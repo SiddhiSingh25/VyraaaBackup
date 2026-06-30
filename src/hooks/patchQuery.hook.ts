@@ -1,6 +1,6 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import apiClient from '../apis/apiClient';
-import logger from '../utils/logger';
+// import console from '../utils/console';
 
 const headers = {
   'Content-Type': 'application/json',
@@ -11,28 +11,28 @@ const usePatchQuery = () => {
   const [data, setData] = useState();
   const [error, setError] = useState();
 
-  const patchQuery = async params => {
+  const patchQuery = async (params: any) => {
     const {
       url,
       onSuccess = () => {
-        logger.log('onSuccess function');
+        console.log('onSuccess function');
       },
       onFail = () => {
-        logger.log('onFail function');
+        console.log('onFail function');
       },
       patchData,
     } = params;
     setLoading(true);
     try {
-      const {data: apiData = {}} = await apiClient.patch(url, patchData, {
+      const { data: apiData = {} } = await apiClient.patch(url, patchData, {
         headers: headers,
       });
       setData(apiData);
       await onSuccess(apiData);
-      logger.log(apiData, 'putQuery-success');
-    } catch (err) {
+      console.log(apiData, 'putQuery-success');
+    } catch (err: any) {
       onFail(err);
-      logger.log(err, 'putQuery-fail');
+      console.log(err, 'putQuery-fail');
       setError(err);
     } finally {
       setLoading(false);

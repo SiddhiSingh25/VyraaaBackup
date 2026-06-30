@@ -1,8 +1,8 @@
 import { useState } from "react";
 import apiClient from "../apis/apiClient";
-import { logger } from "../utils/logger";
+// import { console } from "../utils/console";
 import "react-toastify/dist/ReactToastify.css";
-import Toast from "../components/Toast/Toast";
+// import Toast from "../components/Toast/Toast";
 
 const headers = {
   "Content-Type": "application/json",
@@ -13,14 +13,14 @@ const usePutQuery = () => {
   const [data, setData] = useState(null); // Initialize as null
   const [error, setError] = useState(null); // Initialize as null
 
-  const putQuery = async (params) => {
+  const putQuery = async (params: any) => {
     const {
       url,
       onSuccess = () => {
-        logger.log("onSuccess function");
+        console.log("onSuccess function");
       },
       onFail = () => {
-        logger.log("onFail function");
+        console.log("onFail function");
       },
       putData,
     } = params;
@@ -32,18 +32,23 @@ const usePutQuery = () => {
       const apiData = response.data || {}; // Extract data from response
       setData(apiData);
       await onSuccess(apiData);
-      logger.log(apiData, "putQuery-success");
+      console.log(apiData, "putQuery-success");
       return { data: apiData, error: null };
-    } catch (err) {
-      Toast({
-        type: "error",
-        content:
-          err?.response?.data?.message ||
-          err?.message ||
-          "Something went wrong",
-      });
+    } catch (err: any) {
+      // Toast({
+      //   type: "error",
+      //   content:
+      //     err?.response?.data?.message ||
+      //     err?.message ||
+      //     "Something went wrong",
+      // });
+      console.log(
+        err?.response?.data?.message ||
+        err?.message ||
+        "Something went wrong",
+      )
       onFail(err);
-      logger.log(err, "putQuery-fail");
+      console.log(err, "putQuery-fail");
       setError(err);
       return { data: null, error: err };
     } finally {

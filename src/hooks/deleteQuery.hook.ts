@@ -1,18 +1,18 @@
 import { useState } from "react";
-import apiClient from "../apis/apiClient";
+import apiClient from "../apis/apiClient.ts";
 import "react-toastify/dist/ReactToastify.css";
-import Toast from "../components/Toast/Toast";
+// import Toast from "../components/Toast/Toast";
 
 const useDeleteQuery = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState();
   const [error, setError] = useState();
 
-  const deleteQuery = async (params) => {
+  const deleteQuery = async (params: any) => {
     const {
       url,
-      onSuccess = () => {},
-      onFail = () => {},
+      onSuccess = () => { },
+      onFail = () => { },
       deleteData = {},
     } = params;
     setLoading(true);
@@ -23,17 +23,24 @@ const useDeleteQuery = () => {
       setData(apiData);
       await onSuccess(apiData);
       return apiData;
-    } catch (err) {
-      Toast({
-        type: "error",
-        content:
-          err?.response?.data?.message ||
-          err?.message ||
-          err?.data?.message ||
-          err?.response?.data?.message ||
-          err?.data?.data?.message ||
-          "Something went wrong",
-      });
+    } catch (err: any) {
+      // Toast({
+      //   type: "error",
+      //   content:
+      //     err?.response?.data?.message ||
+      //     err?.message ||
+      //     err?.data?.message ||
+      //     err?.response?.data?.message ||
+      //     err?.data?.data?.message ||
+      //     "Something went wrong",
+      // });
+      console.log(
+        err?.response?.data?.message ||
+        err?.message ||
+        err?.data?.message ||
+        err?.response?.data?.message ||
+        err?.data?.data?.message ||
+        "Something went wrong",)
       onFail(err);
       setError(err);
       return false;
