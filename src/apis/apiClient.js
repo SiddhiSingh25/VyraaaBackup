@@ -2,7 +2,7 @@ import axios from "axios";
 import axiosRetry from "axios-retry";
 
 import { apiBaseUrl } from "./index";
-import { logger } from "../utils/logger";
+// import { console } from "../utils/console";
 
 const apiInstance = () => {
   const api = axios.create({
@@ -17,19 +17,19 @@ const apiInstance = () => {
     if (accessToken) {
       config.headers["authorization"] = `Bearer ${accessToken}`;
     }
-    logger.log("REQUEST", config);
+    console.log("REQUEST", config);
     return config;
   });
 
   api.interceptors.response.use(
     (response) => {
-      logger.log(response);
+      console.log(response);
       console.log(response.data);
       document.cookie = `token=${response.data.token}; max-age=3600`;
       return response;
     },
     (error) => {
-      logger.log("ERROR", error.response.data.detail);
+      console.log("ERROR", error.response.data.detail);
       throw error;
     }
   );

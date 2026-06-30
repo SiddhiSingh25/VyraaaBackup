@@ -5,6 +5,7 @@
   --color-primary: #835240;
   --color-primary-light: #c98f7a;
   --color-primary-dark: #51291a;
+  --color-dark: #3D2A1E;
 
   /* Accent */
   --color-rose-gold: #b76e79;
@@ -26,4 +27,29 @@
   --color-success: #4caf50;
   --color-warning: #f59e0b;
   --color-error: #ba1a1a;
+
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Playfair Display", serif;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 24;
+  vertical-align: middle;
 }

@@ -1,8 +1,8 @@
 import apiClient from "../apis/apiClient";
-import Toast from "../components/Toast/Toast";
+// import Toast from "../components/Toast/Toast";
 
 import { useState } from "react";
-import { logger } from "../utils/logger";
+// import { logger } from "../utils/logger";
 
 const useGetQuery = () => {
   const [loading, setLoading] = useState(false);
@@ -13,10 +13,10 @@ const useGetQuery = () => {
     const {
       url,
       onSuccess = () => {
-        logger.log("onSuccess function");
+        console.log("onSuccess function");
       },
       onFail = () => {
-        logger.log("onFail function");
+        console.log("onFail function");
       },
     } = params;
     setLoading(true);
