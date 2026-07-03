@@ -1,5 +1,5 @@
 import Footer from "../../../components/Footer/Footer";
-import Navbar from "../../../components/Header/Component/Navbar";
+import Navbar from "../../../components/Header/Navbar";
 import BrandStory from "./Components/BrandStory";
 import FeaturedCollections from "./Components/FeaturedCollections";
 import MarqueeBar from "./Components/Marquee";

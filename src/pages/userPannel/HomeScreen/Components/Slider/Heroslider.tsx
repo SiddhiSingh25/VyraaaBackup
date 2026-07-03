@@ -3,7 +3,7 @@ import { SLIDES } from "./Slides";
 import Slide from "./Slide";
 import Indicators from "./Indicators";
 import Navigation from "./Navigation";
-import { useIsMobile } from "./useIsMobile";
+import { useIsMobile } from "./Useismobile";
 
 const AUTOPLAY_DELAY = 5000;
 

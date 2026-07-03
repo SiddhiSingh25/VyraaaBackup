@@ -98,7 +98,7 @@ export default function Testimonials() {
   const current = TESTIMONIALS[index];
 
   return (
-    <section ref={ref} className="py-16 sm:py-24 bg-background">
+    <section ref={ref} className="py-10 bg-background">
       <div className="px-5 sm:px-10 lg:px-20 max-w-[860px] mx-auto">
         <div data-reveal className="text-center mb-10 sm:mb-14">
           <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-primary mb-4 block">

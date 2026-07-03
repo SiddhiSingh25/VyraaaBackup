@@ -1,3 +1,5 @@
+import { IoArrowForward } from "react-icons/io5";
+import { womenPerfume } from "../../../../assets/assets";
 import { useReveal } from "../../../../hooks/gsap/useReveal";
 
 interface Collection {
@@ -16,7 +18,7 @@ const COLLECTIONS: Collection[] = [
   {
     index: "02",
     title: "Perfumes",
-    image: "/perfume.jpeg",
+    image: womenPerfume,
     midLift: true,
   },
   {
@@ -30,7 +32,7 @@ export default function FeaturedCollections() {
   const ref = useReveal<HTMLElement>();
 
   return (
-    <section ref={ref} className="py-12 px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
+    <section ref={ref} className="py-10 px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
       <div
         data-reveal
         className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 sm:gap-0 mb-4 sm:mb-14"
@@ -77,7 +79,7 @@ export default function FeaturedCollections() {
                 className="text-[11px] font-medium tracking-[0.18em] uppercase text-white/70 flex items-center gap-2 hover:text-white group-hover:gap-4 transition-all duration-300"
               >
                 Explore
-                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                <span className="material-symbols-outlined text-[16px]"><IoArrowForward/></span>
               </a>
             </div>
           </div>

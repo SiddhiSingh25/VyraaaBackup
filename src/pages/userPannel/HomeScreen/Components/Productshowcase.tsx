@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { catalogData } from "../../../../utils/data";
+import ProductCard from "../../Product/component/ProductCard";
 
 const GENDERS = ["All", "Men", "Women", "Kids"] as const;
 type Gender = (typeof GENDERS)[number];
@@ -17,16 +18,16 @@ export default function ProductShowcase() {
   const products = catalogData[gender].products[subCat] ?? [];
 
   return (
-    <section className="bg-surface py-16">
+    <section className="bg-surface py-10">
       <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
-        <div className="text-center mb-6">
+        {/* <div className="text-center mb-6">
           <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-primary">
             Shop By
           </span>
           <h2 className="font-heading text-heading mt-2 text-[clamp(26px,4vw,48px)] font-light">
             The Latest Additions
           </h2>
-        </div>
+        </div> */}
 
         {/* Gender tabs */}
         <div className="flex justify-center mb-8">
@@ -79,34 +80,8 @@ export default function ProductShowcase() {
 
         {/* Products grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {products.map((p, i) => (
-            <div key={i} className="group">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-xl sm:rounded-2xl mb-3 sm:mb-5 bg-card">
-                <img
-                  src={p.img}
-                  alt={p.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105"
-                />
-                <button className="absolute top-3 right-3 bg-white/90 p-1.5 sm:p-2 rounded-full material-symbols-outlined text-heading/60 hover:text-rose-gold hover:bg-white transition-all text-[16px] sm:text-[18px]">
-                  favorite
-                </button>
-                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                  <button className="w-full bg-heading text-white py-2.5 sm:py-3 text-[10px] font-medium tracking-[0.18em] uppercase hover:bg-primary transition-colors">
-                    Quick View
-                  </button>
-                </div>
-              </div>
-              <div className="px-0.5 sm:px-1">
-                <p className="text-[9px] sm:text-[10px] font-medium tracking-[0.3em] uppercase text-primary mb-1">
-                  {p.cat}
-                </p>
-                <h4 className="font-heading text-heading text-lg sm:text-xl font-medium leading-tight">
-                  {p.name}
-                </h4>
-                <p className="text-xs sm:text-sm text-muted mt-1">{p.price}</p>
-              </div>
-            </div>
+          {products.map((p:any) => (
+            <ProductCard product={p} />
           ))}
           {products.length === 0 && (
             <p className="col-span-full text-center text-muted text-sm py-10">

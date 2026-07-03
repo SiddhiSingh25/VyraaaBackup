@@ -44,7 +44,7 @@ export default function Slide({ slide, isActive, priority }: SlideProps) {
 
     gsap.to(el, {
       opacity: isActive ? 1 : 0,
-      scale: isActive ? 1 : 1.04,
+      scale: isActive ? 1 : 1.00,
       visibility: isActive ? "visible" : "hidden",
       duration: 1,
       ease: "power2.inOut",
@@ -83,13 +83,13 @@ export default function Slide({ slide, isActive, priority }: SlideProps) {
       style={{
         opacity: isActive ? 1 : 0,
         visibility: isActive ? "visible" : "hidden",
-        transform: isActive ? "scale(1)" : "scale(1.04)",
+        transform: isActive ? "scale(1)" : "scale(1.0)",
       }}
       className="absolute inset-0"
       aria-hidden={!isActive}
     >
       <SlideBackground slide={slide} isActive={isActive} priority={priority} />
-      <SlideOverlay />
+      {/* <SlideOverlay /> */}
       {isActive && <ShineLayer />}
       {/* <SlideContent
         ref={contentRootRef}

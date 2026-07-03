@@ -35,7 +35,7 @@ export default function SlideBackground({ slide, priority }: SlideBackgroundProp
       // over the rest of the page's resources.
       // @ts-expect-error fetchpriority isn't in older React DOM typings
       fetchpriority={priority ? "high" : "low"}
-      className="slide-bg absolute inset-0 bg-cover bg-center bg-no-repeat"
+      className="slide-bg absolute inset-0 bg-cover bg-center bg-no-repeat h-[20h]"
       style={{ backgroundImage: `url(${image})`, willChange: "transform, opacity" }}
     />
   );
