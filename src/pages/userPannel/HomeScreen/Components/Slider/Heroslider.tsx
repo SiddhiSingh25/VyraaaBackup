@@ -11,7 +11,8 @@ export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const touchStartX = useRef(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  // const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isMobile = useIsMobile();
 
   // useCallback: goTo is referenced by the autoplay timer, swipe
@@ -32,11 +33,21 @@ export default function HeroSlider() {
   // Autoplay — restarts whenever `current` changes (manual nav resets
   // the timer too, which is the expected luxury-slider behaviour: a
   // user-initiated change shouldn't be immediately undone by autoplay).
-  useEffect(() => {
+useEffect(() => {
+  if (timerRef.current) {
     clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => goTo(current + 1), AUTOPLAY_DELAY);
-    return () => clearTimeout(timerRef.current);
-  }, [current, goTo]);
+  }
+
+  timerRef.current = setTimeout(() => {
+    goTo(current + 1);
+  }, AUTOPLAY_DELAY);
+
+  return () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+}, [current, goTo]);
 
   // Swipe support (mobile). useCallback keeps these stable across
   // re-renders triggered by `current` changing.
