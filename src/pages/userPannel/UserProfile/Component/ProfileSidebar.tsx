@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
-import type { AccountTabConfig, AccountTabId } from "../../types/account";
 import { Link } from "react-router-dom";
+import type { AccountTabConfig, AccountTabId } from "./account";
 
 const TABS: AccountTabConfig[] = [
   { id: "personal-info", label: "Personal Information", icon: "user" },
