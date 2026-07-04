@@ -166,7 +166,8 @@ const ProductInfo = () => {
 
   const [thumbnail, setThumbnail] = React.useState(product.images[0]);
   const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
-  const [selectedSize, setSelectedSize] = React.useState(null);
+  // const [selectedSize, setSelectedSize] = React.useState(null);
+  const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
   const [quantity, setQuantity] = React.useState(1);
   const [isWishlisted, setIsWishlisted] = React.useState(false);
   const ref = useReveal();
