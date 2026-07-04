@@ -6,17 +6,18 @@ import AllProduct from "../pages/adminPannel/AllProduct"
 export const adminRoutes = [
   {
     path: "/admin",
-    element: <AdminLayout/>,
+    element: <AdminLayout />,
     children: [
       {
         index: true,
-        element: <Dashboard/>,
+        element: <Dashboard />,
       },
       {
         path: "dashboard",
         element: <Dashboard />,
       },
       {
-        path: "product",
+        path: "product/:categorySlug",
         element: <AllProduct/>,
-      },]}]
+      },]
+  }]
