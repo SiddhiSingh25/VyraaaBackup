@@ -1,4 +1,4 @@
-import type { CartItem, PriceDetails } from "../types/cart";
+import type { CartItem, PriceDetails } from "./cart";
 
 export const formatINR = (value: number): string =>
   `₹${value.toLocaleString("en-IN")}`;

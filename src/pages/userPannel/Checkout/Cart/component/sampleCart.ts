@@ -1,4 +1,4 @@
-import type { CartItem } from "../types/cart";
+import type { CartItem } from "./cart";
 
 // Sample "add to cart" data — swap for real API data when wired up.
 export const sampleCartItems: CartItem[] = [
