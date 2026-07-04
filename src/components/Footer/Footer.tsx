@@ -74,7 +74,7 @@ export default function Footer() {
   const bottom = useFadeUp(320);
 
   return (
-    <footer className="relative bg-dark border-t border-[rgba(0,0,0,0.08)]">
+    <footer className="relative bg-dark border-t border-[rgba(0,0,0,0.08)] ">
       {/* hairline accent */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#B89B5E]/50 to-transparent" />
 

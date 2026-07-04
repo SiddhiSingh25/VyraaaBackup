@@ -3,14 +3,12 @@ import { AnimatePresence, motion } from "motion/react";
 import type { CartItem } from "./component/cart";
 import { sampleCartItems } from "./component/sampleCart";
 import { computePriceDetails } from "./component/pricing";
-import CheckoutStepper from "./component/CheckoutStepper";
 import OffersStrip from "./component/OffersStrip";
 import CartListHeader from "./component/CartListHeader";
 import CartItemCard from "./component/CartItemCard";
 import OrderSummary from "./component/OrderSummary";
 import TrustBadges from "./component/TrustBadges";
-import Footer from "../../../components/Footer/Footer";
-import Navbar from "../../../components/Header/Navbar";
+
 
 const COUPON_DISCOUNT = 60;
 
@@ -47,12 +45,9 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar/>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <CheckoutStepper current="bag" />
-        </div>
+     
 
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface py-20 text-center">
@@ -129,7 +124,6 @@ const Cart = () => {
         )}
       </div>
 
-      <Footer/>
     </div>
   );
 };

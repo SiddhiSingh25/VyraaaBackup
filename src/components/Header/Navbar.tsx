@@ -120,7 +120,7 @@ export default function Navbar({
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
               <Link
-                to="/cart"
+                to="/checkout/cart"
                 className="relative text-heading/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <ShoppingBag size={19} strokeWidth={1.6} />
@@ -161,7 +161,7 @@ export default function Navbar({
                 <Heart size={20} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
-              <Link to="/cart" className="relative text-heading/80">
+              <Link to="/checkout/cart" className="relative text-heading/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={cartCount} pulse={cartPulse} />
               </Link>
@@ -200,7 +200,7 @@ export default function Navbar({
                 <Heart size={20} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
-              <Link to="/cart" className="relative text-heading/80">
+              <Link to="/checkout/cart" className="relative text-heading/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={cartCount} pulse={cartPulse} />
               </Link>

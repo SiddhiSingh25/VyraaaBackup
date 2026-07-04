@@ -1,57 +1,42 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand */
   --color-primary: #835240;
   --color-primary-light: #c98f7a;
   --color-primary-dark: #51291a;
   --color-dark: #3D2A1E;
 
-  /* Accent */
   --color-rose-gold: #b76e79;
 
-  /* Backgrounds */
   --color-background: #fdf9f3;
   --color-surface: #f8f4ee;
   --color-card: #f2e8dd;
 
-  /* Text */
   --color-heading: #3b302a;
   --color-body: #51443f;
   --color-muted: #84746e;
 
-  /* Border */
   --color-border: #e6d9cf;
 
-  /* Status */
   --color-success: #4caf50;
   --color-warning: #f59e0b;
   --color-error: #ba1a1a;
 
   --font-body: "Inter", sans-serif;
   --font-heading: "Playfair Display", serif;
-    /* --font-body: "Inter", sans-serif;
-  --font-heading: "Cormorant Garamond", serif; */
 }
 
-@keyframes marquee-scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-body {
-  overflow-x: hidden;
-}
-
-.material-symbols-outlined {
-  font-variation-settings:
-    "FILL" 0,
-    "wght" 300,
-    "GRAD" 0,
-    "opsz" 24;
-  vertical-align: middle;
+/* Signature motif: a hand-stitched thread rule, used at section
+   dividers and to connect the checkout breadcrumb. Fashion houses
+   mark a finished seam with a line of small, even stitches — we
+   borrow that gesture as the page's one recurring flourish. */
+.stitch-rule {
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-primary-light) 0px,
+    var(--color-primary-light) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  height: 1px;
 }

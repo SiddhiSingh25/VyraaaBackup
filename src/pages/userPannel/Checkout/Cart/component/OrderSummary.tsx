@@ -4,6 +4,7 @@ import CouponBar from "./CouponBar";
 import DonationCard from "./DonationCard";
 import type { PriceDetails } from "./cart";
 import { formatINR } from "./pricing";
+import {Link} from 'react-router-dom';
 
 interface OrderSummaryProps {
   details: PriceDetails;
@@ -110,7 +111,7 @@ const OrderSummary = ({
         </span>
         .
       </p>
-
+      <Link to="/checkout/address">
       <motion.button
         type="button"
         onClick={onPlaceOrder}
@@ -120,6 +121,7 @@ const OrderSummary = ({
       >
         PLACE ORDER
       </motion.button>
+      </Link>
     </aside>
   );
 };

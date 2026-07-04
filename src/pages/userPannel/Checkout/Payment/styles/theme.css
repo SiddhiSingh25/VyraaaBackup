@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #835240;
+  --color-primary-light: #c98f7a;
+  --color-primary-dark: #51291a;
+  --color-dark: #3d2a1e;
+
+  --color-rose-gold: #b76e79;
+
+  --color-background: #fdf9f3;
+  --color-surface: #f8f4ee;
+  --color-card: #f2e8dd;
+
+  --color-heading: #3b302a;
+  --color-body: #51443f;
+  --color-muted: #84746e;
+
+  --color-border: #e6d9cf;
+
+  --color-success: #4caf50;
+  --color-warning: #f59e0b;
+  --color-error: #ba1a1a;
+
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Playfair Display", serif;
+}
+
+/* Custom utility used across payment components for the gentle
+   paper-grain warmth that keeps the surfaces from feeling flat. */
+.vyraaa-card-shadow {
+  box-shadow: 0 1px 2px rgba(59, 48, 42, 0.04), 0 8px 24px -12px rgba(59, 48, 42, 0.12);
+}
+
+.vyraaa-card-shadow-lifted {
+  box-shadow: 0 4px 10px rgba(59, 48, 42, 0.06), 0 16px 32px -12px rgba(59, 48, 42, 0.18);
+}
+
+/* Hide scrollbar for horizontal offer carousel while keeping scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
