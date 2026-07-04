@@ -17,17 +17,17 @@ export interface Slide {
   ctaHref?: string;
 }
 
-interface SlideProps {
-  slide: SlideType;
-  isActive: boolean;
-  priority: boolean;
-}
+// interface SlideProps {
+//   slide: SlideType
+//   isActive: boolean;
+//   priority: boolean;
+// }
 
 // Owning the GSAP timeline per-slide (rather than one global timeline
 // in HeroSlider) keeps each slide's animation self-contained and means
 // adding/removing slides never requires touching animation wiring
 // elsewhere — this is the "modular, no duplicated code" requirement.
-export default function Slide({ slide, isActive, priority }: SlideProps) {
+export default function Slide({ slide, isActive, priority }: any) {
   const rootRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLParagraphElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
