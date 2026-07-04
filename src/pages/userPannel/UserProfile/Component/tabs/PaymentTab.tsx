@@ -1,4 +1,4 @@
-import type { PaymentMethod } from "../../../types/account";
+import type { PaymentMethod } from "../account";
 
 interface PaymentTabProps {
   methods: PaymentMethod[];
