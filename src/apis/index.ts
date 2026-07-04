@@ -10,6 +10,7 @@ export const apiUrls = {
   SubCategory: {
     add: 'subcategory/add',
     delete: 'subcategory/delete',
-    getAll: 'subcategory/getAll'
+    getAll: 'subcategory/getAll',
+    getByCategoryId: "subcategory/getByCategoryId"
   }
 };
