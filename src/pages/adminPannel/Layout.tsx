@@ -54,6 +54,11 @@ export default function AdminLayout() {
     {
       icon: LayoutDashboard,
       label: "Dashboard",
+      path: "/admin/quick-add",
+    },
+    {
+      icon: LayoutDashboard,
+      label: "Dashboard",
       path: "/admin/dashboard",
     },
     {
@@ -136,7 +141,7 @@ export default function AdminLayout() {
         </div>
 
         <div className="px-4 mt-3">
-          <button className="group mb-2 flex w-full items-center justify-center gap-5 rounded-2xl bg-gradient-to-r from-primary via-primary/90 to-primary/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white shadow-lg shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5  ">
+          <button className="group mb-2 flex w-full items-center justify-center gap-5 rounded-2xl bg-gradient-to-r from-primary via-primary/90 to-primary/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white shadow-lg shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5  " onClick={()=>navigation.navigate("admin/quick-add")}>
             <span className="flex h-6 w-6 items-center justify-center item-center rounded-full bg-white/20 text-base transition-transform duration-300 ">
               <span className="material-symbols-outlined">+</span>
             </span>
