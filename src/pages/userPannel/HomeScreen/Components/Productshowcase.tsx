@@ -18,16 +18,9 @@ export default function ProductShowcase() {
   const products = catalogData[gender].products[subCat] ?? [];
 
   return (
-    <section className="bg-surface py-10">
+    <section className="bg-surface/50 py-10">
       <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
-        {/* <div className="text-center mb-6">
-          <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-primary">
-            Shop By
-          </span>
-          <h2 className="font-heading text-heading mt-2 text-[clamp(26px,4vw,48px)] font-light">
-            The Latest Additions
-          </h2>
-        </div> */}
+       
 
         {/* Gender tabs */}
         <div className="flex justify-center mb-8">
@@ -36,11 +29,11 @@ export default function ProductShowcase() {
               <button
                 key={g}
                 onClick={() => handleGender(g)}
-                className={`text-[11px] font-medium tracking-[0.18em] uppercase px-5 py-2 rounded-full transition-all duration-200
+                className={`text-[11px] font-medium tracking-[0.18em] uppercase px-5 py-2 rounded-full transition-all duration-200 flex items-center justify-center
                   ${
                     g === gender
-                      ? "bg-white text-heading shadow-sm"
-                      : "text-heading/40 hover:text-heading/70"
+                      ? "bg-dark text-gray-50 shadow-sm font-bold"
+                      : "text-heading/90 hover:text-heading font-semibold"
                   }`}
               >
                 {g}
@@ -58,19 +51,19 @@ export default function ProductShowcase() {
               className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0"
             >
               <div
-                className={`w-[55px] h-[55px] sm:w-[40px] sm:h-[40px] lg:w-[100px] lg:h-[100px] rounded-full overflow-hidden border-2 transition-all duration-200 bg-card
-                  ${cat.title === subCat ? "border-heading" : "border-transparent"}`}
+                className={`w-[52px] h-[52px] sm:w-[40px] sm:h-[40px] lg:w-[90px] lg:h-[90px] rounded-full flex items-center justify-center overflow-hidden border-1 transition-all duration-200 bg-card
+                  ${cat.title === subCat ? "border-primary" : "border-transparent"}`}
               >
                 <img
                   src={cat.image}
                   alt={cat.title}
-                  className="w-full h-full object-contain"
+                  className="w-[95%] h-[95%] object-contain"
                   style={{ objectPosition: "top" }}
                 />
               </div>
               <span
                 className={`text-[10px] font-medium tracking-wider uppercase
-                  ${cat.title === subCat ? "text-heading" : "text-heading/50"}`}
+                  ${cat.title === subCat ? "text-heading border-b-[1px] pb-1 px-2 border-body " : "text-heading/70"}`}
               >
                 {cat.title}
               </span>

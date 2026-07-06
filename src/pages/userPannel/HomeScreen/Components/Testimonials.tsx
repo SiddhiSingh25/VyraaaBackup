@@ -100,14 +100,14 @@ export default function Testimonials() {
   return (
     <section ref={ref} className="py-10 bg-background">
       <div className="px-5 sm:px-10 lg:px-20 max-w-[860px] mx-auto">
-        <div data-reveal className="text-center mb-10 sm:mb-14">
-          <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-primary mb-4 block">
+        <div data-reveal className="text-center mb-6 sm:mb-8">
+          <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-primary mb-2 block">
             What Our Customers Say
           </span>
           <div className="flex items-center justify-center gap-3">
-            <span className="w-10 h-px bg-border" />
-            <Gem size={14} className="text-primary-light" />
-            <span className="w-10 h-px bg-border" />
+            <span className="w-10 h-px bg-primary/40" />
+            <Gem size={14} className="text-primary/90" />
+            <span className="w-10 h-px bg-primary/40" />
           </div>
         </div>
 
@@ -137,7 +137,7 @@ export default function Testimonials() {
             >
               <Stars />
 
-              <Quote size={28} className="text-primary-light/50 -mb-2" />
+              {/* <Quote size={28} className="text-primary-light/50 -mb-2" /> */}
 
               <p className="font-heading italic font-light leading-relaxed text-heading text-[clamp(18px,2.6vw,28px)] max-w-[640px]">
                 {current.quote}
