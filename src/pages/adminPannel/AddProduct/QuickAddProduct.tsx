@@ -35,6 +35,7 @@ const QuickAddProduct = () => {
     register,
     handleSubmit,
     watch,
+    control,
     setValue,
     formState: { errors },
     reset,
@@ -53,8 +54,13 @@ const QuickAddProduct = () => {
   const attributes = watch("attributes") || [];
   const variants = watch("variants") || [];
 
+  const category = watch("category");
+
+  console.log(category, "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+
   // --- Data sources -------------------------------------------------------
-  const { categoryOptions, isLoading: categoryLoading } = useCategoryData();
+  const { categoryOptions, addCategory, getCategoryLoading } =
+    useCategoryData();
   const { subcategoryOptions, isLoading: subcategoryLoading } =
     useTaxonomyData(selectedCategoryId);
   const { subcategoryTypeOptions, isLoading: subcategoryTypeLoading } =
@@ -64,19 +70,9 @@ const QuickAddProduct = () => {
   const { sizeTypeOptions } = useSizeTypeData();
   const { sizeValueOptions } = useSizeValueData(selectedSizeType);
   const { propertyTypeOptions } = usePropertyTypeData(selectedSubcategoryId);
-    // const { propertyValueOptions } = usePropertyValueData(selected);
-  const { brandOptions} = useBrandData(selectedCategoryId);
+  // const { propertyValueOptions } = usePropertyValueData(selected);
+  const { brandOptions } = useBrandData(selectedCategoryId);
 
-
-  // const typeOptions = selectedSubcategoryId ? getTypeOptions(selectedSubcategory) : [];
-  // const colorOptions = selectedColorFamily
-  //   ? getColorOptions(selectedColorFamily)
-  //   : [];
-  // const sizeOptions = selectedSizeType ? getSizeOptions(selectedSizeType) : [];
-
-  // --- Cascading resets ----------------------------------------------------
-  // Whenever a parent field changes, clear the dependent child field(s) so
-  // stale selections never survive a change higher up the taxonomy tree.
   useEffect(() => {
     setValue("subcategory", "");
     setValue("subcategoryType", "");
@@ -111,49 +107,51 @@ const QuickAddProduct = () => {
 
   // --- Submission ------------------------------------------------------------
   const onSubmit = (data: QuickAddValues) => {
+    console.log(data, "uyydg");
 
-console.log(data, "uyydg")
+    const payload = {
+      title: data.name,
+      description: data.description,
 
-const payload = {
-  title: data.name,
-  description: data.description,
+      // Set the first image as the main image, default to empty string if none exists
+      image: data.images && data.images.length > 0 ? data.images[0] : "",
 
-  // Set the first image as the main image, default to empty string if none exists
-  image: data.images && data.images.length > 0 ? data.images[0] : "",
-  
-  brand: data.brand,
+      brand: data.brand,
 
-  // Map any additional images into the expected subImages array of objects
-  subImages: data.images && data.images.length > 1 
-    ? data.images.slice(1).map((img) => ({ imageUrl: img }))
-    : [],
+      // Map any additional images into the expected subImages array of objects
+      subImages:
+        data.images && data.images.length > 1
+          ? data.images.slice(1).map((img) => ({ imageUrl: img }))
+          : [],
 
-  color: data.color,
-  category: data.category,
-  subCategory: data.subcategory,
-  subcategoryType: data.subcategoryType || null,
-  sizeType: data.sizeType,
+      color: data.color,
+      category: data.category,
+      subCategory: data.subcategory,
+      subcategoryType: data.subcategoryType || null,
+      sizeType: data.sizeType,
 
-  // Transform variants into the API's expected 'price' format
-  price: data.variants.map((variant) => ({
-    size: variant.size.value, // Extract the ID string from the size object
-    amount: variant.price,    // Map 'price' from data to 'amount' for the API
-    isAvailable: variant.isAvailable,
-    isFewLeft: variant.isFewLeft,
-    markupPrice: variant.price || 0, // Fallback to 0 if not present in your data
-    discount: variant.discountPrice || 0        // Fallback to 0 if not present in your data
-  })),
+      // Transform variants into the API's expected 'price' format
+      price: data.variants.map((variant) => ({
+        size: variant.size.value, // Extract the ID string from the size object
+        amount: variant.price, // Map 'price' from data to 'amount' for the API
+        isAvailable: variant.isAvailable,
+        isFewLeft: variant.isFewLeft,
+        markupPrice: variant.price || 0, // Fallback to 0 if not present in your data
+        discount: variant.discountPrice || 0, // Fallback to 0 if not present in your data
+      })),
 
-  // Safely map attributes, defaulting to an empty array if undefined
-  attributes: data.attributes ? data.attributes.map((item) => ({
-    property: item.property,
-    value: item.value,
-  })) : [],
+      // Safely map attributes, defaulting to an empty array if undefined
+      attributes: data.attributes
+        ? data.attributes.map((item) => ({
+            property: item.property,
+            value: item.value,
+          }))
+        : [],
 
-  // Pass linkItems if they exist in your data, otherwise default to an empty array
-  linkItems:  []
-};
-    
+      // Pass linkItems if they exist in your data, otherwise default to an empty array
+      linkItems: [],
+    };
+
     postQuery({
       url: `${apiUrls.Product.add}`,
       postData: payload,
@@ -194,9 +192,11 @@ const payload = {
             <div className="flex flex-col gap-8">
               <TaxonomySection
                 register={register}
+                control={control}
                 errors={errors}
                 categoryOptions={categoryOptions}
-                categoryLoading={categoryLoading}
+                addCategory={addCategory}
+                getCategoryLoading={getCategoryLoading}
                 selectedCategory={selectedCategoryId}
                 selectedSubcategory={selectedSubcategoryId}
                 subcategoryOptions={subcategoryOptions}
@@ -214,7 +214,7 @@ const payload = {
                 selectedColorFamily={selectedColorFamily}
                 colorOptions={colorOptions}
                 sizeTypeOptions={sizeTypeOptions}
-                brandOptions = {brandOptions}
+                brandOptions={brandOptions}
               />
 
               <VariantsSection
@@ -227,10 +227,9 @@ const payload = {
 
               <AttributesSection
                 attributes={attributes}
-                setAttributes={(a) => setValue("attributes", a)}
+                setAttributes={(a: any) => setValue("attributes", a)}
                 propertyTypeOptions={propertyTypeOptions}
                 selectedSubcategoryId={selectedSubcategoryId}
-                // propertyValueOptions={propertyValueOptions}
               />
             </div>
 

@@ -10,9 +10,8 @@ import useGetQuery from "../../../../hooks/getQuery.hook";
  */
 const useBrandData = (categoryId: string) => {
   const [brands, setBrands] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const { getQuery } = useGetQuery();
+  const { getQuery,loading } = useGetQuery();
 
   const getBrands = () => {
     if (!categoryId) {
@@ -20,18 +19,15 @@ const useBrandData = (categoryId: string) => {
       return;
     }
     
-    setIsLoading(true);
     
     getQuery({
       // Ensure this endpoint exists in your apiUrls object
       url: `${apiUrls.Brand.getByCategoryId}/${categoryId}`, 
       onSuccess: (res: any) => {
         setBrands(res.data);
-        setIsLoading(false);
       },
       onFail: (err: any) => {
         console.log(err, "Error fetching brands");
-        setIsLoading(false);
       },
     });
   };
@@ -46,7 +42,7 @@ const useBrandData = (categoryId: string) => {
     value: b._id,
   }));
 
-  return { brands, brandOptions, isLoading };
+  return { brands, brandOptions, loading };
 };
 
 export default useBrandData;

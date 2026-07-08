@@ -32,34 +32,54 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   error?: string;
   options: { label: string; value: string | number }[];
-  placeholder ? : string
+  placeholder?: string;
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, required, options, className = "", ...props }, ref) => {
+  (
+    {
+      label,
+      error,
+      required,
+      options,
+      placeholder = "Select an option",
+      className = "",
+      ...props
+    },
+    ref
+  ) => {
     return (
       <div className="w-full">
         <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-muted font-body">
           {label} {required && <span className="text-error">*</span>}
         </label>
+
         <select
           ref={ref}
-          className={`w-full rounded-md border bg-surface px-4 py-2.5 text-sm text-body transition focus:border-primary focus:bg-background focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed ${error ? "border-error" : "border-border"
-            } ${className}`}
+          className={`w-full rounded-md border bg-surface px-4 py-2.5 text-sm text-body transition focus:border-primary focus:bg-background focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 ${
+            error ? "border-error" : "border-border"
+          } ${className}`}
           {...props}
         >
-          <option value="" disabled className="text-muted">Select an option</option>
+          <option value="" disabled>
+            {placeholder}
+          </option>
+
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>
           ))}
         </select>
-        {error && <p className="mt-1 text-xs text-error font-body">{error}</p>}
+
+        {error && (
+          <p className="mt-1 text-xs font-body text-error">{error}</p>
+        )}
       </div>
     );
   }
 );
+
 Select.displayName = "Select";
 
 // --- REUSABLE TEXTAREA ---

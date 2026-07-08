@@ -1,7 +1,9 @@
-import type { UseFormRegister, FieldErrors } from "react-hook-form";
+import { type UseFormRegister, type FieldErrors } from "react-hook-form";
 import { TbCategoryPlus } from "react-icons/tb";
 import type { Option, QuickAddValues } from "../types";
 import { Select } from "../../../../components/ui/FormElements";
+import { SearchableSelect } from "../../../../components/SearchableDropdown/SearchableDropdown";
+import { Controller, type Control } from "react-hook-form";
 
 type TaxonomySectionProps = {
   register: UseFormRegister<QuickAddValues>;
@@ -22,15 +24,22 @@ const TaxonomySection = ({
   register,
   errors,
   categoryOptions,
-  categoryLoading,
+  getCategoryLoading,
   selectedCategory,
   selectedSubcategory,
   subcategoryOptions,
   subcategoryLoading,
-   subcategoryType,
+  subcategoryType,
+  addCategory,
   subcategoryTypeOptions,
-  subcategoryTypeLoading
-}: TaxonomySectionProps) => {
+  subcategoryTypeLoading,
+}: any) => {
+  console.log(
+    "hhfdf",
+    selectedCategory,
+    selectedSubcategory,
+    getCategoryLoading,
+  );
   return (
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
@@ -41,17 +50,24 @@ const TaxonomySection = ({
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
-        <Select
-          label="Category"
-          required
-          {...register("category")}
-          error={errors.category?.message}
-          options={categoryOptions}
-          placeholder={
-            categoryLoading ? "Loading categories..." : "Select category"
-          }
-          disabled={categoryLoading}
+        <Controller
+          name="category"
+          control={control}
+          render={({ field }) => (
+            <SearchableSelect
+              {...field}
+              label="Category"
+              required
+              showAddButton
+              addButtonText="Create new category"
+              onAdd={addCategory}
+              error={errors.category?.message}
+              options={categoryOptions}
+              placeholder="Select category"
+            />
+          )}
         />
+
         <Select
           label="Subcategory"
           required
@@ -74,8 +90,7 @@ const TaxonomySection = ({
           {...register("subcategoryType")}
           error={errors.subcategoryType?.message}
           options={subcategoryTypeOptions}
-         
-             placeholder={
+          placeholder={
             !subcategoryType
               ? "Select a subcategory first"
               : subcategoryType
