@@ -1,9 +1,11 @@
 
-import React from "react";
+import React, { use, useEffect, useState } from "react";
 import { useReveal } from "../../../../hooks/gsap/useReveal";
 import { kidsFootwear, shirts } from "../../../../assets/assets";
 import RatingsAndReviews from "./RatingReviews";
-import { useParams } from "react-router-dom";
+import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import useGetQuery from "../../../../hooks/getQuery.hook";
+import { apiBaseUrl, apiUrls } from "../../../../apis";
 
 /* ---------------------------- Small building blocks ---------------------------- */
 
@@ -84,8 +86,30 @@ const HeartIcon = ({ filled }: any) => (
 /* ---------------------------------- Main ---------------------------------- */
 
 const ProductInfo = () => {
+  const [productData, setProductData] = useState<{}>()
+  const [isLoading, setIsLoading] = useState(true)
+  let { id } = useParams()
+  const { getQuery } = useGetQuery()
+  const navigate = useNavigate()
+  useEffect(() => {
+    setIsLoading(true)
+    getQuery({
+      url: apiUrls.Product.getById + id,
+      onSuccess: (res: any) => {
+        console.log(res.data, "====");
+        // Properly create subImages array with main image at the beginning
+        const subImages = res?.data?.image ? [res.data.image, ...(res?.data?.subImages || [])] : (res?.data?.subImages || [])
+        setProductData({ ...res.data, subImages })
+        setIsLoading(false)
+      },
+      onFail: (res: any) => {
+        console.log(res);
+        setIsLoading(false)
+      },
+    })
+  }, [id])
 
-  let {id}  =  useParams()
+
 
   console.log(id, "9999999999")
   const product = {
@@ -122,65 +146,87 @@ const ProductInfo = () => {
       { label: "Fit", value: "True to size" },
     ],
     inStock: true,
-      
-  totalReviews: 128,
 
-  ratingDistribution: {
-    5: 312,
-    4: 103,
-    3: 38,
-    2: 16,
-    1: 11,
-  },
+    totalReviews: 128,
 
-  reviews: [
-    {
-      id: 1,
-      name: "Rahul Sharma",
-      rating: 5,
-      verified: true,
-      date: "2 weeks ago",
-      title: "Excellent Quality",
-      review:
-        "Very comfortable shoes. Material feels premium, lightweight and perfect for everyday wear.",
-      helpful: 122,
-      images: [
-        kidsFootwear,
-        kidsFootwear,
-      ],
+    ratingDistribution: {
+      5: 312,
+      4: 103,
+      3: 38,
+      2: 16,
+      1: 11,
     },
-    {
-      id: 2,
-      name: "Priya Singh",
-      rating: 5,
-      verified: true,
-      date: "1 month ago",
-      title: "Loved It",
-      review:
-        "Beautiful design, excellent cushioning and true to size. Definitely worth buying.",
-      helpful: 73,
-      images: [
-        kidsFootwear,
-        kidsFootwear,
-        kidsFootwear,
-      ],
-    },
-  ],
-  
+
+    reviews: [
+      {
+        id: 1,
+        name: "Rahul Sharma",
+        rating: 5,
+        verified: true,
+        date: "2 weeks ago",
+        title: "Excellent Quality",
+        review:
+          "Very comfortable shoes. Material feels premium, lightweight and perfect for everyday wear.",
+        helpful: 122,
+        images: [
+          kidsFootwear,
+          kidsFootwear,
+        ],
+      },
+      {
+        id: 2,
+        name: "Priya Singh",
+        rating: 5,
+        verified: true,
+        date: "1 month ago",
+        title: "Loved It",
+        review:
+          "Beautiful design, excellent cushioning and true to size. Definitely worth buying.",
+        helpful: 73,
+        images: [
+          kidsFootwear,
+          kidsFootwear,
+          kidsFootwear,
+        ],
+      },
+    ],
+
   };
 
-  const [thumbnail, setThumbnail] = React.useState(product.images[0]);
+  const [thumbnail, setThumbnail] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
   // const [selectedSize, setSelectedSize] = React.useState(null);
-  const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = React.useState<string | null>(0);
   const [quantity, setQuantity] = React.useState(1);
   const [isWishlisted, setIsWishlisted] = React.useState(false);
   const ref = useReveal();
 
+  // Reset states when product data changes
+  useEffect(() => {
+    setThumbnail(0);
+    setSelectedSize(0);
+    setIsWishlisted(false);
+  }, [productData]);
+
   const amountSaved = product.mrp - product.sellingPrice;
 
+  if (isLoading) {
+    return (
+      <section className="bg-[#fdf9f3] py-5">
+        <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#835240]"></div>
+              <p className="mt-4 text-[#84746e]">Loading product...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    product && (
+    product && productData && (
       <section className="bg-[#fdf9f3] py-5">
         <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
           <div className="max-w-6xl w-full ">
@@ -195,10 +241,11 @@ const ProductInfo = () => {
               {/* ---------------------- LEFT SIDE — unchanged ---------------------- */}
               <div className="flex gap-3 sticky top-24 self-start">
                 <div className="flex flex-col gap-2.5">
-                  {product.images.map((image, index) => (
+
+                  {productData?.subImages?.map((image: any, index: any) => (
                     <div
                       key={index}
-                      onClick={() => setThumbnail(image)}
+                      onClick={() => setThumbnail(index)}
                       className="border max-w-[70px] border-gray-500/30 rounded overflow-hidden cursor-pointer"
                     >
                       <img src={image} alt={`Thumbnail ${index + 1}`} />
@@ -207,7 +254,7 @@ const ProductInfo = () => {
                 </div>
 
                 <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50">
-                  <img src={shirts} alt="Selected product" className="w-full h-full object-cover" />
+                  <img src={productData?.subImages?.[thumbnail]} alt="Selected product" className="w-full h-full object-cover" />
                 </div>
               </div>
 
@@ -215,32 +262,35 @@ const ProductInfo = () => {
               <div className="w-full md:w-1/2">
                 {/* Brand + Title */}
                 <p className="text-[11px] tracking-[0.18em] uppercase text-[#b76e79] font-medium">
-                  {product.brand}
+                  {productData?.brand}
                 </p>
                 <h1
                   className="mt-0.5 text-[22px] leading-[1.25] text-[#3b302a] font-heading font-semibold"
-                  // style={{ fontFamily: "'Playfair Display', serif" }}
+                // style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  {product.name}
+                  {productData?.title}
                 </h1>
 
-                <StarRating rating={product.rating} totalRatings={product.totalRatings} />
+                <StarRating rating={productData?.rating} totalRatings={product.totalRatings} />
 
                 {/* Price — single tight row, Myntra-style */}
                 <div className="mt-3 flex items-baseline gap-2">
                   <span className="text-[22px] text-[#3b302a] font-semibold leading-none">
-                    ₹{product.sellingPrice.toLocaleString("en-IN")}
+                    ₹{productData?.price[selectedSize]?.amount}
                   </span>
                   <span className="text-[13px] text-[#84746e] line-through">
-                    MRP ₹{product.mrp.toLocaleString("en-IN")}
+                    MRP ₹{productData?.price[selectedSize]?.markupPrice}
                   </span>
                   <span className="text-[13px] text-[#835240] font-medium">
-                    ({product.discount}% OFF)
+                    ({Math.round((productData?.price[selectedSize]?.discount * 100) / (productData?.price[selectedSize]?.markupPrice || 1)) || 0}% OFF)
                   </span>
                 </div>
-                <p className="mt-0.5 text-[11px] text-[#84746e]">
-                  inclusive of all taxes · you save ₹{amountSaved.toLocaleString("en-IN")}
-                </p>
+                {productData?.price[selectedSize]?.discount != 0 &&
+                  <p className="mt-0.5 text-[11px] text-[#84746e]">
+                    inclusive of all taxes · you save ₹{productData?.price[selectedSize]?.discount}
+                  </p>
+                }
+
 
                 {/* Size */}
                 <div className="mt-4">
@@ -257,21 +307,20 @@ const ProductInfo = () => {
                     Select Size
                   </SectionLabel>
                   <div className="flex flex-wrap gap-2">
-                    {product.availableSizes.map(({ size, stock }) => (
+                    {productData?.price.map((size: any, index: any) => (
                       <button
                         key={size}
                         type="button"
-                        disabled={!stock}
-                        onClick={() => setSelectedSize(size)}
-                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${
-                          !stock
-                            ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
-                            : selectedSize === size
-                              ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
-                              : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
-                        }`}
+                        disabled={!size.isAvailable}
+                        onClick={() => setSelectedSize(index)}
+                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${!size.isAvailable
+                          ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
+                          : selectedSize === index
+                            ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
+                            : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
+                          }`}
                       >
-                        {size}
+                        {size.size}
                       </button>
                     ))}
                   </div>
@@ -280,22 +329,21 @@ const ProductInfo = () => {
                 {/* Colour */}
                 <div className="mt-4">
                   <SectionLabel>
-                    Colour — <span className="text-[#84746e] normal-case tracking-normal">{selectedColor}</span>
+                    Colour — <span className="text-[#84746e] normal-case tracking-normal">{productData?.color}</span>
                   </SectionLabel>
                   <div className="flex items-center gap-2">
-                    {product.colorOptions.map((color) => (
+                    {productData?.linkItems?.map((item: any) => (
                       <button
-                        key={color.name}
+                        key={item._id}
                         type="button"
-                        onClick={() => setSelectedColor(color.name)}
-                        aria-label={color.name}
-                        className={`relative w-8 h-8 rounded-full overflow-hidden border transition-all duration-200 ${
-                          selectedColor === color.name
-                            ? "border-[#835240] ring-1 ring-[#c98f7a] ring-offset-1 ring-offset-[#fdf9f3]"
-                            : "border-[#e6d9cf]"
-                        }`}
+                        onClick={() => navigate({ pathname: `/productDeatils/${item?._id}` })}
+                        aria-label={item?.name}
+                        className={`relative w-8 h-8 rounded-full overflow-hidden border transition-all duration-200 ${selectedColor === item?._id
+                          ? "border-[#835240] ring-1 ring-[#c98f7a] ring-offset-1 ring-offset-[#fdf9f3]"
+                          : "border-[#e6d9cf]"
+                          }`}
                       >
-                        <img src={color.image} alt={color.name} className="w-full h-full object-cover" />
+                        <img src={item?.image} alt={item._id} className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>
@@ -327,7 +375,7 @@ const ProductInfo = () => {
                     type="button"
                     className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium bg-[#835240] text-[#fdf9f3] rounded-sm hover:bg-[#51291a] transition-colors duration-200"
                   >
-                    Add to Bag
+                    Add to Cart
                   </button>
                   <button
                     type="button"
@@ -358,15 +406,15 @@ const ProductInfo = () => {
                     Product Details
                   </p>
                   <p className="text-[13px] leading-[1.7] text-[#51443f]">
-                    {product.description.join(" ")}
+                    {productData?.description}
                   </p>
 
                   <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-bold mt-4 mb-2">
                     Specifications
                   </p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                    {product.specs.map((spec) => (
-                      <SpecCell key={spec.label} label={spec.label} value={spec.value} />
+                    {productData?.attributes.map((spec: any) => (
+                      <SpecCell key={spec._id} label={spec.property} value={spec.value} />
                     ))}
                   </div>
                 </div>
@@ -375,13 +423,13 @@ const ProductInfo = () => {
                 <div className="mt-4 pt-3 border-t border-[#e6d9cf] text-[11.5px] text-[#84746e]">
                   Product Code: <span className="text-[#3b302a]">39052859</span>
                 </div>
-               <RatingsAndReviews
-  rating={product.rating}
-  totalRatings={product.totalRatings}
-  totalReviews={product.totalReviews}
-  ratingDistribution={product.ratingDistribution}
-  reviews={product.reviews}
-/>
+                <RatingsAndReviews
+                  rating={product.rating}
+                  totalRatings={product.totalRatings}
+                  totalReviews={product.totalReviews}
+                  ratingDistribution={product.ratingDistribution}
+                  reviews={product.reviews}
+                />
               </div>
             </div>
           </div>
