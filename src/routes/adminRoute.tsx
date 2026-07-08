@@ -2,7 +2,7 @@ import AdminLayout from "../pages/adminPannel/Layout"
 import Dashboard from "../pages/adminPannel/Dashboard"
 import AllProduct from "../pages/adminPannel/AllProduct"
 import MasterChannel from "../pages/adminPannel/MasterChannel"
-import QuickAddProduct from "../pages/adminPannel/QuickAddProduct"
+import QuickAddProduct from "../pages/adminPannel/AddProduct/QuickAddProduct"
 
 
 export const adminRoutes = [
@@ -20,7 +20,7 @@ export const adminRoutes = [
       },
       {
         path: "/admin/quick-add",
-        element: <QuickAddProduct />,
+        element: <QuickAddProduct/>,
       },
       {
         path: "/admin/master-channel",

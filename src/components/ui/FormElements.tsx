@@ -32,6 +32,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   error?: string;
   options: { label: string; value: string | number }[];
+  placeholder ? : string
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
