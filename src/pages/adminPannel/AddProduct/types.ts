@@ -96,6 +96,7 @@ export type QuickAddValues = {
   subcategoryType: string;
   name: string;
   description: string;
+  brand: string;
   attributes: AttributeEntry[];
   colorFamily: string;
   color: string;

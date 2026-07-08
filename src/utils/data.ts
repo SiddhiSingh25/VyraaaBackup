@@ -72,6 +72,7 @@ export const catalogData: Record<
           cat: "Shirts",
           price: "₹290",
           img: "https://images.unsplash.com/photo-1607345366928-199ea26cfe3e?w=700&q=80&fit=crop",
+          // id : "6a4e23c08e4a844e0e030a3e"
         },
         {
           name: "Slim Poplin Jacket",

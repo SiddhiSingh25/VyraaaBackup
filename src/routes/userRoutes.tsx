@@ -23,7 +23,7 @@ export const userRoutes = [
     element: <Wishlist/>,
   },
    {
-    path: "/productDeatils",
+    path: "/productDeatils/:id",
     element: <ProductDetails/>,
   },
 

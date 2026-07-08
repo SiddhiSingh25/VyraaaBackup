@@ -10,6 +10,7 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
   // Basic Details
   name: yup.string().required("Product Name is required"),
   description: yup.string().required("Description is required"),
+  brand: yup.string().required("Brand is required"),
 
   // Attributes
   attributes: yup
@@ -72,6 +73,7 @@ export const quickAddDefaultValues: QuickAddValues = {
   subcategoryType: "",
   name: "",
   description: "",
+  brand: "",
   attributes: [],
   colorFamily: "",
   color: "",

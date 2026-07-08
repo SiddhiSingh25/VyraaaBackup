@@ -47,7 +47,7 @@ const VariantsSection = ({
 
     // Check if this size variant already exists
     const existingIndex = variants.findIndex(
-      (v) => v.size === draftVariant.size
+      (v) => v.size.value === draftVariant.size.value
     );
 
     if (existingIndex !== -1) {

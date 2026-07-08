@@ -27,10 +27,11 @@ const usePropertyTypeData = (subCategoryId : string) => {
     });
   };
 
-  useEffect(() => {
-    getAttributeData();
-    
-  }, [subCategoryId]);
+useEffect(() => {
+  if (!subCategoryId) return;
+
+  getAttributeData();
+}, [subCategoryId]);
 
   const propertyTypeOptions: Option[] = attributeData.map((a) => ({
     label: a.property,

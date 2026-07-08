@@ -76,8 +76,8 @@ const CoreInfoSection = ({
           <Select
             label="Brand"
             required
-            // {...register("sizeTypeValue")}
-            // error={errors.sizeTypeValue?.message}
+            {...register("brand")}
+            error={errors.brand?.message}
             options={brandOptions}
           />
         </div>

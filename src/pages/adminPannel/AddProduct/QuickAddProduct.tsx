@@ -121,7 +121,7 @@ const payload = {
   // Set the first image as the main image, default to empty string if none exists
   image: data.images && data.images.length > 0 ? data.images[0] : "",
   
-  brand: "6a474fc92ea6d2ca5c31d3fc", // Hardcoded based on your draft
+  brand: data.brand,
 
   // Map any additional images into the expected subImages array of objects
   subImages: data.images && data.images.length > 1 

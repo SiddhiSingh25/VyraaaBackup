@@ -42,7 +42,7 @@ const useBrandData = (categoryId: string) => {
 
   const brandOptions: Option[] = brands.map((b : any) => ({
     // Update 'b.name' if your API returns the brand name under a different key (e.g., b.brandName)
-    label: b.name, 
+    label: b.brand, 
     value: b._id,
   }));
 

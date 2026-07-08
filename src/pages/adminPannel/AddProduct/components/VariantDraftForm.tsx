@@ -40,8 +40,9 @@ const VariantDraftForm = ({
             Size <span className="text-red-500">*</span>
           </label>
           <select
+            // label="Size Type"
             id="variant-size"
-            value={draftVariant.size.value}
+            value={draftVariant.size.value || ""}
             onChange={(e) => {
               const selected = sizeValueOptions.find(
                 (option) => option.value === e.target.value,
@@ -65,16 +66,20 @@ const VariantDraftForm = ({
             </option>
 
             {sizeValueOptions.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option key={option.value } value={option.value || ""}>
                 {option.label}
               </option>
             ))}
           </select>
-          {!sizeTypeSelected && (
-            <p className="mt-1 text-[10px] text-red-500">
-              Please select a size type first
-            </p>
-          )}
+          {!sizeTypeSelected ? (
+  <p className="mt-1 text-[10px] text-red-500">
+    Please select a size type first
+  </p>
+) : !draftVariant.size.value ? (
+  <p className="mt-1 text-[10px] text-red-500">
+    Please select a size
+  </p>
+) : null}
         </div>
 
         {/* Price Input */}
@@ -89,7 +94,7 @@ const VariantDraftForm = ({
             id="variant-price"
             type="number"
             min={0}
-            value={draftVariant.price}
+            value={draftVariant.price }
             onChange={(e) =>
               setDraftVariant({ ...draftVariant, price: e.target.value })
             }

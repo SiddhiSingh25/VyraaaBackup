@@ -3,6 +3,7 @@ import React from "react";
 import { useReveal } from "../../../../hooks/gsap/useReveal";
 import { kidsFootwear, shirts } from "../../../../assets/assets";
 import RatingsAndReviews from "./RatingReviews";
+import { useParams } from "react-router-dom";
 
 /* ---------------------------- Small building blocks ---------------------------- */
 
@@ -83,6 +84,10 @@ const HeartIcon = ({ filled }: any) => (
 /* ---------------------------------- Main ---------------------------------- */
 
 const ProductInfo = () => {
+
+  let {id}  =  useParams()
+
+  console.log(id, "9999999999")
   const product = {
     brand: "Campus",
     name: "HIGHBIRD Women Colourblocked Sneakers",
