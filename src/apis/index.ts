@@ -67,8 +67,8 @@ export const apiUrls = {
     getById: "color/getById",
     getByColorFamilyId: "color/getByColorFamilyId",
   },
-//Brand
-    Brand: {
+  //Brand
+  Brand: {
     add: "brand/add",
     update: "brand/update",
     delete: "brand/delete",
@@ -86,7 +86,7 @@ export const apiUrls = {
     getById: "sizetype/getById",
   },
 
-    SizeTypeValue: {
+  SizeTypeValue: {
     add: "sizetype/add",
     update: "sizetype/update",
     delete: "sizetype/delete",
@@ -96,7 +96,8 @@ export const apiUrls = {
 
 
 
-  Product : {
-    add  :  "product/add"
+  Product: {
+    add: "product/add",
+    getById: "product/"
   }
 };
