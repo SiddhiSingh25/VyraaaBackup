@@ -7,9 +7,9 @@ import { Controller, type Control } from "react-hook-form";
 
 type TaxonomySectionProps = {
   register: UseFormRegister<QuickAddValues>;
+  control: Control<QuickAddValues>;
   errors: FieldErrors<QuickAddValues>;
   categoryOptions: Option[];
-  categoryLoading: boolean;
   selectedCategory: string;
   selectedSubcategory: string;
   subcategoryOptions: Option[];
@@ -17,11 +17,14 @@ type TaxonomySectionProps = {
   subcategoryType: string;
   subcategoryTypeOptions: Option[];
   subcategoryTypeLoading: boolean;
+  addCategory: (category?: string) => void;
+  getCategoryLoading: boolean;
   // typeOptions: Option[];
 };
 
 const TaxonomySection = ({
   register,
+  control,
   errors,
   categoryOptions,
   getCategoryLoading,
@@ -33,7 +36,7 @@ const TaxonomySection = ({
   addCategory,
   subcategoryTypeOptions,
   subcategoryTypeLoading,
-}: any) => {
+}: TaxonomySectionProps) => {
   console.log(
     "hhfdf",
     selectedCategory,
@@ -44,7 +47,7 @@ const TaxonomySection = ({
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
         <TbCategoryPlus className="text-primary text-xl" />
-        <h3 className="text-lg text-heading font-heading font-semibold">
+        <h3 className="text-lg text-admin-text font-heading font-semibold">
           Taxonomy Mapping
         </h3>
       </div>

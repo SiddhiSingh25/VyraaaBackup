@@ -50,7 +50,7 @@ export default function PaymentMethodCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="font-body text-[15px] font-semibold text-heading">{title}</p>
+            <p className="font-body text-[15px] font-semibold text-admin-text">{title}</p>
             {recommended && (
               <span className="rounded-full bg-primary/10 px-2 py-0.5 font-body text-[10px] font-semibold uppercase tracking-wide text-primary">
                 Recommended

@@ -45,7 +45,7 @@ const MediaSection = ({ images, setImages, errorMessage }: MediaSectionProps) =>
       <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
         <div className="flex items-center gap-3">
           <ImImages className="text-primary text-xl" />
-          <h3 className="text-lg text-heading font-heading font-semibold">Media</h3>
+          <h3 className="text-lg text-admin-text font-heading font-semibold">Media</h3>
         </div>
         <span className="rounded-md bg-card px-3 py-1 text-xs font-semibold text-primary-dark border border-border">
           {images.length}/{MAX_IMAGES}

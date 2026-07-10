@@ -119,9 +119,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary: "bg-primary text-background hover:bg-primary-dark rounded-md px-6 py-2 text-sm font-semibold shadow-sm tracking-wide",
-      secondary: "bg-card text-heading hover:bg-border rounded-md px-6 py-2 text-sm font-semibold border border-border shadow-sm tracking-wide",
+      secondary: "bg-card text-admin-text hover:bg-border rounded-md px-6 py-2 text-sm font-semibold border border-border shadow-sm tracking-wide",
       outline: "bg-transparent text-primary hover:bg-surface border border-primary rounded-md px-6 py-2 text-sm font-semibold tracking-wide",
-      ghost: "bg-transparent text-muted hover:text-heading hover:bg-surface rounded-md px-4 py-2 text-sm font-medium",
+      ghost: "bg-transparent text-muted hover:text-admin-text hover:bg-surface rounded-md px-4 py-2 text-sm font-medium",
       icon: "p-2 rounded-full border border-border bg-surface text-primary hover:bg-card hover:border-primary-light transition-colors",
     };
 

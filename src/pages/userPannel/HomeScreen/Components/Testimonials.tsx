@@ -116,7 +116,7 @@ export default function Testimonials() {
           <button
             onClick={handlePrev}
             aria-label="Previous testimonial"
-            className="absolute left-0 sm:-left-6 w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-border bg-surface flex items-center justify-center text-muted hover:text-heading hover:border-primary-light hover:scale-105 active:scale-95 transition-all duration-300 ease-out flex-shrink-0"
+            className="absolute left-0 sm:-left-6 w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-border bg-surface flex items-center justify-center text-muted hover:text-admin-text hover:border-primary-light hover:scale-105 active:scale-95 transition-all duration-300 ease-out flex-shrink-0"
           >
             <ChevronLeft size={18} />
           </button>
@@ -139,7 +139,7 @@ export default function Testimonials() {
 
               {/* <Quote size={28} className="text-primary-light/50 -mb-2" /> */}
 
-              <p className="font-heading italic font-light leading-relaxed text-heading text-[clamp(18px,2.6vw,28px)] max-w-[640px]">
+              <p className="font-heading italic font-light leading-relaxed text-admin-text text-[clamp(18px,2.6vw,28px)] max-w-[640px]">
                 {current.quote}
               </p>
 
@@ -148,12 +148,12 @@ export default function Testimonials() {
               </div>
 
               <div className="flex items-center gap-3 mt-2">
-                <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-heading text-xs font-medium flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-admin-text text-xs font-medium flex-shrink-0">
                   {current.initials}
                 </div>
                 <div className="text-left">
                   <div className="flex items-center gap-1.5">
-                    <p className="font-medium text-heading text-sm">
+                    <p className="font-medium text-admin-text text-sm">
                       {current.name}
                     </p>
                     {current.verified && (
@@ -174,7 +174,7 @@ export default function Testimonials() {
           <button
             onClick={handleNext}
             aria-label="Next testimonial"
-            className="absolute right-0 sm:-right-6 w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-border bg-surface flex items-center justify-center text-muted hover:text-heading hover:border-primary-light hover:scale-105 active:scale-95 transition-all duration-300 ease-out flex-shrink-0"
+            className="absolute right-0 sm:-right-6 w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-border bg-surface flex items-center justify-center text-muted hover:text-admin-text hover:border-primary-light hover:scale-105 active:scale-95 transition-all duration-300 ease-out flex-shrink-0"
           >
             <ChevronRight size={18} />
           </button>

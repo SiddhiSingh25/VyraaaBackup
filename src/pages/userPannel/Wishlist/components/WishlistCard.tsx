@@ -87,10 +87,10 @@ function WishlistCard({
       </div>
 
        <div className="my-1 flex flex-col gap-1 p-2">
-        <p className="font-heading text-sm text-heading">{product.brand}</p>
+        <p className="font-heading text-sm text-admin-text">{product.brand}</p>
         <p className="text-xs text-muted">{product.name}</p>
         <div className="flex items-baseline gap-2 pt-0.5">
-          <span className="text-sm font-medium text-heading">{formatINR(product.price)}</span>
+          <span className="text-sm font-medium text-admin-text">{formatINR(product.price)}</span>
           {product.originalPrice && (
             <span className="text-xs text-muted line-through">
               {formatINR(product.originalPrice)}
@@ -111,7 +111,7 @@ function WishlistCard({
       
 
         <div className="flex items-baseline gap-2">
-          <span className="font-heading text-lg text-heading">{formatINR(product.price)}</span>
+          <span className="font-heading text-lg text-admin-text">{formatINR(product.price)}</span>
           {product.originalPrice && (
             <>
               <span className="text-sm text-muted line-through">

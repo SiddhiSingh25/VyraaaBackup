@@ -60,7 +60,7 @@ const CartItemCard = ({
 
         {/* Details */}
         <div className="flex-1 min-w-0 pr-6">
-          <h3 className="font-heading text-base text-heading sm:text-lg">
+          <h3 className="font-heading text-base text-admin-text sm:text-lg">
             {item.brand}
           </h3>
           <p className="mt-0.5 truncate font-body text-sm text-body">
@@ -77,7 +77,7 @@ const CartItemCard = ({
               <select
                 value={item.size}
                 onChange={(e) => onSizeChange(item.id, e.target.value)}
-                className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-heading focus:outline-none focus:ring-1 focus:ring-primary"
+                className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-admin-text focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 {item.availableSizes.map((s) => (
                   <option key={s} value={s}>
@@ -92,7 +92,7 @@ const CartItemCard = ({
               <select
                 value={item.qty}
                 onChange={(e) => onQtyChange(item.id, Number(e.target.value))}
-                className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-heading focus:outline-none focus:ring-1 focus:ring-primary"
+                className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-admin-text focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 {Array.from({ length: item.maxQty }, (_, i) => i + 1).map(
                   (n) => (
@@ -107,7 +107,7 @@ const CartItemCard = ({
 
           {/* Price */}
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-heading text-lg text-heading">
+            <span className="font-heading text-lg text-admin-text">
               {formatINR(item.price)}
             </span>
             <span className="font-body text-sm text-muted line-through">

@@ -79,14 +79,14 @@ const VariantsSection = ({
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="mb-6 flex items-center gap-3 border-b border-border pb-4">
         <IoColorPaletteOutline className="text-xl text-primary" />
-        <h3 className="font-heading text-lg font-semibold text-heading">
+        <h3 className="font-heading text-lg font-semibold text-admin-text">
           Variants & Pricing
         </h3>
       </div>
 
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <div>
-          <p className="text-sm font-medium text-heading">Add SKU variants</p>
+          <p className="text-sm font-medium text-admin-text">Add SKU variants</p>
           <p className="text-sm text-muted">
             Create one or more size-based entries for this product.
           </p>

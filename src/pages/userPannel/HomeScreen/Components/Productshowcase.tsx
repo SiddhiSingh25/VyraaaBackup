@@ -33,7 +33,7 @@ export default function ProductShowcase() {
                   ${
                     g === gender
                       ? "bg-dark text-gray-50 shadow-sm font-bold"
-                      : "text-heading/90 hover:text-heading font-semibold"
+                      : "text-admin-text/90 hover:text-admin-text font-semibold"
                   }`}
               >
                 {g}
@@ -63,7 +63,7 @@ export default function ProductShowcase() {
               </div>
               <span
                 className={`text-[10px] font-medium tracking-wider uppercase
-                  ${cat.title === subCat ? "text-heading border-b-[1px] pb-1 px-2 border-body " : "text-heading/70"}`}
+                  ${cat.title === subCat ? "text-admin-text border-b-[1px] pb-1 px-2 border-body " : "text-admin-text/70"}`}
               >
                 {cat.title}
               </span>
@@ -86,7 +86,7 @@ export default function ProductShowcase() {
         <div className="text-center mt-10">
           <a
             href="#"
-            className="inline-block border border-heading/30 text-heading px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-heading hover:text-white transition-all duration-400"
+            className="inline-block border border-heading/30 text-admin-text px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-heading hover:text-white transition-all duration-400"
           >
             View All Products
           </a>

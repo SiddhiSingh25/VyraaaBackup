@@ -135,7 +135,7 @@ const AllProduct = () => {
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-surface p-6 rounded-xl border border-border shadow-sm">
             <div>
-              <h2 className="text-3xl font-semibold text-heading font-heading tracking-wide">Add Product</h2>
+              <h2 className="text-3xl font-semibold text-admin-text font-heading tracking-wide">Add Product</h2>
               <p className="text-sm text-muted mt-1">Curate a new piece for your collection.</p>
             </div>
             <div className="flex flex-wrap gap-4">
@@ -150,7 +150,7 @@ const AllProduct = () => {
 
               {/* Basic Details */}
               <section className="rounded-xl border border-border bg-surface p-6 shadow-sm md:p-8">
-                <h3 className="text-xl text-heading font-heading mb-6 border-b border-border pb-4">Basic Details</h3>
+                <h3 className="text-xl text-admin-text font-heading mb-6 border-b border-border pb-4">Basic Details</h3>
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="sm:col-span-2">
                     <Input label="Product Name" required placeholder="e.g. Silk Blend Evening Dress" {...register("name")} error={errors.name?.message} />
@@ -201,7 +201,7 @@ const AllProduct = () => {
               <section className="rounded-xl border border-border bg-surface p-6 shadow-sm md:p-8">
                 <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
                   <div>
-                    <h3 className="text-xl text-heading font-heading">Variants & Pricing</h3>
+                    <h3 className="text-xl text-admin-text font-heading">Variants & Pricing</h3>
                     <p className="text-xs text-muted mt-1">Manage inventory sizes and specific pricing.</p>
                   </div>
                   <Button type="button" variant="icon" onClick={() => setShowVariantDraft(!showVariantDraft)}>
@@ -231,11 +231,11 @@ const AllProduct = () => {
                     </div>
                     <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-4">
                       <div className="flex items-center gap-6">
-                        <label className="flex items-center gap-2 text-sm text-heading cursor-pointer select-none">
+                        <label className="flex items-center gap-2 text-sm text-admin-text cursor-pointer select-none">
                           <input type="checkbox" checked={draftVariant.isAvailable} onChange={(e) => setDraftVariant({ ...draftVariant, isAvailable: e.target.checked })} className="rounded text-primary focus:ring-primary w-4 h-4 accent-primary" />
                           Available
                         </label>
-                        <label className="flex items-center gap-2 text-sm text-heading cursor-pointer select-none">
+                        <label className="flex items-center gap-2 text-sm text-admin-text cursor-pointer select-none">
                           <input type="checkbox" checked={draftVariant.isFewLeft} onChange={(e) => setDraftVariant({ ...draftVariant, isFewLeft: e.target.checked })} className="rounded text-primary focus:ring-primary w-4 h-4 accent-primary" />
                           Few Left
                         </label>
@@ -248,7 +248,7 @@ const AllProduct = () => {
                 {variants.length > 0 && (
                   <div className="overflow-x-auto rounded-lg border border-border">
                     <table className="w-full text-left text-sm whitespace-nowrap">
-                      <thead className="bg-card text-heading border-b border-border font-heading">
+                      <thead className="bg-card text-admin-text border-b border-border font-heading">
                         <tr>
                           <th className="px-5 py-3 font-semibold">Size</th>
                           <th className="px-5 py-3 font-semibold">Price</th>
@@ -289,7 +289,7 @@ const AllProduct = () => {
               {/* Media Gallery */}
               <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-2 text-heading">
+                  <div className="flex items-center gap-2 text-admin-text">
                     <ImImages className="text-primary text-xl" />
                     <h3 className="text-xl font-heading font-semibold">Media Gallery</h3>
                   </div>
@@ -342,7 +342,7 @@ const AllProduct = () => {
               {/* Attributes */}
               <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
                 <div className="flex items-center justify-between border-b border-border pb-4 mb-5">
-                  <div className="flex items-center gap-2 text-heading">
+                  <div className="flex items-center gap-2 text-admin-text">
                     <FaArrowsTurnRight className="text-primary" />
                     <h3 className="text-xl font-heading font-semibold">Attributes</h3>
                   </div>
@@ -374,7 +374,7 @@ const AllProduct = () => {
                 {attributes.length > 0 ? (
                   <div className="overflow-hidden rounded-lg border border-border">
                     <table className="w-full text-left text-sm">
-                      <thead className="bg-card text-heading font-heading border-b border-border">
+                      <thead className="bg-card text-admin-text font-heading border-b border-border">
                         <tr>
                           <th className="px-4 py-3 font-semibold">Property</th>
                           <th className="px-4 py-3 font-semibold">Value</th>
@@ -384,7 +384,7 @@ const AllProduct = () => {
                       <tbody className="divide-y divide-border">
                         {attributes.map((attr: any, index: any) => (
                           <tr key={index} className="hover:bg-card/40 transition">
-                            <td className="px-4 py-3 font-medium text-heading">{attr.property}</td>
+                            <td className="px-4 py-3 font-medium text-admin-text">{attr.property}</td>
                             <td className="px-4 py-3 text-muted">{attr.value}</td>
                             <td className="px-4 py-3 text-right">
                               <button type="button" onClick={() => { const n = [...attributes]; n.splice(index, 1); setValue("attributes", n); }} className="text-muted hover:text-error transition">

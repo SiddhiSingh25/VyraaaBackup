@@ -28,7 +28,7 @@ export default function WalletSection({ wallets }: WalletSectionProps) {
               {wallet.icon}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-body text-[14px] font-semibold text-heading">
+              <p className="font-body text-[14px] font-semibold text-admin-text">
                 {wallet.name}
               </p>
               <p className="font-body text-[12px] text-muted">

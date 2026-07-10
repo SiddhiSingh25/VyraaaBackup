@@ -40,7 +40,7 @@ export default function OfferCarousel({ offers }: OfferCarouselProps) {
   return (
     <div className="mb-8">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-body text-sm font-semibold tracking-wide text-heading">
+        <h2 className="font-body text-sm font-semibold tracking-wide text-admin-text">
           Offers &amp; Cashback
         </h2>
         <span className="font-body text-xs text-muted">{offers.length} available</span>
@@ -63,7 +63,7 @@ export default function OfferCarousel({ offers }: OfferCarouselProps) {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
                 <Icon className="h-4 w-4 text-primary" strokeWidth={1.75} />
               </div>
-              <p className="font-heading text-[15px] leading-tight text-heading">
+              <p className="font-heading text-[15px] leading-tight text-admin-text">
                 {offer.title}
               </p>
               <p className="font-body text-xs leading-snug text-muted">

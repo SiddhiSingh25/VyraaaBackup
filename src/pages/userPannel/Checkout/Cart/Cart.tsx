@@ -51,7 +51,7 @@ const Cart = () => {
 
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface py-20 text-center">
-            <p className="font-heading text-xl text-heading">
+            <p className="font-heading text-xl text-admin-text">
               Your bag is empty
             </p>
             <p className="font-body text-sm text-muted">
@@ -96,7 +96,7 @@ const Cart = () => {
               <motion.button
                 type="button"
                 whileHover={{ x: 2 }}
-                className="flex w-full items-center justify-between rounded-lg border border-border bg-surface px-5 py-4 font-body text-sm font-medium text-heading transition-colors hover:border-primary-light"
+                className="flex w-full items-center justify-between rounded-lg border border-border bg-surface px-5 py-4 font-body text-sm font-medium text-admin-text transition-colors hover:border-primary-light"
               >
                 Add More From Wishlist
                 <span aria-hidden>→</span>

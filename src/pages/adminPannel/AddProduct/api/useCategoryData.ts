@@ -26,12 +26,21 @@ const useCategoryData = () => {
     });
   };
 
-  const addCategory = (category : any) => {
+  const addCategory = (
+    category: string,
+    onSuccess?: (newCategory: CategoryApiItem) => void,
+  ) => {
     postQuery({
       url: apiUrls.Category.add,
-      postData  : {category },
+      postData: { category },
       onSuccess: (res: any) => {
-        setCategory(res.data);
+        const newCategory = res.data;
+        setCategory((prevCategories) =>
+          Array.isArray(newCategory)
+            ? newCategory
+            : [...prevCategories, newCategory],
+        );
+        onSuccess?.(newCategory);
       },
       onFail: (err: any) => {
         console.log(err, "Error fetching categories");

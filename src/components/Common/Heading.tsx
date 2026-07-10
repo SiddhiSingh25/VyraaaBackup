@@ -24,7 +24,7 @@ const Heading = ({ value }: HeadingProps) => {
     <div className={`flex flex-col items-${value.position ?? "start"}`}>
       <h1
         ref={h1Ref}
-        className="text-heading text-3xl md:text-4xl font-semibold mb-2 inline-block"
+        className="text-admin-text text-3xl md:text-4xl font-semibold mb-2 inline-block"
       >
         {value.text}
       </h1>

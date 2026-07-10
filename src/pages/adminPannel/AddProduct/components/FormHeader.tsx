@@ -25,7 +25,7 @@ const FormHeader = ({
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-surface p-6 rounded-xl border border-border shadow-sm">
       <div>
-        <h2 className="text-3xl font-semibold text-heading font-heading tracking-wide">
+        <h2 className="text-3xl font-semibold text-admin-text font-heading tracking-wide">
           Quick Add Product
         </h2>
         <p className="text-sm text-muted mt-1">

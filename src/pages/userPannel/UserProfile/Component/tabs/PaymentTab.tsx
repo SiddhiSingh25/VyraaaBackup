@@ -18,7 +18,7 @@ export function PaymentTab({ methods, onAddNew }: PaymentTabProps) {
               {pm.brand.slice(0, 4).toUpperCase()}
             </div>
             <div>
-              <p className="text-sm font-medium text-heading">
+              <p className="text-sm font-medium text-admin-text">
                 &bull;&bull;&bull;&bull; {pm.last4}
               </p>
               <p className="text-xs text-muted mt-0.5">Expires {pm.expiry}</p>

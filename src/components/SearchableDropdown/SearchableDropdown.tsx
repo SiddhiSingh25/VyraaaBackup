@@ -182,9 +182,10 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
 
     // add without any typed text (plain "Add new" trigger)
     const handleAddPlain = useCallback(() => {
+      if (!trimmedQuery) return;
       close();
-      onAdd?.();
-    }, [close, onAdd]);
+      onAdd?.(trimmedQuery);
+    }, [close, onAdd, trimmedQuery]);
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent) => {

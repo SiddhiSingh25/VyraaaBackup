@@ -20,7 +20,7 @@ function Row({
       <span className="font-body text-[13.5px] text-body">{label}</span>
       <span
         className={`font-body text-[13.5px] font-medium ${
-          isDiscount ? "text-success" : "text-heading"
+          isDiscount ? "text-success" : "text-admin-text"
         }`}
       >
         {isFree ? "FREE" : `${isDiscount ? "−" : ""}₹${value.toLocaleString("en-IN")}`}
@@ -47,8 +47,8 @@ export default function PriceBreakdown({ breakdown }: PriceBreakdownProps) {
       <div className="my-4 h-px bg-border" />
 
       <div className="flex items-center justify-between">
-        <span className="font-heading text-[17px] text-heading">Total Amount</span>
-        <span className="font-heading text-[22px] text-heading">
+        <span className="font-heading text-[17px] text-admin-text">Total Amount</span>
+        <span className="font-heading text-[22px] text-admin-text">
           ₹{breakdown.total.toLocaleString("en-IN")}
         </span>
       </div>

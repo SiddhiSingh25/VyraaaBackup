@@ -1,4 +1,10 @@
-import { Outlet, NavLink, useNavigate, useLocation, useParams } from "react-router-dom";
+import {
+  Outlet,
+  NavLink,
+  useNavigate,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
@@ -71,8 +77,62 @@ export default function AdminLayout() {
 
   const productNavItems = useMemo(
     () => convertToNavLinks(productItems),
-    [productItems]
+    [productItems],
   );
+
+  const masterChannelNavItems: NavSubItem[] = [
+    {
+      id: "category",
+      label: "Category",
+      path: "/admin/master-channel/category",
+    },
+    {
+      id: "subcategory",
+      label: "Subcategory",
+      path: "/admin/master-channel/subcategory",
+    },
+    {
+      id: "subcategory-type",
+      label: "Subcategory Type",
+      path: "/admin/master-channel/subcategory-type",
+    },
+    {
+      id: "brand",
+      label: "Brand",
+      path: "/admin/master-channel/brand",
+    },
+    {
+      id: "color-family",
+      label: "Color Family",
+      path: "/admin/master-channel/color-family",
+    },
+    {
+      id: "color",
+      label: "Color",
+      path: "/admin/master-channel/color",
+    },
+    {
+      id: "property-type",
+      label: "Property Type",
+      path: "/admin/master-channel/property-type",
+    },
+    {
+      id: "property-value",
+      label: "Property Value",
+      path: "/admin/master-channel/property-value",
+    },
+    {
+      id: "size-type",
+      label: "Size Type",
+      path: "/admin/master-channel/size-type",
+    },
+
+    {
+      id: "size-value",
+      label: "Size Value",
+      path: "/admin/master-channel/size-value",
+    },
+  ];
 
   const navItems = useMemo(
     () => [
@@ -85,6 +145,7 @@ export default function AdminLayout() {
         icon: FaNetworkWired,
         label: "Master Channel",
         path: "/admin/master-channel",
+        items: masterChannelNavItems, // <-- static list, defined below
       },
       {
         icon: FaProductHunt,
@@ -103,8 +164,16 @@ export default function AdminLayout() {
         path: "/admin/attributes",
       },
     ],
-    [productNavItems]
+    [productNavItems],
   );
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin/product")) {
+      setOpenMenu("Product");
+    } else if (location.pathname.startsWith("/admin/master-channel")) {
+      setOpenMenu("Master Channel");
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (categorySlug) {
@@ -120,7 +189,7 @@ export default function AdminLayout() {
     const activeItem = navItems.find(
       (item) =>
         item.path === location.pathname ||
-        location.pathname.startsWith(`${item.path}/`)
+        location.pathname.startsWith(`${item.path}/`),
     );
 
     setHeaderName(activeItem?.label || "Dashboard");
@@ -165,7 +234,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="relative flex min-h-screen bg-background text-heading">
+    <div className="relative flex min-h-screen bg-background text-admin-text">
       {isMobileSidebarOpen && (
         <button
           type="button"
@@ -189,7 +258,9 @@ export default function AdminLayout() {
         `}
       >
         <div className="border-b border-border/70 px-4 py-4">
-          <div className={`flex items-center gap-3 ${isAsideExpanded ? "justify-between" : "justify-center"}`}>
+          <div
+            className={`flex items-center gap-3 ${isAsideExpanded ? "justify-between" : "justify-center"}`}
+          >
             <button
               type="button"
               onClick={() => navigate("/admin/dashboard")}
@@ -208,7 +279,7 @@ export default function AdminLayout() {
                   ${isAsideExpanded ? "lg:block" : "lg:hidden"}
                 `}
               >
-                <span className="block truncate text-lg font-bold tracking-wide text-heading">
+                <span className="block truncate text-lg font-bold tracking-wide text-admin-text">
                   Admin
                 </span>
                 <span className="block truncate text-[11px] font-medium text-muted">
@@ -217,7 +288,9 @@ export default function AdminLayout() {
               </span>
             </button>
 
-            <div className={`flex items-center gap-2 ${isAsideExpanded || isMobileSidebarOpen ? "flex" : "hidden"}`}>
+            <div
+              className={`flex items-center gap-2 ${isAsideExpanded || isMobileSidebarOpen ? "flex" : "hidden"}`}
+            >
               <button
                 type="button"
                 onClick={() => setIsLocked((prev) => !prev)}
@@ -287,9 +360,10 @@ export default function AdminLayout() {
                           group flex w-full items-center rounded-2xl px-3 py-2.5
                           text-sm transition-all duration-200
                           ${isAsideExpanded ? "lg:justify-between" : "lg:justify-center"}
-                          ${isParentActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted hover:bg-card hover:text-heading"
+                          ${
+                            isParentActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted hover:bg-card hover:text-admin-text"
                           }
                         `}
                       >
@@ -303,9 +377,10 @@ export default function AdminLayout() {
                             className={`
                               flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
                               transition-all duration-200
-                              ${isParentActive
-                                ? "bg-primary text-white shadow-md shadow-primary/20"
-                                : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+                              ${
+                                isParentActive
+                                  ? "bg-primary text-white shadow-md shadow-primary/20"
+                                  : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                               }
                             `}
                           >
@@ -362,18 +437,20 @@ export default function AdminLayout() {
                                       className={`
                                         group relative flex w-full items-center gap-2 rounded-xl
                                         px-3 py-2 text-left text-xs transition-all duration-200
-                                        ${isSubActive
-                                          ? "bg-primary text-white shadow-sm shadow-primary/20"
-                                          : "text-muted hover:bg-card hover:text-heading"
+                                        ${
+                                          isSubActive
+                                            ? "bg-primary text-white shadow-sm shadow-primary/20"
+                                            : "text-muted hover:bg-card hover:text-admin-text"
                                         }
                                       `}
                                     >
                                       <span
                                         className={`
                                           absolute -left-[17px] h-2.5 w-2.5 rounded-full border-2
-                                          ${isSubActive
-                                            ? "border-primary bg-white"
-                                            : "border-primary/40 bg-background"
+                                          ${
+                                            isSubActive
+                                              ? "border-primary bg-white"
+                                              : "border-primary/40 bg-background"
                                           }
                                         `}
                                       />
@@ -412,10 +489,11 @@ export default function AdminLayout() {
                         group flex items-center rounded-2xl px-3 py-2.5 text-sm
                         transition-all duration-200
                         ${isAsideExpanded ? "lg:gap-3" : "lg:justify-center"}
-                        ${isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted hover:bg-card hover:text-heading"
-                      }
+                        ${
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted hover:bg-card hover:text-admin-text"
+                        }
                       `
                     }
                   >
@@ -425,9 +503,10 @@ export default function AdminLayout() {
                           className={`
                             flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
                             transition-all duration-200
-                            ${isActive
-                              ? "bg-primary text-white shadow-md shadow-primary/20"
-                              : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+                            ${
+                              isActive
+                                ? "bg-primary text-white shadow-md shadow-primary/20"
+                                : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                             }
                           `}
                         >
@@ -473,7 +552,7 @@ export default function AdminLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header
+        {/* <header
           className="
             sticky top-0 z-20 border-b border-border/60
             bg-background/55 px-4 py-3 backdrop-blur-2xl
@@ -493,7 +572,7 @@ export default function AdminLayout() {
               </button>
 
               <div className="min-w-0">
-                <p className="truncate text-base font-bold text-heading sm:text-lg">
+                <p className="truncate text-base font-bold text-admin-text sm:text-lg">
                   {headerName}
                 </p>
                 <p className="hidden text-xs text-muted sm:block">
@@ -508,7 +587,7 @@ export default function AdminLayout() {
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-36 bg-transparent text-sm text-heading outline-none placeholder:text-muted lg:w-52"
+                  className="w-36 bg-transparent text-sm text-admin-text outline-none placeholder:text-muted lg:w-52"
                 />
               </div>
 
@@ -536,9 +615,9 @@ export default function AdminLayout() {
               </button>
             </div>
           </div>
-        </header>
+        </header> */}
 
-        <main className="flex-1 overflow-y-auto bg-background p-4 sm:p-5 lg:p-6">
+        <main className="flex-1 overflow-y-auto bg-background ">
           <Outlet />
         </main>
       </div>

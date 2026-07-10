@@ -17,7 +17,7 @@ function Toggle({
   return (
     <div className="flex items-center justify-between gap-4 py-4 border-b border-border last:border-b-0">
       <div>
-        <p className="text-sm font-medium text-heading">{label}</p>
+        <p className="text-sm font-medium text-admin-text">{label}</p>
         <p className="text-xs text-muted mt-0.5">{description}</p>
       </div>
       <button
@@ -46,7 +46,7 @@ export function SecurityTab() {
   return (
     <div className="flex flex-col gap-8">
       <form className="flex flex-col gap-5">
-        <h2 className="font-heading text-lg text-heading">Change password</h2>
+        <h2 className="font-heading text-lg text-admin-text">Change password</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <input type="password" placeholder="Current password" className={inputClasses} />
           <div />
@@ -64,7 +64,7 @@ export function SecurityTab() {
       </form>
 
       <div>
-        <h2 className="font-heading text-lg text-heading mb-1">Account protection</h2>
+        <h2 className="font-heading text-lg text-admin-text mb-1">Account protection</h2>
         <Toggle
           checked={twoFactor}
           onChange={setTwoFactor}

@@ -7,15 +7,14 @@ export const apiUrls = {
     update: "category/update",
     delete: "category/delete",
     getAll: "category/getAll",
-    getById: "category/getById",
   },
 
   // Sub Category
   SubCategory: {
     add: "subcategory/add",
+    getAll : "subcategory/getAll",
     update: "subcategory/update",
     delete: "subcategory/delete",
-    getById: "/subcategory/getByCategoryId",
     getByCategoryId: "subcategory/getByCategoryId",
   },
 
@@ -24,9 +23,9 @@ export const apiUrls = {
     add: "subcategorytype/add",
     update: "subcategorytype/update",
     delete: "subcategorytype/delete",
-    getAll: "subcategorytype/getAll",
+    getAll: "subcategory/type/getAll",
     getById: "subcategorytype/getById",
-    getBySubCategoryId: "subcategory/type/getBySubCategoryId",
+    getBySubCategoryId: "subcategorytype/getBySubCategoryId",
   },
 
   // Property
@@ -36,16 +35,15 @@ export const apiUrls = {
     delete: "property/delete",
     getAll: "property/getAll",
     getById: "property/getById",
-    getBySubCategoryTypeId: "property/getBySubCategoryId",
+    getBySubCategoryId: "property/getBySubCategoryId",
   },
 
   // Property Values
   PropertyValues: {
-    add: "propertyvalue/add",
-    update: "propertyvalue/update",
-    delete: "propertyvalue/delete",
-    getAll: "propertyvalue/getAll",
-    getById: "propertyvalue/getById",
+    add: "property/values/add",
+    update: "property/values/update",
+    delete: "property/values/delete",
+    getAll: "property/values/getAll",
     getByPropertyId: "property/values/getByPropertyId",
   },
 
@@ -55,7 +53,6 @@ export const apiUrls = {
     update: "color/family/update",
     delete: "color/family/delete",
     getAll: "color/family/getAll",
-    getById: "color/family/getById",
   },
 
   // Color
@@ -64,16 +61,15 @@ export const apiUrls = {
     update: "color/update",
     delete: "color/delete",
     getAll: "color/getAll",
-    getById: "color/getById",
     getByColorFamilyId: "color/getByColorFamilyId",
   },
-  //Brand
+
+  // Brand
   Brand: {
     add: "brand/add",
     update: "brand/update",
     delete: "brand/delete",
     getAll: "brand/getAll",
-    getById: "brand/getById",
     getByCategoryId: "brand/getByCategoryId",
   },
 
@@ -86,18 +82,21 @@ export const apiUrls = {
     getById: "sizetype/getById",
   },
 
-  SizeTypeValue: {
-    add: "sizetype/add",
-    update: "sizetype/update",
-    delete: "sizetype/delete",
-    getAll: "sizetype/getAll",
+  // Size
+  Size: {
+    add: "size/add",
+    update: "size/update",
+    delete: "size/delete",
+    getAll: "size/getAll",
     getBySizeTypeId: "size/getBySizeType",
   },
 
-
-
+  // Product
   Product: {
     add: "product/add",
-    getById: "product/"
-  }
+    update: "product/update", // Remove if backend doesn't support it
+    delete: "product/delete",
+    getAll: "product/getAll",
+    getById: "product/", // Usage: `${apiUrls.Product.getById}${id}`
+  },
 };

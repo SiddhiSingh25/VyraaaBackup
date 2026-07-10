@@ -31,7 +31,7 @@
 //           size={16}
 //           strokeWidth={1.8}
 //           className={`ml-4 shrink-0 transition-colors duration-300 ${
-//             focused ? "text-primary-dark" : "text-heading/40"
+//             focused ? "text-primary-dark" : "text-admin-text/40"
 //           }`}
 //         />
 //         <input
@@ -41,15 +41,15 @@
 //           onFocus={() => setFocused(true)}
 //           onBlur={() => setFocused(false)}
 //           placeholder={placeholder}
-//           className="w-full h-full bg-transparent px-3 text-[13px] tracking-wide text-heading
-//             placeholder:text-heading/50 focus:outline-none "
+//           className="w-full h-full bg-transparent px-3 text-[13px] tracking-wide text-admin-text
+//             placeholder:text-admin-text/50 focus:outline-none "
 //         />
 //         {value && (
 //           <button
 //             type="button"
 //             onClick={() => setValue("")}
 //             aria-label="Clear search"
-//             className="mr-3 text-heading/30 hover:text-heading/60 transition-colors duration-200"
+//             className="mr-3 text-admin-text/30 hover:text-admin-text/60 transition-colors duration-200"
 //           >
 //             <X size={14} />
 //           </button>
@@ -127,7 +127,7 @@ export default function SearchBar({
             size={16}
             strokeWidth={1.8}
             className={`ml-4 shrink-0 transition-colors duration-300 ${
-              isActive ? "text-primary-dark" : "text-heading/40"
+              isActive ? "text-primary-dark" : "text-admin-text/40"
             }`}
           />
           <input
@@ -140,8 +140,8 @@ export default function SearchBar({
             }}
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
-            className="w-full h-full bg-transparent px-3 text-[13px] tracking-wide text-heading
-              placeholder:text-heading/50 focus:outline-none cursor-pointer"
+            className="w-full h-full bg-transparent px-3 text-[13px] tracking-wide text-admin-text
+              placeholder:text-admin-text/50 focus:outline-none cursor-pointer"
           />
         </div>
       </div>

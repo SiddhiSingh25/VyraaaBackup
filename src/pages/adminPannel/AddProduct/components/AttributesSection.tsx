@@ -90,7 +90,7 @@ const addAttribute = () => {
       <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
         <div className="flex items-center gap-3">
           <FaArrowsTurnRight className="text-primary text-xl" />
-          <h3 className="text-lg text-heading font-heading font-semibold">
+          <h3 className="text-lg text-admin-text font-heading font-semibold">
             Attributes
           </h3>
         </div>

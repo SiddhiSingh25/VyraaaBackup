@@ -11,7 +11,7 @@ export function StatChip({ label, value, icon }: StatChipProps) {
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="font-heading text-lg text-heading leading-none">{value}</p>
+        <p className="font-heading text-lg text-admin-text leading-none">{value}</p>
         <p className="text-xs text-muted mt-1 truncate">{label}</p>
       </div>
     </div>

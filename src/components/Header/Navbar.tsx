@@ -94,7 +94,7 @@ export default function Navbar({
                   <div key={link.label} className="relative group">
                     <Link
                       to={link.to}
-                      className="relative py-2 block text-[11px] font-medium tracking-[0.16em] uppercase text-heading/85
+                      className="relative py-2 block text-[11px] font-medium tracking-[0.16em] uppercase text-admin-text/85
                       hover:text-primary-dark transition-colors duration-250"
                     >
                       {link.label}
@@ -114,21 +114,21 @@ export default function Navbar({
             <div className="flex items-center gap-5 xl:gap-6 shrink-0">
               <Link
                 to="/wishlist"
-                className="relative text-heading/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
+                className="relative text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <Heart size={19} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
               <Link
                 to="/checkout/cart"
-                className="relative text-heading/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
+                className="relative text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <ShoppingBag size={19} strokeWidth={1.6} />
                 <Badge count={cartCount} pulse={cartPulse} />
               </Link>
               <Link
                 to="/profile"
-                className="text-heading/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
+                className="text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <User size={19} strokeWidth={1.6} />
               </Link>
@@ -142,7 +142,7 @@ export default function Navbar({
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
-              className="text-heading p-1"
+              className="text-admin-text p-1"
             >
               <Menu size={22} strokeWidth={1.6} />
             </button>
@@ -157,15 +157,15 @@ export default function Navbar({
               />
             </Link>
             <div className="flex items-center gap-5">
-              <Link to="/wishlist" className="relative text-heading/80">
+              <Link to="/wishlist" className="relative text-admin-text/80">
                 <Heart size={20} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
-              <Link to="/checkout/cart" className="relative text-heading/80">
+              <Link to="/checkout/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={cartCount} pulse={cartPulse} />
               </Link>
-              <Link to="/profile" className="text-heading/80">
+              <Link to="/profile" className="text-admin-text/80">
                 <User size={20} strokeWidth={1.6} />
               </Link>
             </div>
@@ -181,7 +181,7 @@ export default function Navbar({
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
-              className="justify-self-start text-heading p-1"
+              className="justify-self-start text-admin-text p-1"
             >
               <Menu size={22} strokeWidth={1.6} />
             </button>
@@ -196,11 +196,11 @@ export default function Navbar({
               />
             </Link>
             <div className="justify-self-end flex items-center gap-4">
-              <Link to="/wishlist" className="relative text-heading/80">
+              <Link to="/wishlist" className="relative text-admin-text/80">
                 <Heart size={20} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
-              <Link to="/checkout/cart" className="relative text-heading/80">
+              <Link to="/checkout/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={cartCount} pulse={cartPulse} />
               </Link>

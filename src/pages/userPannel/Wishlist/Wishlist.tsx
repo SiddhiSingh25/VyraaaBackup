@@ -21,7 +21,7 @@ function EmptyWishlist() {
         <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
       </svg>
       <div>
-        <p className="font-heading text-lg text-heading">Your wishlist is empty</p>
+        <p className="font-heading text-lg text-admin-text">Your wishlist is empty</p>
         <p className="mt-1 text-sm text-muted">Save pieces you love and find them here anytime.</p>
       </div>
       <button
@@ -74,7 +74,7 @@ export default function WishlistPage() {
         {/* Header */}
         <div className="flex flex-col gap-2 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-heading text-3xl text-heading sm:text-4xl">
+            <h1 className="font-heading text-3xl text-admin-text sm:text-4xl">
               My Wishlist{" "}
               <span className="align-middle text-lg font-normal text-muted">
                 ({items.length})
@@ -145,7 +145,7 @@ export default function WishlistPage() {
         {/* You May Also Like */}
         <section className="mt-20">
           <div className="mb-6 flex items-end justify-between">
-            <h2 className="font-heading text-2xl text-heading">You May Also Like</h2>
+            <h2 className="font-heading text-2xl text-admin-text">You May Also Like</h2>
             <span className="hidden text-sm text-muted sm:block">Curated to match your taste</span>
           </div>
 

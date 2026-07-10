@@ -44,7 +44,7 @@ export function AddressInput({
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className={`peer w-full rounded-xl border bg-background px-4 pt-5 pb-2 text-[15px] text-heading outline-none transition-colors duration-200
+          className={`peer w-full rounded-xl border bg-background px-4 pt-5 pb-2 text-[15px] text-admin-text outline-none transition-colors duration-200
             ${error ? "border-error" : success ? "border-success" : "border-border"}
             focus:border-primary`}
           aria-invalid={Boolean(error)}

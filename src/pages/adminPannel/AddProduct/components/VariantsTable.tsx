@@ -21,7 +21,7 @@ const VariantsTable = ({ variants, onRemove }: VariantsTableProps) => {
   return (
     <div className="overflow-x-auto rounded-xl border border-border bg-surface/70">
       <table className="w-full text-left text-sm whitespace-nowrap">
-        <thead className="bg-card text-heading border-b border-border font-heading">
+        <thead className="bg-card text-admin-text border-b border-border font-heading">
           <tr>
             <th className="px-5 py-3 font-semibold">Size</th>
             <th className="px-5 py-3 font-semibold">Price</th>

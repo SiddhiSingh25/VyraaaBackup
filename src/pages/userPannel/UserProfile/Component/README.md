@@ -44,5 +44,5 @@ pages/AccountPage.tsx                Composes everything; imports your existing 
 - **Signature element**: the avatar's ring is a real loyalty-tier progress indicator (`tierProgress` in the sample data), not decoration — it animates in on load using `motion`.
 - Active sidebar tab uses a shared `layoutId` so the highlight glides between items instead of snapping.
 - Tab content cross-fades on switch (`AnimatePresence`).
-- All colors reference your theme tokens (`bg-surface`, `text-heading`, `border-border`, etc.) so the page stays in sync if the palette changes.
+- All colors reference your theme tokens (`bg-surface`, `text-admin-text`, `border-border`, etc.) so the page stays in sync if the palette changes.
 - Fully responsive: sidebar stacks above content below the `lg` breakpoint, form grids collapse to one column, order rows stack on mobile.

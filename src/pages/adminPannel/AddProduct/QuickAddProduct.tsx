@@ -61,6 +61,14 @@ const QuickAddProduct = () => {
   // --- Data sources -------------------------------------------------------
   const { categoryOptions, addCategory, getCategoryLoading } =
     useCategoryData();
+
+  const handleAddCategory = (categoryName?: string) => {
+    if (!categoryName?.trim()) return;
+    addCategory(categoryName.trim(), (newCategory) => {
+      setValue("category", newCategory._id);
+    });
+  };
+
   const { subcategoryOptions, isLoading: subcategoryLoading } =
     useTaxonomyData(selectedCategoryId);
   const { subcategoryTypeOptions, isLoading: subcategoryTypeLoading } =
@@ -195,7 +203,7 @@ const QuickAddProduct = () => {
                 control={control}
                 errors={errors}
                 categoryOptions={categoryOptions}
-                addCategory={addCategory}
+                addCategory={handleAddCategory}
                 getCategoryLoading={getCategoryLoading}
                 selectedCategory={selectedCategoryId}
                 selectedSubcategory={selectedSubcategoryId}

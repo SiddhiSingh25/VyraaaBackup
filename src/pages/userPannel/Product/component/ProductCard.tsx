@@ -37,7 +37,7 @@ const ProductCard = ({ product }: any) => {
           {/* Soft ivory scrim reveal */}
           <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out">
             <div className="bg-[#FAF6F0]/95 backdrop-blur-sm border-t border-[#D4B896]/40">
-              <button className="w-full py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-medium tracking-[0.28em] uppercase text-heading hover:text-[#B08D57] transition-colors duration-300">
+              <button className="w-full py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-medium tracking-[0.28em] uppercase text-admin-text hover:text-[#B08D57] transition-colors duration-300">
                 Discover
               </button>
             </div>
@@ -52,7 +52,7 @@ const ProductCard = ({ product }: any) => {
             </p>
           </div>
 
-          <h4 className="font-heading text-heading text-lg sm:text-xl font-semibold leading-snug tracking-[0.01em] line-clamp-2">
+          <h4 className="font-heading text-admin-text text-lg sm:text-xl font-semibold leading-snug tracking-[0.01em] line-clamp-2">
             {product.name}
           </h4>
           <div className="flex items-center justify-between mt-2 sm:mt-1">

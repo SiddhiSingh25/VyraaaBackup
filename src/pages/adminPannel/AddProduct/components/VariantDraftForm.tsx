@@ -135,7 +135,7 @@ const VariantDraftForm = ({
           <div className="flex gap-5 pb-1 md:pb-2">
             <label
               htmlFor="variant-available"
-              className="flex cursor-pointer select-none items-center gap-2 text-sm font-medium text-heading hover:text-primary transition-colors"
+              className="flex cursor-pointer select-none items-center gap-2 text-sm font-medium text-admin-text hover:text-primary transition-colors"
             >
               <input
                 id="variant-available"
@@ -154,7 +154,7 @@ const VariantDraftForm = ({
 
             <label
               htmlFor="variant-few-left"
-              className="flex cursor-pointer select-none items-center gap-2 text-sm font-medium text-heading hover:text-primary transition-colors"
+              className="flex cursor-pointer select-none items-center gap-2 text-sm font-medium text-admin-text hover:text-primary transition-colors"
             >
               <input
                 id="variant-few-left"

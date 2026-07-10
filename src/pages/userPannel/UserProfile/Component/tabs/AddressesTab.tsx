@@ -25,7 +25,7 @@ export function AddressesTab({
               </div>
 
               <div className="min-w-0">
-                <h3 className="truncate text-sm font-semibold text-heading">
+                <h3 className="truncate text-sm font-semibold text-admin-text">
                   {addr.fullName}
                 </h3>
 
@@ -60,7 +60,7 @@ export function AddressesTab({
           <div className="mt-3 flex gap-2 border-t border-border pt-3">
             <button
               type="button"
-              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-heading transition-colors hover:bg-muted"
+              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-admin-text transition-colors hover:bg-muted"
             >
               <Pencil size={14} />
               Edit
@@ -87,7 +87,7 @@ export function AddressesTab({
           <Plus size={18} className="text-primary" />
         </div>
 
-        <h3 className="text-sm font-semibold text-heading">
+        <h3 className="text-sm font-semibold text-admin-text">
           Add Address
         </h3>
 

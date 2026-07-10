@@ -18,7 +18,7 @@ interface OrderSummaryProps {
 const Row = ({
   label,
   value,
-  valueClassName = "text-heading",
+  valueClassName = "text-admin-text",
   sub,
 }: {
   label: React.ReactNode;
@@ -94,8 +94,8 @@ const OrderSummary = ({
       </div>
 
       <div className="flex items-center justify-between border-t border-border pt-3">
-        <span className="font-heading text-base text-heading">Total Amount</span>
-        <span className="font-heading text-lg text-heading">
+        <span className="font-heading text-base text-admin-text">Total Amount</span>
+        <span className="font-heading text-lg text-admin-text">
           {formatINR(details.totalAmount)}
         </span>
       </div>

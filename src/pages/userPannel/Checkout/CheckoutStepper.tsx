@@ -66,7 +66,7 @@ export default function CheckoutStepper() {
                   <span
                     className={`text-[11px] tracking-wide ${
                       isActive
-                        ? "font-semibold text-heading"
+                        ? "font-semibold text-admin-text"
                         : isComplete
                         ? "text-body"
                         : "text-muted"

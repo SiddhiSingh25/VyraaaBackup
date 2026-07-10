@@ -19,7 +19,7 @@ const CouponBar = ({ applied, onApply, onRemove }: CouponBarProps) => {
       </p>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 font-body text-sm text-heading">
+        <div className="flex items-center gap-2 font-body text-sm text-admin-text">
           <IconTag className="h-4 w-4 text-primary" />
           <span>{applied ? "VYRAAA10 applied" : "Apply Coupons"}</span>
         </div>
@@ -46,7 +46,7 @@ const CouponBar = ({ applied, onApply, onRemove }: CouponBarProps) => {
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 placeholder="Enter coupon code"
-                className="flex-1 rounded border border-border bg-background px-3 py-2 font-body text-sm text-heading placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-primary"
+                className="flex-1 rounded border border-border bg-background px-3 py-2 font-body text-sm text-admin-text placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-primary"
               />
               <button
                 type="button"

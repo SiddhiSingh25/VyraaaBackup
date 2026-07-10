@@ -14,7 +14,7 @@ export default function CouponCard() {
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="mb-3 flex items-center gap-2">
         <Tag className="h-4 w-4 text-primary" strokeWidth={1.75} />
-        <span className="font-body text-[13.5px] font-semibold text-heading">
+        <span className="font-body text-[13.5px] font-semibold text-admin-text">
           Apply Coupon
         </span>
       </div>
@@ -32,7 +32,7 @@ export default function CouponCard() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="Enter coupon code"
-            className="flex-1 rounded-xl border border-border bg-background px-3.5 py-2.5 font-body text-[13px] text-heading outline-none transition-colors focus:border-primary"
+            className="flex-1 rounded-xl border border-border bg-background px-3.5 py-2.5 font-body text-[13px] text-admin-text outline-none transition-colors focus:border-primary"
           />
           <button
             onClick={handleApply}

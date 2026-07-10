@@ -25,7 +25,7 @@ export default function NetBankingSection({ banks }: NetBankingSectionProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for your bank"
-          className="w-full rounded-xl border border-border bg-background py-3 pl-11 pr-4 font-body text-[14px] text-heading outline-none transition-colors focus:border-primary"
+          className="w-full rounded-xl border border-border bg-background py-3 pl-11 pr-4 font-body text-[14px] text-admin-text outline-none transition-colors focus:border-primary"
         />
       </div>
 

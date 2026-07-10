@@ -8,7 +8,7 @@ export default function CODSection() {
           <PackageCheck className="h-5 w-5 text-primary" strokeWidth={1.75} />
         </div>
         <div>
-          <p className="font-heading text-[19px] text-heading">
+          <p className="font-heading text-[19px] text-admin-text">
             Cash on Delivery Available
           </p>
           <p className="mt-1 font-body text-[13.5px] leading-relaxed text-muted">
@@ -23,14 +23,14 @@ export default function CODSection() {
           <IndianRupee className="h-4 w-4 text-primary" strokeWidth={1.75} />
           <div>
             <p className="font-body text-[12px] text-muted">Additional Handling Fee</p>
-            <p className="font-body text-[14px] font-semibold text-heading">₹49</p>
+            <p className="font-body text-[14px] font-semibold text-admin-text">₹49</p>
           </div>
         </div>
         <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-3.5">
           <Truck className="h-4 w-4 text-primary" strokeWidth={1.75} />
           <div>
             <p className="font-body text-[12px] text-muted">Estimated Delivery</p>
-            <p className="font-body text-[14px] font-semibold text-heading">3–5 Days</p>
+            <p className="font-body text-[14px] font-semibold text-admin-text">3–5 Days</p>
           </div>
         </div>
       </div>

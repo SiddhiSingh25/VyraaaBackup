@@ -21,7 +21,7 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="font-heading text-2xl text-heading">
+            <h1 className="font-heading text-2xl text-admin-text">
               {user.firstName} {user.lastName}
             </h1>
           

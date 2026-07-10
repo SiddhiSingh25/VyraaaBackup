@@ -43,19 +43,19 @@ export default function Profile() {
 <main className="max-w-[1400px] mx-auto px-6 md:px-10 py-6">
   <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
     <div>
-      <h1 className="text-3xl font-semibold tracking-tight text-heading">
+      <h1 className="text-3xl font-semibold tracking-tight text-admin-text">
         My Account
       </h1>
 
       <p className="text-sm text-muted mt-1">
         Home
         <span className="mx-2">/</span>
-        <span className="text-heading">My Account</span>
+        <span className="text-admin-text">My Account</span>
       </p>
     </div>
 
     <div className="text-right">
-      <p className="text-lg font-semibold text-heading">
+      <p className="text-lg font-semibold text-admin-text">
         Hi, {user.firstName}
       </p>
 
@@ -76,7 +76,7 @@ export default function Profile() {
       <ProfileHeader user={user} stats={sampleStats} />
 
       <div className="rounded-2xl border border-border bg-surface p-4 md:p-5 min-h-[420px]">
-        <h2 className="text-xl font-semibold text-heading mb-5">
+        <h2 className="text-xl font-semibold text-admin-text mb-5">
           {TAB_TITLES[activeTab]}
         </h2>
 

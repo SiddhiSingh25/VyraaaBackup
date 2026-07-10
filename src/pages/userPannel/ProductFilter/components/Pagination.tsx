@@ -16,8 +16,8 @@ export default function Pagination({
     <div className="flex flex-col gap-4 border-t border-border px-6 py-5 sm:flex-row items-center justify-center">
       {/* Info */}
       <p className="text-sm text-muted">
-        Page <span className="font-semibold text-heading">{currentPage}</span>{" "}
-        of <span className="font-semibold text-heading">{totalPages}</span>
+        Page <span className="font-semibold text-admin-text">{currentPage}</span>{" "}
+        of <span className="font-semibold text-admin-text">{totalPages}</span>
       </p>
 
       {/* Pagination */}

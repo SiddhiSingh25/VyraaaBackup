@@ -31,7 +31,7 @@ export default function SignatureScent() {
               <p className="text-[9px] font-medium tracking-[0.25em] uppercase text-muted mb-0.5">
                 {note.label}
               </p>
-              <p className="text-sm text-heading">{note.value}</p>
+              <p className="text-sm text-admin-text">{note.value}</p>
             </div>
           ))}
         </div>
@@ -43,7 +43,7 @@ export default function SignatureScent() {
             The Signature Scent
           </span>
 
-          <h2 className="font-heading text-heading leading-tight text-[clamp(28px,4vw,48px)] font-light mb-6">
+          <h2 className="font-heading text-admin-text leading-tight text-[clamp(28px,4vw,48px)] font-light mb-6">
             The Essence of
             <br />
             Noctis

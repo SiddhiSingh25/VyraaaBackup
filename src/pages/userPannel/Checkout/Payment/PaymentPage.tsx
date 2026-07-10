@@ -110,7 +110,7 @@ export default function Payment() {
       <main className="mx-auto max-w-7xl px-5 pb-28 pt-8 sm:px-8 lg:pb-16">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="font-heading text-[32px] leading-tight text-heading sm:text-[38px]">
+          <h1 className="font-heading text-[32px] leading-tight text-admin-text sm:text-[38px]">
             Choose Payment Method
           </h1>
           <p className="mt-1.5 font-body text-[14px] text-muted">
@@ -159,7 +159,7 @@ export default function Payment() {
                       onClick={() => setOpenMobileAccordion(isOpen ? null : cat.id)}
                       className="flex w-full items-center justify-between px-4 py-4"
                     >
-                      <span className="font-body text-[14px] font-semibold text-heading">
+                      <span className="font-body text-[14px] font-semibold text-admin-text">
                         {cat.label}
                       </span>
                       <motion.span

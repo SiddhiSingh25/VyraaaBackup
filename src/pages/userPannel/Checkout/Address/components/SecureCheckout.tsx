@@ -11,7 +11,7 @@ export function SecureCheckout() {
     <div className="rounded-2xl bg-surface p-5">
       <div className="flex items-center gap-2">
         <ShieldCheck size={18} className="text-primary" strokeWidth={1.75} />
-        <p className="text-sm font-medium text-heading">100% Secure Checkout</p>
+        <p className="text-sm font-medium text-admin-text">100% Secure Checkout</p>
       </div>
       <ul className="mt-3 space-y-2">
         {BADGES.map(({ icon: Icon, label }) => (

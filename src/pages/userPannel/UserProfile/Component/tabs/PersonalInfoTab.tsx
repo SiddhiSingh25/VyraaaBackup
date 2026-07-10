@@ -18,7 +18,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-heading">
+      <label className="text-sm font-medium text-admin-text">
         {label} {required && <span className="text-error">*</span>}
       </label>
       {children}

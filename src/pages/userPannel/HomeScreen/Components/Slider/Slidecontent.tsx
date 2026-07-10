@@ -60,7 +60,7 @@ const SlideContent = forwardRef<HTMLDivElement, SlideContentProps>(
             {slide.ctaLabel && (
               <a
                 href={slide.ctaHref ?? "#"}
-                className="inline-block bg-white text-heading px-6 sm:px-8 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-card transition-colors duration-400"
+                className="inline-block bg-white text-admin-text px-6 sm:px-8 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-card transition-colors duration-400"
               >
                 {slide.ctaLabel}
               </a>

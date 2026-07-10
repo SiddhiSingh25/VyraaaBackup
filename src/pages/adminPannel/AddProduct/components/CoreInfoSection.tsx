@@ -31,7 +31,7 @@ const CoreInfoSection = ({
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
         <FaTags className="text-primary text-xl" />
-        <h3 className="text-lg text-heading font-heading font-semibold">
+        <h3 className="text-lg text-admin-text font-heading font-semibold">
           Core Information
         </h3>
       </div>

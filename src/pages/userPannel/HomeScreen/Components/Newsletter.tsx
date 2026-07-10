@@ -34,7 +34,7 @@ export default function Newsletter() {
           Private Client List
         </span>
 
-        <h2 className="font-heading text-heading font-normal text-[clamp(32px,5vw,52px)] leading-tight mb-6">
+        <h2 className="font-heading text-admin-text font-normal text-[clamp(32px,5vw,52px)] leading-tight mb-6">
           Step into{" "}
           <span className="italic font-light text-primary" >
             your new era

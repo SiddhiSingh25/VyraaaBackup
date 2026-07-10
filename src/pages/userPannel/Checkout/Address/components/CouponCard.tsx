@@ -12,7 +12,7 @@ export function CouponCard() {
 
   return (
     <div className="border-t border-border pt-5">
-      <div className="flex items-center gap-2 text-sm font-medium text-heading">
+      <div className="flex items-center gap-2 text-sm font-medium text-admin-text">
         <Tag size={15} className="text-primary" strokeWidth={1.75} />
         Apply Coupon
       </div>
@@ -40,7 +40,7 @@ export function CouponCard() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="Enter coupon code"
-            className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-heading outline-none focus:border-primary"
+            className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-admin-text outline-none focus:border-primary"
           />
           <button
             type="button"
