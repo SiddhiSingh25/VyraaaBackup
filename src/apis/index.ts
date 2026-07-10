@@ -93,11 +93,11 @@ export const apiUrls = {
     getAll: "sizetype/getAll",
     getBySizeTypeId: "size/getBySizeType",
   },
-
-
-
   Product: {
     add: "product/add",
     getById: "product/"
+  },
+  Cart: {
+    add: "/cart/add"
   }
 };
