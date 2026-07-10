@@ -2,24 +2,62 @@ import { motion } from "motion/react";
 import type { CartItem } from "./cart";
 import { discountPercent, formatINR } from "./pricing";
 import { IconClock, IconClose } from "./icons";
+import usePostQuery from "../../../../../hooks/postQuery.hook";
+import { apiUrls } from "../../../../../apis";
+import useGetQuery from "../../../../../hooks/getQuery.hook";
 
 interface CartItemCardProps {
   item: CartItem;
   onToggleSelect: (id: string) => void;
-  onRemove: (id: string) => void;
+  // onRemove: (id: string) => void;
   onMoveToWishlist: (id: string) => void;
   onQtyChange: (id: string, qty: number) => void;
-  // REMOVED: onSizeChange
+  onRefreshCart: () => void;
 }
 
 const CartItemCard = ({
   item,
   onToggleSelect,
-  onRemove,
+  // onRemove,
   onMoveToWishlist,
   onQtyChange,
+  onRefreshCart,
 }: CartItemCardProps) => {
   const pct = discountPercent(item.mrp, item.price);
+  const { postQuery } = usePostQuery();
+  const { getQuery } = useGetQuery();
+
+  const updateCart = (data: Number) => {
+    postQuery({
+      url: apiUrls.Cart.update,
+      postData: {
+        itemId: item.id,
+        quantity: data,
+      },
+      onSuccess: (res: any) => {
+        alert(res.message);
+        onRefreshCart();
+      },
+      onFail: (res: any) => {
+        console.log(res?.data);
+      },
+    });
+  };
+
+  const removeCart = () => {
+    // getQuery({
+    //   url: apiUrls.Cart.update + item.id,
+    //   onSuccess: (res: any) => {
+    //     alert(res.message);
+    //     onRefreshCart();
+    //   },
+    //   onFail: (res: any) => {
+    //     console.log(res?.data);
+    //   },
+    // });
+    console.log("hello")
+  }
+
 
   return (
     <motion.div
@@ -33,7 +71,7 @@ const CartItemCard = ({
       {/* Remove */}
       <button
         type="button"
-        onClick={() => onRemove(item.id)}
+        onClick={() => removeCart()}
         aria-label={`Remove ${item.name}`}
         className="absolute right-4 top-4 text-muted transition-colors hover:text-error"
       >
@@ -81,16 +119,19 @@ const CartItemCard = ({
               <span className="sr-only">Quantity</span>
               <select
                 value={item.qty}
-                onChange={(e) => onQtyChange(item.id, Number(e.target.value))}
+                onChange={(e) => {
+                  const newQty = Number(e.target.value);
+                  updateCart(newQty)
+                  console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
+                  onQtyChange(item.id, newQty);
+                }}
                 className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-heading focus:outline-none focus:ring-1 focus:ring-primary"
               >
-                {Array.from({ length: item.maxQty }, (_, i) => i + 1).map(
-                  (n) => (
-                    <option key={n} value={n}>
-                      Qty: {n}
-                    </option>
-                  )
-                )}
+                {Array.from({ length: item.maxQty }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    Qty: {n}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
@@ -118,7 +159,7 @@ const CartItemCard = ({
       <div className="mt-4 flex items-center gap-4 border-t border-border pt-3 text-xs font-semibold tracking-wide">
         <button
           type="button"
-          onClick={() => onRemove(item.id)}
+          onClick={removeCart}
           className="text-body transition-colors hover:text-error"
         >
           REMOVE

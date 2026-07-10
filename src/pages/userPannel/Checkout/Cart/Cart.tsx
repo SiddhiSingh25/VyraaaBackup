@@ -19,9 +19,12 @@ const Cart = () => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [couponApplied, setCouponApplied] = useState(false);
   const [donation, setDonation] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   const { getQuery } = useGetQuery();
-  const { postQuery } = usePostQuery();
+
   const [cartData, setCartData] = useState<any>();
+
+  const refreshCart = () => setRefreshKey((prev) => prev + 1);
 
   useEffect(() => {
     getQuery({
@@ -47,8 +50,8 @@ const Cart = () => {
               availableSizes: availableSizes,
               qty: apiItem.quantity || 1,
               maxQty: apiItem.maxQty || product.maxQty || 10,
-              mrp: priceList?.[0]?.markupPrice || apiItem.unitPrice || 0,
-              price: apiItem.unitPrice || priceList?.[0]?.amount || 0,
+              mrp: priceList?.[0]?.markupPrice * apiItem.quantity || apiItem.unitPrice || 0,
+              price: apiItem.itemTotal || priceList?.[0]?.amount || 0,
               returnDays: product.returnDays || 7,
               selected: true,
             } as unknown as CartItem;
@@ -62,7 +65,7 @@ const Cart = () => {
         console.error("Failed to fetch cart:", res);
       },
     });
-  }, []);
+  }, [refreshKey]);
 
   const toggleSelect = (id: string) =>
     setItems((prev) =>
@@ -126,9 +129,10 @@ const Cart = () => {
                         key={item.id}
                         item={item}
                         onToggleSelect={toggleSelect}
-                        onRemove={removeItem}
+                        // onRemove={removeItem}
                         onMoveToWishlist={moveToWishlist}
                         onQtyChange={changeQty}
+                        onRefreshCart={refreshCart}
                       // onSizeChange={changeSize}
                       />
                     ))}

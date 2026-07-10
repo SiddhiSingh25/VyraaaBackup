@@ -99,6 +99,8 @@ export const apiUrls = {
   },
   Cart: {
     add: "/cart/add",
-    getByUserId: "cart/getByUserId"
+    getByUserId: "cart/getByUserId",
+    update: "/cart/update",
+    remove: "/cart/remove/"
   }
 };
