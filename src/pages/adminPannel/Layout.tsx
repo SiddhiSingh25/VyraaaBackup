@@ -119,7 +119,7 @@ export default function AdminLayout() {
     {
       id: "property-value",
       label: "Property Value",
-      path: "/admin/master-channel/property-value",
+      path: "/admin/master-channel/property-values",
     },
     {
       id: "size-type",
@@ -130,7 +130,7 @@ export default function AdminLayout() {
     {
       id: "size-value",
       label: "Size Value",
-      path: "/admin/master-channel/size-value",
+      path: "/admin/master-channel/size-values",
     },
   ];
 

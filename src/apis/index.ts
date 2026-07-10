@@ -99,4 +99,10 @@ export const apiUrls = {
     getAll: "product/getAll",
     getById: "product/", // Usage: `${apiUrls.Product.getById}${id}`
   },
+   Cart: {
+    add: "/cart/add",
+    getByUserId: "cart/getByUserId",
+    update: "/cart/update",
+    remove: "/cart/remove/"
+  }
 };

@@ -44,16 +44,13 @@ const usePostQuery = () => {
       // });
       console.log(
         err?.response?.data?.message ||
-        err?.message ||
-        err?.data?.message ||
-        err?.response?.data?.message ||
-        err?.data?.data?.message ||
+       
         "Something went wrong",
       );
 
-      onFail(err);
+      onFail (err?.response);
       console.log(err, "postQuery-fail");
-      setError(err);
+      setError( err?.response);
       // setData();
     } finally {
       setLoading(false);

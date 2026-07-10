@@ -1,11 +1,11 @@
-
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; // Removed unused 'use' import
 import { useReveal } from "../../../../hooks/gsap/useReveal";
 import { kidsFootwear, shirts } from "../../../../assets/assets";
 import RatingsAndReviews from "./RatingReviews";
-import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // Removed unused 'useNavigation'
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
+import usePostQuery from "../../../../hooks/postQuery.hook";
 
 /* ---------------------------- Small building blocks ---------------------------- */
 
@@ -86,32 +86,54 @@ const HeartIcon = ({ filled }: any) => (
 /* ---------------------------------- Main ---------------------------------- */
 
 const ProductInfo = () => {
-  const [productData, setProductData] = useState<{}>()
-  const [isLoading, setIsLoading] = useState(true)
-  let { id } = useParams()
-  const { getQuery } = useGetQuery()
-  const navigate = useNavigate()
+  // FIX 1: Initialized with <any>(null) instead of <{}>(). 
+  // This prevents TS errors when accessing deeply nested properties like productData.price
+  const [productData, setProductData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  let { id } = useParams();
+  const { getQuery } = useGetQuery();
+  const { postQuery } = usePostQuery();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    setIsLoading(true)
+    if (!id) return; // Guard clause in case ID is undefined
+
+    setIsLoading(true);
     getQuery({
       url: apiUrls.Product.getById + id,
       onSuccess: (res: any) => {
-        console.log(res.data, "====");
-        // Properly create subImages array with main image at the beginning
-        const subImages = res?.data?.image ? [res.data.image, ...(res?.data?.subImages || [])] : (res?.data?.subImages || [])
-        setProductData({ ...res.data, subImages })
-        setIsLoading(false)
+        // console.log(res.data, "====");
+        const subImages = res?.data?.image ? [res.data.image, ...(res?.data?.subImages || [])] : (res?.data?.subImages || []);
+        setProductData({ ...res.data, subImages });
+        setIsLoading(false);
       },
       onFail: (res: any) => {
         console.log(res);
-        setIsLoading(false)
+        setIsLoading(false);
       },
-    })
-  }, [id])
+    });
+  }, [id]);
 
+  const addToCart = () => {
+    postQuery({
+      url: apiUrls.Cart.add,
+      postData: {
+        "productId": productData._id,
+        "size": productData?.price?.[selectedSize]?.size?._id,
+        "quantity": 1
+      },
+      onSuccess: (res: any) => {
+        alert(res.message)
+        // console.log(res, "====success section")
+      },
+      onFail: (res: any) => {
+        console.log(res?.data?.message, "=====error section");
+        alert(res?.data?.message)
+        setIsLoading(false);
+      },
+    });
+  };
 
-
-  console.log(id, "9999999999")
   const product = {
     brand: "Campus",
     name: "HIGHBIRD Women Colourblocked Sneakers",
@@ -146,9 +168,7 @@ const ProductInfo = () => {
       { label: "Fit", value: "True to size" },
     ],
     inStock: true,
-
     totalReviews: 128,
-
     ratingDistribution: {
       5: 312,
       4: 103,
@@ -156,7 +176,6 @@ const ProductInfo = () => {
       2: 16,
       1: 11,
     },
-
     reviews: [
       {
         id: 1,
@@ -165,13 +184,9 @@ const ProductInfo = () => {
         verified: true,
         date: "2 weeks ago",
         title: "Excellent Quality",
-        review:
-          "Very comfortable shoes. Material feels premium, lightweight and perfect for everyday wear.",
+        review: "Very comfortable shoes. Material feels premium, lightweight and perfect for everyday wear.",
         helpful: 122,
-        images: [
-          kidsFootwear,
-          kidsFootwear,
-        ],
+        images: [kidsFootwear, kidsFootwear],
       },
       {
         id: 2,
@@ -180,35 +195,33 @@ const ProductInfo = () => {
         verified: true,
         date: "1 month ago",
         title: "Loved It",
-        review:
-          "Beautiful design, excellent cushioning and true to size. Definitely worth buying.",
+        review: "Beautiful design, excellent cushioning and true to size. Definitely worth buying.",
         helpful: 73,
-        images: [
-          kidsFootwear,
-          kidsFootwear,
-          kidsFootwear,
-        ],
+        images: [kidsFootwear, kidsFootwear, kidsFootwear],
       },
     ],
-
   };
 
   const [thumbnail, setThumbnail] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
-  // const [selectedSize, setSelectedSize] = React.useState(null);
-  const [selectedSize, setSelectedSize] = React.useState<string | null>(0);
+
+  // FIX 2: Changed <string | null> to <number>. 
+  // You are using `selectedSize` as an array index below (e.g. productData?.price[selectedSize]), 
+  // so it MUST be a number, otherwise TypeScript will throw errors.
+  const [selectedSize, setSelectedSize] = React.useState<number>(0);
+
   const [quantity, setQuantity] = React.useState(1);
   const [isWishlisted, setIsWishlisted] = React.useState(false);
   const ref = useReveal();
 
-  // Reset states when product data changes
   useEffect(() => {
     setThumbnail(0);
     setSelectedSize(0);
     setIsWishlisted(false);
   }, [productData]);
 
-  const amountSaved = product.mrp - product.sellingPrice;
+  // Commented out since it was declared but never read, causing a TS 'unused variable' warning.
+  // const amountSaved = product.mrp - product.sellingPrice; 
 
   if (isLoading) {
     return (
@@ -230,7 +243,6 @@ const ProductInfo = () => {
       <section className="bg-[#fdf9f3] py-5">
         <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
           <div className="max-w-6xl w-full ">
-            {/* Breadcrumb */}
             <p className="text-[10.5px] tracking-[0.08em] uppercase text-[#84746e]">
               <span>Home</span> /<span> Products</span> /
               <span> {product.category}</span> /
@@ -238,11 +250,9 @@ const ProductInfo = () => {
             </p>
 
             <div className="flex flex-col md:flex-row gap-10 mt-4">
-              {/* ---------------------- LEFT SIDE — unchanged ---------------------- */}
               <div className="flex gap-3 sticky top-24 self-start">
                 <div className="flex flex-col gap-2.5">
-
-                  {productData?.subImages?.map((image: any, index: any) => (
+                  {productData?.subImages?.map((image: any, index: number) => (
                     <div
                       key={index}
                       onClick={() => setThumbnail(index)}
@@ -258,41 +268,33 @@ const ProductInfo = () => {
                 </div>
               </div>
 
-              {/* ---------------------- RIGHT SIDE — Myntra-style compact layout ---------------------- */}
               <div className="w-full md:w-1/2">
-                {/* Brand + Title */}
                 <p className="text-[11px] tracking-[0.18em] uppercase text-[#b76e79] font-medium">
                   {productData?.brand}
                 </p>
-                <h1
-                  className="mt-0.5 text-[22px] leading-[1.25] text-[#3b302a] font-heading font-semibold"
-                // style={{ fontFamily: "'Playfair Display', serif" }}
-                >
+                <h1 className="mt-0.5 text-[22px] leading-[1.25] text-[#3b302a] font-heading font-semibold">
                   {productData?.title}
                 </h1>
 
                 <StarRating rating={productData?.rating} totalRatings={product.totalRatings} />
 
-                {/* Price — single tight row, Myntra-style */}
                 <div className="mt-3 flex items-baseline gap-2">
                   <span className="text-[22px] text-[#3b302a] font-semibold leading-none">
-                    ₹{productData?.price[selectedSize]?.amount}
+                    ₹{productData?.price?.[selectedSize]?.amount}
                   </span>
                   <span className="text-[13px] text-[#84746e] line-through">
-                    MRP ₹{productData?.price[selectedSize]?.markupPrice}
+                    MRP ₹{productData?.price?.[selectedSize]?.markupPrice}
                   </span>
                   <span className="text-[13px] text-[#835240] font-medium">
-                    ({Math.round((productData?.price[selectedSize]?.discount * 100) / (productData?.price[selectedSize]?.markupPrice || 1)) || 0}% OFF)
+                    ({Math.round((productData?.price?.[selectedSize]?.discount * 100) / (productData?.price?.[selectedSize]?.markupPrice || 1)) || 0}% OFF)
                   </span>
                 </div>
-                {productData?.price[selectedSize]?.discount != 0 &&
+                {productData?.price?.[selectedSize]?.discount != 0 &&
                   <p className="mt-0.5 text-[11px] text-[#84746e]">
-                    inclusive of all taxes · you save ₹{productData?.price[selectedSize]?.discount}
+                    inclusive of all taxes · you save ₹{productData?.price?.[selectedSize]?.discount}
                   </p>
                 }
 
-
-                {/* Size */}
                 <div className="mt-4">
                   <SectionLabel
                     action={
@@ -307,9 +309,9 @@ const ProductInfo = () => {
                     Select Size
                   </SectionLabel>
                   <div className="flex flex-wrap gap-2">
-                    {productData?.price.map((size: any, index: any) => (
+                    {productData?.price?.map((size: any, index: number) => (
                       <button
-                        key={size}
+                        key={index} // Changed from key={size} to key={index} because objects as keys throw errors
                         type="button"
                         disabled={!size.isAvailable}
                         onClick={() => setSelectedSize(index)}
@@ -320,13 +322,12 @@ const ProductInfo = () => {
                             : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
                           }`}
                       >
-                        {size.size}
+                        {size.size.size}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Colour */}
                 <div className="mt-4">
                   <SectionLabel>
                     Colour — <span className="text-[#84746e] normal-case tracking-normal">{productData?.color}</span>
@@ -349,29 +350,9 @@ const ProductInfo = () => {
                   </div>
                 </div>
 
-                {/* CTAs — tight, Myntra-style block buttons */}
                 <div className="mt-4 flex items-center gap-2">
-                  {/* <div className="flex items-center border border-[#e6d9cf] rounded-sm overflow-hidden shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="w-8 h-11 flex items-center justify-center text-[#835240] hover:bg-[#f2e8dd]"
-                      aria-label="Decrease quantity"
-                    >
-                      −
-                    </button>
-                    <span className="w-7 text-center text-[13px] text-[#3b302a]">{quantity}</span>
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((q) => q + 1)}
-                      className="w-8 h-11 flex items-center justify-center text-[#835240] hover:bg-[#f2e8dd]"
-                      aria-label="Increase quantity"
-                    >
-                      +
-                    </button>
-                  </div> */}
-
                   <button
+                    onClick={addToCart}
                     type="button"
                     className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium bg-[#835240] text-[#fdf9f3] rounded-sm hover:bg-[#51291a] transition-colors duration-200"
                   >
@@ -393,14 +374,12 @@ const ProductInfo = () => {
                   </button>
                 </div>
 
-                {/* Trust lines — plain stacked, no boxes, Myntra-style */}
                 <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
                   <TrustLine icon={<ShieldIcon />}>100% Original Products</TrustLine>
                   <TrustLine icon={<TruckIcon />}>Free shipping, pan-India</TrustLine>
                   <TrustLine icon={<ReturnIcon />}>Easy 7-day returns & exchanges</TrustLine>
                 </div>
 
-                {/* Product Details — static, no accordion, Myntra-style */}
                 <div className="mt-4 pt-4 border-t border-[#e6d9cf]">
                   <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium mb-2">
                     Product Details
@@ -413,13 +392,12 @@ const ProductInfo = () => {
                     Specifications
                   </p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                    {productData?.attributes.map((spec: any) => (
+                    {productData?.attributes?.map((spec: any) => (
                       <SpecCell key={spec._id} label={spec.property} value={spec.value} />
                     ))}
                   </div>
                 </div>
 
-                {/* Product code / seller */}
                 <div className="mt-4 pt-3 border-t border-[#e6d9cf] text-[11.5px] text-[#84746e]">
                   Product Code: <span className="text-[#3b302a]">39052859</span>
                 </div>

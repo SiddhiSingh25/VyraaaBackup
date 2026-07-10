@@ -69,11 +69,11 @@ export const adminRoutes = [
         element: <SizeType/>,
       },
       {
-        path: "master-channel/size",
+        path: "master-channel/size-values",
         element: <Size/>,
       },
       {
-        path: "master-channel/property",
+        path: "master-channel/property-type",
         element: <Property/>,
       },
       {
