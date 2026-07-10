@@ -124,9 +124,11 @@ const ProductInfo = () => {
       },
       onSuccess: (res: any) => {
         alert(res.message)
+        // console.log(res, "====success section")
       },
       onFail: (res: any) => {
-        console.log(res);
+        console.log(res?.data?.message, "=====error section");
+        alert(res?.data?.message)
         setIsLoading(false);
       },
     });

@@ -98,6 +98,7 @@ export const apiUrls = {
     getById: "product/"
   },
   Cart: {
-    add: "/cart/add"
+    add: "/cart/add",
+    getByUserId: "cart/getByUserId"
   }
 };

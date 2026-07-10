@@ -9,7 +9,7 @@ interface CartItemCardProps {
   onRemove: (id: string) => void;
   onMoveToWishlist: (id: string) => void;
   onQtyChange: (id: string, qty: number) => void;
-  onSizeChange: (id: string, size: string) => void;
+  // REMOVED: onSizeChange
 }
 
 const CartItemCard = ({
@@ -18,7 +18,6 @@ const CartItemCard = ({
   onRemove,
   onMoveToWishlist,
   onQtyChange,
-  onSizeChange,
 }: CartItemCardProps) => {
   const pct = discountPercent(item.mrp, item.price);
 
@@ -70,22 +69,13 @@ const CartItemCard = ({
             Sold by: {item.soldBy}
           </p>
 
-          {/* Size / Qty selectors */}
+          {/* Size (Static) / Qty selector */}
           <div className="mt-3 flex flex-wrap items-center gap-2.5">
-            <label className="relative">
-              <span className="sr-only">Size</span>
-              <select
-                value={item.size}
-                onChange={(e) => onSizeChange(item.id, e.target.value)}
-                className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-heading focus:outline-none focus:ring-1 focus:ring-primary"
-              >
-                {item.availableSizes.map((s) => (
-                  <option key={s} value={s}>
-                    Size: {s}
-                  </option>
-                ))}
-              </select>
-            </label>
+
+            {/* Directly showing the size instead of a dropdown */}
+            <div className="flex items-center rounded border border-border bg-surface px-3 py-1.5 font-body text-xs font-medium text-heading">
+              Size: {item.size}
+            </div>
 
             <label className="relative">
               <span className="sr-only">Quantity</span>
