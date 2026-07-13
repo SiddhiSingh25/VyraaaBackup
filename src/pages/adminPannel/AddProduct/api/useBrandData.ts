@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { apiUrls } from "../../../../apis";
-import type {  Option } from "../types"; // Updated type
+import type { Option } from "../types";
 import useGetQuery from "../../../../hooks/getQuery.hook";
-// Removed usePostQuery since it wasn't being used in the original hook
+import usePostQuery from "../../../../hooks/postQuery.hook";
 
 /**
  * Fetches brands that belong to a given category.
@@ -11,18 +11,17 @@ import useGetQuery from "../../../../hooks/getQuery.hook";
 const useBrandData = (categoryId: string) => {
   const [brands, setBrands] = useState<any>([]);
 
-  const { getQuery,loading } = useGetQuery();
+  const { getQuery, loading: getBrandLoading } = useGetQuery();
+  const { postQuery, loading: addBrandLoading } = usePostQuery();
 
   const getBrands = () => {
     if (!categoryId) {
       setBrands([]);
       return;
     }
-    
-    
+
     getQuery({
-      // Ensure this endpoint exists in your apiUrls object
-      url: `${apiUrls.Brand.getByCategoryId}/${categoryId}`, 
+      url: `${apiUrls.Brand.getByCategoryId}/${categoryId}`,
       onSuccess: (res: any) => {
         setBrands(res.data);
       },
@@ -32,17 +31,41 @@ const useBrandData = (categoryId: string) => {
     });
   };
 
+  const addBrand = (
+    brandName: string,
+    onSuccess?: (newBrand: any) => void,
+  ) => {
+    if (!categoryId || !brandName?.trim()) return;
+
+    postQuery({
+      url: apiUrls.Brand.add,
+      postData: {
+        brand: brandName.trim(),
+        category: categoryId,
+      },
+      onSuccess: (res: any) => {
+        const newBrand = res.data;
+        setBrands((prevBrands) =>
+          Array.isArray(newBrand) ? newBrand : [...prevBrands, newBrand],
+        );
+        onSuccess?.(newBrand);
+      },
+      onFail: (err: any) => {
+        console.log(err, "Error creating brand");
+      },
+    });
+  };
+
   useEffect(() => {
     getBrands();
   }, [categoryId]);
 
-  const brandOptions: Option[] = brands.map((b : any) => ({
-    // Update 'b.name' if your API returns the brand name under a different key (e.g., b.brandName)
-    label: b.brand, 
+  const brandOptions: Option[] = brands.map((b: any) => ({
+    label: b.brand,
     value: b._id,
   }));
 
-  return { brands, brandOptions, loading };
+  return { brands, brandOptions, getBrandLoading, addBrand, addBrandLoading };
 };
 
 export default useBrandData;

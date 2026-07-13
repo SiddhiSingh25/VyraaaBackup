@@ -1,4 +1,7 @@
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Button } from "../../../../components/ui/FormElements";
+import { SearchableSelect } from "../../../../components/SearchableDropdown/SearchableDropdown";
 import useSizeValueData from "../api/useSizeValueData";
 import type { DraftVariant, Option } from "../types";
 
@@ -11,6 +14,10 @@ type VariantDraftFormProps = {
   onCancel: () => void;
 };
 
+type VariantDraftFormValues = {
+  size: string;
+};
+
 const VariantDraftForm = ({
   draftVariant,
   setDraftVariant,
@@ -19,10 +26,19 @@ const VariantDraftForm = ({
   onAdd,
   onCancel,
 }: VariantDraftFormProps) => {
-  // Updated validation: Only requires Size and a valid Price
+  const { control, watch, reset } = useForm<VariantDraftFormValues>({
+    defaultValues: { size: draftVariant.size.value || "" },
+  });
+
+  const selectedSize = watch("size");
+
+  useEffect(() => {
+    reset({ size: draftVariant.size.value || "" });
+  }, [draftVariant.size.value, reset]);
+
   const isValid =
     sizeTypeSelected &&
-    draftVariant.size.label !== "" &&
+    selectedSize !== "" &&
     Number(draftVariant.price) > 0;
 
   const { sizeValueOptions } = useSizeValueData(sizeTypeSelected);
@@ -33,44 +49,35 @@ const VariantDraftForm = ({
       <div className="grid gap-5 sm:grid-cols-2">
         {/* Size Selection */}
         <div className="w-full">
-          <label
-            htmlFor="variant-size"
-            className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-muted"
-          >
-            Size <span className="text-red-500">*</span>
-          </label>
-          <select
-            // label="Size Type"
-            id="variant-size"
-            value={draftVariant.size.value || ""}
-            onChange={(e) => {
-              const selected = sizeValueOptions.find(
-                (option) => option.value === e.target.value,
-              );
+          <Controller
+            name="size"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect
+                {...field}
+                label="Size"
+                disabled={!sizeTypeSelected}
+                options={sizeValueOptions}
+                placeholder="Select Size"
+                onChange={(event) => {
+                  field.onChange(event);
+                  const selected = sizeValueOptions.find(
+                    (option) => option.value === event.target.value,
+                  );
 
-              if (selected) {
-                setDraftVariant({
-                  ...draftVariant,
-                  size: {
-                    value: selected.value,
-                    label: selected.label,
-                  },
-                });
-              }
-            }}
-            disabled={!sizeTypeSelected}
-            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-body outline-none transition-colors focus:border-primary disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <option value="" disabled>
-              Select Size
-            </option>
-
-            {sizeValueOptions.map((option) => (
-              <option key={option.value } value={option.value || ""}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+                  if (selected) {
+                    setDraftVariant({
+                      ...draftVariant,
+                      size: {
+                        value: selected.value,
+                        label: selected.label,
+                      },
+                    });
+                  }
+                }}
+              />
+            )}
+          />
           {!sizeTypeSelected ? (
   <p className="mt-1 text-[10px] text-red-500">
     Please select a size type first

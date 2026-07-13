@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useGetQuery from "../../../../hooks/getQuery.hook";
+import usePostQuery from "../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../apis";
 import type { ColorFamilyApiItem, Option } from "../types";
 
@@ -9,13 +10,13 @@ const useColorFamilyData = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { getQuery } = useGetQuery();
+  const { postQuery, loading: addColorFamilyLoading } = usePostQuery();
 
   const getColorFamily = () => {
     setIsLoading(true);
     getQuery({
       url: apiUrls.ColorFamily.getAll,
       onSuccess: (res: any) => {
-        console.log(res.data, " 777777777777777777")
         setColorFamily(res.data);
         setIsLoading(false);
       },
@@ -30,13 +31,39 @@ const useColorFamilyData = () => {
     getColorFamily();
   }, []);
 
+  const addColorFamily = (
+    colorFamilyName: string,
+    onSuccess?: (newFamily: ColorFamilyApiItem) => void,
+  ) => {
+    if (!colorFamilyName?.trim()) return;
+
+    postQuery({
+      url: apiUrls.ColorFamily.add,
+      postData: { colorFamily: colorFamilyName.trim() },
+      onSuccess: (res: any) => {
+        const newFamily = res.data;
+        if (newFamily) {
+          setColorFamily((prev) =>
+            Array.isArray(newFamily) ? newFamily : [...prev, newFamily],
+          );
+        } else {
+          getColorFamily();
+        }
+        onSuccess?.(newFamily);
+      },
+      onFail: (err: any) => {
+        console.log(err, "Error creating color family");
+      },
+    });
+  };
+
   const colorFamilyOptions: Option[] = colorFamily.map((cf) => ({
     label: cf.colorFamily,
     value: cf._id,
   }));
 
 
-  return { colorFamily, colorFamilyOptions, isLoading };
+  return { colorFamily, colorFamilyOptions, isLoading, addColorFamily, addColorFamilyLoading };
 };
 
 export default useColorFamilyData;

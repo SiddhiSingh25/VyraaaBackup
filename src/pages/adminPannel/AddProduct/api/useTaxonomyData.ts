@@ -13,6 +13,7 @@ const useTaxonomyData = (categoryId: string) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const {getQuery  } = useGetQuery();
+  const {postQuery  } = usePostQuery();
 
   const getTaxonomy = () => {
     if (!categoryId) {
@@ -35,6 +36,34 @@ const useTaxonomyData = (categoryId: string) => {
 
 
 
+    const addSubCategory = (
+      subCategoryName: string,
+      onSuccess?: (newSubCategory: TaxonomyApiItem) => void,
+    ) => {
+      if (!categoryId || !subCategoryName?.trim()) return;
+
+      postQuery({
+        url: apiUrls.SubCategory.add,
+        postData: {
+          category: categoryId,
+          subCategory: subCategoryName.trim(),
+        },
+        onSuccess: (res: any) => {
+          const newSubCategory = res.data;
+          setTaxonomy((prevTaxonomy) =>
+            Array.isArray(newSubCategory)
+              ? newSubCategory
+              : [...prevTaxonomy, newSubCategory],
+          );
+          onSuccess?.(newSubCategory);
+        },
+        onFail: (err: any) => {
+          console.log(err, "Error creating subcategory");
+        },
+      });
+    };
+
+
   useEffect(() => {
     getTaxonomy();
   }, [categoryId]);
@@ -44,7 +73,7 @@ const useTaxonomyData = (categoryId: string) => {
     value: t._id,
   }));
 
-  return { taxonomy, subcategoryOptions,  isLoading };
+  return { taxonomy, subcategoryOptions, addSubCategory, isLoading };
 };
 
 export default useTaxonomyData;

@@ -25,7 +25,7 @@ export const apiUrls = {
     delete: "subcategorytype/delete",
     getAll: "subcategory/type/getAll",
     getById: "subcategorytype/getById",
-    getBySubCategoryId: "subcategorytype/getBySubCategoryId",
+    getBySubCategoryId: "subcategory/type/getBySubCategoryId",
   },
 
   // Property

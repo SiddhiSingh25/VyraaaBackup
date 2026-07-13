@@ -2,34 +2,58 @@ import { useEffect, useState } from "react";
 import { apiUrls } from "../../../../apis";
 import type { PropertyValueApiItem, Option } from "../types";
 import useGetQuery from "../../../../hooks/getQuery.hook";
+import usePostQuery from "../../../../hooks/postQuery.hook";
 
-/** Fetches color families and the specific colors that belong to each one. */
+/** Fetches property values for a selected property. */
 const usePropertyValueData = (propertyId: string) => {
-
-  console.log("4vfb", propertyId )
   const [propertyData, setPropertyData] = useState<PropertyValueApiItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { getQuery } = useGetQuery();
+  const { postQuery, loading: addPropertyValueLoading } = usePostQuery();
 
   const getPropertyValue = () => {
     if (!propertyId) {
       setPropertyData([]);
-      console.log("not get", propertyId);
       return;
     }
 
     setIsLoading(true);
     getQuery({
       url: `${apiUrls.PropertyValues.getByPropertyId}/${propertyId}`,
-      
       onSuccess: (res: any) => {
         setPropertyData(res.data);
         setIsLoading(false);
       },
       onFail: (err: any) => {
-        console.log(err, "Error fetching color families");
+        console.log(err, "Error fetching property values");
         setIsLoading(false);
+      },
+    });
+  };
+
+  const addPropertyValue = (
+    valueName: string,
+    propertyIdValue: string,
+    onSuccess?: (newValue: PropertyValueApiItem) => void,
+  ) => {
+    if (!propertyIdValue || !valueName?.trim()) return;
+
+    postQuery({
+      url: apiUrls.PropertyValues.add,
+      postData: {
+        property: propertyIdValue,
+        value: valueName.trim(),
+      },
+      onSuccess: (res: any) => {
+        const newValue = res.data;
+        setPropertyData((prev) =>
+          Array.isArray(newValue) ? newValue : [...prev, newValue],
+        );
+        onSuccess?.(newValue);
+      },
+      onFail: (err: any) => {
+        console.log(err, "Error creating property value");
       },
     });
   };
@@ -48,7 +72,13 @@ useEffect(() => {
     value: cf._id,
   }));
 
-  return { propertyData, propertyValueOptions, isLoading };
+  return {
+    propertyData,
+    propertyValueOptions,
+    isLoading,
+    addPropertyValue,
+    addPropertyValueLoading,
+  };
 };
 
 export default usePropertyValueData;

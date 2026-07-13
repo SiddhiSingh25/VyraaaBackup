@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { apiUrls } from "../../../../apis";
-import type { TaxonomyApiItem, Option } from "../types";
+import type { Option } from "../types";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import useGetQuery from "../../../../hooks/getQuery.hook";
 
 /**
- * Fetches subcategories (and their types) that belong to a given category.
- * Re-fetches whenever `categoryId` changes; skips the call when empty.
+ * Fetches subcategory types that belong to a selected subcategory.
+ * Re-fetches whenever `subCategoryId` changes; skips the call when empty.
  */
 const useSubCategoryTypeData = (subCategoryId: string) => {
   const [subcategoryType, setSubcategoryType] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { getQuery } = useGetQuery();
+  const { postQuery, loading: addSubCategoryTypeLoading } = usePostQuery();
 
   const getSubCategoryType = () => {
     if (!subCategoryId) {
@@ -27,13 +28,36 @@ const useSubCategoryTypeData = (subCategoryId: string) => {
         setIsLoading(false);
       },
       onFail: (err: any) => {
-        console.log(err, "Error fetching subcategories");
+        console.log(err, "Error fetching subcategory types");
         setIsLoading(false);
       },
     });
   };
 
+  const addSubCategoryType = (
+    typeName: string,
+    onSuccess?: (newType: any) => void,
+  ) => {
+    if (!subCategoryId || !typeName?.trim()) return;
 
+    postQuery({
+      url: apiUrls.SubCategoryType.add,
+      postData: {
+        subCategory: subCategoryId,
+        type: typeName.trim(),
+      },
+      onSuccess: (res: any) => {
+        const newType = res.data;
+        setSubcategoryType((prev) =>
+          Array.isArray(newType) ? newType : [...prev, newType],
+        );
+        onSuccess?.(newType);
+      },
+      onFail: (err: any) => {
+        console.log(err, "Error creating subcategory type");
+      },
+    });
+  };
 
   useEffect(() => {
     getSubCategoryType();
@@ -44,7 +68,13 @@ const useSubCategoryTypeData = (subCategoryId: string) => {
     value: t._id,
   }));
 
-  return { subcategoryType,  subcategoryTypeOptions,  isLoading };
+  return {
+    subcategoryType,
+    subcategoryTypeOptions,
+    isLoading,
+    addSubCategoryType,
+    addSubCategoryTypeLoading,
+  };
 };
 
 export default useSubCategoryTypeData;

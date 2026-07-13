@@ -73,9 +73,9 @@ export default function ColorPage() {
   };
 
   return (
-    <div className="h-screen bg-slate-50 font-sans text-slate-900">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+    <div className="h-screen bg-slate-50 font-admin-text text-slate-900">
+      <div className="mx-auto max-w-7xl px-4 sm:px-4 lg:px-4 py-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Color Management</h1>
             <p className="mt-2 text-sm text-slate-500">Manage colors and hex codes.</p>
@@ -83,7 +83,7 @@ export default function ColorPage() {
           <Button onClick={openAdd} variant="primary" size="md" icon={<Plus size={18} strokeWidth={2.5} />}>Add Color</Button>
         </div>
 
-        <div className="p-0 sm:p-2">
+        <div className="p-0 sm:p-2 ">
           <ColorTable items={items} onEdit={openEdit} onDelete={requestDelete} />
         </div>
       </div>

@@ -182,6 +182,9 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
 
     // add without any typed text (plain "Add new" trigger)
     const handleAddPlain = useCallback(() => {
+       console.log("clicked");
+        console.log(onAdd);
+  console.log(trimmedQuery); 
       if (!trimmedQuery) return;
       close();
       onAdd?.(trimmedQuery);
@@ -373,20 +376,7 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
                     })}
                 </ul>
 
-                {showAddButton && (
-                  <div className="border-t border-border p-1.5">
-                    <motion.button
-                      type="button"
-                      whileHover={{ opacity: 0.8 }}
-                      transition={{ duration: 0.12 }}
-                      onClick={trimmedQuery ? handleAddFromQuery : handleAddPlain}
-                      className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm font-medium text-primary"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      {trimmedQuery ? `Add "${trimmedQuery}"` : addButtonText}
-                    </motion.button>
-                  </div>
-                )}
+
               </motion.div>
             )}
           </AnimatePresence>

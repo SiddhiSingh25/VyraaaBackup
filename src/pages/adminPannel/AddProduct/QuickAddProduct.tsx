@@ -25,11 +25,15 @@ import usePropertyValueData from "./api/usePropertyValueData";
 import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
+import { useToast } from "../../../hooks/useToast.hook";
 
 const TOTAL_SECTIONS = 5;
 
 const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
+
+
+  const  {toast} = useToast()
 
   const {
     register,
@@ -58,6 +62,8 @@ const QuickAddProduct = () => {
 
   console.log(category, "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
 
+
+
   // --- Data sources -------------------------------------------------------
   const { categoryOptions, addCategory, getCategoryLoading } =
     useCategoryData();
@@ -69,17 +75,48 @@ const QuickAddProduct = () => {
     });
   };
 
-  const { subcategoryOptions, isLoading: subcategoryLoading } =
-    useTaxonomyData(selectedCategoryId);
+  const handleAddSubCategory = (subcategoryName?: string) => {
+    if (!selectedCategoryId || !subcategoryName?.trim()) return;
+    addSubCategory(subcategoryName.trim(), (newSubCategory) => {
+      setValue("subcategory", newSubCategory._id);
+    });
+  };
+
+  const handleAddColorFamily = (colorFamilyName?: string) => {
+    if (!colorFamilyName?.trim()) return;
+    addColorFamily(colorFamilyName.trim(), (newFamily) => {
+      setValue("colorFamily", newFamily._id);
+    });
+  };
+
+  const handleAddSizeType = (sizeTypeName?: string) => {
+    if (!sizeTypeName?.trim()) return;
+    addSizeType(sizeTypeName.trim(), (newType) => {
+      setValue("sizeType", newType._id);
+    });
+  };
+
+  const handleAddBrand = (brandName?: string) => {
+    if (!selectedCategoryId || !brandName?.trim()) return;
+    addBrand(brandName.trim(), (newBrand) => {
+      setValue("brand", newBrand._id);
+    });
+  };
+
+  const {
+    subcategoryOptions,
+    addSubCategory,
+    isLoading: subcategoryLoading,
+  } = useTaxonomyData(selectedCategoryId);
   const { subcategoryTypeOptions, isLoading: subcategoryTypeLoading } =
     useSubCategoryTypeData(selectedSubcategoryId);
-  const { colorFamilyOptions } = useColorFamilyData();
+  const { colorFamilyOptions, addColorFamily } = useColorFamilyData();
   const { colorOptions } = useColorData(selectedColorFamily);
-  const { sizeTypeOptions } = useSizeTypeData();
+  const { sizeTypeOptions, addSizeType } = useSizeTypeData();
   const { sizeValueOptions } = useSizeValueData(selectedSizeType);
   const { propertyTypeOptions } = usePropertyTypeData(selectedSubcategoryId);
   // const { propertyValueOptions } = usePropertyValueData(selected);
-  const { brandOptions } = useBrandData(selectedCategoryId);
+  const { brandOptions, addBrand } = useBrandData(selectedCategoryId);
 
   useEffect(() => {
     setValue("subcategory", "");
@@ -165,6 +202,10 @@ const QuickAddProduct = () => {
       postData: payload,
       onSuccess: (res: any) => {
         console.log(res);
+
+        toast("success", res.message)
+
+
       },
       onFail: (err: any) => {
         console.log(err);
@@ -176,7 +217,7 @@ const QuickAddProduct = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-body font-body selection:bg-rose-gold/30">
+    <div className="flex min-h-screen flex-col bg-background text-admin-text font-admin-text selection:bg-rose-gold/30">
       <main className="flex-1 overflow-y-auto">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -199,7 +240,6 @@ const QuickAddProduct = () => {
             {/* LEFT COLUMN: Data Entry */}
             <div className="flex flex-col gap-8">
               <TaxonomySection
-                register={register}
                 control={control}
                 errors={errors}
                 categoryOptions={categoryOptions}
@@ -207,30 +247,26 @@ const QuickAddProduct = () => {
                 getCategoryLoading={getCategoryLoading}
                 selectedCategory={selectedCategoryId}
                 selectedSubcategory={selectedSubcategoryId}
+                addSubCategory={handleAddSubCategory}
                 subcategoryOptions={subcategoryOptions}
                 subcategoryLoading={subcategoryLoading}
                 subcategoryType={selectedSubcategoryTypeId}
                 subcategoryTypeOptions={subcategoryTypeOptions}
                 subcategoryTypeLoading={subcategoryTypeLoading}
-                // typeOptions={subcategoryTypeOptions}
               />
 
               <CoreInfoSection
                 register={register}
+                control={control}
                 errors={errors}
                 colorFamilyOptions={colorFamilyOptions}
                 selectedColorFamily={selectedColorFamily}
                 colorOptions={colorOptions}
                 sizeTypeOptions={sizeTypeOptions}
                 brandOptions={brandOptions}
-              />
-
-              <VariantsSection
-                variants={variants}
-                setVariants={(v) => setValue("variants", v as any)}
-                sizeOptions={sizeTypeOptions}
-                sizeTypeSelected={selectedSizeType}
-                errorMessage={errors.variants?.message as string | undefined}
+                addColorFamily={handleAddColorFamily}
+                addSizeType={handleAddSizeType}
+                addBrand={handleAddBrand}
               />
 
               <AttributesSection
