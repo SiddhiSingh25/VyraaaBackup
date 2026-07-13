@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom"; // Removed unused 'us
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
 import usePostQuery from "../../../../hooks/postQuery.hook";
+import { Heart } from "lucide-react";
 
 /* ---------------------------- Small building blocks ---------------------------- */
 
@@ -113,6 +114,11 @@ const ProductInfo = () => {
       },
     });
   }, [id]);
+
+  const handleWishlist = ()=>{
+      setIsWishlisted(true);
+    console.log("Hello0 from the other side ")
+  }
 
   const addToCart = () => {
     postQuery({
@@ -260,7 +266,21 @@ const ProductInfo = () => {
                   ))}
                 </div>
 
-                <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50">
+                <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
+                          <button
+            onClick={handleWishlist}
+            aria-label={
+              isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+            }
+            className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150"
+          >
+            <Heart
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
+                isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
+              }`}
+              strokeWidth={2}
+            />
+          </button>
                   <img src={productData?.subImages?.[thumbnail]} alt="Selected product" className="w-full h-full object-cover" />
                 </div>
               </div>
@@ -361,14 +381,14 @@ const ProductInfo = () => {
                   >
                     Buy Now
                   </button>
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => setIsWishlisted((w) => !w)}
                     aria-label="Add to wishlist"
                     className="w-11 h-11 flex items-center justify-center shrink-0 border border-[#e6d9cf] rounded-sm hover:border-[#835240] transition-colors duration-200"
                   >
                     <HeartIcon filled={isWishlisted} />
-                  </button>
+                  </button> */}
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
