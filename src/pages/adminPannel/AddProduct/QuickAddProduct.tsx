@@ -59,6 +59,7 @@ const QuickAddProduct = () => {
   const variants = watch("variants") || [];
 
   const category = watch("category");
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   console.log(category, "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
 
@@ -131,6 +132,39 @@ const QuickAddProduct = () => {
     setValue("color", "");
   }, [selectedColorFamily, setValue]);
 
+  const handleMediaFiles = (files: File[]) => {
+    setImageFiles((prev) => [...prev, ...files]);
+  };
+
+  const { postQuery } = usePostQuery();
+
+  const handleRemoveImage = (index: number) => {
+    setValue("images", images.filter((_img, idx) => idx !== index));
+    setImageFiles((prev) => prev.filter((_file, idx) => idx !== index));
+  };
+
+  const uploadImages = async (files: File[]) => {
+    const imageUrls: string[] = [];
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const uploadResponse = await postQuery({
+        url: apiUrls.Image.upload,
+        postData: formData,
+      });
+
+      if (!uploadResponse?.data) {
+        throw new Error("Image upload failed");
+      }
+
+      imageUrls.push(uploadResponse.data);
+    }
+
+    return imageUrls;
+  };
+
   // --- Progress ------------------------------------------------------------
   const completedSections = [
     Boolean(
@@ -148,26 +182,15 @@ const QuickAddProduct = () => {
     images.length > 0,
   ].filter(Boolean).length;
 
-  let { postQuery } = usePostQuery();
-
   // --- Submission ------------------------------------------------------------
-  const onSubmit = (data: QuickAddValues) => {
+  const onSubmit = async (data: QuickAddValues) => {
     console.log(data, "uyydg");
 
     const payload = {
       title: data.name,
       description: data.description,
 
-      // Set the first image as the main image, default to empty string if none exists
-      image: data.images && data.images.length > 0 ? data.images[0] : "",
-
       brand: data.brand,
-
-      // Map any additional images into the expected subImages array of objects
-      subImages:
-        data.images && data.images.length > 1
-          ? data.images.slice(1).map((img) => ({ imageUrl: img }))
-          : [],
 
       color: data.color,
       category: data.category,
@@ -197,23 +220,45 @@ const QuickAddProduct = () => {
       linkItems: [],
     };
 
-    postQuery({
-      url: `${apiUrls.Product.add}`,
-      postData: payload,
-      onSuccess: (res: any) => {
-        console.log(res);
-
-        toast("success", res.message)
 
 
-      },
-      onFail: (err: any) => {
-        console.log(err);
-      },
-    });
-    console.log("Quick Add Payload:", data);
-    setShowSuccess(true);
-    reset();
+
+
+
+
+
+
+    
+
+    try {
+      const imageUrls = await uploadImages(imageFiles);
+
+      const payloadWithImages = {
+        ...payload,
+        image: imageUrls[0] || "",
+        subImages:
+          imageUrls.length > 1
+            ? imageUrls.slice(1).map((img) => ({ imageUrl: img }))
+            : [],
+      };
+
+      const productResponse = await postQuery({
+        url: apiUrls.Product.add,
+        postData: payloadWithImages,
+      });
+
+      toast(
+        "success",
+        productResponse?.message || productResponse?.data?.message || "Product added successfully",
+      );
+      console.log("Quick Add Payload:", payloadWithImages);
+      setShowSuccess(true);
+      reset();
+      setImageFiles([]);
+    } catch (err: any) {
+      console.log(err);
+      toast("error", err?.response?.data?.message || err?.message || "Could not add product");
+    }
   };
 
   return (
@@ -269,6 +314,14 @@ const QuickAddProduct = () => {
                 addBrand={handleAddBrand}
               />
 
+               <VariantsSection
+                variants={variants}
+                setVariants={(v) => setValue("variants", v as any)}
+                sizeOptions={sizeTypeOptions}
+                sizeTypeSelected={selectedSizeType}
+                errorMessage={errors.variants?.message as string | undefined}
+              />
+
               <AttributesSection
                 attributes={attributes}
                 setAttributes={(a: any) => setValue("attributes", a)}
@@ -282,6 +335,8 @@ const QuickAddProduct = () => {
               <MediaSection
                 images={images}
                 setImages={(imgs) => setValue("images", imgs)}
+                onFilesSelected={handleMediaFiles}
+                onRemoveImage={handleRemoveImage}
                 errorMessage={errors.images?.message as string | undefined}
               />
             </div>

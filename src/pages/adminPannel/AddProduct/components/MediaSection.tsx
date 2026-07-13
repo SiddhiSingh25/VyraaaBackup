@@ -8,19 +8,27 @@ const MAX_IMAGES = 5;
 type MediaSectionProps = {
   images: string[];
   setImages: (images: string[]) => void;
+  onFilesSelected?: (files: File[]) => void;
+  onRemoveImage?: (index: number) => void;
   errorMessage?: string;
 };
 
-const MediaSection = ({ images, setImages, errorMessage }: MediaSectionProps) => {
+const MediaSection = ({
+  images,
+  setImages,
+  onFilesSelected,
+  onRemoveImage,
+  errorMessage,
+}: MediaSectionProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const remainingSlots = MAX_IMAGES - images.length;
 
   const addFiles = (files: FileList | null) => {
     if (!files || remainingSlots <= 0) return;
-    const nextUrls = Array.from(files)
-      .slice(0, remainingSlots)
-      .map((file) => URL.createObjectURL(file));
+    const fileArray = Array.from(files).slice(0, remainingSlots);
+    const nextUrls = fileArray.map((file) => URL.createObjectURL(file));
     setImages([...images, ...nextUrls]);
+    onFilesSelected?.(fileArray);
   };
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -32,12 +40,6 @@ const MediaSection = ({ images, setImages, errorMessage }: MediaSectionProps) =>
     e.preventDefault();
     setIsDragging(false);
     addFiles(e.dataTransfer.files);
-  };
-
-  const removeImage = (index: number) => {
-    const next = [...images];
-    next.splice(index, 1);
-    setImages(next);
   };
 
   return (
@@ -75,7 +77,7 @@ const MediaSection = ({ images, setImages, errorMessage }: MediaSectionProps) =>
             <img src={images[0]} alt="Primary" className="h-full w-full object-cover" />
             <button
               type="button"
-              onClick={() => removeImage(0)}
+              onClick={() => onRemoveImage?.(0)}
               aria-label="Remove primary image"
               className="absolute right-3 top-3 z-10 rounded-full bg-background/90 p-2 text-error shadow-sm hover:bg-error hover:text-white transition"
             >
@@ -110,7 +112,7 @@ const MediaSection = ({ images, setImages, errorMessage }: MediaSectionProps) =>
             <img src={img} alt={`Extra ${idx}`} className="h-full w-full object-cover" />
             <button
               type="button"
-              onClick={() => removeImage(idx + 1)}
+              onClick={() => onRemoveImage?.(idx + 1)}
               aria-label={`Remove image ${idx + 2}`}
               className="absolute inset-0 flex items-center justify-center bg-dark/50 text-white opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
             >
