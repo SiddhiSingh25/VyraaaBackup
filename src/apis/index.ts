@@ -108,6 +108,7 @@ export const apiUrls = {
   },
 
   WishList: {
+    remove: "/wishList/remove/",
     getByUserId: "/wishList/getByUserId"
   }
 };

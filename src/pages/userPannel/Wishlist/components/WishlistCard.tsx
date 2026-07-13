@@ -4,6 +4,8 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import type { StockStatus, WishlistProduct } from "./types";
+import useGetQuery from "../../../../hooks/getQuery.hook";
+import { apiUrls } from "../../../../apis";
 
 /* ------------------------------------------------------------------ */
 /* Star rating & Utilities                                           */
@@ -44,6 +46,7 @@ function WishlistCard({
   onBuyNow: (id: string) => void;
   onNotifyMe: (id: string) => void;
 }) {
+  const { getQuery } = useGetQuery()
   const navigate = useNavigate();
   const discount = discountPercent(product.price, product.originalPrice);
   const isOut = product.stockStatus === "out-of-stock";
@@ -73,7 +76,16 @@ function WishlistCard({
           type="button"
           aria-label="Remove from wishlist"
           onClick={(e) => {
-            e.stopPropagation(); // Prevents the card onClick from firing when removing
+            e.stopPropagation();
+            getQuery({
+              url: apiUrls.WishList.remove + product?.id,
+              onSuccess: (res: any) => {
+                alert(res.message)
+              },
+              onFail: (res: any) => {
+                console.error("Failed to fetch wishlist:", res);
+              },
+            });
             onRemove(product.id);
           }}
           className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-body opacity-100 backdrop-blur-sm transition-all duration-300 hover:bg-background hover:text-error group-hover:opacity-100"
@@ -99,7 +111,7 @@ function WishlistCard({
           )}
         </div>
       </div>
-    </motion.article>
+    </motion.article >
   );
 }
 
