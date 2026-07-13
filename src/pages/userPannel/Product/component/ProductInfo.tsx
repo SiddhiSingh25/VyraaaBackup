@@ -96,7 +96,7 @@ const ProductInfo = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!id) return; // Guard clause in case ID is undefined
+    if (!id) return; 
 
     setIsLoading(true);
     getQuery({
@@ -205,9 +205,7 @@ const ProductInfo = () => {
   const [thumbnail, setThumbnail] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
 
-  // FIX 2: Changed <string | null> to <number>. 
-  // You are using `selectedSize` as an array index below (e.g. productData?.price[selectedSize]), 
-  // so it MUST be a number, otherwise TypeScript will throw errors.
+ 
   const [selectedSize, setSelectedSize] = React.useState<number>(0);
 
   const [quantity, setQuantity] = React.useState(1);
@@ -220,8 +218,7 @@ const ProductInfo = () => {
     setIsWishlisted(false);
   }, [productData]);
 
-  // Commented out since it was declared but never read, causing a TS 'unused variable' warning.
-  // const amountSaved = product.mrp - product.sellingPrice; 
+
 
   if (isLoading) {
     return (

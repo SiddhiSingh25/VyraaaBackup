@@ -12,7 +12,7 @@ export const apiUrls = {
   // Sub Category
   SubCategory: {
     add: "subcategory/add",
-    getAll : "subcategory/getAll",
+    getAll: "subcategory/getAll",
     update: "subcategory/update",
     delete: "subcategory/delete",
     getByCategoryId: "subcategory/getByCategoryId",
@@ -99,10 +99,15 @@ export const apiUrls = {
     getAll: "product/getAll",
     getById: "product/", // Usage: `${apiUrls.Product.getById}${id}`
   },
-   Cart: {
+
+  Cart: {
     add: "/cart/add",
     getByUserId: "cart/getByUserId",
     update: "/cart/update",
     remove: "/cart/remove/"
+  },
+
+  WishList: {
+    getByUserId: "/wishList/getByUserId"
   }
 };

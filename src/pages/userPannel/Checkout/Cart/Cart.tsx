@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { CartItem } from "./component/cart";
-import { sampleCartItems } from "./component/sampleCart"; // You can remove this now
+// import { sampleCartItems } from "./component/sampleCart"; // You can remove this now
 import { computePriceDetails } from "./component/pricing";
 import OffersStrip from "./component/OffersStrip";
 import CartListHeader from "./component/CartListHeader";

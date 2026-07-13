@@ -1,12 +1,12 @@
 /* ------------------------------------------------------------------ */
-/*  Wishlist Card                                                      */
+/* Wishlist Card                                                     */
 /* ------------------------------------------------------------------ */
-import {  motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import type { StockStatus, WishlistProduct } from "./types";
 
 /* ------------------------------------------------------------------ */
-/*  Star rating                                                        */
+/* Star rating & Utilities                                           */
 /* ------------------------------------------------------------------ */
 
 const formatINR = (value: number) =>
@@ -17,10 +17,8 @@ const discountPercent = (price: number, original: number | null) => {
   return Math.round(((original - price) / original) * 100);
 };
 
-
-
 /* ------------------------------------------------------------------ */
-/*  Stock status pill                                                  */
+/* Stock status pill                                                 */
 /* ------------------------------------------------------------------ */
 
 function StockStatusLabel({ status }: { status: StockStatus }) {
@@ -57,7 +55,8 @@ function WishlistCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.25 } }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      onClick={() => navigate(`/product/details/${product.id}`)}
+      // Updated onClick logic here
+      onClick={() => navigate({ pathname: `/productDeatils/${product?.id}` })}
       className="group cursor-pointer rounded-xl border border-border bg-surface overflow-hidden shadow-[0_1px_3px_rgba(59,48,42,0.06)] hover:shadow-[0_18px_40px_-16px_rgba(59,48,42,0.25)] transition-shadow duration-500"
     >
       {/* Image */}
@@ -65,9 +64,8 @@ function WishlistCard({
         <img
           src={product.image}
           alt={`${product.brand} ${product.name}`}
-          className={`h-full w-full object-cover transition-transform duration-400 ease-out group-hover:scale-[1.025] ${
-            isOut ? "grayscale-35 opacity-80" : ""
-          }`}
+          className={`h-full w-full object-cover transition-transform duration-400 ease-out group-hover:scale-[1.025] ${isOut ? "grayscale-35 opacity-80" : ""
+            }`}
         />
 
         {/* Remove button */}
@@ -75,7 +73,7 @@ function WishlistCard({
           type="button"
           aria-label="Remove from wishlist"
           onClick={(e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Prevents the card onClick from firing when removing
             onRemove(product.id);
           }}
           className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-body opacity-100 backdrop-blur-sm transition-all duration-300 hover:bg-background hover:text-error group-hover:opacity-100"
@@ -86,7 +84,7 @@ function WishlistCard({
         </button>
       </div>
 
-       <div className="my-1 flex flex-col gap-1 p-2">
+      <div className="my-1 flex flex-col gap-1 p-2">
         <p className="font-heading text-sm text-admin-text">{product.brand}</p>
         <p className="text-xs text-muted">{product.name}</p>
         <div className="flex items-baseline gap-2 pt-0.5">
@@ -101,72 +99,8 @@ function WishlistCard({
           )}
         </div>
       </div>
-
-      {/* Details */}
-      {/* <div className="flex flex-col gap-2.5 p-4">
-        <div>
-          <p className="text-sm text-body">{product.name}</p>
-        </div>
-
-      
-
-        <div className="flex items-baseline gap-2">
-          <span className="font-heading text-lg text-admin-text">{formatINR(product.price)}</span>
-          {product.originalPrice && (
-            <>
-              <span className="text-sm text-muted line-through">
-                {formatINR(product.originalPrice)}
-              </span>
-              {discount && (
-                <span className="text-sm font-medium text-success">{discount}% off</span>
-              )}
-            </>
-          )}
-        </div>
-
-        <StockStatusLabel status={product.stockStatus} />
-
-       
-        <div className="mt-1 flex flex-col gap-2">
-          {isOut ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onNotifyMe(product.id);
-              }}
-              className="w-full rounded-full border border-primary py-2.5 text-sm font-medium text-primary transition-colors duration-300 hover:bg-primary hover:text-background"
-            >
-              Notify Me
-            </button>
-          ) : (
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAddToBag(product.id);
-                }}
-                className="flex-1 rounded-xl bg-heading py-2.5 text-sm font-medium text-background transition-colors duration-300 hover:bg-primary-dark"
-              >
-                Add to Bag
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onBuyNow(product.id);
-                }}
-                className="flex-1 rounded-full border border-primary py-2.5 text-sm font-medium text-primary transition-colors duration-300 hover:bg-primary hover:text-background sm:hidden"
-              >
-                Buy Now
-              </button>
-            </div>
-          )}
-        </div>
-      </div> */}
     </motion.article>
   );
 }
 
-export default WishlistCard
+export default WishlistCard;
