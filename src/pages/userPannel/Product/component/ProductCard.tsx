@@ -2,12 +2,24 @@ import { Heart, ShoppingBag } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
+import useGetQuery from "../../../../hooks/getQuery.hook";
+import { apiUrls } from "../../../../apis";
 
 const ProductCard = ({ product }: any) => {
+  const { getQuery } = useGetQuery()
   const [isWishlisted, setIsWishlisted] = useState(false);
   const handleWishlist = () => {
-    console.log("Hel;lo");
-    setIsWishlisted(true);
+    // console.log("Hel;lo");
+    // setIsWishlisted(true);
+    getQuery({
+      url: apiUrls.WishList.add + product?.id,
+      onSuccess: (res: any) => {
+        alert(res.message)
+      },
+      onFail: (res: any) => {
+        console.error("Failed to fetch wishlist:", res);
+      },
+    });
   };
   return (
     <Link to="/productDeatils/6a50c39a729a40d15f95a608">
@@ -27,9 +39,8 @@ const ProductCard = ({ product }: any) => {
             className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150"
           >
             <Heart
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
-                isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
-              }`}
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
+                }`}
               strokeWidth={2}
             />
           </button>

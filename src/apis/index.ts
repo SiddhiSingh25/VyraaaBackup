@@ -108,6 +108,7 @@ export const apiUrls = {
   },
 
   WishList: {
+    add : "wishList/add/",
     remove: "/wishList/remove/",
     getByUserId: "/wishList/getByUserId"
   }
