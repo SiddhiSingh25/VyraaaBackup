@@ -182,9 +182,9 @@ const MasterChannel = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-body font-body selection:bg-rose-gold/30">
+    <div className="flex min-h-screen flex-col bg-background text-admin-text font-admin-text selection:bg-rose-gold/30">
       <main className="flex-1 overflow-y-auto">
-        <form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex h-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex h-full max-w-7xl flex-col gap-8 px-4 sm:px-4 lg:px-4 py-4">
           
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-surface p-6 rounded-xl border border-border shadow-sm">
@@ -264,7 +264,7 @@ const MasterChannel = () => {
                 </div>
 
                 {properties.length > 0 && (
-                  <div className="overflow-hidden rounded-lg border border-border">
+                  <div className="mb-4 overflow-hidden rounded-lg border border-border">
                     <table className="w-full text-left text-sm">
                       <thead className="bg-card text-admin-text font-heading border-b border-border">
                         <tr>

@@ -68,7 +68,7 @@ export default function AdminLayout() {
 
   const [productItems, setProductItems] = useState<CategoryItem[]>([]);
   const [headerName, setHeaderName] = useState("Dashboard");
-  const [openMenu, setOpenMenu] = useState<string | null>("Product");
+  const [openMenu, setOpenMenu] = useState<string | null>("");
   const [isHovered, setIsHovered] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -158,11 +158,11 @@ export default function AdminLayout() {
         label: "Coupons",
         path: "/admin/coupons",
       },
-      {
-        icon: FaLayerGroup,
-        label: "Global Attributes",
-        path: "/admin/attributes",
-      },
+      // {
+      //   icon: FaLayerGroup,
+      //   label: "Global Attributes",
+      //   path: "/admin/attributes",
+      // },
     ],
     [productNavItems],
   );
@@ -234,7 +234,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="relative flex min-h-screen bg-background text-admin-text">
+    <div className="relative flex min-h-screen bg-background text-admin-text font-admin-text">
       {isMobileSidebarOpen && (
         <button
           type="button"

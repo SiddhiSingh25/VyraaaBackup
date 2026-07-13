@@ -8,6 +8,7 @@ import SubCategory from '../pages/adminPannel/masterData/SubCategory/SubCategory
 import SubCategoryType from '../pages/adminPannel/masterData/SubCategoryType/SubCategoryType';
 import ColorFamily from '../pages/adminPannel/masterData/ColorFamily/ColorFamily';
 import Color from '../pages/adminPannel/masterData/Color/Color';
+import Brand from '../pages/adminPannel/masterData/Brand/Brand';
 import SizeType from '../pages/adminPannel/masterData/SizeType/SizeType';
 import Size from '../pages/adminPannel/masterData/Size/Size';
 import Property from '../pages/adminPannel/masterData/Property/Property';
@@ -63,6 +64,10 @@ export const adminRoutes = [
       {
         path: "master-channel/color",
         element: <Color/>,
+      },
+      {
+        path: "master-channel/brand",
+        element: <Brand/>,
       },
       {
         path: "master-channel/size-type",

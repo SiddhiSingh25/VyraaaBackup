@@ -82,9 +82,9 @@ export default function SubCategory() {
   };
 
   return (
-    <div className="h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="h-screen bg-slate-50 font-admin-text text-slate-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-4 lg:px-4 py-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
             <h1 className="text-3xl font-admin-text font-bold tracking-tight text-slate-900">Subcategory Management</h1>
             <p className="mt-2 text-sm font-admin-text text-slate-500">Manage subcategories and bind them to categories.</p>
@@ -92,7 +92,7 @@ export default function SubCategory() {
           <Button onClick={openAdd} variant="primary" className='font-admin-text bg-dark' size="md" icon={<Plus size={18} strokeWidth={2.5} />}>Add Subcategory</Button>
         </div>
 
-        <div className="p-0 sm:p-2">
+        <div className="p-0 sm:p-2 mb-4">
           <SubCategoryTable items={items} onEdit={openEdit} onDelete={requestDelete} />
         </div>
       </div>

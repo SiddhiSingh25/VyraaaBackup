@@ -148,7 +148,7 @@ export default function Category() {
   const cancelDelete = () => setCategoryPendingDelete(null);
 
   return (
-    <div className="h-screen bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="h-screen bg-slate-50 font-admin-text text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-4 lg:px-4 py-4 ">
         
         {/* Page header */}
@@ -174,7 +174,7 @@ export default function Category() {
 
     
           {/* Table Area */}
-          <div className="p-0 sm:p-2">
+          <div className="p-0 sm:p-2 mb-4">
             <CategoryTable 
               categories={visibleCategories} 
               onEdit={openEditModal} 

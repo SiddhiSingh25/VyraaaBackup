@@ -1,12 +1,9 @@
-import { type UseFormRegister, type FieldErrors } from "react-hook-form";
+import { type FieldErrors, Controller, type Control } from "react-hook-form";
 import { TbCategoryPlus } from "react-icons/tb";
 import type { Option, QuickAddValues } from "../types";
-import { Select } from "../../../../components/ui/FormElements";
 import { SearchableSelect } from "../../../../components/SearchableDropdown/SearchableDropdown";
-import { Controller, type Control } from "react-hook-form";
 
 type TaxonomySectionProps = {
-  register: UseFormRegister<QuickAddValues>;
   control: Control<QuickAddValues>;
   errors: FieldErrors<QuickAddValues>;
   categoryOptions: Option[];
@@ -18,12 +15,12 @@ type TaxonomySectionProps = {
   subcategoryTypeOptions: Option[];
   subcategoryTypeLoading: boolean;
   addCategory: (category?: string) => void;
+  addSubCategory: (subcategory?: string) => void;
   getCategoryLoading: boolean;
   // typeOptions: Option[];
 };
 
 const TaxonomySection = ({
-  register,
   control,
   errors,
   categoryOptions,
@@ -34,21 +31,17 @@ const TaxonomySection = ({
   subcategoryLoading,
   subcategoryType,
   addCategory,
+  addSubCategory,
   subcategoryTypeOptions,
   subcategoryTypeLoading,
 }: TaxonomySectionProps) => {
-  console.log(
-    "hhfdf",
-    selectedCategory,
-    selectedSubcategory,
-    getCategoryLoading,
-  );
+
   return (
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
         <TbCategoryPlus className="text-primary text-xl" />
         <h3 className="text-lg text-admin-text font-heading font-semibold">
-          Taxonomy Mapping
+          Category
         </h3>
       </div>
 
@@ -71,35 +64,50 @@ const TaxonomySection = ({
           )}
         />
 
-        <Select
-          label="Subcategory"
-          required
-          disabled={!selectedCategory || subcategoryLoading}
-          {...register("subcategory")}
-          error={errors.subcategory?.message}
-          options={subcategoryOptions}
-          placeholder={
-            !selectedCategory
-              ? "Select a category first"
-              : subcategoryLoading
-                ? "Loading subcategories..."
-                : "Select subcategory"
-          }
+        <Controller
+          name="subcategory"
+          control={control}
+          render={({ field }) => (
+            <SearchableSelect
+              {...field}
+              label="Subcategory"
+              required
+              disabled={!selectedCategory || subcategoryLoading}
+              error={errors.subcategory?.message}
+              options={subcategoryOptions}
+              showAddButton
+              addButtonText="Create new subcategory"
+              onAdd={addSubCategory}
+              placeholder={
+                !selectedCategory
+                  ? "Select a category first"
+                  : subcategoryLoading
+                    ? "Loading subcategories..."
+                    : "Select subcategory"
+              }
+            />
+          )}
         />
-        <Select
-          label="Subcategory Type"
-          required
-          disabled={!selectedSubcategory}
-          {...register("subcategoryType")}
-          error={errors.subcategoryType?.message}
-          options={subcategoryTypeOptions}
-          placeholder={
-            !subcategoryType
-              ? "Select a subcategory first"
-              : subcategoryType
-                ? "Loading types..."
-                : "Select type"
-          }
+        <Controller
+          name="subcategoryType"
+          control={control}
+          render={({ field }) => (
+            <SearchableSelect
+              {...field}
+              label="Subcategory Type"
+              required
+              disabled={!selectedSubcategory}
+              error={errors.subcategoryType?.message}
+              options={subcategoryTypeOptions}
+              placeholder={
+                !selectedSubcategory
+                  ? "Select a category first"
+                  : subcategoryTypeLoading
+                    ? "Loading types..."
+                    : "Select type"
+              }
+            />
+          )}
         />
       </div>
     </section>

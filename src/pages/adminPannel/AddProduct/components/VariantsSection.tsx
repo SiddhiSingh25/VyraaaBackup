@@ -80,7 +80,7 @@ const VariantsSection = ({
       <div className="mb-6 flex items-center gap-3 border-b border-border pb-4">
         <IoColorPaletteOutline className="text-xl text-primary" />
         <h3 className="font-heading text-lg font-semibold text-admin-text">
-          Variants & Pricing
+          Variants
         </h3>
       </div>
 
