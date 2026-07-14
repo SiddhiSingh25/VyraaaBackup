@@ -137,7 +137,7 @@ const MasterChannel = () => {
               value={newVal}
               onChange={(e) => setNewVal(e.target.value)}
               placeholder={`Enter new ${label.toLowerCase()}`}
-              className="w-full rounded-md border border-primary bg-background px-4 py-2 text-sm text-admin-text outline-none focus:ring-1 focus:ring-primary"
+              className="w-full rounded-md border border-primary bg-background px-4 py-2 text-sm  outline-none focus:ring-1 focus:ring-primary"
             />
             <button type="button" onClick={handleSave} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-success text-white hover:bg-success/90 transition shadow-sm">
               <FiCheck />
@@ -182,14 +182,14 @@ const MasterChannel = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-admin-text font-admin-text selection:bg-rose-gold/30">
+    <div className="flex min-h-screen flex-col bg-background  font-admin-text selection:bg-rose-gold/30">
       <main className="flex-1 overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="mx-auto flex h-full max-w-7xl flex-col gap-8 px-4 sm:px-4 lg:px-4 py-4">
           
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-surface p-6 rounded-xl border border-border shadow-sm">
             <div>
-              <h2 className="text-3xl font-semibold text-admin-text font-heading tracking-wide">Master Builder</h2>
+              <h2 className="text-3xl font-semibold  text-sm font-semibold tracking-tight  tracking-wide">Master Builder</h2>
               <p className="text-sm text-muted mt-1">Dynamically create and link categories, properties, and variants.</p>
             </div>
             <div className="flex flex-wrap gap-4">
@@ -207,7 +207,7 @@ const MasterChannel = () => {
               <section className="rounded-xl border border-border bg-surface p-6 shadow-sm md:p-8">
                 <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
                   <TbCategoryPlus className="text-primary text-2xl" />
-                  <h3 className="text-xl text-admin-text font-heading">Classification</h3>
+                  <h3 className="text-xl  text-sm font-semibold tracking-tight ">Classification</h3>
                 </div>
                 
                 <div className="flex flex-col gap-6">
@@ -245,7 +245,7 @@ const MasterChannel = () => {
               <section className="rounded-xl border border-border bg-surface p-6 shadow-sm md:p-8">
                 <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
                   <FaArrowsTurnRight className="text-primary text-xl" />
-                  <h3 className="text-xl text-admin-text font-heading">Dependent Properties</h3>
+                  <h3 className="text-xl  text-sm font-semibold tracking-tight ">Dependent Properties</h3>
                 </div>
 
                 <div className="mb-5 rounded-lg border border-border bg-card p-4">
@@ -266,7 +266,7 @@ const MasterChannel = () => {
                 {properties.length > 0 && (
                   <div className="mb-4 overflow-hidden rounded-lg border border-border">
                     <table className="w-full text-left text-sm">
-                      <thead className="bg-card text-admin-text font-heading border-b border-border">
+                      <thead className="bg-card  text-sm font-semibold tracking-tight  border-b border-border">
                         <tr>
                           <th className="px-4 py-3 font-semibold">Property</th>
                           <th className="px-4 py-3 font-semibold">Value</th>
@@ -298,7 +298,7 @@ const MasterChannel = () => {
               <section className="rounded-xl border border-border bg-surface p-6 shadow-sm md:p-8">
                 <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
                   <IoColorPaletteOutline className="text-primary text-2xl" />
-                  <h3 className="text-xl text-admin-text font-heading">Color Standards</h3>
+                  <h3 className="text-xl  text-sm font-semibold tracking-tight ">Color Standards</h3>
                 </div>
                 
                 <InlineAdder 
@@ -322,7 +322,7 @@ const MasterChannel = () => {
                 {colors.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {colors.map((color, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-sm text-admin-text shadow-sm font-medium">
+                      <span key={idx} className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-sm  shadow-sm font-medium">
                         <span className="h-2.5 w-2.5 rounded-full bg-primary/40 block"></span>
                         {color}
                         <button type="button" onClick={() => removeItem("colors", idx)} className="text-muted hover:text-error transition leading-none ml-1">&times;</button>
@@ -336,7 +336,7 @@ const MasterChannel = () => {
               <section className="rounded-xl border border-border bg-surface p-6 shadow-sm md:p-8">
                 <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
                   <RxRulerSquare className="text-primary text-2xl" />
-                  <h3 className="text-xl text-admin-text font-heading">Sizing Standards</h3>
+                  <h3 className="text-xl  text-sm font-semibold tracking-tight ">Sizing Standards</h3>
                 </div>
 
                 <InlineAdder 
@@ -360,7 +360,7 @@ const MasterChannel = () => {
                 {sizes.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {sizes.map((size, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1 text-sm font-semibold text-admin-text shadow-sm">
+                      <span key={idx} className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1 text-sm font-semibold  shadow-sm">
                         {size}
                         <button type="button" onClick={() => removeItem("sizes", idx)} className="text-muted hover:text-error transition leading-none font-normal ml-1">&times;</button>
                       </span>

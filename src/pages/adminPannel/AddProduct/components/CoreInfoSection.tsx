@@ -6,7 +6,7 @@ import type { Option, QuickAddValues } from "../types";
 
 type CoreInfoSectionProps = {
   register: UseFormRegister<QuickAddValues>;
-  control: Control<QuickAddValues>;
+  control: Control<QuickAddValues, any, any>;
   errors: FieldErrors<QuickAddValues>;
   colorFamilyOptions: Option[];
   selectedColorFamily: string;
@@ -17,6 +17,22 @@ type CoreInfoSectionProps = {
   addSizeType: (name?: string) => void;
   addBrand: (name?: string) => void;
 };
+
+const genderOptions = [
+  { label: "Men", value: "Men" },
+  { label: "Women", value: "Women" },
+  { label: "Unisex", value: "Unisex" },
+  { label: "Boys", value: "Boys" },
+  { label: "Girls", value: "Girls" },
+];
+
+const ageRangeOptions = [
+  { label: "0-2 Years", value: "0-2 Years" },
+  { label: "3-5 Years", value: "3-5 Years" },
+  { label: "6-8 Years", value: "6-8 Years" },
+  { label: "9-12 Years", value: "9-12 Years" },
+  { label: "13-18 Years", value: "13-18 Years" },
+];
 
 const CoreInfoSection = ({
   register,
@@ -35,7 +51,7 @@ const CoreInfoSection = ({
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
         <FaTags className="text-primary text-xl" />
-        <h3 className="text-lg text-admin-text font-heading font-semibold">
+        <h3 className="text-lg  text-sm font-semibold tracking-tight  font-semibold">
           Product Details
         </h3>
       </div>
@@ -117,6 +133,34 @@ const CoreInfoSection = ({
               />
             )}
           />
+<Controller
+  name="gender"
+  control={control}
+  render={({ field }) => (
+    <SearchableSelect
+      {...field}
+      label="Gender"
+      required
+      error={errors.gender?.message}
+      options={genderOptions}
+    />
+  )}
+/>
+
+
+<Controller
+  name="ageRange"
+  control={control}
+  render={({ field }) => (
+    <SearchableSelect
+      {...field}
+      label="Age Range"
+      error={errors.ageRange?.message}
+      options={ageRangeOptions}
+    />
+  )}
+/>
+
         </div>
         <TextArea
           label="Description"

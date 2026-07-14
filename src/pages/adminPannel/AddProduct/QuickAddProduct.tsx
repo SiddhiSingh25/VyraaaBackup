@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+
+
+
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -26,14 +29,32 @@ import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
+import { useParams } from "react-router-dom";
+import Button from "../masterData/Category/component/Button";
 
 const TOTAL_SECTIONS = 5;
 
 const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // categoryId coming from the route params (e.g. /category/:categoryId/quick-add)
+  const { categorySlug, categoryId: categoryIdFromParams } = useParams();
 
-  const  {toast} = useToast()
+  const { toast } = useToast();
+
+  // Build default values so the "category" field is pre-filled whenever
+  // we've landed here with a categoryId in the URL.
+  const getInitialValues = useCallback(
+    (): QuickAddValues => ({
+      ...quickAddDefaultValues,
+      category: categoryIdFromParams || quickAddDefaultValues.category,
+    }),
+    [categoryIdFromParams],
+  );
+
+
+  // Whether TaxonomySection should hide its own category picker
+  const hasCategoryFromParams = Boolean(categoryIdFromParams);
 
   const {
     register,
@@ -45,8 +66,12 @@ const QuickAddProduct = () => {
     reset,
   } = useForm<QuickAddValues>({
     resolver: yupResolver(quickAddSchema),
-    defaultValues: quickAddDefaultValues,
+    defaultValues: getInitialValues(),
+    context: { hasCategoryFromParams },
   });
+
+
+
 
   // --- Watched fields ---------------------------------------------------
   const selectedCategoryId = watch("category");
@@ -58,10 +83,15 @@ const QuickAddProduct = () => {
   const attributes = watch("attributes") || [];
   const variants = watch("variants") || [];
 
-  const category = watch("category");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
-  console.log(category, "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+
+
+  // The single source of truth for "which category are we working under".
+  // Params always win — if the user arrived via a category-scoped route,
+  // that id drives everything, even if the (hidden) form field hasn't
+  // synced yet on the very first render.
+  const effectiveCategoryId = categoryIdFromParams || selectedCategoryId;
 
 
 
@@ -77,7 +107,7 @@ const QuickAddProduct = () => {
   };
 
   const handleAddSubCategory = (subcategoryName?: string) => {
-    if (!selectedCategoryId || !subcategoryName?.trim()) return;
+    if (!effectiveCategoryId || !subcategoryName?.trim()) return;
     addSubCategory(subcategoryName.trim(), (newSubCategory) => {
       setValue("subcategory", newSubCategory._id);
     });
@@ -98,9 +128,16 @@ const QuickAddProduct = () => {
   };
 
   const handleAddBrand = (brandName?: string) => {
-    if (!selectedCategoryId || !brandName?.trim()) return;
+    if (!effectiveCategoryId || !brandName?.trim()) return;
     addBrand(brandName.trim(), (newBrand) => {
       setValue("brand", newBrand._id);
+    });
+  };
+
+  const handleAddSubCategoryType = (subcategoryTypeName?: string) => {
+    if (!selectedSubcategoryId || !subcategoryTypeName?.trim()) return;
+    addSubCategoryType(subcategoryTypeName.trim(), (newSubCategoryType) => {
+      setValue("subcategoryType", newSubCategoryType._id);
     });
   };
 
@@ -108,21 +145,27 @@ const QuickAddProduct = () => {
     subcategoryOptions,
     addSubCategory,
     isLoading: subcategoryLoading,
-  } = useTaxonomyData(selectedCategoryId);
-  const { subcategoryTypeOptions, isLoading: subcategoryTypeLoading } =
-    useSubCategoryTypeData(selectedSubcategoryId);
+  } = useTaxonomyData(effectiveCategoryId);
+  const {
+    subcategoryTypeOptions,
+    isLoading: subcategoryTypeLoading,
+    addSubCategoryType,
+  } = useSubCategoryTypeData(selectedSubcategoryId);
   const { colorFamilyOptions, addColorFamily } = useColorFamilyData();
   const { colorOptions } = useColorData(selectedColorFamily);
   const { sizeTypeOptions, addSizeType } = useSizeTypeData();
   const { sizeValueOptions } = useSizeValueData(selectedSizeType);
-  const { propertyTypeOptions } = usePropertyTypeData(selectedSubcategoryId);
-  // const { propertyValueOptions } = usePropertyValueData(selected);
-  const { brandOptions, addBrand } = useBrandData(selectedCategoryId);
+  const { propertyTypeOptions, addPropertyType } =
+    usePropertyTypeData(selectedSubcategoryId);
+  const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
 
+  // Only reset subcategory/type when category actually changes (i.e. the
+  // user is picking it manually). When category comes from params this
+  // still only fires once, harmlessly, on mount.
   useEffect(() => {
     setValue("subcategory", "");
     setValue("subcategoryType", "");
-  }, [selectedCategoryId, setValue]);
+  }, [effectiveCategoryId, setValue]);
 
   useEffect(() => {
     setValue("subcategoryType", "");
@@ -132,6 +175,21 @@ const QuickAddProduct = () => {
     setValue("color", "");
   }, [selectedColorFamily, setValue]);
 
+  // If the param-based categoryId changes (e.g. navigating between
+  // category-scoped quick-add routes), keep the form field in sync.
+  useEffect(() => {
+    if (categoryIdFromParams) {
+      setValue("category", categoryIdFromParams);
+    }
+  }, [categoryIdFromParams, setValue]);
+
+
+
+
+
+
+
+
   const handleMediaFiles = (files: File[]) => {
     setImageFiles((prev) => [...prev, ...files]);
   };
@@ -139,7 +197,10 @@ const QuickAddProduct = () => {
   const { postQuery } = usePostQuery();
 
   const handleRemoveImage = (index: number) => {
-    setValue("images", images.filter((_img, idx) => idx !== index));
+    setValue(
+      "images",
+      images.filter((_img, idx) => idx !== index),
+    );
     setImageFiles((prev) => prev.filter((_file, idx) => idx !== index));
   };
 
@@ -168,7 +229,7 @@ const QuickAddProduct = () => {
   // --- Progress ------------------------------------------------------------
   const completedSections = [
     Boolean(
-      selectedCategoryId && selectedSubcategoryId && watch("subcategoryType"),
+      effectiveCategoryId && selectedSubcategoryId && selectedSubcategoryTypeId,
     ),
     Boolean(
       watch("name") &&
@@ -182,53 +243,52 @@ const QuickAddProduct = () => {
     images.length > 0,
   ].filter(Boolean).length;
 
+  // --- Reset helpers ---------------------------------------------------
+  // Resetting the whole form should NOT wipe a categoryId that came from
+  // the route — otherwise the (hidden) category field goes blank and the
+  // taxonomy chain breaks silently.
+  const resetForm = useCallback(() => {
+    reset(getInitialValues());
+    setImageFiles([]);
+  }, [reset, getInitialValues]);
+
+  const handleClear = () => {
+    const confirmed = window.confirm(
+      "Clear this form? Everything you've entered so far will be lost.",
+    );
+    if (confirmed) resetForm();
+  };
+
   // --- Submission ------------------------------------------------------------
   const onSubmit = async (data: QuickAddValues) => {
-    console.log(data, "uyydg");
-
     const payload = {
       title: data.name,
       description: data.description,
-
       brand: data.brand,
-
       color: data.color,
-      category: data.category,
+      category: effectiveCategoryId,
       subCategory: data.subcategory,
       subcategoryType: data.subcategoryType || null,
       sizeType: data.sizeType,
 
-      // Transform variants into the API's expected 'price' format
       price: data.variants.map((variant) => ({
-        size: variant.size.value, // Extract the ID string from the size object
-        amount: variant.price, // Map 'price' from data to 'amount' for the API
+        size: variant.size.value,
+        amount: variant.price,
         isAvailable: variant.isAvailable,
         isFewLeft: variant.isFewLeft,
-        markupPrice: variant.price || 0, // Fallback to 0 if not present in your data
-        discount: variant.discountPrice || 0, // Fallback to 0 if not present in your data
+        markupPrice: variant.price || 0,
+        discount: variant.discountPrice || 0,
       })),
 
-      // Safely map attributes, defaulting to an empty array if undefined
       attributes: data.attributes
         ? data.attributes.map((item) => ({
-            property: item.property,
-            value: item.value,
-          }))
+          property: item.property,
+          value: item.value,
+        }))
         : [],
 
-      // Pass linkItems if they exist in your data, otherwise default to an empty array
       linkItems: [],
     };
-
-
-
-
-
-
-
-
-
-    
 
     try {
       const imageUrls = await uploadImages(imageFiles);
@@ -249,24 +309,29 @@ const QuickAddProduct = () => {
 
       toast(
         "success",
-        productResponse?.message || productResponse?.data?.message || "Product added successfully",
+        productResponse?.message ||
+        productResponse?.data?.message ||
+        "Product added successfully",
       );
-      console.log("Quick Add Payload:", payloadWithImages);
       setShowSuccess(true);
-      reset();
-      setImageFiles([]);
+      resetForm();
     } catch (err: any) {
-      console.log(err);
-      toast("error", err?.response?.data?.message || err?.message || "Could not add product");
+      toast(
+        "error",
+        err?.response?.data?.message || err?.message || "Could not add product",
+      );
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-admin-text font-admin-text selection:bg-rose-gold/30">
+    <div className="flex min-h-screen flex-col bg-background  font-admin-text selection:bg-rose-gold/30">
       <main className="flex-1 overflow-y-auto">
         <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mx-auto flex h-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8"
+          // onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit, (formErrors) => {
+            console.log("VALIDATION FAILED:", formErrors);
+          })}
+          className="mx-auto flex h-full max-w-5xl flex-col gap-5 py-6 "
         >
           {showSuccess && (
             <SuccessBanner
@@ -278,19 +343,18 @@ const QuickAddProduct = () => {
           <FormHeader
             completedSections={completedSections}
             totalSections={TOTAL_SECTIONS}
-            onClear={() => reset()}
           />
 
-          <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
+          <div className="grid gap-5 lg:grid-cols-[1.7fr_1fr]">
             {/* LEFT COLUMN: Data Entry */}
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
               <TaxonomySection
                 control={control}
                 errors={errors}
                 categoryOptions={categoryOptions}
                 addCategory={handleAddCategory}
                 getCategoryLoading={getCategoryLoading}
-                selectedCategory={selectedCategoryId}
+                selectedCategory={effectiveCategoryId}
                 selectedSubcategory={selectedSubcategoryId}
                 addSubCategory={handleAddSubCategory}
                 subcategoryOptions={subcategoryOptions}
@@ -298,6 +362,10 @@ const QuickAddProduct = () => {
                 subcategoryType={selectedSubcategoryTypeId}
                 subcategoryTypeOptions={subcategoryTypeOptions}
                 subcategoryTypeLoading={subcategoryTypeLoading}
+                addSubCategoryType={handleAddSubCategoryType}
+                // NEW: tell TaxonomySection to hide its category picker
+                // when we already have one from the route.
+                hideCategoryField={hasCategoryFromParams}
               />
 
               <CoreInfoSection
@@ -314,7 +382,7 @@ const QuickAddProduct = () => {
                 addBrand={handleAddBrand}
               />
 
-               <VariantsSection
+              <VariantsSection
                 variants={variants}
                 setVariants={(v) => setValue("variants", v as any)}
                 sizeOptions={sizeTypeOptions}
@@ -327,11 +395,12 @@ const QuickAddProduct = () => {
                 setAttributes={(a: any) => setValue("attributes", a)}
                 propertyTypeOptions={propertyTypeOptions}
                 selectedSubcategoryId={selectedSubcategoryId}
+                addPropertyType={addPropertyType}
               />
             </div>
 
             {/* RIGHT COLUMN: Media */}
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
               <MediaSection
                 images={images}
                 setImages={(imgs) => setValue("images", imgs)}
@@ -339,6 +408,15 @@ const QuickAddProduct = () => {
                 onRemoveImage={handleRemoveImage}
                 errorMessage={errors.images?.message as string | undefined}
               />
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <Button type="button" variant="secondary" onClick={handleClear}>
+                Clear
+              </Button>
+              <Button type="submit" variant="primary">
+                Publish SKU
+              </Button>
             </div>
           </div>
         </form>

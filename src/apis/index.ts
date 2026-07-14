@@ -20,7 +20,7 @@ export const apiUrls = {
 
   // Sub Category Type
   SubCategoryType: {
-    add: "subcategorytype/add",
+    add: "subcategory/type/add",
     update: "subcategorytype/update",
     delete: "subcategorytype/delete",
     getAll: "subcategory/type/getAll",

@@ -43,7 +43,10 @@ interface SearchableSelectProps {
   }) => void;
 }
 
-export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectProps>(
+export const SearchableSelect = forwardRef<
+  HTMLInputElement,
+  SearchableSelectProps
+>(
   (
     {
       label,
@@ -63,7 +66,7 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
       onChange,
       onBlur,
     },
-    ref
+    ref,
   ) => {
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState("");
@@ -76,13 +79,15 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
 
     const selectedOption = useMemo(
       () => options.find((opt) => opt.value === value) ?? null,
-      [options, value]
+      [options, value],
     );
 
     const filteredOptions = useMemo(() => {
       if (!query.trim()) return options;
       const normalized = query.trim().toLowerCase();
-      return options.filter((opt) => opt.label.toLowerCase().includes(normalized));
+      return options.filter((opt) =>
+        opt.label.toLowerCase().includes(normalized),
+      );
     }, [options, query]);
 
     // does the typed query already exist (case-insensitive) among options?
@@ -90,12 +95,15 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
     const queryMatchesExisting = useMemo(() => {
       if (!trimmedQuery) return true;
       return options.some(
-        (opt) => opt.label.toLowerCase() === trimmedQuery.toLowerCase()
+        (opt) => opt.label.toLowerCase() === trimmedQuery.toLowerCase(),
       );
     }, [options, trimmedQuery]);
 
     const canAddFromQuery =
-      showAddButton && !!onAdd && trimmedQuery.length > 0 && !queryMatchesExisting;
+      showAddButton &&
+      !!onAdd &&
+      trimmedQuery.length > 0 &&
+      !queryMatchesExisting;
 
     useEffect(() => {
       if (activeIndex < 0 || !listRef.current) return;
@@ -108,7 +116,7 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
       (nextValue: string | number | "") => {
         onChange?.({ target: { name, value: nextValue }, type: "change" });
       },
-      [onChange, name]
+      [onChange, name],
     );
 
     const emitBlur = useCallback(() => {
@@ -124,7 +132,10 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
 
     useEffect(() => {
       function handlePointerDown(e: MouseEvent) {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(e.target as Node)
+        ) {
           if (isOpen) close();
         }
       }
@@ -143,7 +154,9 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
 
     useEffect(() => {
       if (isOpen) {
-        const frame = requestAnimationFrame(() => searchInputRef.current?.focus());
+        const frame = requestAnimationFrame(() =>
+          searchInputRef.current?.focus(),
+        );
         return () => cancelAnimationFrame(frame);
       }
     }, [isOpen]);
@@ -158,7 +171,7 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
         emitChange(opt.value);
         close();
       },
-      [emitChange, close]
+      [emitChange, close],
     );
 
     const handleClear = useCallback(
@@ -166,7 +179,7 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
         e.stopPropagation();
         emitChange("");
       },
-      [emitChange]
+      [emitChange],
     );
 
     // add using whatever text is currently typed in the search box
@@ -182,9 +195,9 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
 
     // add without any typed text (plain "Add new" trigger)
     const handleAddPlain = useCallback(() => {
-       console.log("clicked");
-        console.log(onAdd);
-  console.log(trimmedQuery); 
+      console.log("clicked");
+      console.log(onAdd);
+      console.log(trimmedQuery);
       if (!trimmedQuery) return;
       close();
       onAdd?.(trimmedQuery);
@@ -235,7 +248,7 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
         handleSelect,
         canAddFromQuery,
         handleAddFromQuery,
-      ]
+      ],
     );
 
     const showEmptyState = !loading && filteredOptions.length === 0;
@@ -248,7 +261,13 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
 
         <div className="relative" ref={containerRef}>
           {/* hidden field so react-hook-form register(ref) has a real DOM node */}
-          <input type="hidden" ref={ref} name={name} value={value ?? ""} readOnly />
+          <input
+            type="hidden"
+            ref={ref}
+            name={name}
+            value={value ?? ""}
+            readOnly
+          />
 
           <button
             type="button"
@@ -264,7 +283,11 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
               error ? "border-error" : "border-border"
             } ${className}`}
           >
-            <span className={selectedOption ? "truncate text-body" : "truncate text-muted"}>
+            <span
+              className={
+                selectedOption ? "truncate text-body" : "truncate text-muted"
+              }
+            >
               {selectedOption ? selectedOption.label : placeholder}
             </span>
 
@@ -316,7 +339,13 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
                   </div>
                 </div>
 
-                <ul ref={listRef} id={listboxId} role="listbox" className="max-h-56 overflow-y-auto py-1">
+                <ul
+                  ref={listRef}
+                  id={listboxId}
+                  role="listbox"
+                  // className="max-h-56 overflow-y-auto py-1"
+                  className="scrollbar-premium max-h-56 overflow-y-auto py-1"
+                >
                   {loading && (
                     <li className="flex items-center justify-center gap-2 px-3 py-6 text-sm text-muted">
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -340,9 +369,7 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
                         className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm font-medium text-primary transition-colors hover:bg-background"
                       >
                         <Plus className="h-3.5 w-3.5 shrink-0" />
-                        <span className="truncate">
-                          Add "{trimmedQuery}"
-                        </span>
+                        <span className="truncate">Add "{trimmedQuery}"</span>
                       </button>
                     </li>
                   )}
@@ -375,8 +402,6 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
                       );
                     })}
                 </ul>
-
-
               </motion.div>
             )}
           </AnimatePresence>
@@ -385,7 +410,7 @@ export const SearchableSelect = forwardRef<HTMLInputElement, SearchableSelectPro
         {error && <p className="mt-1 text-xs font-body text-error">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 SearchableSelect.displayName = "SearchableSelect";

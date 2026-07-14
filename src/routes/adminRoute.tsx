@@ -41,8 +41,8 @@ export const adminRoutes = [
         element: <MasterChannel />,
       },
       {
-        path: "product/:categorySlug",
-        element: <AllProduct />,
+        path: "product/:categorySlug/:categoryId",
+        element: <QuickAddProduct/>,
       },
 
       {

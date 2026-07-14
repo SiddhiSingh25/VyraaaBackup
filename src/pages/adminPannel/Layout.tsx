@@ -55,7 +55,7 @@ const convertToNavLinks = (data: CategoryItem[]): NavSubItem[] => {
     return {
       id: item._id,
       label: item.category,
-      path: `/admin/product/${slug}`,
+      path: `/admin/product/${slug}/${item._id}`,
     };
   });
 };
@@ -234,7 +234,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="relative flex min-h-screen bg-background text-admin-text font-admin-text">
+    <div className="relative flex min-h-screen bg-background  font-admin-text">
       {isMobileSidebarOpen && (
         <button
           type="button"
@@ -279,7 +279,7 @@ export default function AdminLayout() {
                   ${isAsideExpanded ? "lg:block" : "lg:hidden"}
                 `}
               >
-                <span className="block truncate text-lg font-bold tracking-wide text-admin-text">
+                <span className="block truncate text-lg font-bold tracking-wide ">
                   Admin
                 </span>
                 <span className="block truncate text-[11px] font-medium text-muted">
@@ -363,7 +363,7 @@ export default function AdminLayout() {
                           ${
                             isParentActive
                               ? "bg-primary/10 text-primary"
-                              : "text-muted hover:bg-card hover:text-admin-text"
+                              : "text-muted hover:bg-card hover:"
                           }
                         `}
                       >
@@ -440,7 +440,7 @@ export default function AdminLayout() {
                                         ${
                                           isSubActive
                                             ? "bg-primary text-white shadow-sm shadow-primary/20"
-                                            : "text-muted hover:bg-card hover:text-admin-text"
+                                            : "text-muted hover:bg-card hover:"
                                         }
                                       `}
                                     >
@@ -492,7 +492,7 @@ export default function AdminLayout() {
                         ${
                           isActive
                             ? "bg-primary/10 text-primary"
-                            : "text-muted hover:bg-card hover:text-admin-text"
+                            : "text-muted hover:bg-card hover:"
                         }
                       `
                     }
@@ -572,7 +572,7 @@ export default function AdminLayout() {
               </button>
 
               <div className="min-w-0">
-                <p className="truncate text-base font-bold text-admin-text sm:text-lg">
+                <p className="truncate text-base font-bold  sm:text-lg">
                   {headerName}
                 </p>
                 <p className="hidden text-xs text-muted sm:block">
@@ -587,7 +587,7 @@ export default function AdminLayout() {
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-36 bg-transparent text-sm text-admin-text outline-none placeholder:text-muted lg:w-52"
+                  className="w-36 bg-transparent text-sm  outline-none placeholder:text-muted lg:w-52"
                 />
               </div>
 

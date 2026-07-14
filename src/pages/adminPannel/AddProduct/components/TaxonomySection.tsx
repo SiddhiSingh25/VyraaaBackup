@@ -2,9 +2,10 @@ import { type FieldErrors, Controller, type Control } from "react-hook-form";
 import { TbCategoryPlus } from "react-icons/tb";
 import type { Option, QuickAddValues } from "../types";
 import { SearchableSelect } from "../../../../components/SearchableDropdown/SearchableDropdown";
+import { useEffect } from "react";
 
 type TaxonomySectionProps = {
-  control: Control<QuickAddValues>;
+  control: Control<QuickAddValues, any, any>;
   errors: FieldErrors<QuickAddValues>;
   categoryOptions: Option[];
   selectedCategory: string;
@@ -16,7 +17,9 @@ type TaxonomySectionProps = {
   subcategoryTypeLoading: boolean;
   addCategory: (category?: string) => void;
   addSubCategory: (subcategory?: string) => void;
+  addSubCategoryType: (type?: string) => void;
   getCategoryLoading: boolean;
+  hideCategoryField : any
   // typeOptions: Option[];
 };
 
@@ -30,23 +33,26 @@ const TaxonomySection = ({
   subcategoryOptions,
   subcategoryLoading,
   subcategoryType,
+  hideCategoryField,
   addCategory,
   addSubCategory,
   subcategoryTypeOptions,
   subcategoryTypeLoading,
+  addSubCategoryType,
 }: TaxonomySectionProps) => {
+
 
   return (
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
         <TbCategoryPlus className="text-primary text-xl" />
-        <h3 className="text-lg text-admin-text font-heading font-semibold">
+        <h3 className="text-lg  text-sm font-semibold tracking-tight  font-semibold">
           Category
         </h3>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
-        <Controller
+        {!hideCategoryField &&          <Controller
           name="category"
           control={control}
           render={({ field }) => (
@@ -62,7 +68,8 @@ const TaxonomySection = ({
               placeholder="Select category"
             />
           )}
-        />
+        />}
+
 
         <Controller
           name="subcategory"
@@ -96,12 +103,15 @@ const TaxonomySection = ({
               {...field}
               label="Subcategory Type"
               required
-              disabled={!selectedSubcategory}
+              disabled={!selectedSubcategory || subcategoryTypeLoading}
               error={errors.subcategoryType?.message}
               options={subcategoryTypeOptions}
+              showAddButton
+              addButtonText="Create new type"
+              onAdd={addSubCategoryType}
               placeholder={
                 !selectedSubcategory
-                  ? "Select a category first"
+                  ? "Select a subcategory first"
                   : subcategoryTypeLoading
                     ? "Loading types..."
                     : "Select type"
