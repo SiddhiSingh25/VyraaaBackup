@@ -4,18 +4,28 @@ import { apiUrls } from "../../../../apis";
 import useGetQuery from "../../../../hooks/getQuery.hook";
 
 const GENDERS = ["Men", "Women", "Unisex", "Boys", "Girls"] as const;
-type Gender = (typeof GENDERS)[number] | ""; // Added "" so it can be initially empty
+type Gender = (typeof GENDERS)[number] | "";
+
+// 1. Optional but recommended: Define a quick interface for your category
+interface Category {
+  _id: string;
+  category: string;
+  image: string;
+}
 
 export default function ProductShowcase() {
   const { getQuery } = useGetQuery();
   const [gender, setGender] = useState<Gender>("");
-  const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [pageNum, setPageNum] = useState("");
-  const [limit, setLimit] = useState("");
+
+  // 2. FIX: Tell TypeScript this is an array of Categories (or any[]) instead of never[]
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [pageNum, setPageNum] = useState<string>("");
+  const [limit, setLimit] = useState<string>("");
   const [products, setProducts] = useState<any[]>([]);
 
-  // 1. Fetch Categories on Mount
+  // Fetch Categories on Mount
   useEffect(() => {
     getQuery({
       url: apiUrls.Category.getAll,
@@ -26,10 +36,9 @@ export default function ProductShowcase() {
         console.log(res);
       },
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getQuery]);
 
-  // 2. Fetch Products whenever filters change
+  // Fetch Products whenever filters change
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -65,7 +74,7 @@ export default function ProductShowcase() {
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNum, limit, gender, selectedCategory]); // Removed getQuery to prevent infinite loops
+  }, [pageNum, limit, gender, selectedCategory]);
 
   const handleGender = (g: Gender) => {
     setGender(g);
@@ -99,7 +108,7 @@ export default function ProductShowcase() {
           {categories?.map((cat) => (
             <button
               key={cat?._id}
-              onClick={() => setSelectedCategory(cat?._id)} // Fixed: This now updates the API dependency!
+              onClick={() => setSelectedCategory(cat?._id)}
               className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0"
             >
               <div
@@ -129,7 +138,7 @@ export default function ProductShowcase() {
         {/* Products grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {products.map((p: any) => (
-            <ProductCard key={p.id} product={p} /> // Fixed: Added key here
+            <ProductCard key={p.id} product={p} />
           ))}
 
           {products.length === 0 && (
