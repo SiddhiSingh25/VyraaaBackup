@@ -57,13 +57,13 @@ const OrderSummary = ({
 }: OrderSummaryProps) => {
   return (
     <aside className="w-full rounded-lg border border-border bg-surface p-5 sm:p-6">
-      <CouponBar
+      {/* <CouponBar
         applied={couponApplied}
         onApply={onApplyCoupon}
         onRemove={onRemoveCoupon}
-      />
+      /> */}
 
-      <DonationCard onChange={onDonationChange} />
+      {/* <DonationCard onChange={onDonationChange} /> */}
 
       <div className="space-y-2.5 py-4">
         <p className="font-body text-xs font-semibold tracking-[0.15em] text-muted">

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import ProductCard from "../../Product/component/ProductCard";
 import { apiUrls } from "../../../../apis";
 import useGetQuery from "../../../../hooks/getQuery.hook";
+import { useNavigate } from "react-router-dom";
 
-const GENDERS = ["Men", "Women", "Unisex", "Boys", "Girls"] as const;
+const GENDERS = ["Men", "Women", "Unisex", "Child"] as const;
 type Gender = (typeof GENDERS)[number] | "";
 
 // 1. Optional but recommended: Define a quick interface for your category
@@ -14,6 +15,7 @@ interface Category {
 }
 
 export default function ProductShowcase() {
+  const navigate = useNavigate();
   const { getQuery } = useGetQuery();
   const [gender, setGender] = useState<Gender>("");
 
@@ -84,6 +86,53 @@ export default function ProductShowcase() {
     <section className="bg-surface/50 py-10">
       <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
 
+        {/* Sub-category pills */}
+        <div className="flex gap-4 overflow-x-auto pb-1 mb-10 justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {categories?.map((cat) => (
+            <button
+              key={cat?._id}
+              onClick={() => {
+                // Keep your local state update if needed for UI before route transition
+                // setSelectedCategory(cat?._id);
+
+                // 3. Redirect to /:category and pass data 
+                // We convert category name to lowercase/slug for a cleaner URL
+                const routeParam = cat?.category?.toLowerCase().replace(/\s+/g, '-');
+
+                navigate(`/${routeParam}`, {
+                  state: {
+                    categoryId: cat?._id,
+                    fullCategoryData: cat
+                  }
+                });
+              }}
+              className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0"
+            >
+              <div
+                className={`w-[52px] h-[52px] sm:w-[40px] sm:h-[40px] lg:w-[90px] lg:h-[90px] rounded-full flex items-center justify-center overflow-hidden border-1 transition-all duration-200 bg-card
+              ${cat?._id === selectedCategory ? "border-primary" : "border-transparent"}`}
+              >
+                <img
+                  src={cat?.image}
+                  alt={cat?.category}
+                  className="w-[95%] h-[95%] object-contain"
+                  style={{ objectPosition: "top" }}
+                />
+              </div>
+              <span
+                className={`text-[10px] font-medium tracking-wider uppercase
+              ${cat?._id === selectedCategory
+                    ? "text-admin-text border-b-[1px] pb-1 px-2 border-body "
+                    : "text-admin-text/70"
+                  }`}
+              >
+                {cat?.category}
+              </span>
+            </button>
+          ))}
+        </div>
+
+
         {/* Gender tabs */}
         <div className="flex justify-center mb-8">
           <div className="flex bg-card rounded-full p-1 gap-0.5 border border-heading/10">
@@ -101,38 +150,6 @@ export default function ProductShowcase() {
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Sub-category pills */}
-        <div className="flex gap-4 overflow-x-auto pb-1 mb-10 justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {categories?.map((cat) => (
-            <button
-              key={cat?._id}
-              onClick={() => setSelectedCategory(cat?._id)}
-              className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0"
-            >
-              <div
-                className={`w-[52px] h-[52px] sm:w-[40px] sm:h-[40px] lg:w-[90px] lg:h-[90px] rounded-full flex items-center justify-center overflow-hidden border-1 transition-all duration-200 bg-card
-                  ${cat?._id === selectedCategory ? "border-primary" : "border-transparent"}`}
-              >
-                <img
-                  src={cat?.image}
-                  alt={cat?.category}
-                  className="w-[95%] h-[95%] object-contain"
-                  style={{ objectPosition: "top" }}
-                />
-              </div>
-              <span
-                className={`text-[10px] font-medium tracking-wider uppercase
-                  ${cat?._id === selectedCategory
-                    ? "text-admin-text border-b-[1px] pb-1 px-2 border-body "
-                    : "text-admin-text/70"
-                  }`}
-              >
-                {cat?.category}
-              </span>
-            </button>
-          ))}
         </div>
 
         {/* Products grid */}

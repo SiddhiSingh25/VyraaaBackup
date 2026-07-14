@@ -12,33 +12,33 @@ import CheckoutLayout from '../pages/userPannel/Checkout/CheckoutLayout.tsx';
 export const userRoutes = [
   {
     path: "/",
-    element: <HomeScreen/>,
-  },
-   {
-    path: "/aboutus",
-    element: <AboutUs/>,
-  },
-   {
-    path: "/wishlist",
-    element: <Wishlist/>,
-  },
-   {
-    path: "/productDeatils/:id",
-    element: <ProductDetails/>,
-  },
-
-   {
-    path: "/profile",
-    element : <Profile/>
+    element: <HomeScreen />,
   },
   {
-    path: "/clothing",
-    element : <ProductFilter/>
+    path: "/aboutus",
+    element: <AboutUs />,
+  },
+  {
+    path: "/wishlist",
+    element: <Wishlist />,
+  },
+  {
+    path: "/productDeatils/:id",
+    element: <ProductDetails />,
   },
 
-   {
+  {
+    path: "/profile",
+    element: <Profile />
+  },
+  {
+    path: "/:category",
+    element: <ProductFilter />
+  },
+
+  {
     path: "/checkout",
-    element: <CheckoutLayout/>,
+    element: <CheckoutLayout />,
     children: [
       {
         path: "cart",

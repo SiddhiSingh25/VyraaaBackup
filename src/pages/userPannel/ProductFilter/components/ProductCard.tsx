@@ -8,14 +8,14 @@ import type { Product } from "../types";
 
 export interface ProductCardProps {
   product: Product;
-  wished: boolean;
-  onToggleWish: (id: string) => void;
+  // wished: boolean;
+  // onToggleWish: (id: string) => void;
 }
 
 export default function ProductCard({
   product,
-  wished,
-  onToggleWish,
+  // wished,
+  // onToggleWish,
 }: ProductCardProps) {
   const [hover, setHover] = useState(false);
   const discount = pct(product.price, product.mrp);
@@ -56,7 +56,7 @@ export default function ProductCard({
         </div>
 
         <button
-          onClick={() => onToggleWish(product.id)}
+          // onClick={() => onToggleWish(product.id)}
           aria-label="Wishlist"
           className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full flex items-center justify-center transition-colors"
           style={{ background: "rgba(253,249,243,0.9)" }}
@@ -64,8 +64,8 @@ export default function ProductCard({
           <Heart
             size={16}
             strokeWidth={1.8}
-            fill={wished ? C.rose : "none"}
-            color={wished ? C.rose : C.heading}
+            // fill={wished ? C.rose : "none"}
+            // color={wished ? C.rose : C.heading}
           />
         </button>
 
@@ -142,9 +142,9 @@ export default function ProductCard({
             {discount}% off
           </span>
         </div>
-        <span className="text-[11px]" style={{ color: C.muted }}>
+        {/* <span className="text-[11px]" style={{ color: C.muted }}>
           Delivery by {product.delivery}
-        </span>
+        </span> */}
       </div>
     </motion.div>
   );

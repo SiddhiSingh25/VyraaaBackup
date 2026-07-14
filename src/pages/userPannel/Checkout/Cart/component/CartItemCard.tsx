@@ -80,13 +80,13 @@ const CartItemCard = ({
       <div className="flex gap-4 sm:gap-5">
         {/* Select + image */}
         <div className="flex flex-shrink-0 items-start gap-2.5">
-          <input
+          {/* <input
             type="checkbox"
             checked={item.selected}
             onChange={() => onToggleSelect(item.id)}
             className="mt-1 h-4 w-4 accent-primary"
             aria-label={`Select ${item.name}`}
-          />
+          /> */}
           <img
             src={item.image}
             alt={item.name}
@@ -114,25 +114,44 @@ const CartItemCard = ({
               Size: {item.size}
             </div>
 
-            <label className="relative">
-              <span className="sr-only">Quantity</span>
-              <select
-                value={item.qty}
-                onChange={(e) => {
-                  const newQty = Number(e.target.value);
-                  updateCart(newQty)
+            <div className="flex items-center gap-2 rounded-md border border-border bg-surface p-1">
+              {/* Decrease Button */}
+              <button
+                type="button"
+                disabled={item.qty <= 1}
+                onClick={() => {
+                  const newQty = item.qty - 1;
+                  updateCart(newQty);
                   console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
                   onQtyChange(item.id, newQty);
                 }}
-                className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-heading focus:outline-none focus:ring-1 focus:ring-primary"
+                className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Decrease quantity"
               >
-                {Array.from({ length: item.maxQty }, (_, i) => i + 1).map((n) => (
-                  <option key={n} value={n}>
-                    Qty: {n}
-                  </option>
-                ))}
-              </select>
-            </label>
+                -
+              </button>
+
+              {/* Quantity Display */}
+              <span className="w-4 text-center font-body text-xs font-medium text-heading">
+                {item.qty}
+              </span>
+
+              {/* Increase Button */}
+              <button
+                type="button"
+                disabled={item.qty >= item.maxQty}
+                onClick={() => {
+                  const newQty = item.qty + 1;
+                  updateCart(newQty);
+                  console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
+                  onQtyChange(item.id, newQty);
+                }}
+                className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
           </div>
 
           {/* Price */}
