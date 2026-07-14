@@ -161,28 +161,20 @@ const MAX_IMAGES = 5;
 type MediaSectionProps = {
   images: string[];
   setImages: (images: string[]) => void;
-  onFilesSelected?: (files: File[]) => void;
-  onRemoveImage?: (index: number) => void;
   errorMessage?: string;
 };
 
-const MediaSection = ({
-  images,
-  setImages,
-  onFilesSelected,
-  onRemoveImage,
-  errorMessage,
-}: MediaSectionProps) => {
+const MediaSection = ({ images, setImages, errorMessage }: MediaSectionProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const remainingSlots = MAX_IMAGES - images.length;
 
   // --- Logic (Unchanged) ---
   const addFiles = (files: FileList | null) => {
     if (!files || remainingSlots <= 0) return;
-    const fileArray = Array.from(files).slice(0, remainingSlots);
-    const nextUrls = fileArray.map((file) => URL.createObjectURL(file));
+    const nextUrls = Array.from(files)
+      .slice(0, remainingSlots)
+      .map((file) => URL.createObjectURL(file));
     setImages([...images, ...nextUrls]);
-    onFilesSelected?.(fileArray);
   };
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -196,6 +188,12 @@ const MediaSection = ({
     addFiles(e.dataTransfer.files);
   };
   // -------------------------
+
+  const removeImage = (index: number) => {
+    const next = [...images];
+    next.splice(index, 1);
+    setImages(next);
+  };
 
   return (
     <section className="sticky top-6 rounded-2xl border border-border/80 bg-surface p-5 shadow-sm">
@@ -246,7 +244,7 @@ const MediaSection = ({
             />
             <button
               type="button"
-              onClick={() => onRemoveImage?.(0)}
+              onClick={() => removeImage(0)}
               aria-label="Remove primary image"
               className="absolute right-3 top-3 z-10 rounded-full bg-black/40 p-1.5 text-white/90 backdrop-blur-md transition-all hover:bg-error hover:text-white hover:scale-110"
             >
@@ -290,7 +288,7 @@ const MediaSection = ({
             <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
             <button
               type="button"
-              onClick={() => onRemoveImage?.(idx + 1)}
+              onClick={() => removeImage(idx + 1)}
               aria-label={`Remove image ${idx + 2}`}
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 p-1.5 text-white opacity-0 backdrop-blur-sm transition-all duration-200 hover:bg-error group-hover:opacity-100"
             >

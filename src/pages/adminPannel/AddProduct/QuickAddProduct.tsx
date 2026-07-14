@@ -404,8 +404,6 @@ const QuickAddProduct = () => {
               <MediaSection
                 images={images}
                 setImages={(imgs) => setValue("images", imgs)}
-                onFilesSelected={handleMediaFiles}
-                onRemoveImage={handleRemoveImage}
                 errorMessage={errors.images?.message as string | undefined}
               />
             </div>
