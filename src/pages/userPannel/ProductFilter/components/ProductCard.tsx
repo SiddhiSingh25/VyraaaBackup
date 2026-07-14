@@ -5,6 +5,7 @@ import { C } from "../constants";
 import { money, pct } from "../utils";
 import Badge from "./Badge";
 import type { Product } from "../types";
+import { useNavigate } from "react-router-dom";
 
 export interface ProductCardProps {
   product: Product;
@@ -19,12 +20,15 @@ export default function ProductCard({
 }: ProductCardProps) {
   const [hover, setHover] = useState(false);
   const discount = pct(product.price, product.mrp);
-
+  const navigate = useNavigate();
   return (
     <motion.div
       className="group flex flex-col"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+
+      onClick={() => navigate({ pathname: `/productDeatils/${product?.id}` })
+      }
     >
       <div
         className="relative overflow-hidden rounded-2xl"
@@ -64,8 +68,8 @@ export default function ProductCard({
           <Heart
             size={16}
             strokeWidth={1.8}
-            // fill={wished ? C.rose : "none"}
-            // color={wished ? C.rose : C.heading}
+          // fill={wished ? C.rose : "none"}
+          // color={wished ? C.rose : C.heading}
           />
         </button>
 
@@ -146,6 +150,6 @@ export default function ProductCard({
           Delivery by {product.delivery}
         </span> */}
       </div>
-    </motion.div>
+    </motion.div >
   );
 }

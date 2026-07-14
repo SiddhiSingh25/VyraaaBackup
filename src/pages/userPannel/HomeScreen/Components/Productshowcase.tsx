@@ -136,6 +136,17 @@ export default function ProductShowcase() {
         {/* Gender tabs */}
         <div className="flex justify-center mb-8">
           <div className="flex bg-card rounded-full p-1 gap-0.5 border border-heading/10">
+            <button
+              key={"ALL"}
+              onClick={() => handleGender("")}
+              className={`text-[11px] font-medium tracking-[0.18em] uppercase px-5 py-2 rounded-full transition-all duration-200 flex items-center justify-center
+                  ${"" === gender
+                  ? "bg-dark text-gray-50 shadow-sm font-bold"
+                  : "text-admin-text/90 hover:text-admin-text font-semibold"
+                }`}
+            >
+              All
+            </button>
             {GENDERS.map((g) => (
               <button
                 key={g}
