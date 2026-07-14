@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { IoColorPaletteOutline } from "react-icons/io5";
+import { useState, useEffect } from "react";
+import { IoAdd, IoColorPaletteOutline, IoRemove, IoRemoveCircleOutline } from "react-icons/io5";
 import { Button } from "../../../../components/ui/FormElements";
 import VariantDraftForm from "./VariantDraftForm";
 import VariantsTable from "./VariantsTable";
 import type { DraftVariant, Option, VariantEntry } from "../types";
+import { RxCross2 } from "react-icons/rx";
 
 const emptyDraftVariant: DraftVariant = {
   size: {},
@@ -32,6 +33,11 @@ const VariantsSection = ({
 }: VariantsSectionProps) => {
   const [showDraft, setShowDraft] = useState(false);
   const [draftVariant, setDraftVariant] = useState<DraftVariant>(emptyDraftVariant);
+
+  useEffect(() => {
+    setDraftVariant(emptyDraftVariant);
+    setShowDraft(false);
+  }, [sizeTypeSelected]);
 
   const addVariant = () => {
     // draftVariant.size should hold the 'value' from your select options
@@ -79,26 +85,26 @@ const VariantsSection = ({
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="mb-6 flex items-center gap-3 border-b border-border pb-4">
         <IoColorPaletteOutline className="text-xl text-primary" />
-        <h3 className="font-heading text-lg font-semibold text-admin-text">
-          Variants
+        <h3 className="text-sm font-semibold tracking-tight  ">
+          Inventory & Pricing
         </h3>
       </div>
 
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <div>
-          <p className="text-sm font-medium text-admin-text">Add SKU variants</p>
+          <p className="text-sm font-medium ">Add SKU variants</p>
           <p className="text-sm text-muted">
             Create one or more size-based entries for this product.
           </p>
         </div>
         <Button type="button" variant="icon" onClick={() => setShowDraft(!showDraft)}>
           <span className="material-symbols-outlined">
-            {showDraft ? "remove" : "add"}
+            {showDraft ? <RxCross2/> : <IoAdd/> }
           </span>
         </Button>
       </div>
 
-      {errorMessage && !showDraft && variants.length === 0 && (
+      {errorMessage && variants.length === 0 && (
         <p className="mb-4 text-sm text-error">{errorMessage}</p>
       )}
 
@@ -124,3 +130,4 @@ const VariantsSection = ({
 };
 
 export default VariantsSection;
+

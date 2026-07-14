@@ -20,7 +20,7 @@ export const apiUrls = {
 
   // Sub Category Type
   SubCategoryType: {
-    add: "subcategorytype/add",
+    add: "subcategory/type/add",
     update: "subcategorytype/update",
     delete: "subcategorytype/delete",
     getAll: "subcategory/type/getAll",
@@ -114,5 +114,8 @@ export const apiUrls = {
     add: "wishList/add/",
     remove: "/wishList/remove/",
     getByUserId: "/wishList/getByUserId"
+  },
+  Image: {
+    upload: "common/uploadImage",
   },
 };

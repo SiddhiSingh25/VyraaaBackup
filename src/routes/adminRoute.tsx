@@ -1,7 +1,5 @@
 import AdminLayout from "../pages/adminPannel/Layout";
 import Dashboard from "../pages/adminPannel/Dashboard";
-import AllProduct from "../pages/adminPannel/AllProduct";
-import MasterChannel from "../pages/adminPannel/MasterChannel";
 import QuickAddProduct from "../pages/adminPannel/AddProduct/QuickAddProduct";
 import Category from '../pages/adminPannel/masterData/Category/Category';
 import SubCategory from '../pages/adminPannel/masterData/SubCategory/SubCategory';
@@ -26,7 +24,7 @@ export const adminRoutes = [
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <QuickAddProduct />,
       },
       {
         path: "dashboard",
@@ -36,54 +34,51 @@ export const adminRoutes = [
         path: "/admin/quick-add",
         element: <QuickAddProduct />,
       },
+
       {
-        path: "/admin/master-channel",
-        element: <MasterChannel />,
-      },
-      {
-        path: "product/:categorySlug",
-        element: <AllProduct />,
+        path: "product/:categorySlug/:categoryId",
+        element: <QuickAddProduct />,
       },
 
       {
         path: "master-channel/category",
-        element: <Category/>,
+        element: <Category />,
       },
-        {
+      {
         path: "master-channel/subcategory",
-        element: <SubCategory/>,
+        element: <SubCategory />,
       },
       {
         path: "master-channel/subcategory-type",
-        element: <SubCategoryType/>,
+        element: <SubCategoryType />,
       },
       {
         path: "master-channel/color-family",
-        element: <ColorFamily/>,
+        element: <ColorFamily />,
       },
       {
         path: "master-channel/color",
-        element: <Color/>,
+        element: <Color />,
       },
       {
         path: "master-channel/brand",
-        element: <Brand/>,
+        element: <Brand />,
       },
       {
         path: "master-channel/size-type",
-        element: <SizeType/>,
+        element: <SizeType />,
       },
       {
         path: "master-channel/size-values",
-        element: <Size/>,
+        element: <Size />,
       },
       {
         path: "master-channel/property-type",
-        element: <Property/>,
+        element: <Property />,
       },
       {
         path: "master-channel/property-values",
-        element: <PropertyValues/>,
+        element: <PropertyValues />,
       },
     ],
   },

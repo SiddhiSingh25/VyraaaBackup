@@ -31,6 +31,7 @@ const usePostQuery = () => {
       setData(apiData);
       await onSuccess(apiData);
       console.log(apiData, "postQuery-success");
+      return apiData;
     } catch (err: any) {
       // Toast({
       //   type: "error",

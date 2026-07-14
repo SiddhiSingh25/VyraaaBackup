@@ -64,7 +64,7 @@ export interface AttributeEntry {
   property: string;
   value: string;
   propertyLabel: string;
-  valueLabel : string;
+  valueLabel: string;
 }
 
 export interface VariantEntry {
@@ -97,6 +97,13 @@ export type QuickAddValues = {
   name: string;
   description: string;
   brand: string;
+  gender: "Men" | "Women" | "Unisex" | "Boys" | "Girls" | "";
+  ageRange?:
+    | "0-2 Years"
+    | "3-5 Years"
+    | "6-8 Years"
+    | "9-12 Years"
+    | "13-18 Years" | "";
   attributes: AttributeEntry[];
   colorFamily: string;
   color: string;

@@ -21,6 +21,7 @@ type AttributesSectionProps = {
   // Pass the subcategory ID down from the parent instead of the options
   selectedSubcategoryId: string | number;
   propertyTypeOptions: Option[];
+  addPropertyType: (propertyName: string, onSuccess?: (newProperty: any) => void) => void;
 };
 
 const AttributesSection = ({
@@ -28,6 +29,7 @@ const AttributesSection = ({
   setAttributes,
   selectedSubcategoryId,
   propertyTypeOptions,
+  addPropertyType,
 }: AttributesSectionProps) => {
   const {
     control,
@@ -38,8 +40,8 @@ const AttributesSection = ({
     defaultValues: emptyDraft,
   });
 
-  const draftAttr = watch<AttributeDraftFormValues>();
-  const { propertyValueOptions } = usePropertyValueData(draftAttr.property);
+  const draftAttr = watch();
+  const { propertyValueOptions, addPropertyValue } = usePropertyValueData(draftAttr.property);
 
   useEffect(() => {
     reset(emptyDraft);
@@ -52,15 +54,15 @@ const AttributesSection = ({
     if (!draftAttr.property || !draftAttr.value) return;
 
     const property = propertyTypeOptions?.find(
-      (item: Option) => item.value === draftAttr.property
+      (item: Option) : boolean => item.value === draftAttr.property
     );
     const value = propertyValueOptions?.find(
-      (item: Option) => item.value === draftAttr.value
+      (item: Option) : boolean => item.value === draftAttr.value
     );
 
     // 1. Check if the PROPERTY already exists in the user's ATTRIBUTES list
     const existingIndex = attributes.findIndex(
-      (attr: AttributeEntry) => attr.property === draftAttr.property
+      (attr: AttributeEntry) : boolean => attr.property === draftAttr.property
     );
 
     if (existingIndex !== -1) {
@@ -99,7 +101,7 @@ const AttributesSection = ({
       <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
         <div className="flex items-center gap-3">
           <FaArrowsTurnRight className="text-primary text-xl" />
-          <h3 className="text-lg text-admin-text font-heading font-semibold">
+          <h3 className="text-lg  text-sm font-semibold tracking-tight  font-semibold">
             Product Specifications
           </h3>
         </div>
@@ -114,8 +116,17 @@ const AttributesSection = ({
               <SearchableSelect
                 {...field}
                 label="Property"
+                disabled={!selectedSubcategoryId}
                 options={propertyTypeOptions}
-                placeholder="Select property"
+                placeholder={!selectedSubcategoryId ? "Select a subcategory first" : "Select property"}
+                showAddButton
+                addButtonText="Create new property"
+                onAdd={(query: string) => {
+                  addPropertyType(query, (newProperty) => {
+                    setValue("property", newProperty._id);
+                    setValue("value", "");
+                  });
+                }}
                 onChange={(event) => {
                   field.onChange(event);
                   setValue("value", "");
@@ -135,7 +146,14 @@ const AttributesSection = ({
                 label="Value"
                 disabled={!draftAttr.property}
                 options={propertyValueOptions}
-                placeholder="Select value"
+                showAddButton
+                addButtonText="Create new value"
+                onAdd={(query: string) => {
+                  addPropertyValue(query, draftAttr.property, (newValue) => {
+                    setValue("value", newValue._id);
+                  });
+                }}
+                placeholder={!draftAttr.property ? "Select a property first" : "Select value"}
               />
             )}
           />

@@ -26,7 +26,7 @@ const VariantDraftForm = ({
   onAdd,
   onCancel,
 }: VariantDraftFormProps) => {
-  const { control, watch, reset } = useForm<VariantDraftFormValues>({
+  const { control, watch, reset, setValue } = useForm<VariantDraftFormValues>({
     defaultValues: { size: draftVariant.size.value || "" },
   });
 
@@ -41,12 +41,26 @@ const VariantDraftForm = ({
     selectedSize !== "" &&
     Number(draftVariant.price) > 0;
 
-  const { sizeValueOptions } = useSizeValueData(sizeTypeSelected);
+  const { sizeValueOptions, addSizeValue } = useSizeValueData(sizeTypeSelected);
+
+  const handleAddSize = (query: string) => {
+    addSizeValue(query, (newSize) => {
+      if (!newSize) return;
+      setDraftVariant({
+        ...draftVariant,
+        size: {
+          value: newSize._id,
+          label: newSize.size,
+        },
+      });
+      setValue("size", newSize._id);
+    });
+  };
 
   return (
     <div className="mb-6 rounded-xl border border-primary-light bg-card/80 p-5 shadow-sm transition-all">
-      {/* Top Row: 2-Column Grid for main attributes */}
-      <div className="grid gap-5 sm:grid-cols-2">
+      {/* Top Row: 3-Column Grid for main attributes */}
+      <div className="grid gap-5 sm:grid-cols-3">
         {/* Size Selection */}
         <div className="w-full">
           <Controller
@@ -55,10 +69,13 @@ const VariantDraftForm = ({
             render={({ field }) => (
               <SearchableSelect
                 {...field}
-                label="Size"
+                label="SIZE"
                 disabled={!sizeTypeSelected}
                 options={sizeValueOptions}
-                placeholder="Select Size"
+                placeholder={!sizeTypeSelected ? "Select a size type first" : "Select size"}
+                showAddButton
+                addButtonText="Create new size"
+                onAdd={handleAddSize}
                 onChange={(event) => {
                   field.onChange(event);
                   const selected = sizeValueOptions.find(
@@ -79,14 +96,14 @@ const VariantDraftForm = ({
             )}
           />
           {!sizeTypeSelected ? (
-  <p className="mt-1 text-[10px] text-red-500">
-    Please select a size type first
-  </p>
-) : !draftVariant.size.value ? (
-  <p className="mt-1 text-[10px] text-red-500">
-    Please select a size
-  </p>
-) : null}
+            <p className="mt-1 text-[10px] text-red-500">
+              Please select a size type first
+            </p>
+          ) : !draftVariant.size.value ? (
+            <p className="mt-1 text-[10px] text-red-500">
+              Please select a size
+            </p>
+          ) : null}
         </div>
 
         {/* Price Input */}
@@ -95,13 +112,13 @@ const VariantDraftForm = ({
             htmlFor="variant-price"
             className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-muted"
           >
-            Price (₹) <span className="text-red-500">*</span>
+            PRICE
           </label>
           <input
             id="variant-price"
             type="number"
             min={0}
-            value={draftVariant.price }
+            value={draftVariant.price}
             onChange={(e) =>
               setDraftVariant({ ...draftVariant, price: e.target.value })
             }
@@ -109,79 +126,80 @@ const VariantDraftForm = ({
             className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-body outline-none transition-colors focus:border-primary"
           />
         </div>
+
+        {/* Discount Input */}
+        <div className="w-full">
+          <label
+            htmlFor="variant-discount"
+            className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-muted"
+          >
+            DISCOUNT
+          </label>
+          <input
+            id="variant-discount"
+            type="number"
+            min={0}
+            value={draftVariant.discountPrice}
+            onChange={(e) =>
+              setDraftVariant({
+                ...draftVariant,
+                discountPrice: e.target.value,
+              })
+            }
+            placeholder="Optional"
+            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-body outline-none transition-colors focus:border-primary"
+          />
+        </div>
       </div>
 
-      {/* Bottom Row: Discounts, Toggles, and Actions */}
-      <div className="mt-6 flex flex-col gap-4 rounded-lg border border-border/70 bg-surface/50 p-4 md:flex-row md:items-end md:justify-between">
-        {/* Left Side: Discount & Toggles */}
-        <div className="flex flex-1 flex-wrap items-center gap-6">
-          <div className="min-w-[140px] flex-1 md:max-w-[200px]">
-            <label
-              htmlFor="variant-discount"
-              className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-muted"
-            >
-              Discount (₹)
-            </label>
+      <hr className="my-6 border-border/70" />
+
+      {/* Bottom Row: Toggles and Actions */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        {/* Left Side: Checkboxes */}
+        <div className="flex gap-5">
+          <label
+            htmlFor="variant-available"
+            className="flex cursor-pointer select-none items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
+          >
             <input
-              id="variant-discount"
-              type="number"
-              min={0}
-              value={draftVariant.discountPrice}
+              id="variant-available"
+              type="checkbox"
+              checked={draftVariant.isAvailable}
               onChange={(e) =>
                 setDraftVariant({
                   ...draftVariant,
-                  discountPrice: e.target.value,
+                  isAvailable: e.target.checked,
                 })
               }
-              placeholder="Optional"
-              className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-body outline-none transition-colors focus:border-primary"
+              className="h-4 w-4 rounded accent-primary text-primary focus:ring-primary focus:ring-offset-1"
             />
-          </div>
+            Available
+          </label>
 
-          {/* Checkboxes grouped together */}
-          <div className="flex gap-5 pb-1 md:pb-2">
-            <label
-              htmlFor="variant-available"
-              className="flex cursor-pointer select-none items-center gap-2 text-sm font-medium text-admin-text hover:text-primary transition-colors"
-            >
-              <input
-                id="variant-available"
-                type="checkbox"
-                checked={draftVariant.isAvailable}
-                onChange={(e) =>
-                  setDraftVariant({
-                    ...draftVariant,
-                    isAvailable: e.target.checked,
-                  })
-                }
-                className="h-4 w-4 rounded accent-primary text-primary focus:ring-primary focus:ring-offset-1"
-              />
-              Available
-            </label>
-
-            <label
-              htmlFor="variant-few-left"
-              className="flex cursor-pointer select-none items-center gap-2 text-sm font-medium text-admin-text hover:text-primary transition-colors"
-            >
-              <input
-                id="variant-few-left"
-                type="checkbox"
-                checked={draftVariant.isFewLeft}
-                onChange={(e) =>
-                  setDraftVariant({
-                    ...draftVariant,
-                    isFewLeft: e.target.checked,
-                  })
-                }
-                className="h-4 w-4 rounded accent-primary text-primary focus:ring-primary focus:ring-offset-1"
-              />
-              Few Left
-            </label>
-          </div>
+          <label
+            htmlFor="variant-few-left"
+            className="flex cursor-pointer select-none items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
+          >
+            <input
+              id="variant-few-left"
+              type="checkbox"
+              checked={draftVariant.isFewLeft}
+              onChange={(e) =>
+                setDraftVariant({
+                  ...draftVariant,
+                  isFewLeft: e.target.checked,
+                })
+              }
+              className="h-4 w-4 rounded accent-primary text-primary focus:ring-primary focus:ring-offset-1"
+            />
+            Few Left
+          </label>
         </div>
 
         {/* Right Side: Actions */}
-        <div className="flex shrink-0 gap-3 pt-2 md:pt-0">
+        <div className="flex shrink-0 gap-3">
+          {/* I kept the Cancel button as it's typically necessary for UX, even if omitted in the specific screenshot frame */}
           <Button
             type="button"
             variant="secondary"
