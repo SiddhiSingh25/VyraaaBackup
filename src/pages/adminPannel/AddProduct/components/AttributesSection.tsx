@@ -40,7 +40,7 @@ const AttributesSection = ({
     defaultValues: emptyDraft,
   });
 
-  const draftAttr = watch<AttributeDraftFormValues>();
+  const draftAttr = watch();
   const { propertyValueOptions, addPropertyValue } = usePropertyValueData(draftAttr.property);
 
   useEffect(() => {
@@ -116,13 +116,14 @@ const AttributesSection = ({
               <SearchableSelect
                 {...field}
                 label="Property"
+                disabled={!selectedSubcategoryId}
                 options={propertyTypeOptions}
-                placeholder="Select property"
+                placeholder={!selectedSubcategoryId ? "Select a subcategory first" : "Select property"}
                 showAddButton
                 addButtonText="Create new property"
                 onAdd={(query: string) => {
                   addPropertyType(query, (newProperty) => {
-                    field.onChange(newProperty._id);
+                    setValue("property", newProperty._id);
                     setValue("value", "");
                   });
                 }}
@@ -149,10 +150,10 @@ const AttributesSection = ({
                 addButtonText="Create new value"
                 onAdd={(query: string) => {
                   addPropertyValue(query, draftAttr.property, (newValue) => {
-                    field.onChange(newValue._id);
+                    setValue("value", newValue._id);
                   });
                 }}
-                placeholder="Select value"
+                placeholder={!draftAttr.property ? "Select a property first" : "Select value"}
               />
             )}
           />

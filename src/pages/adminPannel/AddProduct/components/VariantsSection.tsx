@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoAdd, IoColorPaletteOutline, IoRemove, IoRemoveCircleOutline } from "react-icons/io5";
 import { Button } from "../../../../components/ui/FormElements";
 import VariantDraftForm from "./VariantDraftForm";
@@ -33,6 +33,11 @@ const VariantsSection = ({
 }: VariantsSectionProps) => {
   const [showDraft, setShowDraft] = useState(false);
   const [draftVariant, setDraftVariant] = useState<DraftVariant>(emptyDraftVariant);
+
+  useEffect(() => {
+    setDraftVariant(emptyDraftVariant);
+    setShowDraft(false);
+  }, [sizeTypeSelected]);
 
   const addVariant = () => {
     // draftVariant.size should hold the 'value' from your select options
@@ -99,7 +104,7 @@ const VariantsSection = ({
         </Button>
       </div>
 
-      {errorMessage && !showDraft && variants.length === 0 && (
+      {errorMessage && variants.length === 0 && (
         <p className="mb-4 text-sm text-error">{errorMessage}</p>
       )}
 

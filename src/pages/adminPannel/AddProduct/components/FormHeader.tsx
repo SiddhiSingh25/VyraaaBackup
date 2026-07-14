@@ -30,7 +30,7 @@ const FormHeader = ({ completedSections, totalSections }: FormHeaderProps) => {
           const active = index === completedSections;
 
           return (
-            <div key={step} className="relative flex flex-1 items-center">
+            <div key={step} className="relative flex flex-1 items-center sticky top-0 z-50">
               <div className="flex w-full flex-col items-center">
                 <div
                   className={[

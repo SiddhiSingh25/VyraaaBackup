@@ -161,20 +161,28 @@ const MAX_IMAGES = 5;
 type MediaSectionProps = {
   images: string[];
   setImages: (images: string[]) => void;
+  onFilesSelected?: (files: File[]) => void;
+  onRemoveImage?: (index: number) => void;
   errorMessage?: string;
 };
 
-const MediaSection = ({ images, setImages, errorMessage }: MediaSectionProps) => {
+const MediaSection = ({
+  images,
+  setImages,
+  onFilesSelected,
+  onRemoveImage,
+  errorMessage,
+}: MediaSectionProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const remainingSlots = MAX_IMAGES - images.length;
 
   // --- Logic (Unchanged) ---
   const addFiles = (files: FileList | null) => {
     if (!files || remainingSlots <= 0) return;
-    const nextUrls = Array.from(files)
-      .slice(0, remainingSlots)
-      .map((file) => URL.createObjectURL(file));
+    const fileArray = Array.from(files).slice(0, remainingSlots);
+    const nextUrls = fileArray.map((file) => URL.createObjectURL(file));
     setImages([...images, ...nextUrls]);
+    onFilesSelected?.(fileArray);
   };
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -193,6 +201,7 @@ const MediaSection = ({ images, setImages, errorMessage }: MediaSectionProps) =>
     const next = [...images];
     next.splice(index, 1);
     setImages(next);
+    onRemoveImage?.(index);
   };
 
   return (

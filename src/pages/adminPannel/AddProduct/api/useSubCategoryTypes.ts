@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiUrls } from "../../../../apis";
 import type { Option } from "../types";
 import usePostQuery from "../../../../hooks/postQuery.hook";

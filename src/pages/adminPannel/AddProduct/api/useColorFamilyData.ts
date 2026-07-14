@@ -42,13 +42,9 @@ const useColorFamilyData = () => {
       postData: { colorFamily: colorFamilyName.trim() },
       onSuccess: (res: any) => {
         const newFamily = res.data;
-        if (newFamily) {
-          setColorFamily((prev) =>
-            Array.isArray(newFamily) ? newFamily : [...prev, newFamily],
-          );
-        } else {
-          getColorFamily();
-        }
+        setColorFamily((prev) =>
+          Array.isArray(newFamily) ? newFamily : [...prev, newFamily],
+        );
         onSuccess?.(newFamily);
       },
       onFail: (err: any) => {

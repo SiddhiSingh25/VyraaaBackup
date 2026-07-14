@@ -11,8 +11,8 @@ import usePostQuery from "../../../../hooks/postQuery.hook";
 const useCategoryData = () => {
   const [category, setCategory] = useState<CategoryApiItem[]>([]);
 
-  const { getQuery, loading : getCategoryLoading } = useGetQuery();
-  const { postQuery, loading : addCategoryLoading } = usePostQuery();
+  const { getQuery, loading: getCategoryLoading } = useGetQuery();
+  const { postQuery, loading: addCategoryLoading } = usePostQuery();
 
   const getCategory = () => {
     getQuery({
@@ -51,7 +51,6 @@ const useCategoryData = () => {
   useEffect(() => {
     getCategory();
   }, []);
-console.log(category , "88888888888888888888888888888888");
 
   const categoryOptions: Option[] = category.map((c) => ({
     label: c.category,

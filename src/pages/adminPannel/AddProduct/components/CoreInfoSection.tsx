@@ -16,6 +16,8 @@ type CoreInfoSectionProps = {
   addColorFamily: (name?: string) => void;
   addSizeType: (name?: string) => void;
   addBrand: (name?: string) => void;
+  addColor?: (name?: string) => void;
+  selectedCategory: string;
 };
 
 const genderOptions = [
@@ -46,6 +48,8 @@ const CoreInfoSection = ({
   addColorFamily,
   addSizeType,
   addBrand,
+  addColor,
+  selectedCategory,
 }: CoreInfoSectionProps) => {
   return (
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
@@ -92,6 +96,9 @@ const CoreInfoSection = ({
                 disabled={!selectedColorFamily}
                 error={errors.color?.message}
                 options={colorOptions}
+                showAddButton
+                addButtonText="Create new color"
+                onAdd={addColor}
                 placeholder={
                   !selectedColorFamily
                     ? "Select a color family first"
@@ -125,11 +132,15 @@ const CoreInfoSection = ({
                 {...field}
                 label="Brand"
                 required
+                disabled={!selectedCategory}
                 showAddButton
                 addButtonText="Create new brand"
                 onAdd={addBrand}
                 error={errors.brand?.message}
                 options={brandOptions}
+                placeholder={
+                  !selectedCategory ? "Select a category first" : "Select brand"
+                }
               />
             )}
           />

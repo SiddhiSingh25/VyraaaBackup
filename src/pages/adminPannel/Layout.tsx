@@ -136,11 +136,11 @@ export default function AdminLayout() {
 
   const navItems = useMemo(
     () => [
-      {
-        icon: LayoutDashboard,
-        label: "Dashboard",
-        path: "/admin/dashboard",
-      },
+      // {
+      //   icon: LayoutDashboard,
+      //   label: "Dashboard",
+      //   path: "/admin/dashboard",
+      // },
       {
         icon: FaNetworkWired,
         label: "Master Channel",
@@ -153,11 +153,11 @@ export default function AdminLayout() {
         path: "/admin/product",
         items: productNavItems,
       },
-      {
-        icon: FaTags,
-        label: "Coupons",
-        path: "/admin/coupons",
-      },
+      // {
+      //   icon: FaTags,
+      //   label: "Coupons",
+      //   path: "/admin/coupons",
+      // },
       // {
       //   icon: FaLayerGroup,
       //   label: "Global Attributes",
@@ -360,10 +360,9 @@ export default function AdminLayout() {
                           group flex w-full items-center rounded-2xl px-3 py-2.5
                           text-sm transition-all duration-200
                           ${isAsideExpanded ? "lg:justify-between" : "lg:justify-center"}
-                          ${
-                            isParentActive
-                              ? "bg-primary/10 text-primary"
-                              : "text-muted hover:bg-card hover:"
+                          ${isParentActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted hover:bg-card hover:"
                           }
                         `}
                       >
@@ -377,10 +376,9 @@ export default function AdminLayout() {
                             className={`
                               flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
                               transition-all duration-200
-                              ${
-                                isParentActive
-                                  ? "bg-primary text-white shadow-md shadow-primary/20"
-                                  : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+                              ${isParentActive
+                                ? "bg-primary text-white shadow-md shadow-primary/20"
+                                : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                               }
                             `}
                           >
@@ -437,20 +435,18 @@ export default function AdminLayout() {
                                       className={`
                                         group relative flex w-full items-center gap-2 rounded-xl
                                         px-3 py-2 text-left text-xs transition-all duration-200
-                                        ${
-                                          isSubActive
-                                            ? "bg-primary text-white shadow-sm shadow-primary/20"
-                                            : "text-muted hover:bg-card hover:"
+                                        ${isSubActive
+                                          ? "bg-primary text-white shadow-sm shadow-primary/20"
+                                          : "text-muted hover:bg-card hover:"
                                         }
                                       `}
                                     >
                                       <span
                                         className={`
                                           absolute -left-[17px] h-2.5 w-2.5 rounded-full border-2
-                                          ${
-                                            isSubActive
-                                              ? "border-primary bg-white"
-                                              : "border-primary/40 bg-background"
+                                          ${isSubActive
+                                            ? "border-primary bg-white"
+                                            : "border-primary/40 bg-background"
                                           }
                                         `}
                                       />
@@ -489,11 +485,10 @@ export default function AdminLayout() {
                         group flex items-center rounded-2xl px-3 py-2.5 text-sm
                         transition-all duration-200
                         ${isAsideExpanded ? "lg:gap-3" : "lg:justify-center"}
-                        ${
-                          isActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted hover:bg-card hover:"
-                        }
+                        ${isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted hover:bg-card hover:"
+                      }
                       `
                     }
                   >
@@ -503,10 +498,9 @@ export default function AdminLayout() {
                           className={`
                             flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
                             transition-all duration-200
-                            ${
-                              isActive
-                                ? "bg-primary text-white shadow-md shadow-primary/20"
-                                : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+                            ${isActive
+                              ? "bg-primary text-white shadow-md shadow-primary/20"
+                              : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                             }
                           `}
                         >

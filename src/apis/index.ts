@@ -115,4 +115,7 @@ export const apiUrls = {
     remove: "/wishList/remove/",
     getByUserId: "/wishList/getByUserId"
   },
+  Image: {
+    upload: "common/uploadImage",
+  },
 };

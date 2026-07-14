@@ -72,7 +72,7 @@ const VariantDraftForm = ({
                 label="SIZE"
                 disabled={!sizeTypeSelected}
                 options={sizeValueOptions}
-                placeholder="Select Size"
+                placeholder={!sizeTypeSelected ? "Select a size type first" : "Select size"}
                 showAddButton
                 addButtonText="Create new size"
                 onAdd={handleAddSize}

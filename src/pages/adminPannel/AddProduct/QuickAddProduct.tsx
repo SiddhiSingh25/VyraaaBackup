@@ -65,7 +65,7 @@ const QuickAddProduct = () => {
     formState: { errors },
     reset,
   } = useForm<QuickAddValues>({
-    resolver: yupResolver(quickAddSchema),
+    resolver: yupResolver(quickAddSchema) as any,
     defaultValues: getInitialValues(),
     context: { hasCategoryFromParams },
   });
@@ -120,6 +120,18 @@ const QuickAddProduct = () => {
     });
   };
 
+  const handleAddColor = (colorName?: string) => {
+    if (!selectedColorFamily || !colorName?.trim()) return;
+    const hexCode = prompt(
+      `Enter HEX Code (e.g., #000000 or red) for color "${colorName}":`,
+      "#000000",
+    );
+    if (!hexCode) return;
+    addColor(colorName.trim(), selectedColorFamily, hexCode.trim(), (newColor) => {
+      setValue("color", newColor._id);
+    });
+  };
+
   const handleAddSizeType = (sizeTypeName?: string) => {
     if (!sizeTypeName?.trim()) return;
     addSizeType(sizeTypeName.trim(), (newType) => {
@@ -133,7 +145,6 @@ const QuickAddProduct = () => {
       setValue("brand", newBrand._id);
     });
   };
-
   const handleAddSubCategoryType = (subcategoryTypeName?: string) => {
     if (!selectedSubcategoryId || !subcategoryTypeName?.trim()) return;
     addSubCategoryType(subcategoryTypeName.trim(), (newSubCategoryType) => {
@@ -152,7 +163,7 @@ const QuickAddProduct = () => {
     addSubCategoryType,
   } = useSubCategoryTypeData(selectedSubcategoryId);
   const { colorFamilyOptions, addColorFamily } = useColorFamilyData();
-  const { colorOptions } = useColorData(selectedColorFamily);
+  const { colorOptions, addColor } = useColorData(selectedColorFamily);
   const { sizeTypeOptions, addSizeType } = useSizeTypeData();
   const { sizeValueOptions } = useSizeValueData(selectedSizeType);
   const { propertyTypeOptions, addPropertyType } =
@@ -175,6 +186,10 @@ const QuickAddProduct = () => {
     setValue("color", "");
   }, [selectedColorFamily, setValue]);
 
+  useEffect(() => {
+    setValue("variants", []);
+  }, [selectedSizeType, setValue]);
+
   // If the param-based categoryId changes (e.g. navigating between
   // category-scoped quick-add routes), keep the form field in sync.
   useEffect(() => {
@@ -190,6 +205,7 @@ const QuickAddProduct = () => {
 
 
 
+
   const handleMediaFiles = (files: File[]) => {
     setImageFiles((prev) => [...prev, ...files]);
   };
@@ -197,10 +213,7 @@ const QuickAddProduct = () => {
   const { postQuery } = usePostQuery();
 
   const handleRemoveImage = (index: number) => {
-    setValue(
-      "images",
-      images.filter((_img, idx) => idx !== index),
-    );
+    setValue("images", images.filter((_img, idx) => idx !== index));
     setImageFiles((prev) => prev.filter((_file, idx) => idx !== index));
   };
 
@@ -214,6 +227,9 @@ const QuickAddProduct = () => {
       const uploadResponse = await postQuery({
         url: apiUrls.Image.upload,
         postData: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (!uploadResponse?.data) {
@@ -270,15 +286,22 @@ const QuickAddProduct = () => {
       subCategory: data.subcategory,
       subcategoryType: data.subcategoryType || null,
       sizeType: data.sizeType,
+      gender: data.gender === "Boys" || data.gender === "Girls" ? "Child" : data.gender,
+      ageRange: data.ageRange || null,
 
-      price: data.variants.map((variant) => ({
-        size: variant.size.value,
-        amount: variant.price,
-        isAvailable: variant.isAvailable,
-        isFewLeft: variant.isFewLeft,
-        markupPrice: variant.price || 0,
-        discount: variant.discountPrice || 0,
-      })),
+      price: data.variants.map((variant) => {
+        const amount = variant.price || 0;
+        const discount = variant.discountPrice || 0;
+        const markupPrice = amount + discount;
+        return {
+          size: variant.size.value,
+          amount,
+          isAvailable: variant.isAvailable,
+          isFewLeft: variant.isFewLeft,
+          markupPrice,
+          discount,
+        };
+      }),
 
       attributes: data.attributes
         ? data.attributes.map((item) => ({
@@ -306,6 +329,10 @@ const QuickAddProduct = () => {
         url: apiUrls.Product.add,
         postData: payloadWithImages,
       });
+
+      if (!productResponse) {
+        throw new Error("Could not add product");
+      }
 
       toast(
         "success",
@@ -380,11 +407,13 @@ const QuickAddProduct = () => {
                 addColorFamily={handleAddColorFamily}
                 addSizeType={handleAddSizeType}
                 addBrand={handleAddBrand}
+                addColor={handleAddColor}
+                selectedCategory={effectiveCategoryId}
               />
 
               <VariantsSection
                 variants={variants}
-                setVariants={(v) => setValue("variants", v as any)}
+                setVariants={(v) => setValue("variants", v as any, { shouldValidate: true, shouldDirty: true })}
                 sizeOptions={sizeTypeOptions}
                 sizeTypeSelected={selectedSizeType}
                 errorMessage={errors.variants?.message as string | undefined}
@@ -404,6 +433,8 @@ const QuickAddProduct = () => {
               <MediaSection
                 images={images}
                 setImages={(imgs) => setValue("images", imgs)}
+                onFilesSelected={handleMediaFiles}
+                onRemoveImage={handleRemoveImage}
                 errorMessage={errors.images?.message as string | undefined}
               />
             </div>
