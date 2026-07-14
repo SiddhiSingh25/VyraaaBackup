@@ -8,6 +8,7 @@ import { apiUrls } from "../../../../apis";
 const ProductCard = ({ product }: any) => {
   const { getQuery } = useGetQuery()
   const [isWishlisted, setIsWishlisted] = useState(false);
+
   const handleWishlist = () => {
     // console.log("Hel;lo");
     // setIsWishlisted(true);
@@ -21,6 +22,7 @@ const ProductCard = ({ product }: any) => {
       },
     });
   };
+  
   return (
     <Link to="/productDeatils/6a50c39a729a40d15f95a608">
       <div className="group transition-all duration-500 ease-out hover:-translate-y-1 bg-gray-50 shadow rounded-xl">

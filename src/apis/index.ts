@@ -98,6 +98,9 @@ export const apiUrls = {
     delete: "product/delete",
     getAll: "product/getAll",
     getById: "product/", // Usage: `${apiUrls.Product.getById}${id}`
+
+
+    home: "/product/home"
   },
 
   Cart: {
@@ -108,8 +111,8 @@ export const apiUrls = {
   },
 
   WishList: {
-    add : "wishList/add/",
+    add: "wishList/add/",
     remove: "/wishList/remove/",
     getByUserId: "/wishList/getByUserId"
-  }
+  },
 };
