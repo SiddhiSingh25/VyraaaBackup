@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Footer from "../../../components/Footer/Footer";
 import Navbar from "../../../components/Header/Navbar";
 import SuggestedProduct from "../Product/component/SuggestedProduct";
+import { useLocation, useParams } from "react-router-dom";
 
 import { C, FILTERS, PRODUCTS } from "./constants";
 import { pct } from "./utils";
@@ -16,6 +17,8 @@ import Pagination from "./components/Pagination";
 import SortSheet from "./components/SortSheet";
 import FilterDrawer from "./components/FilterDrawer";
 import MobileBottomBar from "./components/MobileBottomBar";
+import useGetQuery from "../../../hooks/getQuery.hook";
+import { apiUrls } from "../../../apis";
 
 /* ============================================================================
    VYRAAA — Product Listing Page
@@ -23,6 +26,7 @@ import MobileBottomBar from "./components/MobileBottomBar";
 ============================================================================ */
 
 export default function ProductFilter() {
+  const { getQuery } = useGetQuery();
   const [filterState, setFilterState] = useState<FilterState>({});
   const [sort, setSort] = useState("recommended");
   const [activeChip, setActiveChip] = useState<string | null>(null);
@@ -31,6 +35,70 @@ export default function ProductFilter() {
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [gender, setGender] = useState();
+  const [productData, setProductData] = useState([])
+
+  const { category } = useParams();
+  const location = useLocation();
+  const categoryId = location.state?.categoryId;
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    const params = new URLSearchParams();
+
+    if (page) params.append("page", String(page));
+    params.append("limit", "16");
+    if (gender) params.append("gender", gender);
+    if (categoryId) params.append("category", categoryId);
+
+    const queryString = params.toString();
+    const finalUrl = queryString
+      ? `${apiUrls.Product.home}?${queryString}`
+      : apiUrls.Product.home;
+
+    getQuery({
+      url: finalUrl,
+      onSuccess: (res: any) => {
+        if (res.success && Array.isArray(res.data)) {
+
+          const formattedProducts = res.data.map((item: any) => {
+            // 1. Safely extract the first available price object
+            const basePrice = item.price && item.price.length > 0 ? item.price[0] : null;
+
+            // 2. Generate badges dynamically based on API flags
+            const badges: string[] = [];
+            if (basePrice?.isFewLeft) {
+              badges.push("Only Few Left");
+            }
+            if (basePrice?.amount > 2000) { // Example condition for "Premium"
+              badges.push("Premium");
+            }
+
+            // 3. Return strictly typed object for ProductCard
+            return {
+              id: item._id,
+              name: item.title,
+              img: item.image,
+              img2: item.image, // Fallback to same image since API doesn't provide img2
+              brand: item.brand?.brand || "Vyraa", // Safe check, fallback if missing
+              price: basePrice ? basePrice.amount : 0, // Must be a number for money()
+              mrp: basePrice ? basePrice.markupPrice : 0, // Must be a number for pct()
+              rating: 4.5, // Fallback: Not in API
+              reviews: 120, // Fallback: Not in API
+              badges: badges,
+            };
+          });
+          setProductData(formattedProducts)
+          // console.log("Formatted for Card:", formattedProducts);
+          // setProducts(formattedProducts);
+        }
+      },
+      onFail: (res: any) => {
+        console.log(res);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, gender, location]);
 
   const handleFilterChange = useCallback((id: string, value: FilterValue) => {
     setLoading(true);
@@ -177,15 +245,15 @@ export default function ProductFilter() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-5">
             {loading ? (
               Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-            ) : filtered.length ? (
-              filtered.map((p, i) => (
+            ) : productData.length ? (
+              productData.map((p: any) => (
                 <ProductCard
-                  key={`${p.id}-${i}`}
+                  key={p?.id}
                   product={p}
-                  wished={!!wished[p.id]}
-                  onToggleWish={(id) =>
-                    setWished((w) => ({ ...w, [id]: !w[id] }))
-                  }
+                // wished={!!wished[p.id]}
+                // onToggleWish={(id) =>
+                //   setWished((w) => ({ ...w, [id]: !w[id] }))
+                // }
                 />
               ))
             ) : (

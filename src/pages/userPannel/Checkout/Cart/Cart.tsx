@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import type { CartItem } from "./component/cart";
 // import { sampleCartItems } from "./component/sampleCart"; // You can remove this now
 import { computePriceDetails } from "./component/pricing";
-import OffersStrip from "./component/OffersStrip";
+// import OffersStrip from "./component/OffersStrip";
 import CartListHeader from "./component/CartListHeader";
 import CartItemCard from "./component/CartItemCard";
 import OrderSummary from "./component/OrderSummary";
@@ -11,11 +11,13 @@ import TrustBadges from "./component/TrustBadges";
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../apis";
+import { useNavigate } from "react-router-dom";
 
 const COUPON_DISCOUNT = 60;
 
 const Cart = () => {
   // 1. Initialize with an empty array instead of sample data
+  const navigate = useNavigate();
   const [items, setItems] = useState<CartItem[]>([]);
   const [couponApplied, setCouponApplied] = useState(false);
   const [donation, setDonation] = useState(0);
@@ -114,13 +116,13 @@ const Cart = () => {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* Left: bag items */}
             <section className="space-y-4">
-              <OffersStrip />
+              {/* <OffersStrip /> */}
 
               <div className="rounded-lg border border-border bg-surface p-4 sm:p-5">
-                <CartListHeader
+                {/* <CartListHeader
                   selectedCount={selectedCount}
                   totalCount={items.length}
-                />
+                /> */}
 
                 <div className="mt-4 space-y-3">
                   <AnimatePresence mode="popLayout">
@@ -143,6 +145,7 @@ const Cart = () => {
               <motion.button
                 type="button"
                 whileHover={{ x: 2 }}
+                onClick={() => navigate("/wishlist")} // 3. Add the navigation trigger
                 className="flex w-full items-center justify-between rounded-lg border border-border bg-surface px-5 py-4 font-body text-sm font-medium text-admin-text transition-colors hover:border-primary-light"
               >
                 Add More From Wishlist
@@ -167,9 +170,9 @@ const Cart = () => {
                   console.log("Placing order", priceDetails);
                 }}
               />
-              <div className="mt-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
+              {/* <div className="mt-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
                 <TrustBadges />
-              </div>
+              </div> */}
             </div>
           </div>
         )}
