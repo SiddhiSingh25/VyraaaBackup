@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaArrowsTurnRight } from "react-icons/fa6";
@@ -21,7 +20,10 @@ type AttributesSectionProps = {
   // Pass the subcategory ID down from the parent instead of the options
   selectedSubcategoryId: string | number;
   propertyTypeOptions: Option[];
-  addPropertyType: (propertyName: string, onSuccess?: (newProperty: any) => void) => void;
+  addPropertyType: (
+    propertyName: string,
+    onSuccess?: (newProperty: any) => void,
+  ) => void;
 };
 
 const AttributesSection = ({
@@ -31,21 +33,20 @@ const AttributesSection = ({
   propertyTypeOptions,
   addPropertyType,
 }: AttributesSectionProps) => {
-  const {
-    control,
-    watch,
-    reset,
-    setValue,
-  } = useForm<AttributeDraftFormValues>({
-    defaultValues: emptyDraft,
-  });
+  const { control, watch, reset, setValue } = useForm<AttributeDraftFormValues>(
+    {
+      defaultValues: emptyDraft,
+    },
+  );
 
   const draftAttr = watch();
-  const { propertyValueOptions, addPropertyValue } = usePropertyValueData(draftAttr.property);
+  const { propertyValueOptions, addPropertyValue } = usePropertyValueData(
+    draftAttr.property,
+  );
 
   useEffect(() => {
     reset(emptyDraft);
-    // Uncomment the line below if you also want to clear the added attributes 
+    // Uncomment the line below if you also want to clear the added attributes
     // table when the subcategory changes so old data doesn't persist:
     // setAttributes([]);
   }, [selectedSubcategoryId, reset, setAttributes]);
@@ -54,15 +55,15 @@ const AttributesSection = ({
     if (!draftAttr.property || !draftAttr.value) return;
 
     const property = propertyTypeOptions?.find(
-      (item: Option) : boolean => item.value === draftAttr.property
+      (item: Option): boolean => item.value === draftAttr.property,
     );
     const value = propertyValueOptions?.find(
-      (item: Option) : boolean => item.value === draftAttr.value
+      (item: Option): boolean => item.value === draftAttr.value,
     );
 
     // 1. Check if the PROPERTY already exists in the user's ATTRIBUTES list
     const existingIndex = attributes.findIndex(
-      (attr: AttributeEntry) : boolean => attr.property === draftAttr.property
+      (attr: AttributeEntry): boolean => attr.property === draftAttr.property,
     );
 
     if (existingIndex !== -1) {
@@ -101,7 +102,7 @@ const AttributesSection = ({
       <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
         <div className="flex items-center gap-3">
           <FaArrowsTurnRight className="text-primary text-xl" />
-          <h3 className="text-lg  text-sm font-semibold tracking-tight  font-semibold">
+          <h3 className="text-lg font-semibold tracking-tight">
             Product Specifications
           </h3>
         </div>
@@ -118,7 +119,11 @@ const AttributesSection = ({
                 label="Property"
                 disabled={!selectedSubcategoryId}
                 options={propertyTypeOptions}
-                placeholder={!selectedSubcategoryId ? "Select a subcategory first" : "Select property"}
+                placeholder={
+                  !selectedSubcategoryId
+                    ? "Select a subcategory first"
+                    : "Select property"
+                }
                 showAddButton
                 addButtonText="Create new property"
                 onAdd={(query: string) => {
@@ -135,7 +140,7 @@ const AttributesSection = ({
             )}
           />
         </div>
-        
+
         <div className="flex-1">
           <Controller
             name="value"
@@ -153,12 +158,16 @@ const AttributesSection = ({
                     setValue("value", newValue._id);
                   });
                 }}
-                placeholder={!draftAttr.property ? "Select a property first" : "Select value"}
+                placeholder={
+                  !draftAttr.property
+                    ? "Select a property first"
+                    : "Select value"
+                }
               />
             )}
           />
         </div>
-        
+
         <Button
           type="button"
           variant="primary"

@@ -28,11 +28,14 @@ import { useToast } from "../../../hooks/useToast.hook";
 import { useParams } from "react-router-dom";
 import Button from "../masterData/Category/component/Button";
 import SkuSection from "./components/SKUCode";
+import ProductAddedModal from "./components/LinkProductModal";
 
 const TOTAL_SECTIONS = 5;
 
 const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [addedProduct, setAddedProduct] = useState<any>(null);
+  const [showProductModal, setShowProductModal] = useState(false);
 
   // categoryId coming from the route params (e.g. /category/:categoryId/quick-add)
   const { categorySlug, categoryId: categoryIdFromParams } = useParams();
@@ -319,23 +322,42 @@ const QuickAddProduct = () => {
             : [],
       };
 
-      const productResponse = await postQuery({
+      await postQuery({
         url: apiUrls.Product.add,
         postData: payloadWithImages,
+        onSuccess: (res: any) => {
+          toast(
+            "success",
+            res?.message || res?.data?.message || "Product added successfully",
+          );
+          // setShowSuccess(true);
+          // resetForm();
+          setAddedProduct({
+            image: payloadWithImages.image,
+            title: payload.title,
+            sku: payload.sku,
+            category: categoryOptions.find(
+              (c) => c.value === effectiveCategoryId,
+            )?.label,
+            subCategory: subcategoryOptions.find(
+              (s) => s.value === payload.subCategory,
+            )?.label,
+          });
+
+          setShowProductModal(true);
+
+          resetForm();
+        },
+        onFail: (err: any) => {
+          console.log("errur", err);
+          toast(
+            "error",
+            err?.response?.data?.message ||
+              err?.data.message ||
+              "Could not add product",
+          );
+        },
       });
-
-      if (!productResponse) {
-        throw new Error("Could not add product");
-      }
-
-      toast(
-        "success",
-        productResponse?.message ||
-          productResponse?.data?.message ||
-          "Product added successfully",
-      );
-      setShowSuccess(true);
-      resetForm();
     } catch (err: any) {
       toast(
         "error",
@@ -449,11 +471,24 @@ const QuickAddProduct = () => {
                 Clear
               </Button>
               <Button type="submit" variant="primary">
-                Publish SKU
+                Add product
+              </Button>
+              <Button type="button" variant="tertiary">
+                Link Similar Product
               </Button>
             </div>
           </div>
         </form>
+        <ProductAddedModal
+          open={showProductModal}
+          product={addedProduct}
+          onClose={() => setShowProductModal(false)}
+          onLink={() => {
+            setShowProductModal(false);
+
+            // open your product linking screen here
+          }}
+        />
       </main>
     </div>
   );

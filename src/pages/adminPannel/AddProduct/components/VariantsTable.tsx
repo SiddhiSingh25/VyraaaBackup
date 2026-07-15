@@ -40,7 +40,7 @@ const VariantsTable = ({ variants, onRemove }: VariantsTableProps) => {
               <td className="px-5 py-4">₹{variant.price}</td>
 
               <td className="px-5 py-4 text-muted">
-                {variant.discountPrice ? `₹${variant.discountPrice}` : "-"}
+                {variant.discountPrice ? `%${variant.discountPrice}` : "-"}
               </td>
               <td className="px-5 py-4">
                 <div className="flex items-center gap-2">
