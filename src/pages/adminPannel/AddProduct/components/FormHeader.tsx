@@ -30,7 +30,10 @@ const FormHeader = ({ completedSections, totalSections }: FormHeaderProps) => {
           const active = index === completedSections;
 
           return (
-            <div key={step} className="relative flex flex-1 items-center sticky top-0 z-50">
+            <div
+              key={step}
+              className="relative flex flex-1 items-center top-0 z-50"
+            >
               <div className="flex w-full flex-col items-center">
                 <div
                   className={[
@@ -58,7 +61,7 @@ const FormHeader = ({ completedSections, totalSections }: FormHeaderProps) => {
               {index !== steps.length - 1 && (
                 <div
                   className={[
-                    "absolute left-1/2 top-4 h-[2px] w-full",
+                    "absolute left-1/2 top-4 h-0.5 w-full",
                     completed ? "bg-primary" : "bg-border",
                   ].join(" ")}
                   style={{
