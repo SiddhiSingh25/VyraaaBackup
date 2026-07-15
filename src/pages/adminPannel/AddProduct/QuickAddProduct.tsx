@@ -287,9 +287,9 @@ const QuickAddProduct = () => {
       ageRange: data.ageRange || null,
 
       price: data.variants.map((variant) => {
-        const amount = variant.price || 0;
         const discount = variant.discountPrice || 0;
-        const markupPrice = amount + discount;
+        const markupPrice = variant.price;
+        const amount = variant.price - (variant.price * discount) / 100;
         return {
           size: variant.size.value,
           amount,
