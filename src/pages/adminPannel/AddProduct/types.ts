@@ -103,11 +103,13 @@ export type QuickAddValues = {
     | "3-5 Years"
     | "6-8 Years"
     | "9-12 Years"
-    | "13-18 Years" | "";
+    | "13-18 Years"
+    | "";
   attributes: AttributeEntry[];
   colorFamily: string;
   color: string;
   sizeType: string;
   variants: VariantEntry[];
   images: string[];
+  sku: string;
 };

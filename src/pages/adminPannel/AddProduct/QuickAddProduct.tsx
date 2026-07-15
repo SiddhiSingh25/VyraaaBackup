@@ -21,13 +21,13 @@ import useSubCategoryTypeData from "./api/useSubCategoryTypes";
 import useColorData from "./api/useColorData";
 import useSizeValueData from "./api/useSizeValueData";
 import usePropertyTypeData from "./api/usePropertyTypeData";
-import usePropertyValueData from "./api/usePropertyValueData";
 import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
 import { useParams } from "react-router-dom";
 import Button from "../masterData/Category/component/Button";
+import SkuSection from "./components/SKUCode";
 
 const TOTAL_SECTIONS = 5;
 
@@ -49,7 +49,6 @@ const QuickAddProduct = () => {
     [categoryIdFromParams],
   );
 
-
   // Whether TaxonomySection should hide its own category picker
   const hasCategoryFromParams = Boolean(categoryIdFromParams);
 
@@ -67,9 +66,6 @@ const QuickAddProduct = () => {
     context: { hasCategoryFromParams },
   });
 
-
-
-
   // --- Watched fields ---------------------------------------------------
   const selectedCategoryId = watch("category");
   const selectedSubcategoryId = watch("subcategory");
@@ -82,15 +78,11 @@ const QuickAddProduct = () => {
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
-
-
   // The single source of truth for "which category are we working under".
   // Params always win — if the user arrived via a category-scoped route,
   // that id drives everything, even if the (hidden) form field hasn't
   // synced yet on the very first render.
   const effectiveCategoryId = categoryIdFromParams || selectedCategoryId;
-
-
 
   // --- Data sources -------------------------------------------------------
   const { categoryOptions, addCategory, getCategoryLoading } =
@@ -124,9 +116,14 @@ const QuickAddProduct = () => {
       "#000000",
     );
     if (!hexCode) return;
-    addColor(colorName.trim(), selectedColorFamily, hexCode.trim(), (newColor) => {
-      setValue("color", newColor._id);
-    });
+    addColor(
+      colorName.trim(),
+      selectedColorFamily,
+      hexCode.trim(),
+      (newColor) => {
+        setValue("color", newColor._id);
+      },
+    );
   };
 
   const handleAddSizeType = (sizeTypeName?: string) => {
@@ -163,8 +160,9 @@ const QuickAddProduct = () => {
   const { colorOptions, addColor } = useColorData(selectedColorFamily);
   const { sizeTypeOptions, addSizeType } = useSizeTypeData();
   const { sizeValueOptions } = useSizeValueData(selectedSizeType);
-  const { propertyTypeOptions, addPropertyType } =
-    usePropertyTypeData(selectedSubcategoryId);
+  const { propertyTypeOptions, addPropertyType } = usePropertyTypeData(
+    selectedSubcategoryId,
+  );
   const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
 
   // Only reset subcategory/type when category actually changes (i.e. the
@@ -195,14 +193,6 @@ const QuickAddProduct = () => {
     }
   }, [categoryIdFromParams, setValue]);
 
-
-
-
-
-
-
-
-
   const handleMediaFiles = (files: File[]) => {
     setImageFiles((prev) => [...prev, ...files]);
   };
@@ -210,7 +200,10 @@ const QuickAddProduct = () => {
   const { postQuery } = usePostQuery();
 
   const handleRemoveImage = (index: number) => {
-    setValue("images", images.filter((_img, idx) => idx !== index));
+    setValue(
+      "images",
+      images.filter((_img, idx) => idx !== index),
+    );
     setImageFiles((prev) => prev.filter((_file, idx) => idx !== index));
   };
 
@@ -275,6 +268,7 @@ const QuickAddProduct = () => {
   // --- Submission ------------------------------------------------------------
   const onSubmit = async (data: QuickAddValues) => {
     const payload = {
+      sku: data.sku,
       title: data.name,
       description: data.description,
       brand: data.brand,
@@ -283,7 +277,10 @@ const QuickAddProduct = () => {
       subCategory: data.subcategory,
       subcategoryType: data.subcategoryType || null,
       sizeType: data.sizeType,
-      gender: data.gender === "Boys" || data.gender === "Girls" ? "Child" : data.gender,
+      gender:
+        data.gender === "Boys" || data.gender === "Girls"
+          ? "Child"
+          : data.gender,
       ageRange: data.ageRange || null,
 
       price: data.variants.map((variant) => {
@@ -302,9 +299,9 @@ const QuickAddProduct = () => {
 
       attributes: data.attributes
         ? data.attributes.map((item) => ({
-          property: item.property,
-          value: item.value,
-        }))
+            property: item.property,
+            value: item.value,
+          }))
         : [],
 
       linkItems: [],
@@ -334,8 +331,8 @@ const QuickAddProduct = () => {
       toast(
         "success",
         productResponse?.message ||
-        productResponse?.data?.message ||
-        "Product added successfully",
+          productResponse?.data?.message ||
+          "Product added successfully",
       );
       setShowSuccess(true);
       resetForm();
@@ -351,9 +348,14 @@ const QuickAddProduct = () => {
     <div className="flex min-h-screen flex-col bg-background  font-admin-text selection:bg-rose-gold/30">
       <main className="flex-1 overflow-y-auto">
         <form
-          // onSubmit={handleSubmit(onSubmit)}
           onSubmit={handleSubmit(onSubmit, (formErrors) => {
             console.log("VALIDATION FAILED:", formErrors);
+            const firstError = Object.values(formErrors)[0];
+            toast(
+              "error",
+              firstError?.message?.toString() ||
+                "Please fix the highlighted fields.",
+            );
           })}
           className="mx-auto flex h-full max-w-5xl flex-col gap-5 py-6 "
         >
@@ -372,6 +374,7 @@ const QuickAddProduct = () => {
           <div className="grid gap-5 lg:grid-cols-[1.7fr_1fr]">
             {/* LEFT COLUMN: Data Entry */}
             <div className="flex flex-col gap-4">
+              <SkuSection register={register} errors={errors} />
               <TaxonomySection
                 control={control}
                 errors={errors}
@@ -410,7 +413,12 @@ const QuickAddProduct = () => {
 
               <VariantsSection
                 variants={variants}
-                setVariants={(v) => setValue("variants", v as any, { shouldValidate: true, shouldDirty: true })}
+                setVariants={(v) =>
+                  setValue("variants", v as any, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
                 sizeOptions={sizeTypeOptions}
                 sizeTypeSelected={selectedSizeType}
                 errorMessage={errors.variants?.message as string | undefined}

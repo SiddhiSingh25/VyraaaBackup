@@ -37,9 +37,7 @@ const VariantDraftForm = ({
   }, [draftVariant.size.value, reset]);
 
   const isValid =
-    sizeTypeSelected &&
-    selectedSize !== "" &&
-    Number(draftVariant.price) > 0;
+    sizeTypeSelected && selectedSize !== "" && Number(draftVariant.price) > 0;
 
   const { sizeValueOptions, addSizeValue } = useSizeValueData(sizeTypeSelected);
 
@@ -72,7 +70,9 @@ const VariantDraftForm = ({
                 label="SIZE"
                 disabled={!sizeTypeSelected}
                 options={sizeValueOptions}
-                placeholder={!sizeTypeSelected ? "Select a size type first" : "Select size"}
+                placeholder={
+                  !sizeTypeSelected ? "Select a size type first" : "Select size"
+                }
                 showAddButton
                 addButtonText="Create new size"
                 onAdd={handleAddSize}
@@ -110,7 +110,7 @@ const VariantDraftForm = ({
         <div className="w-full">
           <label
             htmlFor="variant-price"
-            className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-muted"
+            className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted"
           >
             PRICE
           </label>
@@ -131,7 +131,7 @@ const VariantDraftForm = ({
         <div className="w-full">
           <label
             htmlFor="variant-discount"
-            className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-muted"
+            className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted"
           >
             DISCOUNT
           </label>

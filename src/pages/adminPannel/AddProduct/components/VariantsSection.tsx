@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { IoAdd, IoColorPaletteOutline, IoRemove, IoRemoveCircleOutline } from "react-icons/io5";
+import {
+  IoAdd,
+  IoColorPaletteOutline,
+  IoRemove,
+  IoRemoveCircleOutline,
+} from "react-icons/io5";
 import { Button } from "../../../../components/ui/FormElements";
 import VariantDraftForm from "./VariantDraftForm";
 import VariantsTable from "./VariantsTable";
@@ -32,7 +37,8 @@ const VariantsSection = ({
   errorMessage,
 }: VariantsSectionProps) => {
   const [showDraft, setShowDraft] = useState(false);
-  const [draftVariant, setDraftVariant] = useState<DraftVariant>(emptyDraftVariant);
+  const [draftVariant, setDraftVariant] =
+    useState<DraftVariant>(emptyDraftVariant);
 
   useEffect(() => {
     setDraftVariant(emptyDraftVariant);
@@ -42,7 +48,7 @@ const VariantsSection = ({
   const addVariant = () => {
     // draftVariant.size should hold the 'value' from your select options
     const newVariant: VariantEntry = {
-      size: draftVariant.size, 
+      size: draftVariant.size,
       price: Number(draftVariant.price),
       discountPrice: draftVariant.discountPrice
         ? Number(draftVariant.discountPrice)
@@ -53,7 +59,7 @@ const VariantsSection = ({
 
     // Check if this size variant already exists
     const existingIndex = variants.findIndex(
-      (v) => v.size.value === draftVariant.size.value
+      (v) => v.size.value === draftVariant.size.value,
     );
 
     if (existingIndex !== -1) {
@@ -92,14 +98,19 @@ const VariantsSection = ({
 
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <div>
-          <p className="text-sm font-medium ">Add SKU variants</p>
-          <p className="text-sm text-muted">
-            Create one or more size-based entries for this product.
+          <p className="text-sm font-medium "> Add Product Variants</p>
+          <p className="text-sm text-muted mt-1">
+            Add one or more size variants with their price, discount, and stock
+            availability.
           </p>
         </div>
-        <Button type="button" variant="icon" onClick={() => setShowDraft(!showDraft)}>
+        <Button
+          type="button"
+          variant="icon"
+          onClick={() => setShowDraft(!showDraft)}
+        >
           <span className="material-symbols-outlined">
-            {showDraft ? <RxCross2/> : <IoAdd/> }
+            {showDraft ? <RxCross2 /> : <IoAdd />}
           </span>
         </Button>
       </div>
@@ -120,14 +131,13 @@ const VariantsSection = ({
       )}
 
       {/* Passed sizeOptions here so the table can render the label */}
-      <VariantsTable 
-        variants={variants} 
-        onRemove={removeVariant} 
-        sizeOptions={sizeOptions} 
+      <VariantsTable
+        variants={variants}
+        onRemove={removeVariant}
+        sizeOptions={sizeOptions}
       />
     </section>
   );
 };
 
 export default VariantsSection;
-
