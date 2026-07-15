@@ -473,9 +473,6 @@ const QuickAddProduct = () => {
               <Button type="submit" variant="primary">
                 Add product
               </Button>
-              <Button type="button" variant="tertiary">
-                Link Similar Product
-              </Button>
             </div>
           </div>
         </form>
