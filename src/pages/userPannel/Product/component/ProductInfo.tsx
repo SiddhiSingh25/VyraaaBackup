@@ -97,8 +97,8 @@ const ProductInfo = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!id) return; 
-
+    if (!id) return;
+    window.scrollTo(0, 0);
     setIsLoading(true);
     getQuery({
       url: apiUrls.Product.getById + id,
@@ -115,8 +115,8 @@ const ProductInfo = () => {
     });
   }, [id]);
 
-  const handleWishlist = ()=>{
-      setIsWishlisted(true);
+  const handleWishlist = () => {
+    setIsWishlisted(true);
     console.log("Hello0 from the other side ")
   }
 
@@ -211,7 +211,7 @@ const ProductInfo = () => {
   const [thumbnail, setThumbnail] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
 
- 
+
   const [selectedSize, setSelectedSize] = React.useState<number>(0);
 
   const [quantity, setQuantity] = React.useState(1);
@@ -267,20 +267,19 @@ const ProductInfo = () => {
                 </div>
 
                 <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
-                          <button
-            onClick={handleWishlist}
-            aria-label={
-              isWishlisted ? "Remove from wishlist" : "Add to wishlist"
-            }
-            className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150"
-          >
-            <Heart
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
-                isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
-              }`}
-              strokeWidth={2}
-            />
-          </button>
+                  <button
+                    onClick={handleWishlist}
+                    aria-label={
+                      isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+                    }
+                    className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150"
+                  >
+                    <Heart
+                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
+                        }`}
+                      strokeWidth={2}
+                    />
+                  </button>
                   <img src={productData?.subImages?.[thumbnail]} alt="Selected product" className="w-full h-full object-cover" />
                 </div>
               </div>

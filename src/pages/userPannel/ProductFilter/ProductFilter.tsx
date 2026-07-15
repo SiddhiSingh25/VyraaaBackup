@@ -41,11 +41,9 @@ export default function ProductFilter() {
   const { category } = useParams();
   const location = useLocation();
   const categoryId = location.state?.categoryId;
-  // const fullCategoryData = location.state?.fullCategoryData;
-  console.log("URL Category:", category);
-  console.log("State Category ID:", categoryId);
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     const params = new URLSearchParams();
 
     if (page) params.append("page", String(page));
