@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
-import Modal from '../../Category/component/Modal';
-import Button from '../../Category/component/Button';
+import Modal from '../../../../../components/tableComponents/Modal';
+import Button from '../../../../../components/tableComponents/Button';
 import type { SubCategoryTypeFormValues, ModalMode } from './types';
 
 interface Props {

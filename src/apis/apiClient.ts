@@ -25,11 +25,13 @@ const apiInstance = () => {
     (response: any) => {
       console.log(response);
       console.log(response.data);
-      document.cookie = `token=${response.data.token}; max-age=3600`;
+      if (response?.data?.token) {
+        document.cookie = `token=${response.data.token}; max-age=3600; path=/`;
+      }
       return response;
     },
     (error: any) => {
-      console.log("ERROR", error.response.data.detail);
+      console.log("ERROR", error.response?.data?.detail || error.message);
       throw error;
     }
   );

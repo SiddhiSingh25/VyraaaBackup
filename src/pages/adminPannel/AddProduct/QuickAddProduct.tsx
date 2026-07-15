@@ -30,7 +30,7 @@ import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
 import { useParams } from "react-router-dom";
-import Button from "../masterData/Category/component/Button";
+import Button from "../../../components/tableComponents/Button";
 
 const TOTAL_SECTIONS = 5;
 

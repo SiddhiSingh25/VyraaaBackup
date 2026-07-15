@@ -5,6 +5,7 @@ import SearchBar from "./Component/SearchBar";
 import MegaMenu from "./Component/MegaMenu";
 import { NAV_LINKS } from "./Component/navData";
 import MobileMenu from "./Component/MobileMenu";
+import { useSelector } from "react-redux";
 
 interface NavbarProps {
   wishlistCount?: number;
@@ -46,7 +47,11 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const cartPulse = useBadgePulse(cartCount);
+  
+  const cartItems = useSelector((state: any) => state.cart.items || []);
+  const calculatedCartCount = cartItems.reduce((acc: number, item: any) => acc + (item.quantity || item.qty || 1), 0);
+
+  const cartPulse = useBadgePulse(calculatedCartCount);
   const wishlistPulse = useBadgePulse(wishlistCount);
 
   useEffect(() => {
@@ -124,7 +129,7 @@ export default function Navbar({
                 className="relative text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <ShoppingBag size={19} strokeWidth={1.6} />
-                <Badge count={cartCount} pulse={cartPulse} />
+                <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
               <Link
                 to="/profile"
@@ -163,7 +168,7 @@ export default function Navbar({
               </Link>
               <Link to="/checkout/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
-                <Badge count={cartCount} pulse={cartPulse} />
+                <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
               <Link to="/profile" className="text-admin-text/80">
                 <User size={20} strokeWidth={1.6} />
@@ -202,7 +207,7 @@ export default function Navbar({
               </Link>
               <Link to="/checkout/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
-                <Badge count={cartCount} pulse={cartPulse} />
+                <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
             </div>
           </div>

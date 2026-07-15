@@ -11,12 +11,20 @@ import TrustBadges from "./component/TrustBadges";
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../apis";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setCartItems,
+  toggleSelectItem,
+  updateQuantity,
+  removeFromCart,
+} from "../../../../redux/slices/cartSlice";
 
 const COUPON_DISCOUNT = 60;
 
 const Cart = () => {
-  // 1. Initialize with an empty array instead of sample data
-  const [items, setItems] = useState<CartItem[]>([]);
+  const dispatch = useDispatch();
+  // Bind items to Redux store cart items
+  const items = useSelector((state: any) => state.cart.items);
   const [couponApplied, setCouponApplied] = useState(false);
   const [donation, setDonation] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -57,8 +65,8 @@ const Cart = () => {
             } as unknown as CartItem;
           });
 
-          // Update the React state with the real mapped data
-          setItems(mappedItems);
+          // Update Redux state with real API data
+          dispatch(setCartItems(mappedItems));
         }
       },
       onFail: (res: any) => {
@@ -67,19 +75,21 @@ const Cart = () => {
     });
   }, [refreshKey]);
 
-  const toggleSelect = (id: string) =>
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i))
-    );
+  const toggleSelect = (id: string) => {
+    dispatch(toggleSelectItem(id));
+  };
 
-  const removeItem = (id: string) =>
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  const removeItem = (id: string) => {
+    dispatch(removeFromCart(id));
+  };
 
-  const moveToWishlist = (id: string) =>
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  const moveToWishlist = (id: string) => {
+    dispatch(removeFromCart(id));
+  };
 
-  const changeQty = (id: string, qty: number) =>
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, qty } : i)));
+  const changeQty = (id: string, qty: number) => {
+    dispatch(updateQuantity({ id, quantity: qty }));
+  };
 
   // const changeSize = (id: string, size: string) =>
   //   setItems((prev) => prev.map((i) => (i.id === id ? { ...i, size } : i)));

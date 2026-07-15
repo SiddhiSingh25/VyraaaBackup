@@ -22,9 +22,14 @@ import {
   Search,
 } from "lucide-react";
 import {
+  FaBoxOpen,
+  FaShoppingCart,
+  FaUsers,
+  FaLayerGroup,
+} from "react-icons/fa";
+import {
   FaProductHunt,
   FaTags,
-  FaLayerGroup,
   FaNetworkWired,
 } from "react-icons/fa6";
 import useGetQuery from "../../hooks/getQuery.hook.ts";
@@ -158,11 +163,21 @@ export default function AdminLayout() {
       //   label: "Coupons",
       //   path: "/admin/coupons",
       // },
-      // {
-      //   icon: FaLayerGroup,
-      //   label: "Global Attributes",
-      //   path: "/admin/attributes",
-      // },
+      {
+        icon: FaBoxOpen,
+        label: "All Products",
+        path: "/admin/products",
+      },
+      {
+        icon: FaShoppingCart,
+        label: "All Orders",
+        path: "/admin/orders",
+      },
+      {
+        icon: FaUsers,
+        label: "All Customers",
+        path: "/admin/customers",
+      },
     ],
     [productNavItems],
   );

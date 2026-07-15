@@ -1,8 +1,8 @@
 import { FormEvent, useEffect, useState } from 'react';
 
 import type { BrandItem, BrandFormValues, ModalMode } from './types';
-import Button from '../../Category/component/Button';
-import Modal from '../../Category/component/Modal';
+import Button from '../../../../../components/tableComponents/Button';
+import Modal from '../../../../../components/tableComponents/Modal';
 
 interface BrandFormModalProps {
   isOpen: boolean;

@@ -118,4 +118,17 @@ export const apiUrls = {
   Image: {
     upload: "common/uploadImage",
   },
+
+  Auth: {
+    sendOtp: "auth/sendOTP",
+    verifyOtp: "auth/verifyOTP",
+    signup: "auth/signup",
+    login: "auth/login",
+    createUser: "auth/createUser",
+    profile: "auth/profile",
+    updateProfile: "auth/update/profile",
+    updatePassword: "auth/update/password"
+  },
+
+
 };

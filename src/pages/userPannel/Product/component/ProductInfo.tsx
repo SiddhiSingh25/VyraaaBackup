@@ -7,6 +7,8 @@ import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { Heart } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { addToCart as addToCartAction } from "../../../../redux/slices/cartSlice";
 
 /* ---------------------------- Small building blocks ---------------------------- */
 
@@ -95,6 +97,7 @@ const ProductInfo = () => {
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!id) return; 
@@ -130,7 +133,19 @@ const ProductInfo = () => {
       },
       onSuccess: (res: any) => {
         alert(res.message)
-        // console.log(res, "====success section")
+        dispatch(
+          addToCartAction({
+            id: productData._id,
+            brand: productData.brand,
+            name: productData.title,
+            image: productData.image || productData.thumbnail || "",
+            quantity: 1,
+            qty: 1,
+            size: productData?.price?.[selectedSize]?.size?.size || "",
+            price: productData?.price?.[selectedSize]?.amount || 0,
+            mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
+          })
+        );
       },
       onFail: (res: any) => {
         console.log(res?.data?.message, "=====error section");
