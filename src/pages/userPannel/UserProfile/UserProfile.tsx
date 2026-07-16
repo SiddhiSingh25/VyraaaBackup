@@ -10,7 +10,6 @@ import { OrdersTab } from "./Component/tabs/OrdersTab";
 import { AddressesTab } from "./Component/tabs/AddressesTab";
 import type { Address } from "./Component/tabs/AddressesTab";
 import { SecurityTab } from "./Component/tabs/SecurityTab";
-import { PaymentTab } from "./Component/tabs/PaymentTab";
 import Footer from "../../../components/Footer/Footer";
 import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook";
@@ -275,12 +274,7 @@ export default function Profile() {
                     />
                   )}
 
-                  {activeTab === "payment" && (
-                    <PaymentTab
-                      methods={samplePaymentMethods}
-                      onAddNew={() => { }}
-                    />
-                  )}
+
 
                   {activeTab === "security" && (
                     <SecurityTab />

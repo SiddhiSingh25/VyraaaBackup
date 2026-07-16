@@ -7,6 +7,30 @@ import { useAppSelector } from "@/redux/hooks";
 import { apiUrls } from "@/apis";
 import useDeleteQuery from "@/hooks/deleteQuery.hook";
 import ConfirmDialog from "@/components/tableComponents/ConfirmDialog";
+import * as yup from "yup";
+
+const addressSchema = yup.object().shape({
+  addressType: yup.string().required("Address type is required"),
+  fullName: yup.string().trim().required("Full name is required"),
+  town: yup.string().trim().required("Town / area is required"),
+  streetAddress: yup.string().trim().required("Street address is required"),
+  landmark: yup.string().trim().optional(),
+  city: yup.string().trim().required("City is required"),
+  state: yup.string().trim().required("State is required"),
+  pinCode: yup
+    .string()
+    .trim()
+    .required("Pin code is required")
+    .matches(/^\d{6}$/, "Pin code must be exactly 6 digits"),
+  country: yup.string().trim().required("Country is required"),
+  phoneNumber: yup
+    .string()
+    .trim()
+    .required("Phone number is required")
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+  userId: yup.string().required(),
+  isDefault: yup.boolean().required(),
+});
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -64,6 +88,7 @@ export function AddressesTab() {
   const [formData, setFormData] = useState<AddressFormData>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -93,6 +118,7 @@ export function AddressesTab() {
       userId: user?._id || user?.id || "",
     });
     setFormError(null);
+    setFieldErrors({});
     setIsModalOpen(true);
   };
 
@@ -113,6 +139,7 @@ export function AddressesTab() {
       userId: user?._id || user?.id || "",
     });
     setFormError(null);
+    setFieldErrors({});
     setIsModalOpen(true);
   };
 
@@ -120,6 +147,7 @@ export function AddressesTab() {
     if (submitting) return;
     setIsModalOpen(false);
     setEditingAddress(null);
+    setFieldErrors({});
   };
 
   const handleFormChange = (
@@ -127,12 +155,37 @@ export function AddressesTab() {
     value: string | boolean,
   ) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[field];
+        return copy;
+      });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setFormError(null);
+    setFieldErrors({});
+
+    try {
+      await addressSchema.validate(formData, { abortEarly: false });
+    } catch (err: any) {
+      if (err instanceof yup.ValidationError) {
+        const errors: Record<string, string> = {};
+        err.inner.forEach((validationError) => {
+          if (validationError.path) {
+            errors[validationError.path] = validationError.message;
+          }
+        });
+        setFieldErrors(errors);
+        setSubmitting(false);
+        return;
+      }
+    }
+
     postQuery({
       url: apiUrls.Address.add,
       postData: editingAddress?._id
@@ -315,85 +368,156 @@ export function AddressesTab() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-3" noValidate>
               <div className="grid grid-cols-2 gap-3">
-                <input
-                  required
-                  placeholder="Full name"
-                  value={formData.fullName}
-                  onChange={(e) => handleFormChange("fullName", e.target.value)}
-                  className="col-span-2 rounded-md border border-border px-3 py-2 text-sm"
-                />
-                <input
-                  required
-                  placeholder="Phone number"
-                  value={formData.phoneNumber}
-                  onChange={(e) =>
-                    handleFormChange("phoneNumber", e.target.value)
-                  }
-                  className="rounded-md border border-border px-3 py-2 text-sm"
-                />
-                <select
-                  value={formData.addressType}
-                  onChange={(e) =>
-                    handleFormChange("addressType", e.target.value)
-                  }
-                  className="rounded-md border border-border px-3 py-2 text-sm"
-                >
-                  <option value="Home">Home</option>
-                  <option value="Work">Work</option>
-                  <option value="Other">Other</option>
-                </select>
-                <input
-                  required
-                  placeholder="Street address"
-                  value={formData.streetAddress}
-                  onChange={(e) =>
-                    handleFormChange("streetAddress", e.target.value)
-                  }
-                  className="col-span-2 rounded-md border border-border px-3 py-2 text-sm"
-                />
-                <input
-                  placeholder="Landmark (optional)"
-                  value={formData.landmark}
-                  onChange={(e) => handleFormChange("landmark", e.target.value)}
-                  className="col-span-2 rounded-md border border-border px-3 py-2 text-sm"
-                />
-                <input
-                  required
-                  placeholder="Town / area"
-                  value={formData.town}
-                  onChange={(e) => handleFormChange("town", e.target.value)}
-                  className="rounded-md border border-border px-3 py-2 text-sm"
-                />
-                <input
-                  required
-                  placeholder="City"
-                  value={formData.city}
-                  onChange={(e) => handleFormChange("city", e.target.value)}
-                  className="rounded-md border border-border px-3 py-2 text-sm"
-                />
-                <input
-                  required
-                  placeholder="State"
-                  value={formData.state}
-                  onChange={(e) => handleFormChange("state", e.target.value)}
-                  className="rounded-md border border-border px-3 py-2 text-sm"
-                />
-                <input
-                  required
-                  placeholder="Pin code"
-                  value={formData.pinCode}
-                  onChange={(e) => handleFormChange("pinCode", e.target.value)}
-                  className="rounded-md border border-border px-3 py-2 text-sm"
-                />
-                <input
-                  required
-                  placeholder="Country"
-                  value={formData.country}
-                  onChange={(e) => handleFormChange("country", e.target.value)}
-                  className="col-span-2 rounded-md border border-border px-3 py-2 text-sm"
-                />
+                <div className="col-span-2 flex flex-col gap-1">
+                  <input
+                    placeholder="Full name"
+                    value={formData.fullName}
+                    onChange={(e) => handleFormChange("fullName", e.target.value)}
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.fullName ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.fullName && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.fullName}</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <input
+                    placeholder="Phone number"
+                    value={formData.phoneNumber}
+                    onChange={(e) =>
+                      handleFormChange("phoneNumber", e.target.value)
+                    }
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.phoneNumber ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.phoneNumber && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.phoneNumber}</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <select
+                    value={formData.addressType}
+                    onChange={(e) =>
+                      handleFormChange("addressType", e.target.value)
+                    }
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.addressType ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  >
+                    <option value="Home">Home</option>
+                    <option value="Work">Work</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {fieldErrors.addressType && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.addressType}</span>
+                  )}
+                </div>
+
+                <div className="col-span-2 flex flex-col gap-1">
+                  <input
+                    placeholder="Street address"
+                    value={formData.streetAddress}
+                    onChange={(e) =>
+                      handleFormChange("streetAddress", e.target.value)
+                    }
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.streetAddress ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.streetAddress && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.streetAddress}</span>
+                  )}
+                </div>
+
+                <div className="col-span-2 flex flex-col gap-1">
+                  <input
+                    placeholder="Landmark (optional)"
+                    value={formData.landmark}
+                    onChange={(e) => handleFormChange("landmark", e.target.value)}
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.landmark ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.landmark && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.landmark}</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <input
+                    placeholder="Town / area"
+                    value={formData.town}
+                    onChange={(e) => handleFormChange("town", e.target.value)}
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.town ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.town && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.town}</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <input
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={(e) => handleFormChange("city", e.target.value)}
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.city ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.city && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.city}</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <input
+                    placeholder="State"
+                    value={formData.state}
+                    onChange={(e) => handleFormChange("state", e.target.value)}
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.state ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.state && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.state}</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <input
+                    placeholder="Pin code"
+                    value={formData.pinCode}
+                    onChange={(e) => handleFormChange("pinCode", e.target.value)}
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.pinCode ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.pinCode && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.pinCode}</span>
+                  )}
+                </div>
+
+                <div className="col-span-2 flex flex-col gap-1">
+                  <input
+                    placeholder="Country"
+                    value={formData.country}
+                    onChange={(e) => handleFormChange("country", e.target.value)}
+                    className={`rounded-md border px-3 py-2 text-sm ${
+                      fieldErrors.country ? "border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" : "border-border"
+                    }`}
+                  />
+                  {fieldErrors.country && (
+                    <span className="text-[11px] text-red-500 px-1">{fieldErrors.country}</span>
+                  )}
+                </div>
               </div>
 
               <label className="flex items-center gap-2 text-sm text-body">

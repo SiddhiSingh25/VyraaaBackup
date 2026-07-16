@@ -40,33 +40,31 @@ const ResetPassword = () => {
   return (
     <PageTransition>
       <AuthLayout image={authImage} imageAlt="Vyraaa perfume bottle">
-        <AuthCard>
-          <AuthHeader
-            title="Reset"
-            highlight="Password"
-            subtitle="Create a new password for your account"
+        <AuthHeader
+          title="Reset"
+          highlight="Password"
+          subtitle="Create a new password for your account"
+        />
+
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <PasswordInput
+            label="New Password"
+            placeholder="Enter new password"
+            error={errors.password?.message}
+            {...register("password")}
           />
 
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <PasswordInput
-              label="New Password"
-              placeholder="Enter new password"
-              error={errors.password?.message}
-              {...register("password")}
-            />
+          <PasswordInput
+            label="Confirm Password"
+            placeholder="Re-enter new password"
+            error={errors.confirmPassword?.message}
+            {...register("confirmPassword")}
+          />
 
-            <PasswordInput
-              label="Confirm Password"
-              placeholder="Re-enter new password"
-              error={errors.confirmPassword?.message}
-              {...register("confirmPassword")}
-            />
-
-            <AuthButton type="submit" className="mt-1">
-              Reset Password
-            </AuthButton>
-          </form>
-        </AuthCard>
+          <AuthButton type="submit" className="mt-1">
+            Reset Password
+          </AuthButton>
+        </form>
       </AuthLayout>
     </PageTransition>
   );
