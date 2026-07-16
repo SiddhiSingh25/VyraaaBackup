@@ -26,7 +26,7 @@ import { loginSchema } from "./login.schema";
 import type { LoginFormValues } from "../../types";
 
 import { useAppDispatch } from "@/redux/hooks";
-import { setCredentials } from "@/redux/slices/authSlice";
+import { setCredentials, updateUser } from "@/redux/slices/authSlice";
 import useGetQuery from "@/hooks/getQuery.hook";
 
 const Login = () => {
@@ -53,12 +53,12 @@ const Login = () => {
         const token = res?.token;
         const user = res?.user;
         if (token && user) {
-          // dispatch(setCredentials({ user, token }));
+          dispatch(setCredentials({ user, token }));
           toast("success", res?.message || "Welcome back!");
           getQuery({
             url: apiUrls.Auth.profile,
             onSuccess: (res: any) => {
-              dispatch(setCredentials({ user: res?.data, token }))
+              dispatch(updateUser({ user: res?.data}))
             },
             onFail: (err: any) => {
               toast("error", err?.data?.message || err?.message || "Invalid email or password. Please try again.");

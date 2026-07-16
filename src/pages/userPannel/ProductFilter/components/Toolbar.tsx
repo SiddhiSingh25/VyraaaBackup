@@ -39,7 +39,7 @@ export default function Toolbar({
   }, []);
 
   return (
-    <div className="max-w-[1440px] mx-auto px-8 pt-3 md:flex items-center justify-between gap-4 hidden">
+    <div className=" px-8 pt-3 md:flex items-center justify-between gap-4 hidden">
       <div className="flex items-center gap-3 flex-wrap min-h-[32px]">
         <span className="text-[12.5px]" style={{ color: C.muted }}>
           {count.toLocaleString("en-IN")} results

@@ -8,7 +8,7 @@ export interface CategoryChipsProps {
 
 export default function CategoryChips({ active, onSelect }: CategoryChipsProps) {
   return (
-    <div className="max-w-[1440px] mx-auto px-4 md:px-8">
+    <div className=" px-4 md:px-8">
       <div
         className="flex gap-2 overflow-x-auto py-3 no-scrollbar"
         style={{ scrollbarWidth: "none" }}

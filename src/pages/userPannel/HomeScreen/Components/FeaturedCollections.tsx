@@ -33,7 +33,7 @@ export default function FeaturedCollections() {
   const ref = useReveal<HTMLElement>();
 
   return (
-    <section ref={ref} className="py-10 px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
+    <section ref={ref} className="py-10 px-5 sm:px-10 lg:px-20 ">
     
       <SectionHeader  viewAllLink="/"
   viewAllText = "View All" tagline="Categories"

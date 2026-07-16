@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { AccountTabId, UserProfile, AccountStats } from "./Component/account";
 import { sampleAddresses, sampleOrders, samplePaymentMethods, sampleStats, sampleUser } from "./Component/sampleUser";
@@ -8,6 +8,7 @@ import { ProfileHeader } from "./Component/ProfileHeader";
 import { PersonalInfoTab } from "./Component/tabs/PersonalInfoTab";
 import { OrdersTab } from "./Component/tabs/OrdersTab";
 import { AddressesTab } from "./Component/tabs/AddressesTab";
+import type { Address } from "./Component/tabs/AddressesTab";
 import { SecurityTab } from "./Component/tabs/SecurityTab";
 import { PaymentTab } from "./Component/tabs/PaymentTab";
 import Footer from "../../../components/Footer/Footer";
@@ -46,9 +47,64 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState<AccountTabId>("personal-info");
   const [user, setUser] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<AccountStats>(sampleStats);
+  const [addresses, setAddresses] = useState<Address[]>([]);
 
   let { getQuery } = useGetQuery();
+  const { getQuery: getAddressesQuery, loading: loadingAddresses } = useGetQuery();
   let { postQuery } = usePostQuery();
+
+  const fetchAddresses = useCallback(() => {
+    getAddressesQuery({
+      url: apiUrls.Address.getByUserId,
+      onSuccess: (res) => {
+        setAddresses(res?.data ?? []);
+      },
+      onFail: (err) => {
+        console.error("Failed to load addresses", err);
+      },
+    });
+  }, [getAddressesQuery]);
+
+  useEffect(() => {
+    fetchAddresses();
+  }, [fetchAddresses]);
+
+  const handleSaveAddress = async (
+    formData: any,
+    addressId?: string
+  ): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      postQuery({
+        url: apiUrls.Address.add,
+        postData: addressId ? { addressId, ...formData } : formData,
+        onSuccess: () => {
+          fetchAddresses();
+          resolve(true);
+        },
+        onFail: (err: any) => {
+          console.error("Save address failed", err);
+          resolve(false);
+        },
+      });
+    });
+  };
+
+  const handleDeleteAddress = async (addressId: string): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      postQuery({
+        url: apiUrls.Address.delete,
+        postData: { addressId },
+        onSuccess: () => {
+          setAddresses((prev) => prev.filter((a) => a._id !== addressId));
+          resolve(true);
+        },
+        onFail: (err: any) => {
+          console.error("Delete address failed", err);
+          resolve(false);
+        },
+      });
+    });
+  };
 
   useEffect(() => {
     getQuery({
@@ -208,8 +264,10 @@ export default function Profile() {
 
                   {activeTab === "addresses" && (
                     <AddressesTab
-                      addresses={sampleAddresses}
-                      onAddNew={() => { }}
+                      addresses={addresses}
+                      onSave={handleSaveAddress}
+                      onDelete={handleDeleteAddress}
+                      loading={loadingAddresses}
                     />
                   )}
 

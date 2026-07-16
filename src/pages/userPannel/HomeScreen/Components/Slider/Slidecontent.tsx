@@ -28,7 +28,7 @@ const SlideContent = forwardRef<HTMLDivElement, SlideContentProps>(
     return (
       <div
         ref={rootRef}
-        className="relative z-20 h-full flex items-center px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto"
+        className="relative z-20 h-full flex items-center px-5 sm:px-10 lg:px-20 "
       >
         <div className="max-w-2xl w-full">
           <p

@@ -40,7 +40,10 @@ export function PersonalInfoTab({ user, onSave }: PersonalInfoTabProps) {
     return { ...u };
   }
 
-  const update = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => {
+  const update = <K extends keyof UserProfile>(
+    key: K,
+    value: UserProfile[K],
+  ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     setSaved(false);
   };
@@ -106,20 +109,15 @@ export function PersonalInfoTab({ user, onSave }: PersonalInfoTabProps) {
       {/* Phone + Gender */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Field label="Phone" required>
-          <div className="flex gap-2">
-            <select
-              className={`${inputClasses} w-24 shrink-0`}
-              value={form.phoneCountryCode}
-              onChange={(e) => update("phoneCountryCode", e.target.value)}
-              disabled={saving}
-            >
-              <option value="+91">+91</option>
-              <option value="+1">+1</option>
-              <option value="+44">+44</option>
-            </select>
+          <div className="flex items-center gap-3">
+         
 
             <input
-              className={inputClasses}
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel-national"
+              placeholder="+91 9876543210"
+              className={`${inputClasses} flex-1 min-w-0`}
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
               disabled={saving}
@@ -167,8 +165,11 @@ export function PersonalInfoTab({ user, onSave }: PersonalInfoTabProps) {
           )}
         </button>
 
-        {saved && <span className="text-sm text-success font-medium">Saved</span>}
+        {saved && (
+          <span className="text-sm text-success font-medium">Saved</span>
+        )}
       </div>
     </form>
   );
 }
+

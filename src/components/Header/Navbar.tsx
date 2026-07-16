@@ -72,7 +72,7 @@ export default function Navbar({
           }`}
       >
         {/* ============ DESKTOP / LAPTOP (lg and up) ============ */}
-        <div className="hidden lg:flex items-center justify-between h-[72px] max-w-[1440px] mx-auto px-8 xl:px-12 gap-8 xl:gap-12">
+        <div className="hidden lg:flex items-center justify-between h-[72px] px-8 xl:px-12 gap-8 xl:gap-12">
           <div className=" flex items-center gap-4">
             <Link to="/" className="shrink-0 flex items-center">
               <img
