@@ -5,10 +5,15 @@ import RatingsAndReviews from "./RatingReviews";
 import { useNavigate, useParams } from "react-router-dom"; // Removed unused 'useNavigation'
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
+import { useToast } from "../../../../hooks/useToast.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { Heart } from "lucide-react";
+import AddressSidebar from "../../../../components/AddressSidebar/AddressSidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../../../../redux/slices/cartSlice";
 
 /* ---------------------------- Small building blocks ---------------------------- */
+
 
 const StarRating = ({ rating, totalRatings }: any) => (
   <div className="flex items-center gap-1.5 mt-1">
@@ -95,6 +100,15 @@ const ProductInfo = () => {
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
+
+
+
+
+  const cart = useSelector((state: any) => state.cart.items);
+  console.log(cart, "=====cart");
 
   useEffect(() => {
     if (!id) return;
@@ -120,7 +134,13 @@ const ProductInfo = () => {
     console.log("Hello0 from the other side ")
   }
 
-  const addToCart = () => {
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast("warning", "Please login to add items to cart");
+      navigate("/auth/login");
+      return;
+    }
+
     postQuery({
       url: apiUrls.Cart.add,
       postData: {
@@ -129,12 +149,24 @@ const ProductInfo = () => {
         "quantity": 1
       },
       onSuccess: (res: any) => {
-        alert(res.message)
-        // console.log(res, "====success section")
+        toast("success", res.message);
+        dispatch(
+          addToCart({
+            id: productData._id,
+            brand: productData.brand,
+            name: productData.title,
+            image: productData.image || productData.thumbnail || "",
+            quantity: 1,
+            qty: 1,
+            size: productData?.price?.[selectedSize]?.size?.size || "",
+            price: productData?.price?.[selectedSize]?.amount || 0,
+            mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
+          })
+        );
       },
       onFail: (res: any) => {
         console.log(res?.data?.message, "=====error section");
-        alert(res?.data?.message)
+        toast("error", res?.data?.message || "Failed to add item to cart");
         setIsLoading(false);
       },
     });
@@ -207,9 +239,10 @@ const ProductInfo = () => {
       },
     ],
   };
-
+  const [isAddressSidebarOpen, setIsAddressSidebarOpen] = useState(false);
   const [thumbnail, setThumbnail] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
+
 
 
   const [selectedSize, setSelectedSize] = React.useState<number>(0);
@@ -229,7 +262,7 @@ const ProductInfo = () => {
   if (isLoading) {
     return (
       <section className="bg-[#fdf9f3] py-5">
-        <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
+        <div className="px-5 sm:px-10 lg:px-20 ">
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#835240]"></div>
@@ -243,7 +276,12 @@ const ProductInfo = () => {
 
   return (
     product && productData && (
+
       <section className="bg-[#fdf9f3] py-5">
+        <AddressSidebar
+          isOpen={isAddressSidebarOpen}
+          onClose={() => setIsAddressSidebarOpen(false)}
+        />
         <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
           <div className="max-w-6xl w-full ">
             <p className="text-[10.5px] tracking-[0.08em] uppercase text-[#84746e]">
@@ -292,7 +330,7 @@ const ProductInfo = () => {
                   {productData?.title}
                 </h1>
 
-                <StarRating rating={productData?.rating} totalRatings={product.totalRatings} />
+                <StarRating rating={productData?.averageRating} totalRatings={product.totalRatings} />
 
                 <div className="mt-3 flex items-baseline gap-2">
                   <span className="text-[22px] text-[#3b302a] font-semibold leading-none">
@@ -302,12 +340,12 @@ const ProductInfo = () => {
                     MRP ₹{productData?.price?.[selectedSize]?.markupPrice}
                   </span>
                   <span className="text-[13px] text-[#835240] font-medium">
-                    ({Math.round((productData?.price?.[selectedSize]?.discount * 100) / (productData?.price?.[selectedSize]?.markupPrice || 1)) || 0}% OFF)
+                    ({productData?.price?.[selectedSize]?.discount || 0}% OFF)
                   </span>
                 </div>
                 {productData?.price?.[selectedSize]?.discount != 0 &&
                   <p className="mt-0.5 text-[11px] text-[#84746e]">
-                    inclusive of all taxes · you save ₹{productData?.price?.[selectedSize]?.discount}
+                    inclusive of all taxes · you save ₹{productData?.price?.[selectedSize]?.markupPrice - productData?.price?.[selectedSize]?.amount}
                   </p>
                 }
 
@@ -368,13 +406,14 @@ const ProductInfo = () => {
 
                 <div className="mt-4 flex items-center gap-2">
                   <button
-                    onClick={addToCart}
+                    onClick={handleAddToCart}
                     type="button"
                     className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium bg-[#835240] text-[#fdf9f3] rounded-sm hover:bg-[#51291a] transition-colors duration-200"
                   >
                     Add to Cart
                   </button>
                   <button
+                    onClick={() => setIsAddressSidebarOpen(true)}
                     type="button"
                     className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] text-[#835240] rounded-sm hover:bg-[#835240] hover:text-[#fdf9f3] transition-colors duration-200"
                   >

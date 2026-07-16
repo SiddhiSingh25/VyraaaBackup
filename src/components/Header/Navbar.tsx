@@ -5,6 +5,7 @@ import SearchBar from "./Component/SearchBar";
 import MegaMenu from "./Component/MegaMenu";
 import { NAV_LINKS } from "./Component/navData";
 import MobileMenu from "./Component/MobileMenu";
+import { useSelector } from "react-redux";
 
 interface NavbarProps {
   wishlistCount?: number;
@@ -46,7 +47,11 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const cartPulse = useBadgePulse(cartCount);
+
+  const cartItems = useSelector((state: any) => state.cart.items || []);
+  const calculatedCartCount = cartItems.reduce((acc: number, item: any) => acc + (item.quantity || item.qty || 1), 0);
+
+  const cartPulse = useBadgePulse(calculatedCartCount);
   const wishlistPulse = useBadgePulse(wishlistCount);
 
   useEffect(() => {
@@ -60,20 +65,19 @@ export default function Navbar({
     <>
       <header
         className={`sticky top-0 z-50 w-full transition-all duration-300 ease-out
-          ${
-            scrolled
-              ? "bg-background/90 backdrop-blur-xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] border-b border-border/50"
-              : "bg-background border-b border-border/30"
+          ${scrolled
+            ? "bg-background/90 backdrop-blur-xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] border-b border-border/50"
+            : "bg-background border-b border-border/30"
           }`}
       >
         {/* ============ DESKTOP / LAPTOP (lg and up) ============ */}
-        <div className="hidden lg:flex items-center justify-between h-[72px] max-w-[1440px] mx-auto px-8 xl:px-12 gap-8 xl:gap-12">
+        <div className="hidden lg:flex items-center justify-between h-[72px] px-8 xl:px-12 gap-8 xl:gap-12">
           <div className=" flex items-center gap-4">
             <Link to="/" className="shrink-0 flex items-center">
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-14 w-auto object-contain "
+                className="h-20 mt-2 w-auto object-contain "
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -124,7 +128,7 @@ export default function Navbar({
                 className="relative text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <ShoppingBag size={19} strokeWidth={1.6} />
-                <Badge count={cartCount} pulse={cartPulse} />
+                <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
               <Link
                 to="/profile"
@@ -150,7 +154,7 @@ export default function Navbar({
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-12 w-auto object-contain"
+                className="h-18 w-auto object-contain"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -163,7 +167,7 @@ export default function Navbar({
               </Link>
               <Link to="/checkout/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
-                <Badge count={cartCount} pulse={cartPulse} />
+                <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
               <Link to="/profile" className="text-admin-text/80">
                 <User size={20} strokeWidth={1.6} />
@@ -185,11 +189,11 @@ export default function Navbar({
             >
               <Menu size={22} strokeWidth={1.6} />
             </button>
-            <Link to="/" className="justify-self-center flex items-center">
+            <Link to="/" className="  justify-self-center flex items-center">
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-10 w-auto object-contain"
+                className="h-16 mt-1 w-auto object-contain"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -202,7 +206,7 @@ export default function Navbar({
               </Link>
               <Link to="/checkout/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
-                <Badge count={cartCount} pulse={cartPulse} />
+                <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
             </div>
           </div>

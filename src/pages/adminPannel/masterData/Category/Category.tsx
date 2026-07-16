@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Plus } from 'lucide-react';
-import Button from './component/Button';
-import SearchInput from './component/SearchInput';
-import ConfirmDialog from './component/ConfirmDialog';
+import Button from '../../../../components/tableComponents/Button';
+import SearchInput from '../../../../components/tableComponents/SearchInput';
+import ConfirmDialog from '../../../../components/tableComponents/ConfirmDialog';
 import type { Category, CategoryFormValues, ModalMode } from './component/types';
 import CategoryTable from './component/CategoryTable';
 import CategoryFormModal from './component/CategoryFormModal';

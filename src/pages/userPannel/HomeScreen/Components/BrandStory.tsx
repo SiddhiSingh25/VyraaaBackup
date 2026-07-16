@@ -10,7 +10,7 @@ export default function SignatureScent() {
   const ref = useReveal<HTMLElement>();
 
   return (
-    <section ref={ref} className="py-10  px-5 sm:px-10 max-w-6xl mx-auto">
+    <section ref={ref} className="py-10  px-5 sm:px-10 ">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         {/* Image side */}
         <div data-reveal className="relative mx-auto w-full max-w-md">

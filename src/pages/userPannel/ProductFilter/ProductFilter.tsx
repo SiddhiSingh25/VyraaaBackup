@@ -210,7 +210,7 @@ export default function ProductFilter() {
         onRemoveChip={removeChip}
       />
 
-      <div className="max-w-[1440px] mx-auto px-4 md:px-8 flex gap-8 py-3 md:py-5">
+      <div className=" px-4 md:px-8 flex gap-8 py-3 md:py-5">
         {/* Desktop sidebar */}
         <aside
           className="hidden lg:block w-[268px] shrink-0 sticky self-start"

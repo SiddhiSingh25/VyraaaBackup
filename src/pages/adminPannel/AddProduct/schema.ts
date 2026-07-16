@@ -3,7 +3,7 @@ import type { QuickAddValues } from "./types";
 
 export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
   // Taxonomy
- category: yup.string().when("$hideCategoryField", {
+  category: yup.string().when("$hideCategoryField", {
     is: true,
     then: (schema) => schema.optional(),
     otherwise: (schema) => schema.required("Category is required"),
@@ -29,6 +29,7 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
       "6-8 Years",
       "9-12 Years",
       "13-18 Years",
+      "Adult",
     ])
     .optional(),
 
@@ -36,12 +37,10 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
   attributes: yup
     .array()
     .of(
-      yup
-        .object()
-        .shape({
-          property: yup.string().required(),
-          value: yup.string().required(),
-        }),
+      yup.object().shape({
+        property: yup.string().required(),
+        value: yup.string().required(),
+      }),
     )
     .default([]),
 
@@ -53,6 +52,7 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
     .array()
     .of(
       yup.object({
+        sku: yup.string().required("SKU is required"),
         size: yup
           .object({
             value: yup.string().required("Size is required"),
@@ -100,4 +100,6 @@ export const quickAddDefaultValues: QuickAddValues = {
   sizeType: "",
   variants: [],
   images: [],
+  sku: "",
+  appendSizeType: false,
 };

@@ -84,7 +84,7 @@ export default function ProductShowcase() {
 
   return (
     <section className="bg-surface/50 py-10">
-      <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
+      <div className="px-5 sm:px-10 lg:px-20 ">
 
         {/* Sub-category pills */}
         <div className="flex gap-4 overflow-x-auto pb-1 mb-10 justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

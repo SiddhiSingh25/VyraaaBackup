@@ -99,7 +99,7 @@ export default function Testimonials() {
 
   return (
     <section ref={ref} className="py-10 bg-background">
-      <div className="px-5 sm:px-10 lg:px-20 max-w-[860px] mx-auto">
+      <div className="px-5 sm:px-10 lg:px-20 ">
         <div data-reveal className="text-center mb-6 sm:mb-8">
           <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-primary mb-2 block">
             What Our Customers Say

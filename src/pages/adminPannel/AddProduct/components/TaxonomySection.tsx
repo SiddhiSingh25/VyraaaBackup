@@ -19,7 +19,7 @@ type TaxonomySectionProps = {
   addSubCategory: (subcategory?: string) => void;
   addSubCategoryType: (type?: string) => void;
   getCategoryLoading: boolean;
-  hideCategoryField : any
+  hideCategoryField: any;
   // typeOptions: Option[];
 };
 
@@ -40,36 +40,33 @@ const TaxonomySection = ({
   subcategoryTypeLoading,
   addSubCategoryType,
 }: TaxonomySectionProps) => {
-
-
   return (
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
         <TbCategoryPlus className="text-primary text-xl" />
-        <h3 className="text-lg  text-sm font-semibold tracking-tight  font-semibold">
-          Category
-        </h3>
+        <h3 className="text-lg font-semibold tracking-tight">Category</h3>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-3">
-        {!hideCategoryField &&          <Controller
-          name="category"
-          control={control}
-          render={({ field }) => (
-            <SearchableSelect
-              {...field}
-              label="Category"
-              required
-              showAddButton
-              addButtonText="Create new category"
-              onAdd={addCategory}
-              error={errors.category?.message}
-              options={categoryOptions}
-              placeholder="Select category"
-            />
-          )}
-        />}
-
+        {!hideCategoryField && (
+          <Controller
+            name="category"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect
+                {...field}
+                label="Category"
+                required
+                showAddButton
+                addButtonText="Create new category"
+                onAdd={addCategory}
+                error={errors.category?.message}
+                options={categoryOptions}
+                placeholder="Select category"
+              />
+            )}
+          />
+        )}
 
         <Controller
           name="subcategory"

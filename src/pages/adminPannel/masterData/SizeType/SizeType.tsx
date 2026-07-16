@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
-import Button from '../Category/component/Button';
-import ConfirmDialog from '../Category/component/ConfirmDialog';
+import Button from '../../../../components/tableComponents/Button';
+import ConfirmDialog from '../../../../components/tableComponents/ConfirmDialog';
 import SizeTypeTable from './component/SizeTypeTable';
 import SizeTypeFormModal from './component/SizeTypeFormModal';
 import type { SizeTypeItem, SizeTypeFormValues, ModalMode } from './component/types';

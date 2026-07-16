@@ -1,30 +1,79 @@
 import { Heart, ShoppingBag } from "lucide-react";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiUrls } from "../../../../apis";
+import { useToast } from "../../../../hooks/useToast.hook";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { addToWishlist, removeFromWishlist } from "@/redux/slices/wishlistSlice";
 
 const ProductCard = ({ product }: any) => {
-  const { getQuery } = useGetQuery()
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { getQuery } = useGetQuery();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const wishlistItems = useAppSelector((state) => state.wishlist.items || []);
+  const isWishlisted = wishlistItems.some((item: any) => item.id === product.id);
 
-  const handleWishlist = () => {
-    // console.log("Hel;lo");
-    // setIsWishlisted(true);
-    getQuery({
-      url: apiUrls.WishList.add + product?.id,
-      onSuccess: (res: any) => {
-        alert(res.message)
-      },
-      onFail: (res: any) => {
-        console.error("Failed to fetch wishlist:", res);
-      },
-    });
+  console.log(product, "**********")
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast("info", "Please log in to add items to your wishlist");
+      navigate("/auth/login");
+      return;
+    }
+
+    if (isWishlisted) {
+      getQuery({
+        url: apiUrls.WishList.remove + product?.id,
+        onSuccess: (res: any) => {
+          toast("success", res.message || "Removed from wishlist");
+          dispatch(removeFromWishlist(product.id));
+        },
+        onFail: (res: any) => {
+          console.error("Failed to remove from wishlist:", res);
+          toast("error", "Failed to remove from wishlist");
+        },
+      });
+    } else {
+      getQuery({
+        url: apiUrls.WishList.add + product?.id,
+        onSuccess: (res: any) => {
+          toast("success", res.message || "Added to wishlist");
+          dispatch(addToWishlist({
+            id: product.id,
+            brand: product.brand || "Vyraa",
+            name: product.name,
+            image: product.img,
+            price: typeof product.price === 'number' ? product.price : parseFloat(product.price?.toString().replace(/[^\d\.]/g, '') || '0'),
+            stockStatus: "in-stock"
+          }));
+        },
+        onFail: (res: any) => {
+          console.error("Failed to add to wishlist:", res);
+          toast("error", res.message || "Failed to add to wishlist");
+        },
+      });
+    };
   };
 
+
+
+
+
+  const handleAddToCart = () => {
+    console.log("clickedddddd")
+  }
+
+
   return (
-    <Link to={`/productDeatils/${product.id}`}>
+    <Link to={`/productDetails/${product.id}`}>
       <div className="group transition-all duration-500 ease-out hover:-translate-y-1 bg-gray-50 shadow rounded-xl">
         <div className="relative aspect-[4/5] overflow-hidden rounded-xl sm:rounded-2xl mb-4 sm:mb-6 bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06)] group-hover:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.18)] transition-shadow duration-500">
           <img
@@ -51,7 +100,7 @@ const ProductCard = ({ product }: any) => {
           <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out">
             <div className="bg-[#FAF6F0]/95 backdrop-blur-sm border-t border-[#D4B896]/40">
               <button className="w-full py-3 sm:py-3.5 text-[10px] sm:text-[11px] font-medium tracking-[0.28em] uppercase text-admin-text hover:text-[#B08D57] transition-colors duration-300">
-                Discover
+                View Product
               </button>
             </div>
           </div>
@@ -76,6 +125,7 @@ const ProductCard = ({ product }: any) => {
             </p>
 
             <button
+              onClick={handleAddToCart}
               aria-label="Add to bag"
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-dark/90 hover:bg-dark flex items-center justify-center shrink-0 active:scale-90 transition-all duration-150"
             >

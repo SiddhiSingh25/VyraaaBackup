@@ -1,5 +1,6 @@
 import AdminLayout from "../pages/adminPannel/Layout";
 import Dashboard from "../pages/adminPannel/Dashboard";
+import ProtectedRoute from "../components/guards/ProtectedRoute";
 import QuickAddProduct from "../pages/adminPannel/AddProduct/QuickAddProduct";
 import Category from '../pages/adminPannel/masterData/Category/Category';
 import SubCategory from '../pages/adminPannel/masterData/SubCategory/SubCategory';
@@ -19,9 +20,12 @@ import PropertyValues from '../pages/adminPannel/masterData/PropertyValues/Prope
 
 export const adminRoutes = [
   {
-    path: "/admin",
-    element: <AdminLayout />,
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
+      {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [
       {
         index: true,
         element: <QuickAddProduct />,
@@ -79,6 +83,8 @@ export const adminRoutes = [
       {
         path: "master-channel/property-values",
         element: <PropertyValues />,
+      },
+        ],
       },
     ],
   },

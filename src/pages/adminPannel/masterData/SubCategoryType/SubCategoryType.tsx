@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
-import Button from '../Category/component/Button';
-import ConfirmDialog from '../Category/component/ConfirmDialog';
+import Button from '../../../../components/tableComponents/Button';
+import ConfirmDialog from '../../../../components/tableComponents/ConfirmDialog';
 import SubCategoryTypeTable from './component/SubCategoryTypeTable';
 import SubCategoryTypeFormModal from './component/SubCategoryTypeFormModal';
 import type { SubCategoryType, SubCategoryTypeFormValues, ModalMode } from './component/types';
