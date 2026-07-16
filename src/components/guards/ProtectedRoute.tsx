@@ -21,9 +21,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Check role-based authorization if allowedRoles are specified
-  // if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-  //   return <Navigate to="/" replace />;
-  // }
+  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
 
   // Render children subroutes
   return <Outlet />;

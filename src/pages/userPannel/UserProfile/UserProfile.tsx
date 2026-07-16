@@ -69,40 +69,42 @@ export default function Profile() {
     fetchAddresses();
   }, [fetchAddresses]);
 
-  const handleSaveAddress = async (
+  const handleSaveAddress = (
     formData: any,
-    addressId?: string
-  ): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
-      postQuery({
-        url: apiUrls.Address.add,
-        postData: addressId ? { addressId, ...formData } : formData,
-        onSuccess: () => {
-          fetchAddresses();
-          resolve(true);
-        },
-        onFail: (err: any) => {
-          console.error("Save address failed", err);
-          resolve(false);
-        },
-      });
+    addressId?: string,
+    onSuccess?: () => void,
+    onFail?: (err: any) => void
+  ) => {
+    postQuery({
+      url: apiUrls.Address.add,
+      postData: addressId ? { addressId, ...formData } : formData,
+      onSuccess: () => {
+        fetchAddresses();
+        onSuccess?.();
+      },
+      onFail: (err: any) => {
+        console.error("Save address failed", err);
+        onFail?.(err);
+      },
     });
   };
 
-  const handleDeleteAddress = async (addressId: string): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
-      postQuery({
-        url: apiUrls.Address.delete,
-        postData: { addressId },
-        onSuccess: () => {
-          setAddresses((prev) => prev.filter((a) => a._id !== addressId));
-          resolve(true);
-        },
-        onFail: (err: any) => {
-          console.error("Delete address failed", err);
-          resolve(false);
-        },
-      });
+  const handleDeleteAddress = (
+    addressId: string,
+    onSuccess?: () => void,
+    onFail?: (err: any) => void
+  ) => {
+    postQuery({
+      url: apiUrls.Address.delete,
+      postData: { addressId },
+      onSuccess: () => {
+        setAddresses((prev) => prev.filter((a) => a._id !== addressId));
+        onSuccess?.();
+      },
+      onFail: (err: any) => {
+        console.error("Delete address failed", err);
+        onFail?.(err);
+      },
     });
   };
 
@@ -154,41 +156,43 @@ export default function Profile() {
     })
   }, [getQuery])
 
-  const handleSaveProfile = async (updated: UserProfile): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
-      postQuery({
-        url: apiUrls.Auth.updateProfile,
-        postData: {
-          firstName: updated.firstName,
-          lastName: updated.lastName,
-          mobileNo: updated.phone,
-          gender: mapFrontendGender(updated.gender),
-          profilePic: updated.avatarUrl || "",
-        },
-        onSuccess: (res: any) => {
-          const profile = res?.data;
-          if (profile) {
-            setUser((prev) => {
-              if (!prev) return null;
-              return {
-                ...prev,
-                firstName: profile.firstName || prev.firstName,
-                lastName: profile.lastName || prev.lastName,
-                phone: profile.mobileNo || prev.phone,
-                gender: mapBackendGender(profile.gender || ""),
-                avatarUrl: profile.profilePic || prev.avatarUrl || null,
-              };
-            });
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        },
-        onFail: (err: any) => {
-          console.error("Save profile failed", err);
-          resolve(false);
-        },
-      });
+  const handleSaveProfile = (
+    updated: UserProfile,
+    onSuccess?: () => void,
+    onFail?: (err: any) => void
+  ) => {
+    postQuery({
+      url: apiUrls.Auth.updateProfile,
+      postData: {
+        firstName: updated.firstName,
+        lastName: updated.lastName,
+        mobileNo: updated.phone,
+        gender: mapFrontendGender(updated.gender),
+        profilePic: updated.avatarUrl || "",
+      },
+      onSuccess: (res: any) => {
+        const profile = res?.data;
+        if (profile) {
+          setUser((prev) => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              firstName: profile.firstName || prev.firstName,
+              lastName: profile.lastName || prev.lastName,
+              phone: profile.mobileNo || prev.phone,
+              gender: mapBackendGender(profile.gender || ""),
+              avatarUrl: profile.profilePic || prev.avatarUrl || null,
+            };
+          });
+          onSuccess?.();
+        } else {
+          onFail?.({ message: "Invalid payload received from response" });
+        }
+      },
+      onFail: (err: any) => {
+        console.error("Save profile failed", err);
+        onFail?.(err);
+      },
     });
   };
 
@@ -203,7 +207,7 @@ export default function Profile() {
     <div className="min-h-screen bg-background font-body">
       <Navbar />
 
-      <main className="max-w-[1400px] mx-auto px-6 md:px-10 py-6">
+      <main className="px-6 md:px-10 py-6">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-admin-text">
@@ -264,10 +268,10 @@ export default function Profile() {
 
                   {activeTab === "addresses" && (
                     <AddressesTab
-                      addresses={addresses}
-                      onSave={handleSaveAddress}
-                      onDelete={handleDeleteAddress}
-                      loading={loadingAddresses}
+                    // addresses={addresses}
+                    // onSave={handleSaveAddress}
+                    // onDelete={handleDeleteAddress}
+                    // loading={loadingAddresses}
                     />
                   )}
 

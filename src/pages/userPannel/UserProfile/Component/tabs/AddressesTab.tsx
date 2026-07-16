@@ -1,8 +1,12 @@
-"use client";
-
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MapPin, Plus, Pencil, Trash2, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/useToast.hook";
+import useGetQuery from "@/hooks/getQuery.hook";
+import usePostQuery from "@/hooks/postQuery.hook";
+import { useAppSelector } from "@/redux/hooks";
+import { apiUrls } from "@/apis";
+import useDeleteQuery from "@/hooks/deleteQuery.hook";
+import ConfirmDialog from "@/components/tableComponents/ConfirmDialog";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -10,7 +14,7 @@ import { useToast } from "@/hooks/useToast.hook";
 
 export interface Address {
   _id: string;
-  userId: string;
+  // userId: string;
   addressType: string; // "Home" | "Work" | etc.
   isDefault: boolean;
   fullName: string;
@@ -22,9 +26,10 @@ export interface Address {
   pinCode: string;
   country: string;
   phoneNumber: string;
+  userId: string;
 }
 
-export type AddressFormData = Omit<Address, "_id" | "userId">;
+export type AddressFormData = Omit<Address, "_id">;
 
 const EMPTY_FORM: AddressFormData = {
   addressType: "Home",
@@ -38,25 +43,22 @@ const EMPTY_FORM: AddressFormData = {
   pinCode: "",
   country: "India",
   phoneNumber: "",
+  userId: "",
 };
 
-export interface AddressesTabProps {
-  addresses: Address[];
-  onSave: (payload: AddressFormData, addressId?: string) => Promise<boolean>;
-  onDelete: (addressId: string) => Promise<boolean>;
-  loading?: boolean;
-}
+export interface AddressesTabProps { }
 
 /* ------------------------------------------------------------------ */
 /* Component                                                           */
 /* ------------------------------------------------------------------ */
 
-export function AddressesTab({
-  addresses = [],
-  onSave,
-  onDelete,
-  loading = false,
-}: AddressesTabProps) {
+export function AddressesTab() {
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const { getQuery, loading } = useGetQuery();
+  const { deleteQuery } = useDeleteQuery();
+  const { postQuery } = usePostQuery();
+  const { user } = useAppSelector((state: any) => state.auth);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [formData, setFormData] = useState<AddressFormData>(EMPTY_FORM);
@@ -64,11 +66,32 @@ export function AddressesTab({
   const [formError, setFormError] = useState<string | null>(null);
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const fetchAddresses = useCallback(() => {
+    getQuery({
+      url: apiUrls.Address.getByUserId,
+      onSuccess: (res: any) => {
+        setAddresses(res?.data ?? []);
+      },
+      onFail: (err: any) => {
+        console.error("Failed to load addresses", err);
+      },
+    });
+  }, [getQuery]);
+
+  useEffect(() => {
+    fetchAddresses();
+  }, [fetchAddresses]);
 
   const openAddModal = () => {
     setEditingAddress(null);
-    setFormData(EMPTY_FORM);
+    setFormData({
+      ...EMPTY_FORM,
+      userId: user?._id || user?.id || "",
+    });
     setFormError(null);
     setIsModalOpen(true);
   };
@@ -87,6 +110,7 @@ export function AddressesTab({
       pinCode: addr.pinCode,
       country: addr.country,
       phoneNumber: addr.phoneNumber,
+      userId: user?._id || user?.id || "",
     });
     setFormError(null);
     setIsModalOpen(true);
@@ -100,46 +124,70 @@ export function AddressesTab({
 
   const handleFormChange = (
     field: keyof AddressFormData,
-    value: string | boolean
+    value: string | boolean,
   ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setFormError(null);
-    try {
-      const success = await onSave(formData, editingAddress?._id);
-      if (success) {
-        toast("success", `Address ${editingAddress ? "updated" : "added"} successfully`);
+    postQuery({
+      url: apiUrls.Address.add,
+      postData: editingAddress?._id
+        ? { addressId: editingAddress._id, ...formData }
+        : formData,
+      onSuccess: () => {
+        toast(
+          "success",
+          `Address ${editingAddress ? "updated" : "added"} successfully`,
+        );
         setIsModalOpen(false);
         setEditingAddress(null);
-      } else {
-        setFormError("Failed to save address");
-      }
-    } catch (err) {
-      setFormError("Error saving address");
-    } finally {
-      setSubmitting(false);
-    }
+        setSubmitting(false);
+        fetchAddresses();
+      },
+      onFail: (err: any) => {
+        setFormError(
+          err?.data?.message || err?.message || "Failed to save address",
+        );
+        setSubmitting(false);
+      },
+    });
   };
 
-  const handleDelete = async (addressId: string) => {
-    if (!window.confirm("Remove this address?")) return;
-    setDeletingId(addressId);
-    try {
-      const success = await onDelete(addressId);
-      if (success) {
+  const handleDeleteClick = (addressId: string) => {
+    setAddressToDelete(addressId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!addressToDelete) return;
+    setDeleteConfirmOpen(false);
+    setDeletingId(addressToDelete);
+    deleteQuery({
+      url: `${apiUrls.Address.delete}/${addressToDelete}`,
+      onSuccess: () => {
         toast("success", "Address removed successfully");
-      } else {
-        toast("error", "Failed to delete address");
-      }
-    } catch (err) {
-      toast("error", "Error deleting address");
-    } finally {
-      setDeletingId(null);
-    }
+        setAddresses((prev) => prev.filter((a) => a._id !== addressToDelete));
+        setDeletingId(null);
+        setAddressToDelete(null);
+      },
+      onFail: (err: any) => {
+        toast(
+          "error",
+          err?.data?.message || err?.message || "Failed to delete address",
+        );
+        setDeletingId(null);
+        setAddressToDelete(null);
+      },
+    });
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmOpen(false);
+    setAddressToDelete(null);
   };
 
   return (
@@ -210,7 +258,7 @@ export function AddressesTab({
 
                 <button
                   type="button"
-                  onClick={() => handleDelete(addr._id)}
+                  onClick={() => handleDeleteClick(addr._id)}
                   disabled={deletingId === addr._id}
                   className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
                 >
@@ -381,6 +429,16 @@ export function AddressesTab({
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        title="Remove Address"
+        description="Are you sure you want to remove this address? This action cannot be undone."
+        confirmLabel="Remove"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 }

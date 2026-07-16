@@ -24,7 +24,7 @@ const ProductCard = ({ product }: any) => {
   };
 
   return (
-    <Link to={`/productDeatils/${product.id}`}>
+    <Link to={`/productDetails/${product.id}`}>
       <div className="group transition-all duration-500 ease-out hover:-translate-y-1 bg-gray-50 shadow rounded-xl">
         <div className="relative aspect-[4/5] overflow-hidden rounded-xl sm:rounded-2xl mb-4 sm:mb-6 bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06)] group-hover:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.18)] transition-shadow duration-500">
           <img

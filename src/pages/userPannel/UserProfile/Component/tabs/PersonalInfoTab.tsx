@@ -4,7 +4,11 @@ import { useToast } from "@/hooks/useToast.hook";
 
 interface PersonalInfoTabProps {
   user: UserProfile;
-  onSave: (updated: UserProfile) => Promise<boolean>;
+  onSave: (
+    updated: UserProfile,
+    onSuccess?: () => void,
+    onFail?: (err: any) => void
+  ) => void;
 }
 
 function Field({
@@ -48,27 +52,25 @@ export function PersonalInfoTab({ user, onSave }: PersonalInfoTabProps) {
     setSaved(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (saving) return;
 
     setSaving(true);
     setSaved(false);
 
-    try {
-      const success = await onSave(form);
-      if (success) {
+    onSave(
+      form,
+      () => {
         setSaved(true);
         toast("success", "Profile updated successfully");
-      } else {
-        toast("error", "Failed to update profile");
+        setSaving(false);
+      },
+      (err) => {
+        toast("error", err?.data?.message || err?.message || "Failed to update profile");
+        setSaving(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast("error", "Error saving profile");
-    } finally {
-      setSaving(false);
-    }
+    );
   };
 
   return (
