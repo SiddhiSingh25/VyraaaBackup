@@ -10,6 +10,9 @@ import VariantDraftForm from "./VariantDraftForm";
 import VariantsTable from "./VariantsTable";
 import type { DraftVariant, Option, VariantEntry } from "../types";
 import { RxCross2 } from "react-icons/rx";
+import { Controller, type Control, type FieldErrors } from "react-hook-form";
+import type { QuickAddValues } from "../types";
+import { SearchableSelect } from "../../../../components/SearchableDropdown/SearchableDropdown";
 
 const emptyDraftVariant: DraftVariant = {
   size: {},
@@ -22,18 +25,26 @@ const emptyDraftVariant: DraftVariant = {
 };
 
 type VariantsSectionProps = {
+  control: Control<QuickAddValues>;
+  errors: FieldErrors<QuickAddValues>;
   variants: VariantEntry[];
   setVariants: (variants: VariantEntry[]) => void;
+  sizeTypeOptions: Option[];
   sizeOptions: Option[];
-  sizeTypeSelected: any;
+  sizeTypeSelected: string;
+  addSizeType: (name?: string) => void;
   errorMessage?: string;
 };
 
 const VariantsSection = ({
+  control,
+  errors,
   variants,
   setVariants,
+  sizeTypeOptions,
   sizeOptions,
   sizeTypeSelected,
+  addSizeType,
   errorMessage,
 }: VariantsSectionProps) => {
   const [showDraft, setShowDraft] = useState(false);
@@ -95,6 +106,24 @@ const VariantsSection = ({
           Inventory & Pricing
         </h3>
       </div>
+      <div className="mb-6">
+        <Controller
+          name="sizeType"
+          control={control}
+          render={({ field }) => (
+            <SearchableSelect
+              {...field}
+              label="Size Type"
+              required
+              options={sizeTypeOptions}
+              error={errors.sizeType?.message}
+              showAddButton
+              addButtonText="Create new size type"
+              onAdd={addSizeType}
+            />
+          )}
+        />
+      </div>
 
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <div>
@@ -104,6 +133,7 @@ const VariantsSection = ({
             availability.
           </p>
         </div>
+
         <Button
           type="button"
           variant="icon"

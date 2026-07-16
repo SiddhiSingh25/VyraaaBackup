@@ -42,8 +42,10 @@ const VariantDraftForm = ({
   const { sizeValueOptions, addSizeValue } = useSizeValueData(sizeTypeSelected);
 
   const handleAddSize = (query: string) => {
-    addSizeValue(query, (newSize) => {
+    if (!query?.trim()) return;
+    addSizeValue(query.trim(), (newSize) => {
       if (!newSize) return;
+
       setDraftVariant({
         ...draftVariant,
         size: {
@@ -51,6 +53,7 @@ const VariantDraftForm = ({
           label: newSize.size,
         },
       });
+
       setValue("size", newSize._id);
     });
   };
@@ -75,7 +78,7 @@ const VariantDraftForm = ({
                 }
                 showAddButton
                 addButtonText="Create new size"
-                onAdd={handleAddSize}
+                onAdd={(query) => handleAddSize(query!)}
                 onChange={(event) => {
                   field.onChange(event);
                   const selected = sizeValueOptions.find(
@@ -112,7 +115,7 @@ const VariantDraftForm = ({
             htmlFor="variant-price"
             className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted"
           >
-            PRICE
+            PRICE (in ₹)
           </label>
           <input
             id="variant-price"
@@ -133,7 +136,7 @@ const VariantDraftForm = ({
             htmlFor="variant-discount"
             className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted"
           >
-            DISCOUNT
+            DISCOUNT (in %)
           </label>
           <input
             id="variant-discount"

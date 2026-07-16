@@ -327,11 +327,12 @@ const QuickAddProduct = () => {
             ? imageUrls.slice(1).map((img) => ({ imageUrl: img }))
             : [],
       };
-
+      console.log("Before postQuery");
       await postQuery({
         url: apiUrls.Product.add,
         postData: payloadWithImages,
         onSuccess: (res: any) => {
+          console.log("SUCCESS", res);
           toast(
             "success",
             res?.message || res?.data?.message || "Product added successfully",
@@ -339,7 +340,7 @@ const QuickAddProduct = () => {
           // setShowSuccess(true);
           // resetForm();
           setAddedProduct({
-            id: res.data._id,
+            id: res.product._id,
             image: payloadWithImages.image,
             title: payload.title,
             sku: payload.sku,
@@ -353,10 +354,10 @@ const QuickAddProduct = () => {
 
           setShowProductModal(true);
 
-          resetForm();
+          // resetForm();
         },
         onFail: (err: any) => {
-          console.log("errur", err);
+          console.log("CATCH", err);
           toast(
             "error",
             err?.response?.data?.message ||
@@ -439,16 +440,16 @@ const QuickAddProduct = () => {
                 colorFamilyOptions={colorFamilyOptions}
                 selectedColorFamily={selectedColorFamily}
                 colorOptions={colorOptions}
-                sizeTypeOptions={sizeTypeOptions}
                 brandOptions={brandOptions}
                 addColorFamily={handleAddColorFamily}
-                addSizeType={handleAddSizeType}
                 addBrand={handleAddBrand}
                 addColor={handleAddColor}
                 selectedCategory={effectiveCategoryId}
               />
 
               <VariantsSection
+                control={control}
+                errors={errors}
                 variants={variants}
                 setVariants={(v) =>
                   setValue("variants", v as any, {
@@ -456,8 +457,10 @@ const QuickAddProduct = () => {
                     shouldDirty: true,
                   })
                 }
-                sizeOptions={sizeTypeOptions}
+                sizeTypeOptions={sizeTypeOptions}
+                sizeOptions={sizeValueOptions}
                 sizeTypeSelected={selectedSizeType}
+                addSizeType={handleAddSizeType}
                 errorMessage={errors.variants?.message as string | undefined}
               />
 
