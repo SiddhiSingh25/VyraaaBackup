@@ -30,7 +30,7 @@ import Button from "../masterData/Category/component/Button";
 import SkuSection from "./components/SKUCode";
 import ProductAddedModal from "./components/LinkProductModal";
 
-const TOTAL_SECTIONS = 5;
+const TOTAL_SECTIONS = 4;
 
 const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -79,6 +79,11 @@ const QuickAddProduct = () => {
   const attributes = watch("attributes") || [];
   const variants = watch("variants") || [];
   const appendSizeType = watch("appendSizeType");
+  const productName = watch("name");
+  const description = watch("description");
+  const color = watch("color");
+  const brand = watch("brand");
+  const gender = watch("gender");
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
@@ -242,15 +247,14 @@ const QuickAddProduct = () => {
       effectiveCategoryId && selectedSubcategoryId && selectedSubcategoryTypeId,
     ), // Category
 
-    Boolean(watch("sku")), // SKU
-
     Boolean(
-      watch("name") &&
-      watch("description") &&
+      productName &&
+      description &&
       selectedColorFamily &&
-      watch("color") &&
-      selectedSizeType,
-    ), // Product Details
+      color &&
+      brand &&
+      gender,
+    ),
 
     variants.length > 0, // Inventory & Pricing
 

@@ -5,7 +5,7 @@ type FormHeaderProps = {
   totalSections: number;
 };
 
-const steps = ["SKU Code", "Category", "Product", "Inventory", "Media"];
+const steps = ["Category", "Product", "Inventory", "Media"];
 
 const FormHeader = ({ completedSections, totalSections }: FormHeaderProps) => {
   return (
