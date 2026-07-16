@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, MapPin, Plus, Edit2, Trash2, CheckCircle2 } from "lucide-react";                 // Update path as needed
+import { X, MapPin, Plus, Edit2, Trash2, CheckCircle2, ChevronDown } from "lucide-react";                 // Update path as needed
 import useGetQuery from "../../hooks/getQuery.hook";
 import usePostQuery from "../../hooks/postQuery.hook";
 import { apiUrls } from "../../apis";
@@ -31,6 +31,7 @@ export default function AddressSidebar({ isOpen, onClose }: AddressSidebarProps)
     const [view, setView] = useState<"list" | "form">("list");
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
     const [addresses, setAddresses] = useState<Address[]>([]);
+    const [expandedAddresses, setExpandedAddresses] = useState<Record<string, boolean>>({});
 
     const { getQuery } = useGetQuery();
     const { postQuery } = usePostQuery();
@@ -48,6 +49,11 @@ export default function AddressSidebar({ isOpen, onClose }: AddressSidebarProps)
                 console.log("Failed to fetch addresses:", err);
             },
         });
+    };
+
+    const toggleAddressExpand = (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setExpandedAddresses((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
     // Run whenever the sidebar is opened
@@ -177,59 +183,93 @@ export default function AddressSidebar({ isOpen, onClose }: AddressSidebarProps)
                                 Add New Address
                             </button>
 
-                            {addresses.map((addr) => (
-                                <div
-                                    key={addr._id}
-                                    className={`relative p-4 rounded-xl border-2 transition-all ${addr.isDefault
-                                        ? "border-primary-dark bg-primary-dark/5"
-                                        : "border-border/50 hover:border-primary-dark/40 bg-surface"
-                                        }`}
-                                >
-                                    {addr.isDefault && (
-                                        <span className="absolute top-4 right-4 flex items-center gap-1 text-xs font-semibold text-primary-dark bg-primary-dark/10 px-2 py-1 rounded-md">
-                                            <CheckCircle2 size={14} /> Default
-                                        </span>
-                                    )}
-                                    <div className="mb-1 flex items-center gap-2">
-                                        <span className="font-semibold text-admin-text">{addr.fullName}</span>
-                                        <span className="text-[10px] uppercase tracking-wider bg-border/50 px-2 py-0.5 rounded-full text-admin-text/70">
-                                            {addr.addressType}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-admin-text/80 leading-relaxed mb-3 pr-16">
-                                        {addr.streetAddress}, {addr.landmark && `${addr.landmark}, `}
-                                        <br />
-                                        {addr.town}, {addr.city}, {addr.state} - {addr.pinCode}
-                                    </p>
-                                    <p className="text-sm font-medium text-admin-text mb-4">
-                                        Phone: {addr.phoneNumber}
-                                    </p>
-
-                                    <div className="flex items-center gap-3 pt-3 border-t border-border/50">
-                                        {!addr.isDefault && (
-                                            <button
-                                                onClick={() => handleSetDefault(addr)}
-                                                className="text-sm font-medium text-primary-dark hover:underline"
-                                            >
-                                                Deliver Here
-                                            </button>
+                            {addresses.map((addr) => {
+                                const isExpanded = !!expandedAddresses[addr._id!];
+                                return (
+                                    <div
+                                        key={addr._id}
+                                        onClick={() => !addr.isDefault && handleSetDefault(addr)}
+                                        className={`relative p-4 rounded-xl border-2 transition-all cursor-pointer select-none hover:shadow-sm ${addr.isDefault
+                                            ? "border-primary-dark bg-primary-dark/5"
+                                            : "border-border/50 hover:border-primary-dark/40 bg-surface"
+                                            }`}
+                                    >
+                                        {addr.isDefault && (
+                                            <span className="absolute top-4 right-4 flex items-center gap-1 text-xs font-semibold text-primary-dark bg-primary-dark/10 px-2 py-1 rounded-md">
+                                                <CheckCircle2 size={14} /> Default
+                                            </span>
                                         )}
-                                        <div className="flex-1" />
-                                        <button
-                                            onClick={() => handleOpenForm(addr)}
-                                            className="p-1.5 text-admin-text/60 hover:text-primary-dark hover:bg-primary-dark/10 rounded-md transition-colors"
-                                        >
-                                            <Edit2 size={16} />
-                                        </button>
-                                        <button
-                                            onClick={() => addr._id && handleDeleteAddress(addr._id)}
-                                            className="p-1.5 text-admin-text/60 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        <div className="mb-1 flex items-center gap-2">
+                                            <span className="font-semibold text-admin-text">{addr.fullName}</span>
+                                            <span className="text-[10px] uppercase tracking-wider bg-border/50 px-2 py-0.5 rounded-full text-admin-text/70">
+                                                {addr.addressType}
+                                            </span>
+                                        </div>
+
+                                        {isExpanded ? (
+                                            <>
+                                                <p className="text-sm text-admin-text/80 leading-relaxed mb-3 pr-16 transition-all duration-200">
+                                                    {addr.streetAddress}, {addr.landmark && `${addr.landmark}, `}
+                                                    <br />
+                                                    {addr.town}, {addr.city}, {addr.state} - {addr.pinCode}
+                                                </p>
+                                                <p className="text-sm font-medium text-admin-text mb-4 transition-all duration-200">
+                                                    Phone: {addr.phoneNumber}
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <p className="text-sm text-admin-text/70 truncate pr-16 mb-4 transition-all duration-200">
+                                                {addr.streetAddress}, {addr.city} - {addr.pinCode}
+                                            </p>
+                                        )}
+
+                                        <div className="flex items-center gap-3 pt-3 border-t border-border/50">
+                                            {!addr.isDefault && (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleSetDefault(addr);
+                                                    }}
+                                                    className="text-xs font-semibold text-primary-dark hover:underline"
+                                                >
+                                                    Deliver Here
+                                                </button>
+                                            )}
+
+                                            <button
+                                                onClick={(e) => addr._id && toggleAddressExpand(addr._id, e)}
+                                                className="text-xs font-semibold text-primary-dark hover:underline flex items-center gap-1"
+                                            >
+                                                {isExpanded ? "Show Less" : "Show More"}
+                                                <ChevronDown
+                                                    size={14}
+                                                    className={`transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                                                />
+                                            </button>
+
+                                            <div className="flex-1" />
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleOpenForm(addr);
+                                                }}
+                                                className="p-1.5 text-admin-text/60 hover:text-primary-dark hover:bg-primary-dark/10 rounded-md transition-colors"
+                                            >
+                                                <Edit2 size={16} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    addr._id && handleDeleteAddress(addr._id);
+                                                }}
+                                                className="p-1.5 text-admin-text/60 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         <AddressForm

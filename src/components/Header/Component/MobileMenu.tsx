@@ -48,7 +48,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
           <img
             src="/logo.png"
             alt="VYRAAA"
-            className="h-7 w-auto object-contain"
+            className="h-16 mt-1 w-auto object-contain"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
             }}

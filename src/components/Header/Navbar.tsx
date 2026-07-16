@@ -47,7 +47,7 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  
+
   const cartItems = useSelector((state: any) => state.cart.items || []);
   const calculatedCartCount = cartItems.reduce((acc: number, item: any) => acc + (item.quantity || item.qty || 1), 0);
 
@@ -65,10 +65,9 @@ export default function Navbar({
     <>
       <header
         className={`sticky top-0 z-50 w-full transition-all duration-300 ease-out
-          ${
-            scrolled
-              ? "bg-background/90 backdrop-blur-xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] border-b border-border/50"
-              : "bg-background border-b border-border/30"
+          ${scrolled
+            ? "bg-background/90 backdrop-blur-xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] border-b border-border/50"
+            : "bg-background border-b border-border/30"
           }`}
       >
         {/* ============ DESKTOP / LAPTOP (lg and up) ============ */}
@@ -78,7 +77,7 @@ export default function Navbar({
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-14 w-auto object-contain "
+                className="h-20 mt-2 w-auto object-contain "
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -155,7 +154,7 @@ export default function Navbar({
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-12 w-auto object-contain"
+                className="h-18 w-auto object-contain"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -190,11 +189,11 @@ export default function Navbar({
             >
               <Menu size={22} strokeWidth={1.6} />
             </button>
-            <Link to="/" className="justify-self-center flex items-center">
+            <Link to="/" className="  justify-self-center flex items-center">
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-10 w-auto object-contain"
+                className="h-16 mt-1 w-auto object-contain"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}

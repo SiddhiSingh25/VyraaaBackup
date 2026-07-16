@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import type { StockStatus, WishlistProduct } from "./types";
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiUrls } from "../../../../apis";
+import { useToast } from "../../../../hooks/useToast.hook";
 
 /* ------------------------------------------------------------------ */
 /* Star rating & Utilities                                           */
@@ -47,6 +48,7 @@ function WishlistCard({
   onNotifyMe: (id: string) => void;
 }) {
   const { getQuery } = useGetQuery()
+  const { toast } = useToast();
   const navigate = useNavigate();
   const discount = discountPercent(product.price, product.originalPrice);
   const isOut = product.stockStatus === "out-of-stock";
@@ -80,7 +82,7 @@ function WishlistCard({
             getQuery({
               url: apiUrls.WishList.remove + product?.id,
               onSuccess: (res: any) => {
-                alert(res.message)
+                toast("success", res.message);
               },
               onFail: (res: any) => {
                 console.error("Failed to fetch wishlist:", res);
