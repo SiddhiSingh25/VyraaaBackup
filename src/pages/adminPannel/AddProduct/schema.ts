@@ -102,4 +102,5 @@ export const quickAddDefaultValues: QuickAddValues = {
   variants: [],
   images: [],
   sku: "",
+  appendSizeType: false,
 };

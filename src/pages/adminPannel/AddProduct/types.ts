@@ -112,4 +112,5 @@ export type QuickAddValues = {
   variants: VariantEntry[];
   images: string[];
   sku: string;
+  appendSizeType: boolean;
 };

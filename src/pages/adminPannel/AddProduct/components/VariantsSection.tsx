@@ -123,6 +123,30 @@ const VariantsSection = ({
             />
           )}
         />
+        <Controller
+          name="appendSizeType"
+          control={control}
+          render={({ field }) => (
+            <div className="mt-3 flex items-start gap-3">
+              <input
+                id="appendSizeType"
+                type="checkbox"
+                checked={field.value}
+                onChange={(e) => field.onChange(e.target.checked)}
+                className="mt-1"
+              />
+
+              <label htmlFor="appendSizeType" className="text-sm">
+                Append Size Type to Variant
+                <p className="text-xs text-muted mt-1">
+                  By enabling this, your variants will be stored as
+                  <strong> 3 ml</strong>, <strong>5 g</strong>,
+                  <strong>250 ml</strong>, etc.
+                </p>
+              </label>
+            </div>
+          )}
+        />
       </div>
 
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">

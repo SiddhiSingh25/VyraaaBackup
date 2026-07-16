@@ -297,7 +297,12 @@ const QuickAddProduct = () => {
         const markupPrice = variant.price;
         const amount = variant.price - (variant.price * discount) / 100;
         return {
-          size: variant.size.value,
+          size: data.appendSizeType
+            ? `${variant.size.label} ${
+                sizeTypeOptions.find((item) => item.value === data.sizeType)
+                  ?.label ?? ""
+              }`
+            : variant.size.label,
           amount,
           isAvailable: variant.isAvailable,
           isFewLeft: variant.isFewLeft,
