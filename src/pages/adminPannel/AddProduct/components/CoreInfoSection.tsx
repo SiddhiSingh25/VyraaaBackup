@@ -16,10 +16,8 @@ type CoreInfoSectionProps = {
   colorFamilyOptions: Option[];
   selectedColorFamily: string;
   colorOptions: Option[];
-  sizeTypeOptions: Option[];
   brandOptions: Option[];
   addColorFamily: (name?: string) => void;
-  addSizeType: (name?: string) => void;
   addBrand: (name?: string) => void;
   addColor?: (name?: string) => void;
   selectedCategory: string;
@@ -48,10 +46,8 @@ const CoreInfoSection = ({
   colorFamilyOptions,
   selectedColorFamily,
   colorOptions,
-  sizeTypeOptions,
   brandOptions,
   addColorFamily,
-  addSizeType,
   addBrand,
   addColor,
   selectedCategory,
@@ -112,7 +108,7 @@ const CoreInfoSection = ({
               />
             )}
           />
-          <Controller
+          {/* <Controller
             name="sizeType"
             control={control}
             render={({ field }) => (
@@ -127,7 +123,7 @@ const CoreInfoSection = ({
                 options={sizeTypeOptions}
               />
             )}
-          />
+          /> */}
 
           <Controller
             name="brand"

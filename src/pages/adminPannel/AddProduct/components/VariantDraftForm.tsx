@@ -42,8 +42,10 @@ const VariantDraftForm = ({
   const { sizeValueOptions, addSizeValue } = useSizeValueData(sizeTypeSelected);
 
   const handleAddSize = (query: string) => {
-    addSizeValue(query, (newSize) => {
+    if (!query?.trim()) return;
+    addSizeValue(query.trim(), (newSize) => {
       if (!newSize) return;
+
       setDraftVariant({
         ...draftVariant,
         size: {
@@ -51,6 +53,7 @@ const VariantDraftForm = ({
           label: newSize.size,
         },
       });
+
       setValue("size", newSize._id);
     });
   };
@@ -58,8 +61,8 @@ const VariantDraftForm = ({
   return (
     <div className="mb-6 rounded-xl border border-primary-light bg-card/80 p-5 shadow-sm transition-all">
       {/* Top Row: 3-Column Grid for main attributes */}
-      <div className="grid gap-5 sm:grid-cols-3">
-        {/* Size Selection */}
+      <div className="grid gap-5 sm:grid-cols-2">
+        {/* Size */}
         <div className="w-full">
           <Controller
             name="size"
@@ -75,9 +78,10 @@ const VariantDraftForm = ({
                 }
                 showAddButton
                 addButtonText="Create new size"
-                onAdd={handleAddSize}
+                onAdd={(query) => handleAddSize(query!)}
                 onChange={(event) => {
                   field.onChange(event);
+
                   const selected = sizeValueOptions.find(
                     (option) => option.value === event.target.value,
                   );
@@ -95,6 +99,7 @@ const VariantDraftForm = ({
               />
             )}
           />
+
           {!sizeTypeSelected ? (
             <p className="mt-1 text-[10px] text-red-500">
               Please select a size type first
@@ -106,37 +111,54 @@ const VariantDraftForm = ({
           ) : null}
         </div>
 
-        {/* Price Input */}
+        {/* SKU */}
         <div className="w-full">
-          <label
-            htmlFor="variant-price"
-            className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted"
-          >
-            PRICE
+          <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted">
+            SKU
           </label>
+
           <input
-            id="variant-price"
+            type="text"
+            value={draftVariant.sku}
+            onChange={(e) =>
+              setDraftVariant({
+                ...draftVariant,
+                sku: e.target.value,
+              })
+            }
+            placeholder="e.g. TS-001-S"
+            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-body outline-none transition-colors focus:border-primary"
+          />
+        </div>
+
+        {/* Price */}
+        <div className="w-full">
+          <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted">
+            PRICE (₹)
+          </label>
+
+          <input
             type="number"
             min={0}
             value={draftVariant.price}
             onChange={(e) =>
-              setDraftVariant({ ...draftVariant, price: e.target.value })
+              setDraftVariant({
+                ...draftVariant,
+                price: e.target.value,
+              })
             }
             placeholder="0.00"
             className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-body outline-none transition-colors focus:border-primary"
           />
         </div>
 
-        {/* Discount Input */}
+        {/* Discount */}
         <div className="w-full">
-          <label
-            htmlFor="variant-discount"
-            className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted"
-          >
-            DISCOUNT
+          <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted">
+            DISCOUNT (%)
           </label>
+
           <input
-            id="variant-discount"
             type="number"
             min={0}
             value={draftVariant.discountPrice}

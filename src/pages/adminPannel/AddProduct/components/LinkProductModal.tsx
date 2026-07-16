@@ -71,9 +71,9 @@ const ProductAddedModal = ({ open, onClose, onLink, product }: Props) => {
                   <div>
                     <h3 className="text-2xl font-semibold">{product.title}</h3>
 
-                    <span className="mt-2 inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-medium">
+                    {/* <span className="mt-2 inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-medium">
                       SKU: {product.sku}
-                    </span>
+                    </span> */}
                   </div>
 
                   <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">

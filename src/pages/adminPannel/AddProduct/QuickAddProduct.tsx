@@ -30,7 +30,7 @@ import Button from "../../../components/tableComponents/Button";
 import SkuSection from "./components/SKUCode";
 import ProductAddedModal from "./components/LinkProductModal";
 
-const TOTAL_SECTIONS = 5;
+const TOTAL_SECTIONS = 4;
 
 const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -78,6 +78,12 @@ const QuickAddProduct = () => {
   const images = watch("images") || [];
   const attributes = watch("attributes") || [];
   const variants = watch("variants") || [];
+  const appendSizeType = watch("appendSizeType");
+  const productName = watch("name");
+  const description = watch("description");
+  const color = watch("color");
+  const brand = watch("brand");
+  const gender = watch("gender");
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
@@ -239,17 +245,22 @@ const QuickAddProduct = () => {
   const completedSections = [
     Boolean(
       effectiveCategoryId && selectedSubcategoryId && selectedSubcategoryTypeId,
-    ),
+    ), // Category
+
     Boolean(
-      watch("name") &&
-      watch("description") &&
+      productName &&
+      description &&
       selectedColorFamily &&
-      watch("color") &&
-      selectedSizeType,
+      color &&
+      brand &&
+      gender,
     ),
-    variants.length > 0,
-    attributes.length > 0,
-    images.length > 0,
+
+    variants.length > 0, // Inventory & Pricing
+
+    // attributes.length > 0, // Product Specifications
+
+    images.length > 0, // Media & Gallery
   ].filter(Boolean).length;
 
   // --- Reset helpers ---------------------------------------------------
@@ -271,8 +282,8 @@ const QuickAddProduct = () => {
   // --- Submission ------------------------------------------------------------
   const onSubmit = async (data: QuickAddValues) => {
     const payload = {
-      sku: data.sku,
       title: data.name,
+      appendSizeTypeToSize: appendSizeType,
       description: data.description,
       brand: data.brand,
       color: data.color,
@@ -292,6 +303,7 @@ const QuickAddProduct = () => {
         const amount = variant.price - (variant.price * discount) / 100;
         return {
           size: variant.size.value,
+          skuCode: variant.sku,
           amount,
           isAvailable: variant.isAvailable,
           isFewLeft: variant.isFewLeft,
@@ -321,11 +333,12 @@ const QuickAddProduct = () => {
             ? imageUrls.slice(1).map((img) => ({ imageUrl: img }))
             : [],
       };
-
+      console.log("Before postQuery");
       await postQuery({
         url: apiUrls.Product.add,
         postData: payloadWithImages,
         onSuccess: (res: any) => {
+          console.log("SUCCESS", res);
           toast(
             "success",
             res?.message || res?.data?.message || "Product added successfully",
@@ -333,10 +346,9 @@ const QuickAddProduct = () => {
           // setShowSuccess(true);
           // resetForm();
           setAddedProduct({
-            id: res.data._id,
+            id: res.product._id,
             image: payloadWithImages.image,
             title: payload.title,
-            sku: payload.sku,
             category: categoryOptions.find(
               (c) => c.value === effectiveCategoryId,
             )?.label,
@@ -350,7 +362,7 @@ const QuickAddProduct = () => {
           resetForm();
         },
         onFail: (err: any) => {
-          console.log("errur", err);
+          console.log("CATCH", err);
           toast(
             "error",
             err?.response?.data?.message ||
@@ -368,7 +380,17 @@ const QuickAddProduct = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background  font-admin-text selection:bg-rose-gold/30">
+    <div className="flex h-screen flex-col bg-background font-admin-text selection:bg-rose-gold/30">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 border-b border-border bg-background ">
+        <div className="mx-auto max-w-5xl px-6 ">
+          <FormHeader
+            completedSections={completedSections}
+            totalSections={TOTAL_SECTIONS}
+          />
+        </div>
+      </div>
+
       <main className="flex-1 overflow-y-auto">
         <form
           onSubmit={handleSubmit(onSubmit, (formErrors) => {
@@ -389,14 +411,14 @@ const QuickAddProduct = () => {
             />
           )}
 
-          <FormHeader
+          {/* <FormHeader
             completedSections={completedSections}
             totalSections={TOTAL_SECTIONS}
-          />
+          /> */}
 
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-4">
-              <SkuSection register={register} errors={errors} />
+              {/* <SkuSection register={register} errors={errors} /> */}
 
               <TaxonomySection
                 control={control}
@@ -423,16 +445,16 @@ const QuickAddProduct = () => {
                 colorFamilyOptions={colorFamilyOptions}
                 selectedColorFamily={selectedColorFamily}
                 colorOptions={colorOptions}
-                sizeTypeOptions={sizeTypeOptions}
                 brandOptions={brandOptions}
                 addColorFamily={handleAddColorFamily}
-                addSizeType={handleAddSizeType}
                 addBrand={handleAddBrand}
                 addColor={handleAddColor}
                 selectedCategory={effectiveCategoryId}
               />
 
               <VariantsSection
+                control={control}
+                errors={errors}
                 variants={variants}
                 setVariants={(v) =>
                   setValue("variants", v as any, {
@@ -440,8 +462,10 @@ const QuickAddProduct = () => {
                     shouldDirty: true,
                   })
                 }
-                sizeOptions={sizeTypeOptions}
+                sizeTypeOptions={sizeTypeOptions}
+                sizeOptions={sizeValueOptions}
                 sizeTypeSelected={selectedSizeType}
+                addSizeType={handleAddSizeType}
                 errorMessage={errors.variants?.message as string | undefined}
               />
 
@@ -463,7 +487,7 @@ const QuickAddProduct = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex w-full flex-col sm:flex-row gap-3">
+            <div className="flex w-full flex-col sm:flex-row gap-3 mb-32">
               <Button
                 type="button"
                 variant="secondary"
