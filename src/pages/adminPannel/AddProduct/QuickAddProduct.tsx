@@ -479,7 +479,7 @@ const QuickAddProduct = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex w-full flex-col sm:flex-row gap-3">
+            <div className="flex w-full flex-col sm:flex-row gap-3 mb-32">
               <Button
                 type="button"
                 variant="secondary"
