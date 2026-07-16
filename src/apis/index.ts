@@ -130,11 +130,11 @@ export const apiUrls = {
     updatePassword: "auth/update/password"
   },
 
-  Address : {
-    add : "address/add",
-    delete : "address/delete",
-    getByUserId  : "address/get", 
-   getByAddressId : "address/get-address"
+  Address: {
+    add: "address/add",
+    delete: "address/delete",
+    getByUserId: "address/get",
+    getByAddressId: "address/get-address"
   }
 
 

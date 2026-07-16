@@ -28,6 +28,7 @@ import type { LoginFormValues } from "../../types";
 import { useAppDispatch } from "@/redux/hooks";
 import { setCredentials, updateUser } from "@/redux/slices/authSlice";
 import useGetQuery from "@/hooks/getQuery.hook";
+import Navbar from "@/components/Header/Navbar";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ const Login = () => {
 
   return (
     <PageTransition>
+      <Navbar/>
       <AuthLayout image={authImage} imageAlt="Vyraaa perfume bottle">
         <AuthHeader title="Welcome" highlight="Back" subtitle="Please login to your account" />
 

@@ -1,8 +1,7 @@
-import { forwardRef } from 'react';
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 
-type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
-type ButtonSize = 'sm' | 'md';
+type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "tertiary";
+type ButtonSize = "sm" | "md";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -13,21 +12,34 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    'bg-dark text-white hover:bg-dark-800 focus-visible:ring-dark/40 shadow-sm',
+    "bg-dark text-white hover:bg-dark-800 focus-visible:ring-dark/40 shadow-sm",
   secondary:
-    'bg-white text-dark/70 border border-dark-200 hover:bg-dark-50 focus-visible:ring-dark-300/50',
+    "bg-white text-dark/70 border border-dark-200 hover:bg-dark-50 focus-visible:ring-dark-300/50",
   danger:
-    'bg-white text-red-600 border border-red-200 hover:bg-red-50 focus-visible:ring-red-300/50',
-  ghost: 'bg-transparent text-dark-500 hover:bg-dark-100 focus-visible:ring-dark-300/50',
+    "bg-white text-red-600 border border-red-200 hover:bg-red-50 focus-visible:ring-red-300/50",
+  ghost:
+    "bg-transparent text-dark-500 hover:bg-dark-100 focus-visible:ring-dark-300/50",
+  tertiary:
+    "border border-primary bg-primary/5 text-primary hover:bg-primary hover:text-white",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: 'h-8 px-2.5 text-xs gap-1.5',
-  md: 'h-10 px-4 text-sm gap-2',
+  sm: "h-8 px-2.5 text-xs gap-1.5",
+  md: "h-10 px-4 text-sm gap-2",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', icon, children, className = '', ...rest }, ref) => {
+  (
+    {
+      variant = "primary",
+      size = "md",
+      icon,
+      children,
+      className = "",
+      ...rest
+    },
+    ref,
+  ) => {
     return (
       <button
         ref={ref}
@@ -40,9 +52,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 export default Button;

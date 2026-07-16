@@ -4,7 +4,7 @@ import type { Option, VariantEntry } from "../types";
 type VariantsTableProps = {
   variants: VariantEntry[];
   onRemove: (index: number) => void;
-  sizeOptions : Option[];
+  sizeOptions: Option[];
 };
 
 const VariantsTable = ({ variants, onRemove }: VariantsTableProps) => {
@@ -16,7 +16,7 @@ const VariantsTable = ({ variants, onRemove }: VariantsTableProps) => {
     );
   }
 
-  console.log(variants, "88888888888888")
+  console.log(variants, "88888888888888");
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border bg-surface/70">
@@ -32,12 +32,15 @@ const VariantsTable = ({ variants, onRemove }: VariantsTableProps) => {
         </thead>
         <tbody className="divide-y divide-border">
           {variants.map((variant, index) => (
-            <tr key={index} className="hover:bg-card/40 transition-colors text-body">
+            <tr
+              key={index}
+              className="hover:bg-card/40 transition-colors text-body"
+            >
               <td className="px-5 py-4 font-medium">{variant.size.label}</td>
               <td className="px-5 py-4">₹{variant.price}</td>
-   
+
               <td className="px-5 py-4 text-muted">
-                {variant.discountPrice ? `₹${variant.discountPrice}` : "-"}
+                {variant.discountPrice ? `%${variant.discountPrice}` : "-"}
               </td>
               <td className="px-5 py-4">
                 <div className="flex items-center gap-2">
@@ -53,7 +56,16 @@ const VariantsTable = ({ variants, onRemove }: VariantsTableProps) => {
                   )}
                 </div>
               </td>
-     
+              <td className="px-5 py-4 text-right">
+                <button
+                  type="button"
+                  onClick={() => onRemove(index)}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-red-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                  title="Delete Variant"
+                >
+                  <MdOutlineDeleteSweep size={20} />
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
