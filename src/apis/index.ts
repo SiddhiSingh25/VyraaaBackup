@@ -117,5 +117,6 @@ export const apiUrls = {
   },
   Image: {
     upload: "common/uploadImage",
-  },
+  }
+
 };

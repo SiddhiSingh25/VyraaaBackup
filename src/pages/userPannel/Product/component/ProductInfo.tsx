@@ -7,6 +7,7 @@ import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { Heart } from "lucide-react";
+import AddressSidebar from "../../../../components/AddressSidebar/AddressSidebar";
 
 /* ---------------------------- Small building blocks ---------------------------- */
 
@@ -207,9 +208,10 @@ const ProductInfo = () => {
       },
     ],
   };
-
+  const [isAddressSidebarOpen, setIsAddressSidebarOpen] = useState(false);
   const [thumbnail, setThumbnail] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
+
 
 
   const [selectedSize, setSelectedSize] = React.useState<number>(0);
@@ -243,7 +245,12 @@ const ProductInfo = () => {
 
   return (
     product && productData && (
+
       <section className="bg-[#fdf9f3] py-5">
+        <AddressSidebar
+          isOpen={isAddressSidebarOpen}
+          onClose={() => setIsAddressSidebarOpen(false)}
+        />
         <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
           <div className="max-w-6xl w-full ">
             <p className="text-[10.5px] tracking-[0.08em] uppercase text-[#84746e]">
@@ -375,6 +382,7 @@ const ProductInfo = () => {
                     Add to Cart
                   </button>
                   <button
+                    onClick={() => setIsAddressSidebarOpen(true)}
                     type="button"
                     className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] text-[#835240] rounded-sm hover:bg-[#835240] hover:text-[#fdf9f3] transition-colors duration-200"
                   >
