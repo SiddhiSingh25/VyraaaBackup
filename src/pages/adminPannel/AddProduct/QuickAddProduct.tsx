@@ -78,6 +78,7 @@ const QuickAddProduct = () => {
   const images = watch("images") || [];
   const attributes = watch("attributes") || [];
   const variants = watch("variants") || [];
+  const appendSizeType = watch("appendSizeType");
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
@@ -277,8 +278,8 @@ const QuickAddProduct = () => {
   // --- Submission ------------------------------------------------------------
   const onSubmit = async (data: QuickAddValues) => {
     const payload = {
-      sku: data.sku,
       title: data.name,
+      appendSizeTypeToSize: appendSizeType,
       description: data.description,
       brand: data.brand,
       color: data.color,
@@ -297,12 +298,8 @@ const QuickAddProduct = () => {
         const markupPrice = variant.price;
         const amount = variant.price - (variant.price * discount) / 100;
         return {
-          size: data.appendSizeType
-            ? `${variant.size.label} ${
-                sizeTypeOptions.find((item) => item.value === data.sizeType)
-                  ?.label ?? ""
-              }`
-            : variant.size.label,
+          size: variant.size.value,
+          skuCode: variant.sku,
           amount,
           isAvailable: variant.isAvailable,
           isFewLeft: variant.isFewLeft,
@@ -348,7 +345,6 @@ const QuickAddProduct = () => {
             id: res.product._id,
             image: payloadWithImages.image,
             title: payload.title,
-            sku: payload.sku,
             category: categoryOptions.find(
               (c) => c.value === effectiveCategoryId,
             )?.label,
@@ -418,7 +414,7 @@ const QuickAddProduct = () => {
 
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-4">
-              <SkuSection register={register} errors={errors} />
+              {/* <SkuSection register={register} errors={errors} /> */}
 
               <TaxonomySection
                 control={control}

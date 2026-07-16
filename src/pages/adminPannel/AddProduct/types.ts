@@ -73,6 +73,7 @@ export interface VariantEntry {
   discountPrice?: number;
   isAvailable: boolean;
   isFewLeft: boolean;
+  sku: string;
 }
 
 export interface DraftVariant {

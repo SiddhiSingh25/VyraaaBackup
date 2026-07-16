@@ -60,6 +60,7 @@ const VariantsSection = ({
     // draftVariant.size should hold the 'value' from your select options
     const newVariant: VariantEntry = {
       size: draftVariant.size,
+      sku: draftVariant.sku.trim(),
       price: Number(draftVariant.price),
       discountPrice: draftVariant.discountPrice
         ? Number(draftVariant.discountPrice)
@@ -67,6 +68,17 @@ const VariantsSection = ({
       isAvailable: draftVariant.isAvailable,
       isFewLeft: draftVariant.isFewLeft,
     };
+
+    if (
+      variants.some(
+        (v) =>
+          v.sku === draftVariant.sku &&
+          v.size.value !== draftVariant.size.value,
+      )
+    ) {
+      alert("SKU already exists.");
+      return;
+    }
 
     // Check if this size variant already exists
     const existingIndex = variants.findIndex(
