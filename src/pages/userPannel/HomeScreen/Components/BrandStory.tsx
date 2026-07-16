@@ -1,3 +1,4 @@
+import { BrandStory } from "@/assets/assets";
 import { useReveal } from "../../../../hooks/gsap/useReveal";
 
 const NOTES = [
@@ -16,7 +17,7 @@ export default function SignatureScent() {
         <div data-reveal className="relative mx-auto w-full max-w-md">
           <div className="relative rounded-t-[200px] rounded-b-2xl border border-border overflow-hidden aspect-[3/4]">
             <img
-              src="https://monclair.in/cdn/shop/files/ChatGPT_Image_May_21_2026_at_06_36_07_PM.webp?v=1779368864&width=800"
+              src={BrandStory}
               alt="MONCLair NOCTIS Eau de Parfum surrounded by florals, spices, and wood"
               className="w-full h-full object-cover"
             />
@@ -61,7 +62,7 @@ export default function SignatureScent() {
               Opening with luminous Pear, sparkling Pink Pepper, and delicate Orange Blossom, it
               reveals an alluring heart of rich Coffee, Jasmine, Bitter Almond.
             </p>
-          
+
             <p>
               An oriental-vanilla gourmand fragrance designed for unforgettable evenings, cooler
               nights, and refined presence beyond ordinary.
