@@ -333,6 +333,7 @@ const QuickAddProduct = () => {
           // setShowSuccess(true);
           // resetForm();
           setAddedProduct({
+            id: res.data._id,
             image: payloadWithImages.image,
             title: payload.title,
             sku: payload.sku,
@@ -393,10 +394,10 @@ const QuickAddProduct = () => {
             totalSections={TOTAL_SECTIONS}
           />
 
-          <div className="grid gap-5 lg:grid-cols-[1.7fr_1fr]">
-            {/* LEFT COLUMN: Data Entry */}
+          <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-4">
               <SkuSection register={register} errors={errors} />
+
               <TaxonomySection
                 control={control}
                 errors={errors}
@@ -412,8 +413,6 @@ const QuickAddProduct = () => {
                 subcategoryTypeOptions={subcategoryTypeOptions}
                 subcategoryTypeLoading={subcategoryTypeLoading}
                 addSubCategoryType={handleAddSubCategoryType}
-                // NEW: tell TaxonomySection to hide its category picker
-                // when we already have one from the route.
                 hideCategoryField={hasCategoryFromParams}
               />
 
@@ -453,10 +452,7 @@ const QuickAddProduct = () => {
                 selectedSubcategoryId={selectedSubcategoryId}
                 addPropertyType={addPropertyType}
               />
-            </div>
 
-            {/* RIGHT COLUMN: Media */}
-            <div className="flex flex-col gap-4">
               <MediaSection
                 images={images}
                 setImages={(imgs) => setValue("images", imgs)}
@@ -466,12 +462,19 @@ const QuickAddProduct = () => {
               />
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              <Button type="button" variant="secondary" onClick={handleClear}>
+            {/* Action Buttons */}
+            <div className="flex w-full flex-col sm:flex-row gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleClear}
+                className="flex-1"
+              >
                 Clear
               </Button>
-              <Button type="submit" variant="primary">
-                Add product
+
+              <Button type="submit" variant="primary" className="flex-1">
+                Add Product
               </Button>
             </div>
           </div>
