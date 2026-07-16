@@ -1,4 +1,9 @@
-import { Controller, type UseFormRegister, type FieldErrors, type Control } from "react-hook-form";
+import {
+  Controller,
+  type UseFormRegister,
+  type FieldErrors,
+  type Control,
+} from "react-hook-form";
 import { FaTags } from "react-icons/fa6";
 import { Input, TextArea } from "../../../../components/ui/FormElements";
 import { SearchableSelect } from "../../../../components/SearchableDropdown/SearchableDropdown";
@@ -24,8 +29,7 @@ const genderOptions = [
   { label: "Men", value: "Men" },
   { label: "Women", value: "Women" },
   { label: "Unisex", value: "Unisex" },
-  { label: "Boys", value: "Boys" },
-  { label: "Girls", value: "Girls" },
+  { label: "Child", value: "Child" },
 ];
 
 const ageRangeOptions = [
@@ -34,6 +38,7 @@ const ageRangeOptions = [
   { label: "6-8 Years", value: "6-8 Years" },
   { label: "9-12 Years", value: "9-12 Years" },
   { label: "13-18 Years", value: "13-18 Years" },
+  { label: "Adult", value: "Adult" },
 ];
 
 const CoreInfoSection = ({
@@ -55,7 +60,7 @@ const CoreInfoSection = ({
     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
         <FaTags className="text-primary text-xl" />
-        <h3 className="text-lg  text-sm font-semibold tracking-tight  font-semibold">
+        <h3 className="text-lg font-semibold tracking-tight">
           Product Details
         </h3>
       </div>
@@ -144,34 +149,32 @@ const CoreInfoSection = ({
               />
             )}
           />
-<Controller
-  name="gender"
-  control={control}
-  render={({ field }) => (
-    <SearchableSelect
-      {...field}
-      label="Gender"
-      required
-      error={errors.gender?.message}
-      options={genderOptions}
-    />
-  )}
-/>
+          <Controller
+            name="gender"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect
+                {...field}
+                label="Gender"
+                required
+                error={errors.gender?.message}
+                options={genderOptions}
+              />
+            )}
+          />
 
-
-<Controller
-  name="ageRange"
-  control={control}
-  render={({ field }) => (
-    <SearchableSelect
-      {...field}
-      label="Age Range"
-      error={errors.ageRange?.message}
-      options={ageRangeOptions}
-    />
-  )}
-/>
-
+          <Controller
+            name="ageRange"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect
+                {...field}
+                label="Age Range"
+                error={errors.ageRange?.message}
+                options={ageRangeOptions}
+              />
+            )}
+          />
         </div>
         <TextArea
           label="Description"
