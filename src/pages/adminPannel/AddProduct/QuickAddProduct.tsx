@@ -239,17 +239,23 @@ const QuickAddProduct = () => {
   const completedSections = [
     Boolean(
       effectiveCategoryId && selectedSubcategoryId && selectedSubcategoryTypeId,
-    ),
+    ), // Category
+
+    Boolean(watch("sku")), // SKU
+
     Boolean(
       watch("name") &&
       watch("description") &&
       selectedColorFamily &&
       watch("color") &&
       selectedSizeType,
-    ),
-    variants.length > 0,
-    attributes.length > 0,
-    images.length > 0,
+    ), // Product Details
+
+    variants.length > 0, // Inventory & Pricing
+
+    // attributes.length > 0, // Product Specifications
+
+    images.length > 0, // Media & Gallery
   ].filter(Boolean).length;
 
   // --- Reset helpers ---------------------------------------------------
@@ -368,7 +374,17 @@ const QuickAddProduct = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background  font-admin-text selection:bg-rose-gold/30">
+    <div className="flex h-screen flex-col bg-background font-admin-text selection:bg-rose-gold/30">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 border-b border-border bg-background ">
+        <div className="mx-auto max-w-5xl px-6 ">
+          <FormHeader
+            completedSections={completedSections}
+            totalSections={TOTAL_SECTIONS}
+          />
+        </div>
+      </div>
+
       <main className="flex-1 overflow-y-auto">
         <form
           onSubmit={handleSubmit(onSubmit, (formErrors) => {
@@ -389,10 +405,10 @@ const QuickAddProduct = () => {
             />
           )}
 
-          <FormHeader
+          {/* <FormHeader
             completedSections={completedSections}
             totalSections={TOTAL_SECTIONS}
-          />
+          /> */}
 
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-4">
