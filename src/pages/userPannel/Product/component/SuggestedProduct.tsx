@@ -46,7 +46,7 @@ const buttons = [
 export default function SuggestedProduct() {
   return (
     <section className="bg-surface py-16">
-      <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
+      <div className="px-5 sm:px-10 lg:px-20 ">
         <Heading
           value={{
             text: "Similar Products",

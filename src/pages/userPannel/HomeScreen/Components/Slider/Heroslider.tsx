@@ -87,7 +87,7 @@ useEffect(() => {
       onTouchEnd={onTouchEnd}
       // Per the brief: h-screen on desktop/tablet, min-h-screen on
       // mobile (so tall content never gets clipped on small devices).
-      className="relative h-screen md:h-screen min-h-screen md:min-h-[560px] w-full   overflow-hidden bg-black   max-w-[1440px] mx-auto px-8 xl:px-12 gap-8 xl:gap-12"
+      className="relative h-screen md:h-screen min-h-screen md:min-h-[560px] w-full   overflow-hidden bg-black    px-8 xl:px-12 gap-8 xl:gap-12"
     >
       {SLIDES.map((slide, i) => (
         <Slide

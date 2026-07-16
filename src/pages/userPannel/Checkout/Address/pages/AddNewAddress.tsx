@@ -54,7 +54,7 @@ export default function AddNewAddress() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] text-muted">Total</p>
-            <p className="font-heading text-base text-heading">
+            <p className="font-heading text-base text-admin-text">
               {formatINR(dummyPriceDetails.total)}
             </p>
           </div>

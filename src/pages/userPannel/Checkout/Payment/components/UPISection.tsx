@@ -15,7 +15,7 @@ export default function UPISection({ apps }: UPISectionProps) {
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border bg-card p-5">
-        <p className="mb-3 font-body text-[13.5px] font-semibold text-heading">
+        <p className="mb-3 font-body text-[13.5px] font-semibold text-admin-text">
           Pay via UPI ID
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -24,7 +24,7 @@ export default function UPISection({ apps }: UPISectionProps) {
               value={upiId}
               onChange={(e) => setUpiId(e.target.value)}
               placeholder="yourname@upi"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 font-body text-[14px] text-heading outline-none transition-colors focus:border-primary"
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 font-body text-[14px] text-admin-text outline-none transition-colors focus:border-primary"
             />
             {isValidUpi && (
               <motion.span

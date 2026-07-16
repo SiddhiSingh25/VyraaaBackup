@@ -24,7 +24,7 @@ const OffersStrip = () => {
     <div className="rounded-lg border border-border bg-surface p-4 sm:p-5">
       <div className="mb-3 flex items-center gap-2">
         <IconGem className="h-4 w-4 text-primary" />
-        <span className="font-body text-sm font-semibold text-heading">
+        <span className="font-body text-sm font-semibold text-admin-text">
           Offers ({offers.length})
         </span>
       </div>
@@ -52,7 +52,7 @@ const OffersStrip = () => {
                 %
               </span>
               <div className="min-w-0">
-                <p className="truncate font-body text-xs font-semibold text-heading">
+                <p className="truncate font-body text-xs font-semibold text-admin-text">
                   {offer.title}
                 </p>
                 <p className="truncate font-body text-[11px] text-muted">

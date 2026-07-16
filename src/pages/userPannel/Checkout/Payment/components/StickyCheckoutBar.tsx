@@ -24,7 +24,7 @@ export default function StickyCheckoutBar({
     >
       <div>
         <p className="font-body text-[11px] text-muted">Total Amount</p>
-        <p className="font-heading text-[19px] text-heading">
+        <p className="font-heading text-[19px] text-admin-text">
           ₹{total.toLocaleString("en-IN")}
         </p>
       </div>

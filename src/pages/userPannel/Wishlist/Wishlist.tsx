@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "../../../components/Header/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import WishlistCard from "./components/WishlistCard";
-import type {  WishlistProduct } from "./components/types";
-import { INITIAL_WISHLIST, RECOMMENDED } from "./components/data";
+import type { WishlistProduct } from "./components/types";
+import { RECOMMENDED } from "./components/data"; // Removed INITIAL_WISHLIST as we fetch from API
 import RecommendedCard from "./components/RecomendationCard";
-
+import useGetQuery from "../../../hooks/getQuery.hook";
+import { apiUrls } from "../../../apis";
 
 function EmptyWishlist() {
   const navigate = useNavigate();
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -21,7 +23,7 @@ function EmptyWishlist() {
         <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
       </svg>
       <div>
-        <p className="font-heading text-lg text-heading">Your wishlist is empty</p>
+        <p className="font-heading text-lg text-admin-text">Your wishlist is empty</p>
         <p className="mt-1 text-sm text-muted">Save pieces you love and find them here anytime.</p>
       </div>
       <button
@@ -36,12 +38,59 @@ function EmptyWishlist() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Page                                                               */
+/* Page                                                              */
 /* ------------------------------------------------------------------ */
 
 export default function WishlistPage() {
-  const [items, setItems] = useState<WishlistProduct[]>(INITIAL_WISHLIST);
+  const { getQuery } = useGetQuery();
   const navigate = useNavigate();
+
+  // 1. Add loading state and initialize items as an empty array
+  const [isLoading, setIsLoading] = useState(true);
+  const [items, setItems] = useState<WishlistProduct[]>([]);
+
+  useEffect(() => {
+    getQuery({
+      url: apiUrls.WishList.getByUserId,
+      onSuccess: (res: any) => {
+
+        const fetchedItems = res.data.items.map((item: any) => {
+
+
+          const defaultPrice = (item.product.price && item.product.price.length > 0)
+            ? item.product.price[0]
+            : { amount: 0, markupPrice: null, isAvailable: true };
+
+          return {
+            id: item.product._id,
+            brand: item.product.brand || "Vyraa",
+            name: item.product.title,
+            image: item.product.image,
+            rating: item.product.rating || 0,
+
+
+            price: defaultPrice.amount,
+            originalPrice: defaultPrice.markupPrice,
+            stockStatus: defaultPrice.isAvailable ? "in-stock" : "out-of-stock",
+
+
+            colorName: "Standard",
+            colorHex: "#000000",
+            size: "Standard",
+            reviewCount: 0,
+            badge: null,
+          };
+        });
+
+        setItems(fetchedItems);
+        setIsLoading(false); // Stop loading on success
+      },
+      onFail: (res: any) => {
+        console.error("Failed to fetch wishlist:", res);
+        setIsLoading(false); // Stop loading on failure so UI doesn't hang
+      },
+    });
+  }, []); // Run once on mount
 
   const removeItem = (id: string) =>
     setItems((prev) => prev.filter((item) => item.id !== id));
@@ -66,15 +115,28 @@ export default function WishlistPage() {
       .forEach((item) => addToBag(item.id));
   };
 
+  // 3. Render a loading skeleton or spinner while fetching
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="mx-auto flex max-w-7xl items-center justify-center px-5 pb-24 pt-32 sm:px-8 lg:px-10">
+          <p className="text-lg font-medium text-muted">Loading your wishlist...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar/>
+      <Navbar />
 
       <main className="mx-auto max-w-7xl px-5 pb-24 pt-6 sm:px-8 lg:px-10">
         {/* Header */}
         <div className="flex flex-col gap-2 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-heading text-3xl text-heading sm:text-4xl">
+            <h1 className="font-heading text-3xl text-admin-text sm:text-4xl">
               My Wishlist{" "}
               <span className="align-middle text-lg font-normal text-muted">
                 ({items.length})
@@ -145,7 +207,7 @@ export default function WishlistPage() {
         {/* You May Also Like */}
         <section className="mt-20">
           <div className="mb-6 flex items-end justify-between">
-            <h2 className="font-heading text-2xl text-heading">You May Also Like</h2>
+            <h2 className="font-heading text-2xl text-admin-text">You May Also Like</h2>
             <span className="hidden text-sm text-muted sm:block">Curated to match your taste</span>
           </div>
 
@@ -157,7 +219,7 @@ export default function WishlistPage() {
         </section>
       </main>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }

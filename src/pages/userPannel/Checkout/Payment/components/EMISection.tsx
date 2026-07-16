@@ -29,7 +29,7 @@ export default function EMISection({ plans }: EMISectionProps) {
               onClick={() => setExpandedBank(isOpen ? null : bank)}
               className="flex w-full items-center justify-between px-5 py-4"
             >
-              <span className="font-body text-[14px] font-semibold text-heading">
+              <span className="font-body text-[14px] font-semibold text-admin-text">
                 {bank}
               </span>
               <motion.span
@@ -63,7 +63,7 @@ export default function EMISection({ plans }: EMISectionProps) {
                           }}
                         >
                           <div>
-                            <p className="font-body text-[13.5px] font-semibold text-heading">
+                            <p className="font-body text-[13.5px] font-semibold text-admin-text">
                               {plan.tenure} months · ₹{plan.monthlyAmount.toLocaleString("en-IN")}/mo
                             </p>
                             <p className="font-body text-[12px] text-muted">

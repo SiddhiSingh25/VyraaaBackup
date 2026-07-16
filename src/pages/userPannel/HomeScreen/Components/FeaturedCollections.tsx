@@ -1,6 +1,7 @@
 import { IoArrowForward } from "react-icons/io5";
 import { womenPerfume } from "../../../../assets/assets";
 import { useReveal } from "../../../../hooks/gsap/useReveal";
+import SectionHeader from "../../../../components/Common/Headers/SectionHeader";
 
 interface Collection {
   index: string;
@@ -32,33 +33,18 @@ export default function FeaturedCollections() {
   const ref = useReveal<HTMLElement>();
 
   return (
-    <section ref={ref} className="py-10 px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
-      <div
-        data-reveal
-        className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 sm:gap-0 mb-4 sm:mb-14"
-      >
-        <div>
-          <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-primary">
-            Categories
-          </span>
-          <h2 className="font-heading text-heading mt-2 text-[clamp(28px,4vw,52px)] font-light -tracking-[0.01em]">
-            New on Vyraaa
-          </h2>
-        </div>
-        <a
-          href="#"
-          className="text-[11px] font-medium tracking-[0.18em] uppercase text-heading border-b border-heading/40 pb-1 hover:text-primary hover:border-primary transition-colors duration-300 self-start sm:self-auto"
-        >
-          View All
-        </a>
-      </div>
+    <section ref={ref} className="py-10 px-5 sm:px-10 lg:px-20 ">
+    
+      <SectionHeader  viewAllLink="/"
+  viewAllText = "View All" tagline="Categories"
+  title="New on Vyraaa"  />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
         {COLLECTIONS.map((c) => (
           <div
             key={c.title}
             data-reveal
-            className={`group relative overflow-hidden rounded-2xl aspect-[3/4] ${
+            className={`group relative overflow-hidden rounded-2xl aspect-[4/5] ${
               c.midLift ? "sm:col-span-2 md:col-span-1 md:-mt-8" : ""
             }`}
           >

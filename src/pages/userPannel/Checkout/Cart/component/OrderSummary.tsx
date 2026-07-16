@@ -1,12 +1,16 @@
 import { motion } from "motion/react";
-
 import CouponBar from "./CouponBar";
 import DonationCard from "./DonationCard";
 import type { PriceDetails } from "./cart";
 import { formatINR } from "./pricing";
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import React from "react"; // Added React import for React.ReactNode
 
 interface OrderSummaryProps {
+  itemCount: number; // Changed from Number to number
+  totalMrp: number;  // Changed from Number to number
+  discountOnMrp: number; // Changed from Number to number
+  totalAmount: number; // Changed from Number to number
   details: PriceDetails;
   couponApplied: boolean;
   onApplyCoupon: (code: string) => void;
@@ -15,17 +19,19 @@ interface OrderSummaryProps {
   onPlaceOrder: () => void;
 }
 
-const Row = ({
-  label,
-  value,
-  valueClassName = "text-heading",
-  sub,
-}: {
+interface RowProps {
   label: React.ReactNode;
   value: string;
   valueClassName?: string;
   sub?: boolean;
-}) => (
+}
+
+const Row = ({
+  label,
+  value,
+  valueClassName = "text-admin-text",
+  sub,
+}: RowProps) => (
   <div
     className={[
       "flex items-center justify-between font-body",
@@ -38,6 +44,10 @@ const Row = ({
 );
 
 const OrderSummary = ({
+  itemCount,
+  totalMrp,
+  discountOnMrp,
+  totalAmount,
   details,
   couponApplied,
   onApplyCoupon,
@@ -47,21 +57,21 @@ const OrderSummary = ({
 }: OrderSummaryProps) => {
   return (
     <aside className="w-full rounded-lg border border-border bg-surface p-5 sm:p-6">
-      <CouponBar
+      {/* <CouponBar
         applied={couponApplied}
         onApply={onApplyCoupon}
         onRemove={onRemoveCoupon}
-      />
+      /> */}
 
-      <DonationCard onChange={onDonationChange} />
+      {/* <DonationCard onChange={onDonationChange} /> */}
 
       <div className="space-y-2.5 py-4">
         <p className="font-body text-xs font-semibold tracking-[0.15em] text-muted">
-          PRICE DETAILS ({details.itemCount}{" "}
-          {details.itemCount === 1 ? "ITEM" : "ITEMS"})
+          PRICE DETAILS ({itemCount}{" "}
+          {itemCount === 1 ? "ITEM" : "ITEMS"})
         </p>
 
-        <Row label="Total MRP" value={formatINR(details.totalMrp)} />
+        <Row label="Total MRP" value={formatINR(totalMrp)} />
         <Row
           label={
             <>
@@ -69,7 +79,7 @@ const OrderSummary = ({
               <span className="cursor-pointer text-primary">Know More</span>
             </>
           }
-          value={`- ${formatINR(details.discountOnMrp)}`}
+          value={`- ${formatINR(discountOnMrp)}`}
           valueClassName="text-success"
         />
         <Row
@@ -96,7 +106,7 @@ const OrderSummary = ({
       <div className="flex items-center justify-between border-t border-border pt-3">
         <span className="font-heading text-base text-heading">Total Amount</span>
         <span className="font-heading text-lg text-heading">
-          {formatINR(details.totalAmount)}
+          {formatINR(totalAmount)}
         </span>
       </div>
 
@@ -111,16 +121,17 @@ const OrderSummary = ({
         </span>
         .
       </p>
+      
       <Link to="/checkout/address">
-      <motion.button
-        type="button"
-        onClick={onPlaceOrder}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.98 }}
-        className="mt-4 w-full rounded-md bg-primary py-3.5 font-body text-sm font-semibold tracking-[0.15em] text-background shadow-sm transition-colors hover:bg-primary-dark"
-      >
-        PLACE ORDER
-      </motion.button>
+        <motion.button
+          type="button"
+          onClick={onPlaceOrder}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
+          className="mt-4 w-full rounded-md bg-primary py-3.5 font-body text-sm font-semibold tracking-[0.15em] text-background shadow-sm transition-colors hover:bg-primary-dark"
+        >
+          PLACE ORDER
+        </motion.button>
       </Link>
     </aside>
   );

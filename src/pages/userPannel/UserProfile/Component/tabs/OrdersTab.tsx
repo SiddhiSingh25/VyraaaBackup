@@ -17,7 +17,7 @@
 //   if (orders.length === 0) {
 //     return (
 //       <div className="text-center py-16">
-//         <p className="font-heading text-lg text-heading">No orders yet</p>
+//         <p className="font-heading text-lg text-admin-text">No orders yet</p>
 //         <p className="text-sm text-muted mt-1">Your future favorites are waiting in the shop.</p>
 //       </div>
 //     );
@@ -41,7 +41,7 @@
 
 //           <div className="flex-1 min-w-0">
 //             <div className="flex flex-wrap items-center gap-2">
-//               <p className="font-medium text-heading text-sm">{order.orderNumber}</p>
+//               <p className="font-medium text-admin-text text-sm">{order.orderNumber}</p>
 //               <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_STYLES[order.status]}`}>
 //                 {order.status}
 //               </span>
@@ -53,7 +53,7 @@
 //           </div>
 
 //           <div className="flex items-center justify-between sm:flex-col sm:items-end gap-1 sm:gap-2">
-//             <p className="font-heading text-base text-heading">
+//             <p className="font-heading text-base text-admin-text">
 //               &#8377;{order.total.toLocaleString("en-IN")}
 //             </p>
 //             <button
@@ -87,7 +87,7 @@ export function OrdersTab({ orders }: OrdersTabProps) {
   if (!orders.length) {
     return (
       <div className="rounded-2xl border border-border bg-surface p-12 text-center">
-        <h3 className="font-heading text-xl text-heading">
+        <h3 className="font-heading text-xl text-admin-text">
           No Orders Yet
         </h3>
         <p className="text-sm text-muted mt-2">
@@ -152,7 +152,7 @@ export function OrdersTab({ orders }: OrdersTabProps) {
             {statusIcon(status)}
 
             <div>
-              <h3 className="font-semibold text-heading">{status}</h3>
+              <h3 className="font-semibold text-admin-text">{status}</h3>
 
               <p className="text-xs text-muted">
                 {list.length} order{list.length > 1 && "s"}
@@ -189,7 +189,7 @@ export function OrdersTab({ orders }: OrdersTabProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between gap-3">
                       <div>
-                        <h4 className="font-medium text-heading line-clamp-2">
+                        <h4 className="font-medium text-admin-text line-clamp-2">
                           {order.items[0]}
                         </h4>
 
@@ -198,7 +198,7 @@ export function OrdersTab({ orders }: OrdersTabProps) {
                           {order.itemCount > 1 && "s"}
                         </p>
 
-                        <p className="text-sm font-semibold mt-2 text-heading">
+                        <p className="text-sm font-semibold mt-2 text-admin-text">
                           ₹{order.total.toLocaleString("en-IN")}
                         </p>
                       </div>

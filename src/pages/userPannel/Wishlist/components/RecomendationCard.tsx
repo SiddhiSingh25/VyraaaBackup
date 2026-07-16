@@ -30,10 +30,10 @@ function RecommendedCard({ product }: { product: RecommendedProduct }) {
         />
       </div>
       <div className="mt-3 flex flex-col gap-1">
-        <p className="font-heading text-sm text-heading">{product.brand}</p>
+        <p className="font-heading text-sm text-admin-text">{product.brand}</p>
         <p className="text-xs text-muted">{product.name}</p>
         <div className="flex items-baseline gap-2 pt-0.5">
-          <span className="text-sm font-medium text-heading">{formatINR(product.price)}</span>
+          <span className="text-sm font-medium text-admin-text">{formatINR(product.price)}</span>
           {product.originalPrice && (
             <span className="text-xs text-muted line-through">
               {formatINR(product.originalPrice)}

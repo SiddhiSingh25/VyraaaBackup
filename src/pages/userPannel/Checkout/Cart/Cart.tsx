@@ -1,39 +1,100 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { CartItem } from "./component/cart";
-import { sampleCartItems } from "./component/sampleCart";
+// import { sampleCartItems } from "./component/sampleCart"; // You can remove this now
 import { computePriceDetails } from "./component/pricing";
-import OffersStrip from "./component/OffersStrip";
+// import OffersStrip from "./component/OffersStrip";
 import CartListHeader from "./component/CartListHeader";
 import CartItemCard from "./component/CartItemCard";
 import OrderSummary from "./component/OrderSummary";
 import TrustBadges from "./component/TrustBadges";
-
+import useGetQuery from "../../../../hooks/getQuery.hook";
+import usePostQuery from "../../../../hooks/postQuery.hook";
+import { apiUrls } from "../../../../apis";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  setCartItems,
+  toggleSelectItem,
+  updateQuantity,
+  removeFromCart,
+} from "../../../../redux/slices/cartSlice";
 
 const COUPON_DISCOUNT = 60;
 
 const Cart = () => {
-  const [items, setItems] = useState<CartItem[]>(sampleCartItems);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  // Bind items to Redux store cart items
+  const items = useSelector((state: any) => state.cart.items);
   const [couponApplied, setCouponApplied] = useState(false);
   const [donation, setDonation] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { getQuery } = useGetQuery();
 
-  const toggleSelect = (id: string) =>
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i))
-    );
+  const [cartData, setCartData] = useState<any>();
 
-  const removeItem = (id: string) =>
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  const refreshCart = () => setRefreshKey((prev) => prev + 1);
 
-  const moveToWishlist = (id: string) =>
-    // Sample behaviour: removes from bag, same as a real "move" would.
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  useEffect(() => {
+    getQuery({
+      url: apiUrls.Cart.getByUserId,
+      onSuccess: (res: any) => {
+        setCartData(res.data);
+        console.log(res.data.items[0].product.title)
+        // 2. Map the API response to the frontend `CartItem` shape with safe defaults
+        if (res.data && res.data.items) {
+          const mappedItems = res.data.items.map((apiItem: any) => {
+            const product = apiItem.product || {};
+            const priceList = product.price || [];
+            // try to derive available sizes from product price entries
+            const availableSizes = priceList.map((p: any) => p.size).filter(Boolean);
 
-  const changeQty = (id: string, qty: number) =>
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, qty } : i)));
+            return {
+              id: apiItem._id,
+              brand: product.brand || product.manufacturer,
+              name: product.title || "Product",
+              soldBy: "VYRAAA",
+              image: product.image || product.thumbnail || "",
+              size: apiItem.size?.size || availableSizes[0] || "",
+              availableSizes: availableSizes,
+              qty: apiItem.quantity || 1,
+              maxQty: apiItem.maxQty || product.maxQty || 10,
+              mrp: priceList?.[0]?.markupPrice * apiItem.quantity || apiItem.unitPrice || 0,
+              price: apiItem.itemTotal || priceList?.[0]?.amount || 0,
+              returnDays: product.returnDays || 7,
+              selected: true,
+            } as unknown as CartItem;
+          });
 
-  const changeSize = (id: string, size: string) =>
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, size } : i)));
+          // Update Redux state with real API data
+          dispatch(setCartItems(mappedItems));
+        }
+      },
+      onFail: (res: any) => {
+        console.error("Failed to fetch cart:", res);
+      },
+    });
+  }, [refreshKey]);
+
+  const toggleSelect = (id: string) => {
+    dispatch(toggleSelectItem(id));
+  };
+
+  const removeItem = (id: string) => {
+    dispatch(removeFromCart(id));
+  };
+
+  const moveToWishlist = (id: string) => {
+    dispatch(removeFromCart(id));
+  };
+
+  const changeQty = (id: string, qty: number) => {
+    dispatch(updateQuantity({ id, quantity: qty }));
+  };
+
+  // const changeSize = (id: string, size: string) =>
+  //   setItems((prev) => prev.map((i) => (i.id === id ? { ...i, size } : i)));
 
   const priceDetails = useMemo(
     () =>
@@ -45,13 +106,10 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-background">
-
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-     
-
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface py-20 text-center">
-            <p className="font-heading text-xl text-heading">
+            <p className="font-heading text-xl text-admin-text">
               Your bag is empty
             </p>
             <p className="font-body text-sm text-muted">
@@ -68,13 +126,13 @@ const Cart = () => {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* Left: bag items */}
             <section className="space-y-4">
-              <OffersStrip/>
+              {/* <OffersStrip /> */}
 
               <div className="rounded-lg border border-border bg-surface p-4 sm:p-5">
-                <CartListHeader
+                {/* <CartListHeader
                   selectedCount={selectedCount}
                   totalCount={items.length}
-                />
+                /> */}
 
                 <div className="mt-4 space-y-3">
                   <AnimatePresence mode="popLayout">
@@ -86,7 +144,8 @@ const Cart = () => {
                         onRemove={removeItem}
                         onMoveToWishlist={moveToWishlist}
                         onQtyChange={changeQty}
-                        onSizeChange={changeSize}
+                        onRefreshCart={refreshCart}
+                      // onSizeChange={changeSize}
                       />
                     ))}
                   </AnimatePresence>
@@ -96,7 +155,8 @@ const Cart = () => {
               <motion.button
                 type="button"
                 whileHover={{ x: 2 }}
-                className="flex w-full items-center justify-between rounded-lg border border-border bg-surface px-5 py-4 font-body text-sm font-medium text-heading transition-colors hover:border-primary-light"
+                onClick={() => navigate("/wishlist")} // 3. Add the navigation trigger
+                className="flex w-full items-center justify-between rounded-lg border border-border bg-surface px-5 py-4 font-body text-sm font-medium text-admin-text transition-colors hover:border-primary-light"
               >
                 Add More From Wishlist
                 <span aria-hidden>→</span>
@@ -106,26 +166,29 @@ const Cart = () => {
             {/* Right: order summary */}
             <div className="lg:sticky lg:top-24 lg:self-start">
               <OrderSummary
+                // 3. Fallback to your local computed details if API totals aren't updating locally on qty change
+                itemCount={cartData?.totalItems || priceDetails.itemCount}
+                totalMrp={cartData?.cartTotalMarkupPrice || priceDetails.totalMrp}
+                discountOnMrp={cartData?.cartTotalDiscount || priceDetails.discountOnMrp}
+                totalAmount={cartData?.cartTotalAmount || priceDetails.totalAmount}
                 details={priceDetails}
                 couponApplied={couponApplied}
                 onApplyCoupon={() => setCouponApplied(true)}
                 onRemoveCoupon={() => setCouponApplied(false)}
                 onDonationChange={setDonation}
                 onPlaceOrder={() => {
-                  // Wire up to real checkout / address step navigation.
                   console.log("Placing order", priceDetails);
                 }}
               />
-              <div className="mt-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
-                <TrustBadges/>
-              </div>
+              {/* <div className="mt-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
+                <TrustBadges />
+              </div> */}
             </div>
           </div>
         )}
       </div>
-
     </div>
   );
 };
 
-export default Cart
+export default Cart;

@@ -44,7 +44,7 @@ export default function CheckoutProgress({ currentStep = 2 }: CheckoutProgressPr
                   <span
                     className={`font-body text-[11px] tracking-wide ${
                       isActive
-                        ? "font-semibold text-heading"
+                        ? "font-semibold text-admin-text"
                         : isComplete
                         ? "text-body"
                         : "text-muted"

@@ -16,7 +16,7 @@ const OPTIONS: { value: AddressType; label: string; icon: typeof Home }[] = [
 export function AddressTypeSelector({ value, onChange }: AddressTypeSelectorProps) {
   return (
     <div>
-      <p className="mb-3 text-sm font-medium text-heading">Address Type</p>
+      <p className="mb-3 text-sm font-medium text-admin-text">Address Type</p>
       <div role="radiogroup" aria-label="Address type" className="flex flex-wrap gap-3">
         {OPTIONS.map(({ value: optionValue, label, icon: Icon }) => {
           const isSelected = value === optionValue;

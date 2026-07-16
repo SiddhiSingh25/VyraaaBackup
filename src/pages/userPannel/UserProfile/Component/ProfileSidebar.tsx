@@ -6,7 +6,6 @@ const TABS: AccountTabConfig[] = [
   { id: "personal-info", label: "Personal Information", icon: "user" },
   { id: "orders", label: "My Orders", icon: "bag" },
   { id: "addresses", label: "Manage Address", icon: "pin" },
-  { id: "payment", label: "Payment Methods", icon: "card" },
   { id: "security", label: "Password & Security", icon: "lock" },
 ];
 
@@ -69,9 +68,8 @@ export function ProfileSidebar({ activeTab, onTabChange, onLogout }: ProfileSide
               type="button"
               onClick={() => onTabChange(tab.id)}
               aria-current={isActive ? "page" : undefined}
-              className={`relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors text-left ${
-                isActive ? "text-background" : "text-body hover:bg-card"
-              }`}
+              className={`relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors text-left ${isActive ? "text-background" : "text-body hover:bg-card"
+                }`}
             >
               {isActive && (
                 <motion.span

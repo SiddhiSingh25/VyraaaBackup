@@ -50,7 +50,7 @@ export default function MegaMenu({ columns }: MegaMenuProps) {
             <div key={col.title}>
               {/* Heading */}
               <div className="mb-2">
-                <p className="text-[10px] uppercase tracking-[0.28em] font-semibold text-heading">
+                <p className="text-[10px] uppercase tracking-[0.28em] font-semibold text-admin-text">
                   {col.title}
                 </p>
 
@@ -71,7 +71,7 @@ export default function MegaMenu({ columns }: MegaMenuProps) {
                       px-2 py-1.5
 
                       text-[14px]
-                      text-heading/80
+                      text-admin-text/80
 
                       transition-all duration-200
 

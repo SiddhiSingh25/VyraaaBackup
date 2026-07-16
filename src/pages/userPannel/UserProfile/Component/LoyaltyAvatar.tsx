@@ -68,7 +68,7 @@ export function LoyaltyAvatar({ user, size = 104, onUpload }: LoyaltyAvatarProps
         {preview ? (
           <img src={preview} alt={`${user.firstName} ${user.lastName}`} className="w-full h-full object-cover" />
         ) : (
-          <span className="font-heading text-2xl text-heading">{initials}</span>
+          <span className="font-heading text-2xl text-admin-text">{initials}</span>
         )}
       </div>
 

@@ -1,83 +1,124 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useToast } from "@/hooks/useToast.hook";
+import usePostQuery from "@/hooks/postQuery.hook";
+import { apiUrls } from "@/apis";
+import { Loader2 } from "lucide-react";
 
 const inputClasses =
-  "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-shadow";
+  "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-shadow disabled:opacity-60";
 
-function Toggle({
-  checked,
-  onChange,
-  label,
-  description,
-}: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  label: string;
-  description: string;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-4 border-b border-border last:border-b-0">
-      <div>
-        <p className="text-sm font-medium text-heading">{label}</p>
-        <p className="text-xs text-muted mt-0.5">{description}</p>
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
-          checked ? "bg-primary" : "bg-border"
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background transition-transform ${
-            checked ? "translate-x-5" : "translate-x-0"
-          }`}
-        />
-      </button>
-    </div>
-  );
-}
+type SecurityFormValues = {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+};
+
+const securitySchema: yup.ObjectSchema<SecurityFormValues> = yup.object({
+  currentPassword: yup.string().required("Current password is required"),
+  newPassword: yup
+    .string()
+    .required("New password is required")
+    .min(3, "New password must be at least 3 characters"),
+  confirmNewPassword: yup
+    .string()
+    .required("Please confirm your new password")
+    .oneOf([yup.ref("newPassword")], "Passwords do not match"),
+});
 
 export function SecurityTab() {
-  const [twoFactor, setTwoFactor] = useState(true);
-  const [loginAlerts, setLoginAlerts] = useState(true);
+  const { toast } = useToast();
+  const { postQuery, loading } = usePostQuery();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<SecurityFormValues>({
+    resolver: yupResolver(securitySchema) as any,
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    },
+  });
+
+  const onSubmit = (values: SecurityFormValues) => {
+    postQuery({
+      url: apiUrls.Auth.updatePassword,
+      postData: {
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      },
+      onSuccess: () => {
+        toast("success", "Password updated successfully");
+        reset();
+      },
+      onFail: (err: any) => {
+        toast(
+          "error",
+          err?.data?.message || err?.message || "Failed to update password"
+        );
+      },
+    });
+  };
 
   return (
     <div className="flex flex-col gap-8">
-      <form className="flex flex-col gap-5">
-        <h2 className="font-heading text-lg text-heading">Change password</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
+        <h2 className="font-heading text-lg text-admin-text">Change password</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <input type="password" placeholder="Current password" className={inputClasses} />
+          <div className="flex flex-col gap-1">
+            <input
+              type="password"
+              placeholder="Current password"
+              className={`${inputClasses} ${errors.currentPassword ? "border-red-500 focus:ring-red-500" : ""}`}
+              disabled={loading}
+              {...register("currentPassword")}
+            />
+            {errors.currentPassword?.message && (
+              <span className="text-xs text-red-500 px-1">{errors.currentPassword.message}</span>
+            )}
+          </div>
           <div />
-          <input type="password" placeholder="New password" className={inputClasses} />
-          <input type="password" placeholder="Confirm new password" className={inputClasses} />
+          <div className="flex flex-col gap-1">
+            <input
+              type="password"
+              placeholder="New password"
+              className={`${inputClasses} ${errors.newPassword ? "border-red-500 focus:ring-red-500" : ""}`}
+              disabled={loading}
+              {...register("newPassword")}
+            />
+            {errors.newPassword?.message && (
+              <span className="text-xs text-red-500 px-1">{errors.newPassword.message}</span>
+            )}
+          </div>
+          <div className="flex flex-col gap-1">
+            <input
+              type="password"
+              placeholder="Confirm new password"
+              className={`${inputClasses} ${errors.confirmNewPassword ? "border-red-500 focus:ring-red-500" : ""}`}
+              disabled={loading}
+              {...register("confirmNewPassword")}
+            />
+            {errors.confirmNewPassword?.message && (
+              <span className="text-xs text-red-500 px-1">{errors.confirmNewPassword.message}</span>
+            )}
+          </div>
         </div>
         <div>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 bg-dark text-background px-6 py-3 rounded-xl text-sm font-medium hover:bg-primary-dark transition-colors"
+            disabled={loading}
+            className="inline-flex items-center gap-2 bg-dark text-background px-6 py-3 rounded-xl text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-60"
           >
-            Update password
+            {loading && <Loader2 size={16} className="animate-spin" />}
+            {loading ? "Updating..." : "Update password"}
           </button>
         </div>
       </form>
-
-      <div>
-        <h2 className="font-heading text-lg text-heading mb-1">Account protection</h2>
-        <Toggle
-          checked={twoFactor}
-          onChange={setTwoFactor}
-          label="Two-factor authentication"
-          description="Require an OTP each time you sign in from a new device."
-        />
-        <Toggle
-          checked={loginAlerts}
-          onChange={setLoginAlerts}
-          label="Login alerts"
-          description="Get an email whenever your account is accessed."
-        />
-      </div>
     </div>
   );
 }

@@ -31,8 +31,8 @@ export function PriceBreakdown({ details }: PriceBreakdownProps) {
       </div>
 
       <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-        <span className="font-heading text-base text-heading">Total</span>
-        <span className="font-heading text-lg text-heading">
+        <span className="font-heading text-base text-admin-text">Total</span>
+        <span className="font-heading text-lg text-admin-text">
           {formatINR(details.total)}
         </span>
       </div>

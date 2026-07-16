@@ -192,7 +192,7 @@ function FloatingInput({
             onBlur();
           }}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full rounded-xl border bg-background px-4 pb-2.5 pt-5 font-body text-[14px] text-heading outline-none transition-colors duration-200 focus:border-primary ${
+          className={`w-full rounded-xl border bg-background px-4 pb-2.5 pt-5 font-body text-[14px] text-admin-text outline-none transition-colors duration-200 focus:border-primary ${
             error ? "border-error" : "border-border"
           }`}
         />

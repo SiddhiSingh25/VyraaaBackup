@@ -1,14 +1,14 @@
 import apiClient from "../apis/apiClient.ts";
 // import Toast from "../components/Toast/Toast";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 const useGetQuery = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState();
   const [error, setError] = useState();
 
-  const getQuery = async (params: any) => {
+  const getQuery = useCallback(async (params: any) => {
     const {
       url,
       onSuccess = () => {
@@ -34,20 +34,24 @@ const useGetQuery = () => {
       //     err?.data?.data?.message ||
       //     "Something went wrong",
       // });
-      console.log(
-        err?.response?.data?.message ||
+      const error = err?.response?.data?.message ||
         err?.message ||
         err?.data?.message ||
         err?.data?.data?.message ||
-        "Something went wrong",
-      )
-      onFail(err);
-      setError(err);
+        console.log(
+          err?.response?.data?.message ||
+          err?.message ||
+          err?.data?.message ||
+          err?.data?.data?.message ||
+          "Something went wrong",
+        )
+      onFail(error);
+      setError(error);
       return false;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return {
     getQuery,

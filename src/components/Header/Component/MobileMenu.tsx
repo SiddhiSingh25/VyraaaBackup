@@ -48,7 +48,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
           <img
             src="/logo.png"
             alt="VYRAAA"
-            className="h-7 w-auto object-contain"
+            className="h-16 mt-1 w-auto object-contain"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
             }}
@@ -56,7 +56,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
           <button
             onClick={onClose}
             aria-label="Close menu"
-            className="p-1.5 text-heading/70 hover:text-primary-dark transition-colors duration-200"
+            className="p-1.5 text-admin-text/70 hover:text-primary-dark transition-colors duration-200"
           >
             <X size={20} strokeWidth={1.6} />
           </button>
@@ -72,7 +72,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
                   <Link
                     to={link.to}
                     onClick={() => !hasChildren && onClose()}
-                    className="flex-1 py-4 px-5 text-[13px] font-medium tracking-[0.12em] uppercase text-heading/90"
+                    className="flex-1 py-4 px-5 text-[13px] font-medium tracking-[0.12em] uppercase text-admin-text/90"
                   >
                     {link.label}
                   </Link>
@@ -80,7 +80,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
                     <button
                       onClick={() => setExpanded(isOpen ? null : link.label)}
                       aria-label={`Toggle ${link.label} submenu`}
-                      className="p-4 text-heading/50"
+                      className="p-4 text-admin-text/50"
                     >
                       <ChevronDown
                         size={16}
@@ -98,7 +98,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
                     <div className="pb-4 px-5 flex flex-col gap-4">
                       {link.columns!.map((col) => (
                         <div key={col.title}>
-                          <p className="text-[10px] tracking-[0.18em] uppercase text-heading/35 mb-2">
+                          <p className="text-[10px] tracking-[0.18em] uppercase text-admin-text/35 mb-2">
                             {col.title}
                           </p>
                           <div className="flex flex-col gap-2.5">
@@ -107,7 +107,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
                                 key={child.label}
                                 to={child.to}
                                 onClick={onClose}
-                                className="text-[13px] text-heading/70 hover:text-primary-dark transition-colors duration-200"
+                                className="text-[13px] text-admin-text/70 hover:text-primary-dark transition-colors duration-200"
                               >
                                 {child.label}
                               </Link>
@@ -124,19 +124,19 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
         </nav>
 
         <div className="flex items-center justify-around py-5 border-t border-border/60 shrink-0">
-          <button className="flex flex-col items-center gap-1.5 text-heading/70">
+          <button className="flex flex-col items-center gap-1.5 text-admin-text/70">
             <Search size={19} strokeWidth={1.6} />
             <span className="text-[9px] tracking-widest uppercase">Search</span>
           </button>
-          <Link to="/wishlist" onClick={onClose} className="flex flex-col items-center gap-1.5 text-heading/70">
+          <Link to="/wishlist" onClick={onClose} className="flex flex-col items-center gap-1.5 text-admin-text/70">
             <Heart size={19} strokeWidth={1.6} />
             <span className="text-[9px] tracking-widest uppercase">Wishlist</span>
           </Link>
-          <Link to="/cart" onClick={onClose} className="flex flex-col items-center gap-1.5 text-heading/70">
+          <Link to="/cart" onClick={onClose} className="flex flex-col items-center gap-1.5 text-admin-text/70">
             <ShoppingBag size={19} strokeWidth={1.6} />
             <span className="text-[9px] tracking-widest uppercase">Bag</span>
           </Link>
-          <Link to="/profile" onClick={onClose} className="flex flex-col items-center gap-1.5 text-heading/70">
+          <Link to="/profile" onClick={onClose} className="flex flex-col items-center gap-1.5 text-admin-text/70">
             <User size={19} strokeWidth={1.6} />
             <span className="text-[9px] tracking-widest uppercase">Profile</span>
           </Link>

@@ -28,7 +28,7 @@ const SlideContent = forwardRef<HTMLDivElement, SlideContentProps>(
     return (
       <div
         ref={rootRef}
-        className="relative z-20 h-full flex items-center px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto"
+        className="relative z-20 h-full flex items-center px-5 sm:px-10 lg:px-20 "
       >
         <div className="max-w-2xl w-full">
           <p
@@ -60,7 +60,7 @@ const SlideContent = forwardRef<HTMLDivElement, SlideContentProps>(
             {slide.ctaLabel && (
               <a
                 href={slide.ctaHref ?? "#"}
-                className="inline-block bg-white text-heading px-6 sm:px-8 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-card transition-colors duration-400"
+                className="inline-block bg-white text-admin-text px-6 sm:px-8 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-card transition-colors duration-400"
               >
                 {slide.ctaLabel}
               </a>

@@ -2,6 +2,10 @@ import { motion } from "motion/react";
 import type { CartItem } from "./cart";
 import { discountPercent, formatINR } from "./pricing";
 import { IconClock, IconClose } from "./icons";
+import usePostQuery from "../../../../../hooks/postQuery.hook";
+import { apiUrls } from "../../../../../apis";
+import useGetQuery from "../../../../../hooks/getQuery.hook";
+import { useToast } from "../../../../../hooks/useToast.hook";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -9,7 +13,7 @@ interface CartItemCardProps {
   onRemove: (id: string) => void;
   onMoveToWishlist: (id: string) => void;
   onQtyChange: (id: string, qty: number) => void;
-  onSizeChange: (id: string, size: string) => void;
+  onRefreshCart: () => void;
 }
 
 const CartItemCard = ({
@@ -18,9 +22,43 @@ const CartItemCard = ({
   onRemove,
   onMoveToWishlist,
   onQtyChange,
-  onSizeChange,
+  onRefreshCart,
 }: CartItemCardProps) => {
   const pct = discountPercent(item.mrp, item.price);
+  const { postQuery } = usePostQuery();
+  const { getQuery } = useGetQuery();
+  const { toast } = useToast();
+
+  const updateCart = (data: Number) => {
+    postQuery({
+      url: apiUrls.Cart.update,
+      postData: {
+        itemId: item.id,
+        quantity: data,
+      },
+      onSuccess: (res: any) => {
+        toast("success", res.message);
+        onRefreshCart();
+      },
+      onFail: (res: any) => {
+        console.log(res?.data);
+      },
+    });
+  };
+
+  const removeCart = () => {
+    getQuery({
+      url: apiUrls.Cart.remove + item.id,
+      onSuccess: (res: any) => {
+        toast("success", res.message);
+        onRefreshCart();
+      },
+      onFail: (res: any) => {
+        console.log(res?.data);
+      },
+    });
+  }
+
 
   return (
     <motion.div
@@ -34,7 +72,7 @@ const CartItemCard = ({
       {/* Remove */}
       <button
         type="button"
-        onClick={() => onRemove(item.id)}
+        onClick={() => removeCart()}
         aria-label={`Remove ${item.name}`}
         className="absolute right-4 top-4 text-muted transition-colors hover:text-error"
       >
@@ -44,13 +82,13 @@ const CartItemCard = ({
       <div className="flex gap-4 sm:gap-5">
         {/* Select + image */}
         <div className="flex flex-shrink-0 items-start gap-2.5">
-          <input
+          {/* <input
             type="checkbox"
             checked={item.selected}
             onChange={() => onToggleSelect(item.id)}
             className="mt-1 h-4 w-4 accent-primary"
             aria-label={`Select ${item.name}`}
-          />
+          /> */}
           <img
             src={item.image}
             alt={item.name}
@@ -60,7 +98,7 @@ const CartItemCard = ({
 
         {/* Details */}
         <div className="flex-1 min-w-0 pr-6">
-          <h3 className="font-heading text-base text-heading sm:text-lg">
+          <h3 className="font-heading text-base text-admin-text sm:text-lg">
             {item.brand}
           </h3>
           <p className="mt-0.5 truncate font-body text-sm text-body">
@@ -70,51 +108,64 @@ const CartItemCard = ({
             Sold by: {item.soldBy}
           </p>
 
-          {/* Size / Qty selectors */}
+          {/* Size (Static) / Qty selector */}
           <div className="mt-3 flex flex-wrap items-center gap-2.5">
-            <label className="relative">
-              <span className="sr-only">Size</span>
-              <select
-                value={item.size}
-                onChange={(e) => onSizeChange(item.id, e.target.value)}
-                className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-heading focus:outline-none focus:ring-1 focus:ring-primary"
-              >
-                {item.availableSizes.map((s) => (
-                  <option key={s} value={s}>
-                    Size: {s}
-                  </option>
-                ))}
-              </select>
-            </label>
 
-            <label className="relative">
-              <span className="sr-only">Quantity</span>
-              <select
-                value={item.qty}
-                onChange={(e) => onQtyChange(item.id, Number(e.target.value))}
-                className="cursor-pointer appearance-none rounded border border-border bg-surface px-3 py-1.5 pr-7 font-body text-xs font-medium text-heading focus:outline-none focus:ring-1 focus:ring-primary"
+            {/* Directly showing the size instead of a dropdown */}
+            <div className="flex items-center rounded border border-border bg-surface px-3 py-1.5 font-body text-xs font-medium text-heading">
+              Size: {item.size}
+            </div>
+
+            <div className="flex items-center gap-2 rounded-md border border-border bg-surface p-1">
+              {/* Decrease Button */}
+              <button
+                type="button"
+                disabled={item.qty <= 1}
+                onClick={() => {
+                  const newQty = item.qty - 1;
+                  updateCart(newQty);
+                  console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
+                  onQtyChange(item.id, newQty);
+                }}
+                className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Decrease quantity"
               >
-                {Array.from({ length: item.maxQty }, (_, i) => i + 1).map(
-                  (n) => (
-                    <option key={n} value={n}>
-                      Qty: {n}
-                    </option>
-                  )
-                )}
-              </select>
-            </label>
+                -
+              </button>
+
+              {/* Quantity Display */}
+              <span className="w-4 text-center font-body text-xs font-medium text-heading">
+                {item.qty}
+              </span>
+
+              {/* Increase Button */}
+              <button
+                type="button"
+                disabled={item.qty >= item.maxQty}
+                onClick={() => {
+                  const newQty = item.qty + 1;
+                  updateCart(newQty);
+                  console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
+                  onQtyChange(item.id, newQty);
+                }}
+                className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
           </div>
 
           {/* Price */}
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-heading text-lg text-heading">
+            <span className="font-heading text-lg text-admin-text">
               {formatINR(item.price)}
             </span>
             <span className="font-body text-sm text-muted line-through">
               {formatINR(item.mrp)}
             </span>
             <span className="font-body text-sm font-medium text-success">
-              {pct}% OFF
+              {pct}% OFFs
             </span>
           </div>
 
@@ -128,7 +179,7 @@ const CartItemCard = ({
       <div className="mt-4 flex items-center gap-4 border-t border-border pt-3 text-xs font-semibold tracking-wide">
         <button
           type="button"
-          onClick={() => onRemove(item.id)}
+          onClick={removeCart}
           className="text-body transition-colors hover:text-error"
         >
           REMOVE

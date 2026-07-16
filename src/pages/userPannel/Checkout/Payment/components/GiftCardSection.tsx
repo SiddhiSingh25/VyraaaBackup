@@ -16,7 +16,7 @@ export default function GiftCardSection() {
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
             <Gift className="h-4 w-4 text-primary" strokeWidth={1.75} />
           </div>
-          <span className="font-body text-[14px] font-semibold text-heading">
+          <span className="font-body text-[14px] font-semibold text-admin-text">
             Have a Gift Card?
           </span>
         </div>
@@ -39,7 +39,7 @@ export default function GiftCardSection() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Enter gift card code"
-                className="flex-1 rounded-xl border border-border bg-background px-4 py-3 font-body text-[14px] text-heading outline-none transition-colors focus:border-primary"
+                className="flex-1 rounded-xl border border-border bg-background px-4 py-3 font-body text-[14px] text-admin-text outline-none transition-colors focus:border-primary"
               />
               <button
                 disabled={!code.trim()}

@@ -11,7 +11,7 @@ function formatINR(amount: number) {
 export function OrderSummary({ items }: OrderSummaryProps) {
   return (
     <div>
-      <h2 className="font-heading text-lg text-heading">Order Summary</h2>
+      <h2 className="font-heading text-lg text-admin-text">Order Summary</h2>
       <p className="mt-1 text-xs text-muted">
         {items.length} {items.length === 1 ? "item" : "items"}
       </p>
@@ -26,12 +26,12 @@ export function OrderSummary({ items }: OrderSummaryProps) {
             />
             <div className="flex flex-1 flex-col justify-between">
               <div>
-                <p className="text-sm font-medium text-heading">{item.name}</p>
+                <p className="text-sm font-medium text-admin-text">{item.name}</p>
                 <p className="mt-1 text-xs text-muted">
                   {item.color} · Size {item.size} · Qty {item.quantity}
                 </p>
               </div>
-              <p className="text-sm font-medium text-heading">
+              <p className="text-sm font-medium text-admin-text">
                 {formatINR(item.price)}
               </p>
             </div>

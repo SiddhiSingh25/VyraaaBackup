@@ -18,7 +18,7 @@ export default function OrderSummary({ products, address, onChangeAddress }: Ord
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <p className="font-body text-[13.5px] font-semibold text-heading">
+              <p className="font-body text-[13.5px] font-semibold text-admin-text">
                 {address.name}
               </p>
               <span className="rounded-full bg-primary/10 px-2 py-0.5 font-body text-[10px] font-semibold text-primary">
@@ -50,13 +50,13 @@ export default function OrderSummary({ products, address, onChangeAddress }: Ord
               className="h-20 w-16 shrink-0 rounded-lg border border-border object-cover"
             />
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 font-body text-[13px] font-medium leading-snug text-heading">
+              <p className="line-clamp-2 font-body text-[13px] font-medium leading-snug text-admin-text">
                 {product.name}
               </p>
               <p className="mt-1 font-body text-[11.5px] text-muted">
                 {product.color} · Size {product.size} · Qty {product.qty}
               </p>
-              <p className="mt-1 font-body text-[13px] font-semibold text-heading">
+              <p className="mt-1 font-body text-[13px] font-semibold text-admin-text">
                 ₹{product.price.toLocaleString("en-IN")}
               </p>
             </div>

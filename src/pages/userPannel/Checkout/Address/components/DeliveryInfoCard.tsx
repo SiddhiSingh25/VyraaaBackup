@@ -8,7 +8,7 @@ export function DeliveryInfoCard() {
       </span>
       <p className="text-sm leading-relaxed text-body">
         Orders will be delivered between{" "}
-        <span className="font-medium text-heading">9 AM – 8 PM</span>. Please
+        <span className="font-medium text-admin-text">9 AM – 8 PM</span>. Please
         ensure someone is available to receive the package.
       </p>
     </div>
