@@ -2,8 +2,6 @@ import * as yup from "yup";
 import type { QuickAddValues } from "./types";
 
 export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
-  //SKU
-  sku: yup.string().trim().required("SKU Code is required"),
   // Taxonomy
   category: yup.string().when("$hideCategoryField", {
     is: true,
@@ -54,6 +52,7 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
     .array()
     .of(
       yup.object({
+        sku: yup.string().required("SKU is required"),
         size: yup
           .object({
             value: yup.string().required("Size is required"),
@@ -102,4 +101,5 @@ export const quickAddDefaultValues: QuickAddValues = {
   variants: [],
   images: [],
   sku: "",
+  appendSizeType: false,
 };

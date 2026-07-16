@@ -73,6 +73,7 @@ export interface VariantEntry {
   discountPrice?: number;
   isAvailable: boolean;
   isFewLeft: boolean;
+  sku: string;
 }
 
 export interface DraftVariant {
@@ -112,4 +113,5 @@ export type QuickAddValues = {
   variants: VariantEntry[];
   images: string[];
   sku: string;
+  appendSizeType: boolean;
 };
