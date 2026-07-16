@@ -354,7 +354,7 @@ const QuickAddProduct = () => {
 
           setShowProductModal(true);
 
-          // resetForm();
+          resetForm();
         },
         onFail: (err: any) => {
           console.log("CATCH", err);
