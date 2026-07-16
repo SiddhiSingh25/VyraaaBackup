@@ -292,7 +292,7 @@ const ProductInfo = () => {
                   {productData?.title}
                 </h1>
 
-                <StarRating rating={productData?.rating} totalRatings={product.totalRatings} />
+                <StarRating rating={productData?.averageRating} totalRatings={product.totalRatings} />
 
                 <div className="mt-3 flex items-baseline gap-2">
                   <span className="text-[22px] text-[#3b302a] font-semibold leading-none">
@@ -302,12 +302,12 @@ const ProductInfo = () => {
                     MRP ₹{productData?.price?.[selectedSize]?.markupPrice}
                   </span>
                   <span className="text-[13px] text-[#835240] font-medium">
-                    ({Math.round((productData?.price?.[selectedSize]?.discount * 100) / (productData?.price?.[selectedSize]?.markupPrice || 1)) || 0}% OFF)
+                    ({productData?.price?.[selectedSize]?.discount || 0}% OFF)
                   </span>
                 </div>
                 {productData?.price?.[selectedSize]?.discount != 0 &&
                   <p className="mt-0.5 text-[11px] text-[#84746e]">
-                    inclusive of all taxes · you save ₹{productData?.price?.[selectedSize]?.discount}
+                    inclusive of all taxes · you save ₹{productData?.price?.[selectedSize]?.markupPrice - productData?.price?.[selectedSize]?.amount}
                   </p>
                 }
 
