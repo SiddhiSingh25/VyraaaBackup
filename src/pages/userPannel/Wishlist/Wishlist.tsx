@@ -53,33 +53,49 @@ export default function WishlistPage() {
       url: apiUrls.WishList.getByUserId,
       onSuccess: (res: any) => {
 
-        const fetchedItems = res.data.items.map((item: any) => {
 
+        const validItems = res.data.items.filter((item: any) => {
+  if (!item.product) {
+    console.warn("Wishlist item has a deleted/missing product, skipping:", item._id);
+    return false;
+  }
+  return true;
+});
+        
+       const fetchedItems =validItems.map((item: any) => {
+  const priceEntry =
+    item.product.price && item.product.price.length > 0
+      ? item.product.price[0]
+      : { amount: 0, markupPrice: null, isAvailable: true, isFewLeft: false, discount: 0, skuCode: "" };
 
-          const defaultPrice = (item.product.price && item.product.price.length > 0)
-            ? item.product.price[0]
-            : { amount: 0, markupPrice: null, isAvailable: true };
+  return {
+    id: item.product._id,
+    wishlistItemId: item._id, // useful if you ever need to remove by wishlist entry, not product id
+    brand: item.product.brand || "Vyraa",
+    name: item.product.title,
+    image: item.product.image,
+    rating: item.product.rating || 0,
 
-          return {
-            id: item.product._id,
-            brand: item.product.brand || "Vyraa",
-            name: item.product.title,
-            image: item.product.image,
-            rating: item.product.rating || 0,
+    price: priceEntry.amount,
+    originalPrice: priceEntry.markupPrice,
+    discount: priceEntry.discount || 0,
+    skuCode: priceEntry.skuCode || "",
 
+    stockStatus: priceEntry.isAvailable ? "in-stock" : "out-of-stock",
+    isFewLeft: !!priceEntry.isFewLeft,
 
-            price: defaultPrice.amount,
-            originalPrice: defaultPrice.markupPrice,
-            stockStatus: defaultPrice.isAvailable ? "in-stock" : "out-of-stock",
+    // size is an ObjectId reference (e.g. "6a58db0461a7ee9ef7807c15"),
+    // not a display name — only show a real label if the API populates it
+    colorName: "Standard",
+    colorHex: "#000000",
+    size: item.product.price?.length > 1 ? `${item.product.price.length} sizes` : "Standard",
 
+    reviewCount: 0,
+    badge: priceEntry.isFewLeft ? "Few Left" : priceEntry.discount ? `${priceEntry.discount}% OFF` : null,
 
-            colorName: "Standard",
-            colorHex: "#000000",
-            size: "Standard",
-            reviewCount: 0,
-            badge: null,
-          };
-        });
+    addedAt: item.addedAt,
+  };
+});
 
         setItems(fetchedItems);
         setIsLoading(false); // Stop loading on success
