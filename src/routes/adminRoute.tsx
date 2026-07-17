@@ -45,6 +45,11 @@ export const adminRoutes = [
         element: <Product/>,
       },
 
+          {
+        path: "/admin/orders",
+        element: <Product/>,
+      },
+
       {
         path: "product/:categorySlug/:categoryId",
         element: <QuickAddProduct />,
