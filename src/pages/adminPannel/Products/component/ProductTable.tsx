@@ -33,7 +33,7 @@ const ProductTable = ({
             <tr className="border-b border-[#D8C4B5] bg-[#FFF8F2] text-left text-sm font-semibold text-[#8B5E49]">
               <th className="px-4 py-3 w-20">Sr. No.</th>
 
-              <th className="px-4 py-3">Product</th>
+              <th className="w-[320px] px-4 py-3">Product</th>
 
               <th className="px-4 py-3">Category</th>
 
@@ -71,24 +71,31 @@ const ProductTable = ({
 
                   {/* Product */}
 
-                  <td className="px-4 py-3">
+                  {/* Product */}
+
+                  <td className="w-[320px] px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img
-                        src={product?.image}
-                        alt={product?.title}
-                        className="h-12 w-12 rounded-lg border border-[#E4D6CB] object-cover"
+                        src={product.image}
+                        alt={product.title}
+                        className="h-12 w-12 shrink-0 rounded-lg border border-[#E4D6CB] object-cover"
                       />
 
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-[#3F322B]">
-                          {product?.title}
+                      <div className="min-w-0 max-w-60">
+                        <p
+                          className="overflow-hidden text-sm font-medium leading-5 text-[#3F322B]"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                          }}
+                        >
+                          {product.title}
                         </p>
 
                         <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                          <span>{product?.brand?.brand}</span>
-
+                          <span>{product.brand?.brand}</span>
                           <span>•</span>
-
                           <span>{product.gender}</span>
                         </div>
                       </div>
