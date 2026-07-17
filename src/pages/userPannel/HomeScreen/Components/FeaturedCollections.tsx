@@ -2,6 +2,7 @@ import { IoArrowForward } from "react-icons/io5";
 import { womenPerfume } from "../../../../assets/assets";
 import { useReveal } from "../../../../hooks/gsap/useReveal";
 import SectionHeader from "../../../../components/Common/Headers/SectionHeader";
+import { Link } from "react-router-dom";
 
 interface Collection {
   index: string;
@@ -10,22 +11,25 @@ interface Collection {
   midLift?: boolean;
 }
 
-const COLLECTIONS: Collection[] = [
+const COLLECTIONS = [
   {
     index: "01",
     title: "Clothing",
     image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80&fit=crop",
+    to : "/clothing"
   },
   {
     index: "02",
     title: "Perfumes",
     image: womenPerfume,
     midLift: true,
+     to : "/clothing"
   },
   {
     index: "03",
     title: "Jewelry",
     image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80&fit=crop",
+    to : "/clothing"
   },
 ];
 
@@ -36,12 +40,14 @@ export default function FeaturedCollections() {
     <section ref={ref} className="py-10 px-5 sm:px-10 lg:px-20 ">
     
       <SectionHeader  viewAllLink="/"
-  viewAllText = "View All" tagline="Categories"
-  title="Categories"  />
+  viewAllText = "View All" tagline="Popular Products"
+  title="Products"  />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
         {COLLECTIONS.map((c) => (
-          <div
+          <Link
+          to={c.to}
+          
             key={c.title}
             data-reveal
             className={`group relative overflow-hidden rounded-2xl aspect-[4/5] ${
@@ -68,7 +74,7 @@ export default function FeaturedCollections() {
                 <span className="material-symbols-outlined text-[16px]"><IoArrowForward/></span>
               </a>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

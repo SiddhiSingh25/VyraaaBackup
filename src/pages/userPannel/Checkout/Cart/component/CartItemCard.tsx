@@ -37,6 +37,7 @@ const CartItemCard = ({
         quantity: data,
       },
       onSuccess: (res: any) => {
+        dispatch(removeFromCart(id));
         toast("success", res.message);
         onRefreshCart();
       },
@@ -50,6 +51,7 @@ const CartItemCard = ({
     getQuery({
       url: apiUrls.Cart.remove + item.id,
       onSuccess: (res: any) => {
+        dispatch(removeFromCart(id));
         toast("success", res.message);
         onRefreshCart();
       },

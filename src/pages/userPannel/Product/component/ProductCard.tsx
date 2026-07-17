@@ -26,7 +26,7 @@ const ProductCard = ({ product }: any) => {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const wishlistItems = useAppSelector((state) => state.wishlist.items || []);
-  const isWishlisted = wishlistItems.some((item: any) => item.id === product.id);
+  const isWishlisted = wishlistItems.some((item: any) => item.id === product._id);
 
   const [selectedSize, setSelectedSize] = React.useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -35,6 +35,8 @@ const ProductCard = ({ product }: any) => {
   console.log(product, "**********")
 
   const handleWishlist = (e: React.MouseEvent) => {
+
+    console.log(e,"jv")
     e.preventDefault();
     e.stopPropagation();
 
@@ -43,39 +45,30 @@ const ProductCard = ({ product }: any) => {
       navigate("/auth/login");
       return;
     }
+    
 
-    if (isWishlisted) {
-       dispatch(removeFromWishlist(product.id));
       getQuery({
-        url: apiUrls.WishList.remove + product?.id,
+
+
+        url: apiUrls.WishList.add + product?._id,
         onSuccess: (res: any) => {
-          toast("success", res.message || "Removed from wishlist");
-        },
-        onFail: (res: any) => {
-          console.error("Failed to remove from wishlist:", res);
-          toast("error", "Failed to remove from wishlist");
-        },
-      });
-    } else {
-        dispatch(addToWishlist({
-            id: product.id,
-            brand: getBrandName(product.brand),
-            name: product.name || product.title,
-            image: product.img || product.image,
-            price: typeof product.price === 'number' ? product.price : parseFloat(product.price?.[0]?.amount?.toString().replace(/[^\d\.]/g, '') || product.price?.toString().replace(/[^\d\.]/g, '') || '0'),
-            stockStatus: "in-stock"
-          }));
-      getQuery({
-        url: apiUrls.WishList.add + product?.id,
-        onSuccess: (res: any) => {
+
+           dispatch(addToWishlist({
+        id: product._id,
+        brand: getBrandName(product.brand),
+        name: product.name || product.title,
+        image: product.img || product.image,
+        price: typeof product.price === 'number' ? product.price : parseFloat(product.price?.[0]?.amount?.toString().replace(/[^\d\.]/g, '') || product.price?.toString().replace(/[^\d\.]/g, '') || '0'),
+        stockStatus: "in-stock"
+      }));
+
           toast("success", res.message || "Added to wishlist");
         },
         onFail: (error: any) => {
-          console.error( error);
-          toast("error",  error.response?.data?.message || "Already Added" );
+          console.error(error);
+          toast("error", error.response?.data?.message || "Already Added");
         },
       });
-    }
   };
 
   const getBrandName = (brand: any) => {
@@ -115,16 +108,21 @@ const ProductCard = ({ product }: any) => {
   };
 
   const executeAddToCart = () => {
+
     if (selectedSize === null) {
       toast("warning", "Please select a size first");
       return;
     }
 
     const currentPriceObj = product.price[selectedSize];
+
+    console.log(currentPriceObj?.size?._id, "88")
     if (!currentPriceObj?.isAvailable) {
       toast("error", "Selected size is not available");
       return;
     }
+
+    console.log(currentPriceObj?._id)
 
     setIsSubmitting(true);
 
@@ -132,7 +130,7 @@ const ProductCard = ({ product }: any) => {
       url: apiUrls.Cart.add,
       postData: {
         "productId": product._id || product.id,
-        "size": currentPriceObj?.size?._id,
+        "size": currentPriceObj?._id,
         "quantity": 1
       },
       onSuccess: (res: any) => {
@@ -251,11 +249,10 @@ const ProductCard = ({ product }: any) => {
               onClick={executeAddToCart}
               disabled={selectedSize === null || isSubmitting}
               type="button"
-              className={`px-5 py-2 rounded font-medium text-[12px] uppercase tracking-wider text-white transition-colors ${
-                selectedSize === null || isSubmitting
-                  ? "bg-[#835240]/55 cursor-not-allowed"
-                  : "bg-[#835240] hover:bg-[#51291a]"
-              }`}
+              className={`px-5 py-2 rounded font-medium text-[12px] uppercase tracking-wider text-white transition-colors ${selectedSize === null || isSubmitting
+                ? "bg-[#835240]/55 cursor-not-allowed"
+                : "bg-[#835240] hover:bg-[#51291a]"
+                }`}
             >
               {isSubmitting ? "Adding..." : "Add to bag"}
             </button>
@@ -293,13 +290,12 @@ const ProductCard = ({ product }: any) => {
                   type="button"
                   disabled={!size.isAvailable}
                   onClick={() => setSelectedSize(index)}
-                  className={`w-10 h-10 rounded-full border text-[12.5px] transition-all duration-200 font-semibold ${
-                    !size.isAvailable
-                      ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through bg-gray-50/50"
-                      : selectedSize === index
+                  className={`w-10 h-10 rounded-full border text-[12.5px] transition-all duration-200 font-semibold ${!size.isAvailable
+                    ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through bg-gray-50/50"
+                    : selectedSize === index
                       ? "bg-[#835240] border-[#835240] text-[#fdf9f3] scale-105 shadow-sm"
                       : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
-                  }`}
+                    }`}
                 >
                   {size.size?.size}
                 </button>
