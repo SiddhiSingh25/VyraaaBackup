@@ -18,7 +18,7 @@ import {
   toggleSelectItem,
   updateQuantity,
   removeFromCart,
-} from "../../../../redux/slices/cartSlice";
+} from "../../../../redux/slices/cartSlice.js";
 
 const COUPON_DISCOUNT = 60;
 
@@ -77,9 +77,9 @@ const Cart = () => {
     });
   }, [refreshKey]);
 
-  const toggleSelect = (id: string) => {
-    dispatch(toggleSelectItem(id));
-  };
+  // const toggleSelect = (id: string) => {
+  //   dispatch(toggleSelectItem(id));
+  // };
 
   const removeItem = (id: string) => {
     dispatch(removeFromCart(id));
@@ -102,7 +102,7 @@ const Cart = () => {
     [items, couponApplied, donation]
   );
 
-  // const selectedCount = items.filter((i) => i.selected).length;
+  const selectedCount = items.filter((i) => i.selected).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -136,11 +136,11 @@ const Cart = () => {
 
                 <div className="mt-4 space-y-3">
                   <AnimatePresence mode="popLayout">
-                    {items.map((item: any) => (
+                    {items.map((item) => (
                       <CartItemCard
                         key={item.id}
                         item={item}
-                        onToggleSelect={toggleSelect}
+                        // onToggleSelect={toggleSelect}
                         onRemove={removeItem}
                         onMoveToWishlist={moveToWishlist}
                         onQtyChange={changeQty}

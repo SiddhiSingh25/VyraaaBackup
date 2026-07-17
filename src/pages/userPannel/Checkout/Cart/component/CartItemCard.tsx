@@ -7,12 +7,7 @@ import { apiUrls } from "../../../../../apis";
 import useGetQuery from "../../../../../hooks/getQuery.hook";
 import { useToast } from "../../../../../hooks/useToast.hook";
 import { useDispatch } from "react-redux";
-import {
-  setCartItems,
-  toggleSelectItem,
-  updateQuantity,
-  removeFromCart,
-} from "../../../../redux/slices/cartSlice";
+
 
 interface CartItemCardProps {
   item: CartItem;
@@ -45,7 +40,7 @@ const CartItemCard = ({
         quantity: data,
       },
       onSuccess: (res: any) => {
-      dispatch(updateQuantity({item : item.id, quantity: data }));
+      // dispatch(updateQuantity({item : item.id, quantity: data }));
         toast("success", res.message);
         onRefreshCart();
       },
@@ -63,7 +58,7 @@ const CartItemCard = ({
     getQuery({
       url: apiUrls.Cart.remove + item.id,
       onSuccess: (res: any) => {
-         dispatch(removeFromCart(item.id));
+        //  dispatch(removeFromCart(item.id));
         toast("success", res.message);
         onRefreshCart();
       },
