@@ -102,7 +102,7 @@ const Cart = () => {
     [items, couponApplied, donation]
   );
 
-  const selectedCount = items.filter((i) => i.selected).length;
+  // const selectedCount = items.filter((i) => i.selected).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -136,7 +136,7 @@ const Cart = () => {
 
                 <div className="mt-4 space-y-3">
                   <AnimatePresence mode="popLayout">
-                    {items.map((item) => (
+                    {items.map((item: any) => (
                       <CartItemCard
                         key={item.id}
                         item={item}

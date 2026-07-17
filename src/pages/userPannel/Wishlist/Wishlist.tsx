@@ -48,6 +48,7 @@ export default function WishlistPage() {
   const [items, setItems] = useState<WishlistProduct[]>([]);
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     getQuery({
       url: apiUrls.WishList.getByUserId,
       onSuccess: (res: any) => {
