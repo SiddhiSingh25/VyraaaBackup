@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 
 import ProductTable from "./component/ProductTable";
@@ -7,14 +7,33 @@ import { dummyProducts } from "./component/dummyProducts";
 
 import type { ProductItem } from "./component/types";
 import Button from "@/components/tableComponents/Button";
+import useGetQuery from "@/hooks/getQuery.hook";
+import { apiUrls } from "@/apis";
 
 const Product = () => {
-  const [products] = useState<ProductItem[]>(dummyProducts);
-
   const [search, setSearch] = useState("");
+  const [products, SetProducts] = useState([]);
+  const { getQuery } = useGetQuery();
+
+  const fetchProducts = () => {
+    getQuery({
+      url: apiUrls.Product.getAll,
+      onSuccess: (res: any) => {
+        console.log("Fetched Addresses:", res.data);
+        SetProducts(res.data);
+      },
+      onFail: (err: any) => {
+        console.log("Failed to fetch addresses:", err);
+      },
+    });
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((item) => {
+    return products.filter((item: any) => {
       return (
         item.title.toLowerCase().includes(search.toLowerCase()) ||
         item.category.toLowerCase().includes(search.toLowerCase()) ||
