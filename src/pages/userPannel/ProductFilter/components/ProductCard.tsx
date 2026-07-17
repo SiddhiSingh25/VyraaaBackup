@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Plus, Star } from "lucide-react";
-import { C } from "../constants";
 import { money, pct } from "../utils";
 import Badge from "./Badge";
 import type { Product } from "../types";
@@ -101,8 +100,8 @@ export default function ProductCard({
       onClick={() => navigate({ pathname: `/productDetails/${product?.id}` })}
     >
       <div
-        className="relative overflow-hidden rounded-2xl"
-        style={{ aspectRatio: "4 / 5", background: C.card }}
+        className="relative overflow-hidden rounded-2xl bg-[#F2E8DD]"
+        style={{ aspectRatio: "4 / 5" }}
       >
         <img
           src={hover && product.img2 ? product.img2 : product.img}
@@ -141,8 +140,8 @@ export default function ProductCard({
             size={16}
             strokeWidth={1.8}
             // 4. Update the fill and color properties based on isWished state
-            fill={isWished ? C.rose : "none"}
-            color={isWished ? C.rose : C.heading}
+            fill={isWished ? "#B76E79" : "none"}
+            color={isWished ? "#B76E79" : "#3B302A"}
           />
         </button>
 
@@ -158,8 +157,7 @@ export default function ProductCard({
               {/* ADD TO CART BUTTON */}
               <button
                 onClick={handleAddToCart}
-                className="flex-1 h-10 rounded-full text-[12px] font-medium flex items-center justify-center gap-1.5 transition-transform hover:scale-[1.02]"
-                style={{ background: C.dark, color: "#fff" }}
+                className="flex-1 h-10 rounded-full text-[12px] font-medium flex items-center justify-center gap-1.5 transition-transform hover:scale-[1.02] bg-[#3D2A1E] text-white"
               >
                 <Plus size={13} /> Add to Cart
               </button>
@@ -170,43 +168,37 @@ export default function ProductCard({
 
       <div className="pt-3 flex flex-col gap-1">
         <span
-          className="text-[11px] font-semibold tracking-wide uppercase"
-          style={{ color: C.muted }}
+          className="text-[11px] font-semibold tracking-wide uppercase text-[#84746E]"
         >
           {product.brand}
         </span>
         <span
-          className="text-[13.5px] leading-snug line-clamp-1"
-          style={{ color: C.heading, fontFamily: "'Playfair Display', serif" }}
+          className="text-[13.5px] leading-snug line-clamp-1 text-[#3B302A] font-serif"
         >
           {product.name}
         </span>
         <div
-          className="flex items-center gap-1.5 text-[11.5px]"
-          style={{ color: C.muted }}
+          className="flex items-center gap-1.5 text-[11.5px] text-[#84746E]"
         >
           <span
-            className="flex items-center gap-0.5"
-            style={{ color: C.heading }}
+            className="flex items-center gap-0.5 text-[#3B302A]"
           >
-            <Star size={11} fill={C.warning} color={C.warning} />
+            <Star size={11} fill="#F59E0B" color="#F59E0B" />
             {product.rating}
           </span>
           <span>({product.reviews})</span>
         </div>
         <div className="flex items-center gap-2 pt-0.5">
           <span
-            className="text-[15px] font-semibold"
-            style={{ color: C.heading }}
+            className="text-[15px] font-semibold text-[#3B302A]"
           >
             {money(product.price)}
           </span>
-          <span className="text-[12px] line-through" style={{ color: C.muted }}>
+          <span className="text-[12px] line-through text-[#84746E]">
             {money(product.mrp)}
           </span>
           <span
-            className="text-[12px] font-medium"
-            style={{ color: C.success }}
+            className="text-[12px] font-medium text-[#4CAF50]"
           >
             {discount}% off
           </span>

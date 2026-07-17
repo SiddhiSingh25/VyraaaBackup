@@ -69,7 +69,7 @@ export default function Toolbar({
           </button>
         )}
       </div>
-      <div className="relative" ref={ref}>
+      {/* <div className="relative" ref={ref}>
         <button
           onClick={() => setSortOpen((s) => !s)}
           className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-colors"
@@ -113,7 +113,7 @@ export default function Toolbar({
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </div> */}
     </div>
   );
 }
