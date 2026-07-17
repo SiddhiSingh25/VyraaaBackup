@@ -12,6 +12,7 @@ import useGetQuery from "../../../../hooks/getQuery.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../apis";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   setCartItems,
   toggleSelectItem,
@@ -22,6 +23,7 @@ import {
 const COUPON_DISCOUNT = 60;
 
 const Cart = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   // Bind items to Redux store cart items
   const items = useSelector((state: any) => state.cart.items);

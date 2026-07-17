@@ -17,6 +17,7 @@ import { apiUrls } from "@/apis";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/slices/authSlice";
+import { clearCart } from "@/redux/slices/cartSlice";
 
 const TAB_TITLES: Record<AccountTabId, string> = {
   "personal-info": "Personal Information",
@@ -197,6 +198,7 @@ export default function Profile() {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(clearCart());
     navigate("/auth/login");
   };
 

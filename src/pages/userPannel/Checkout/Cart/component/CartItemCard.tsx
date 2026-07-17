@@ -5,6 +5,7 @@ import { IconClock, IconClose } from "./icons";
 import usePostQuery from "../../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../../apis";
 import useGetQuery from "../../../../../hooks/getQuery.hook";
+import { useToast } from "../../../../../hooks/useToast.hook";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -26,6 +27,7 @@ const CartItemCard = ({
   const pct = discountPercent(item.mrp, item.price);
   const { postQuery } = usePostQuery();
   const { getQuery } = useGetQuery();
+  const { toast } = useToast();
 
   const updateCart = (data: Number) => {
     postQuery({
@@ -35,7 +37,7 @@ const CartItemCard = ({
         quantity: data,
       },
       onSuccess: (res: any) => {
-        alert(res.message);
+        toast("success", res.message);
         onRefreshCart();
       },
       onFail: (res: any) => {
@@ -48,7 +50,7 @@ const CartItemCard = ({
     getQuery({
       url: apiUrls.Cart.remove + item.id,
       onSuccess: (res: any) => {
-        alert(res.message);
+        toast("success", res.message);
         onRefreshCart();
       },
       onFail: (res: any) => {

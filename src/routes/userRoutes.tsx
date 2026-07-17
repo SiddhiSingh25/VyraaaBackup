@@ -68,10 +68,7 @@ export const userRoutes = [
     path: "/aboutus",
     element: <AboutUs />,
   },
-  {
-    path: "/wishlist",
-    element: <Wishlist />,
-  },
+
   {
     path: "/clothing",
     element: <ProductFilter />,
@@ -90,6 +87,10 @@ export const userRoutes = [
       {
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        path: "/wishlist",
+        element: <Wishlist />,
       },
       {
         path: "/checkout",

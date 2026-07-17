@@ -5,13 +5,15 @@ import RatingsAndReviews from "./RatingReviews";
 import { useNavigate, useParams } from "react-router-dom"; // Removed unused 'useNavigation'
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
+import { useToast } from "../../../../hooks/useToast.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { Heart } from "lucide-react";
 import AddressSidebar from "../../../../components/AddressSidebar/AddressSidebar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../../redux/slices/cartSlice";
 
 /* ---------------------------- Small building blocks ---------------------------- */
+
 
 const StarRating = ({ rating, totalRatings }: any) => (
   <div className="flex items-center gap-1.5 mt-1">
@@ -99,6 +101,14 @@ const ProductInfo = () => {
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { toast } = useToast();
+  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
+
+
+
+
+  const cart = useSelector((state: any) => state.cart.items);
+  console.log(cart, "=====cart");
 
   useEffect(() => {
     if (!id) return;
@@ -125,6 +135,12 @@ const ProductInfo = () => {
   }
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast("warning", "Please login to add items to cart");
+      navigate("/auth/login");
+      return;
+    }
+
     postQuery({
       url: apiUrls.Cart.add,
       postData: {
@@ -133,7 +149,7 @@ const ProductInfo = () => {
         "quantity": 1
       },
       onSuccess: (res: any) => {
-        alert(res.message)
+        toast("success", res.message);
         dispatch(
           addToCart({
             id: productData._id,
@@ -150,7 +166,7 @@ const ProductInfo = () => {
       },
       onFail: (res: any) => {
         console.log(res?.data?.message, "=====error section");
-        alert(res?.data?.message)
+        toast("error", res?.data?.message || "Failed to add item to cart");
         setIsLoading(false);
       },
     });
