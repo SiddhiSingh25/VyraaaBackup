@@ -1,5 +1,6 @@
 import AdminLayout from "../pages/adminPannel/Layout";
 import Dashboard from "../pages/adminPannel/Dashboard";
+import Product from "../pages/adminPannel/Products/Product";
 import ProtectedRoute from "../components/guards/ProtectedRoute";
 import QuickAddProduct from "../pages/adminPannel/AddProduct/QuickAddProduct";
 import Category from '../pages/adminPannel/masterData/Category/Category';
@@ -37,6 +38,11 @@ export const adminRoutes = [
       {
         path: "/admin/quick-add",
         element: <QuickAddProduct />,
+      },
+
+      {
+        path: "/admin/products",
+        element: <Product/>,
       },
 
       {

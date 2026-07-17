@@ -30,15 +30,16 @@ export default function ProductFilter() {
   const [filterState, setFilterState] = useState<FilterState>({});
   const [sort, setSort] = useState("recommended");
   const [activeChip, setActiveChip] = useState<string | null>(null);
-  const [wished, setWished] = useState<Record<string, boolean>>({});
+  // const [wished, setWished] = useState<Record<string, boolean>>({});
   const [sortSheetOpen, setSortSheetOpen] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(1)
   const [page, setPage] = useState(1);
   const [gender, setGender] = useState();
   const [productData, setProductData] = useState([])
 
-  const { category } = useParams();
+  // const { category } = useParams();
   const location = useLocation();
   const categoryId = location.state?.categoryId;
 
@@ -70,8 +71,8 @@ export default function ProductFilter() {
             if (basePrice?.isFewLeft) {
               badges.push("Only Few Left");
             }
-            if (basePrice?.amount > 2000) { // Example condition for "Premium"
-              badges.push("Premium");
+            if (!basePrice?.isAvailable) { // Example condition for "Premium"
+              badges.push("Not Available");
             }
 
             // 3. Return strictly typed object for ProductCard
@@ -86,9 +87,13 @@ export default function ProductFilter() {
               rating: 4.5, // Fallback: Not in API
               reviews: 120, // Fallback: Not in API
               badges: badges,
+              size: basePrice ? basePrice.size._id : null,
+              sizeName: basePrice ? basePrice.size.size : null
             };
           });
           setProductData(formattedProducts)
+          setTotalPages(res.pagination.totalPages)
+          setPage(res.pagination.currentPage)
           // console.log("Formatted for Card:", formattedProducts);
           // setProducts(formattedProducts);
         }
@@ -260,7 +265,7 @@ export default function ProductFilter() {
               <EmptyState onClear={clearAll} />
             )}
           </div>
-          <Pagination currentPage={page} totalPages={8} onPageChange={setPage} />
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         </main>
       </div>
 

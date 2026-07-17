@@ -1,5 +1,6 @@
 import { BrandStory } from "@/assets/assets";
 import { useReveal } from "../../../../hooks/gsap/useReveal";
+import { Link } from "react-router-dom";
 
 const NOTES = [
   { label: "Top", value: "Pear", position: "top-[18%] right-[-10%] sm:right-[-15%]" },
@@ -69,10 +70,10 @@ export default function SignatureScent() {
             </p>
           </div>
 
-          <button className="mt-8 inline-flex items-center gap-2 bg-heading text-surface text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 rounded-sm hover:opacity-90 transition-opacity">
+          <Link to="/clothing" className="mt-8 inline-flex items-center gap-2 bg-heading text-surface text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 rounded-sm hover:opacity-90 transition-opacity">
             Shop Now
             <span aria-hidden="true">→</span>
-          </button>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,4 +1,7 @@
-export const apiBaseUrl = "https://vyraa-backend-production.up.railway.app/api/";
+// export const apiBaseUrl =
+//   "https://vyraa-backend-production.up.railway.app/api/";
+// export const apiBaseUrl = "https://vyraa-backend-production.up.railway.app/api/";
+export const apiBaseUrl = "http://localhost:7777/api/";
 
 export const apiUrls = {
   // Category
@@ -99,21 +102,20 @@ export const apiUrls = {
     getAll: "product/getAll",
     getById: "product/", // Usage: `${apiUrls.Product.getById}${id}`
 
-
-    home: "/product/home"
+    home: "/product/home",
   },
 
   Cart: {
     add: "/cart/add",
     getByUserId: "cart/getByUserId",
     update: "/cart/update",
-    remove: "/cart/remove/"
+    remove: "/cart/remove/",
   },
 
   WishList: {
     add: "wishList/add/",
     remove: "/wishList/remove/",
-    getByUserId: "/wishList/getByUserId"
+    getByUserId: "/wishList/getByUserId",
   },
   Image: {
     upload: "common/uploadImage",
@@ -127,24 +129,13 @@ export const apiUrls = {
     createUser: "auth/createUser",
     profile: "auth/profile",
     updateProfile: "auth/update/profile",
-    updatePassword: "auth/update/password"
+    updatePassword: "auth/update/password",
   },
 
   Address: {
     add: "address/add",
     delete: "address/delete",
     getByUserId: "address/get",
-    getByAddressId: "address/get-address"
-  }
-
-
+    getByAddressId: "address/get-address",
+  },
 };
-
-
-
-
-
-
-
-
-// "build": "tsc -b && vite build", imp dont remove

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ProductCard from "../../Product/component/ProductCard";
 import { apiUrls } from "../../../../apis";
 import useGetQuery from "../../../../hooks/getQuery.hook";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SectionHeader from "@/components/Common/Headers/SectionHeader";
 
 const GENDERS = ["Men", "Women", "Unisex", "Child"] as const;
@@ -59,17 +59,7 @@ export default function ProductShowcase() {
       url: finalUrl,
       onSuccess: (res: any) => {
         if (res.success && Array.isArray(res.data)) {
-          const formattedProducts = res.data.map((item: any) => {
-            return {
-              id: item._id,
-              name: item.title,
-              img: item.image,
-              price: item.price && item.price.length > 0
-                ? item.price[0].amount
-                : "N/A"
-            };
-          });
-          setProducts(formattedProducts);
+          setProducts(res.data);
         }
       },
       onFail: (res: any) => {
@@ -221,12 +211,12 @@ export default function ProductShowcase() {
         </div>
 
         <div className="text-center mt-10">
-          <a
-            href="#"
+          <Link
+            to="/clothing"
             className="inline-block border border-heading/30 text-admin-text px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-heading hover:text-white transition-all duration-400"
           >
             View All Products
-          </a>
+          </Link>
         </div>
       </div>
     </section>

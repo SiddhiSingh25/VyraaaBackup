@@ -70,7 +70,7 @@ export const userRoutes = [
   },
 
   {
-    path: "/clothing",
+    path: "/:id",
     element: <ProductFilter />,
   },
   {

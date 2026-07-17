@@ -6,6 +6,13 @@ import usePostQuery from "../../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../../apis";
 import useGetQuery from "../../../../../hooks/getQuery.hook";
 import { useToast } from "../../../../../hooks/useToast.hook";
+import { useDispatch } from "react-redux";
+import {
+  setCartItems,
+  toggleSelectItem,
+  updateQuantity,
+  removeFromCart,
+} from "../../../../redux/slices/cartSlice";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -20,7 +27,6 @@ const CartItemCard = ({
   item,
   onToggleSelect,
   onRemove,
-  onMoveToWishlist,
   onQtyChange,
   onRefreshCart,
 }: CartItemCardProps) => {
@@ -28,6 +34,8 @@ const CartItemCard = ({
   const { postQuery } = usePostQuery();
   const { getQuery } = useGetQuery();
   const { toast } = useToast();
+
+    const dispatch = useDispatch();
 
   const updateCart = (data: Number) => {
     postQuery({
@@ -37,6 +45,7 @@ const CartItemCard = ({
         quantity: data,
       },
       onSuccess: (res: any) => {
+      dispatch(updateQuantity({item : item.id, quantity: data }));
         toast("success", res.message);
         onRefreshCart();
       },
@@ -46,10 +55,15 @@ const CartItemCard = ({
     });
   };
 
+  const onMoveToWishlist = ()=>{
+    console.log("dgnjhg")
+  }
+
   const removeCart = () => {
     getQuery({
       url: apiUrls.Cart.remove + item.id,
       onSuccess: (res: any) => {
+         dispatch(removeFromCart(item.id));
         toast("success", res.message);
         onRefreshCart();
       },
