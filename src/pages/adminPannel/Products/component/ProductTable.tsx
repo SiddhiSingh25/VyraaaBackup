@@ -74,18 +74,18 @@ const ProductTable = ({
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img
-                        src={product.image}
-                        alt={product.title}
+                        src={product?.image}
+                        alt={product?.title}
                         className="h-12 w-12 rounded-lg border border-[#E4D6CB] object-cover"
                       />
 
                       <div className="min-w-0">
                         <p className="truncate font-medium text-[#3F322B]">
-                          {product.title}
+                          {product?.title}
                         </p>
 
                         <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                          <span>{product.brand}</span>
+                          <span>{product?.brand?.brand}</span>
 
                           <span>•</span>
 

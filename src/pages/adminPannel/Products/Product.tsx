@@ -3,8 +3,6 @@ import { Plus } from "lucide-react";
 
 import ProductTable from "./component/ProductTable";
 
-import { dummyProducts } from "./component/dummyProducts";
-
 import type { ProductItem } from "./component/types";
 import Button from "@/components/tableComponents/Button";
 import useGetQuery from "@/hooks/getQuery.hook";

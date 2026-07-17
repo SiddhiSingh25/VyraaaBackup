@@ -9,6 +9,15 @@ export interface Price {
   isFewLeft: boolean;
 }
 
+export interface Brand {
+  _id: string;
+  brand: string;
+  image: string;
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ProductItem {
   _id: string;
   title: string;
@@ -18,7 +27,7 @@ export interface ProductItem {
   color: string;
   category: string;
   subCategory: string;
-  brand: string;
+  brand: Brand;
   gender: string;
   sizeType: string;
   averageRating: number;
