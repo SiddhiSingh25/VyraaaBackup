@@ -1,5 +1,6 @@
-export const apiBaseUrl =
-  "https://vyraa-backend-production.up.railway.app/api/";
+// export const apiBaseUrl =
+//   "https://vyraa-backend-production.up.railway.app/api/";
+export const apiBaseUrl = "http://localhost:7777/api/";
 
 export const apiUrls = {
   // Category
