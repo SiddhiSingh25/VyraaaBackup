@@ -1,45 +1,49 @@
-
-
-import { useEffect, useMemo, useState } from 'react';
-import { Plus } from 'lucide-react';
-import Button from '../../../../components/tableComponents/Button';
-import SearchInput from '../../../../components/tableComponents/SearchInput';
-import ConfirmDialog from '../../../../components/tableComponents/ConfirmDialog';
-import type { Category, CategoryFormValues, ModalMode } from './component/types';
-import CategoryTable from './component/CategoryTable';
-import CategoryFormModal from './component/CategoryFormModal';
-import useGetQuery from '../../../../hooks/getQuery.hook';
-import usePostQuery from '../../../../hooks/postQuery.hook';
-import usePutQuery from '../../../../hooks/putQuery.hook';
-import useDeleteQuery from '../../../../hooks/deleteQuery.hook';
-import { apiUrls } from '../../../../apis/index.ts';
-
+import { useEffect, useMemo, useState } from "react";
+import { Plus } from "lucide-react";
+import Button from "../../../../components/tableComponents/Button";
+import SearchInput from "../../../../components/tableComponents/SearchInput";
+import ConfirmDialog from "../../../../components/tableComponents/ConfirmDialog";
+import type {
+  Category,
+  CategoryFormValues,
+  ModalMode,
+} from "./component/types";
+import CategoryTable from "./component/CategoryTable";
+import CategoryFormModal from "./component/CategoryFormModal";
+import useGetQuery from "../../../../hooks/getQuery.hook";
+import usePostQuery from "../../../../hooks/postQuery.hook";
+import usePutQuery from "../../../../hooks/putQuery.hook";
+import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
+import { apiUrls } from "../../../../apis/index.ts";
 
 interface ApiCategory {
   _id: string;
   category: string;
+  image?: string;
 }
 
 const mapApiCategory = (category: ApiCategory): Category => ({
   id: category._id,
   srNo: 0,
   categoryName: category.category,
-  categoryHead: '',
-  fatherName: '',
-  cast: '',
-  contact: '',
+  image: category.image,
+  categoryHead: "",
+  fatherName: "",
+  cast: "",
+  contact: "",
 });
 
 export default function Category() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(50);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<ModalMode>('add');
+  const [modalMode, setModalMode] = useState<ModalMode>("add");
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
 
-  const [categoryPendingDelete, setCategoryPendingDelete] = useState<Category | null>(null);
+  const [categoryPendingDelete, setCategoryPendingDelete] =
+    useState<Category | null>(null);
 
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
@@ -51,23 +55,29 @@ export default function Category() {
     if (!query) return categories;
 
     return categories.filter((category) =>
-      [category.categoryName, category.categoryHead, category.fatherName, category.cast, category.contact]
-        .join(' ')
+      [
+        category.categoryName,
+        category.categoryHead,
+        category.fatherName,
+        category.cast,
+        category.contact,
+      ]
+        .join(" ")
         .toLowerCase()
-        .includes(query)
+        .includes(query),
     );
   }, [categories, searchTerm]);
 
   const visibleCategories = filteredCategories.slice(0, rowsPerPage);
 
   const openAddModal = () => {
-    setModalMode('add');
+    setModalMode("add");
     setActiveCategory(null);
     setIsFormOpen(true);
   };
 
   const openEditModal = (category: Category) => {
-    setModalMode('edit');
+    setModalMode("edit");
     setActiveCategory(category);
     setIsFormOpen(true);
   };
@@ -83,7 +93,7 @@ export default function Category() {
           apiData.map(mapApiCategory).map((category, index) => ({
             ...category,
             srNo: index + 1,
-          }))
+          })),
         );
       },
     });
@@ -95,10 +105,10 @@ export default function Category() {
   }, []);
 
   const handleFormSubmit = async (values: CategoryFormValues) => {
-    if (modalMode === 'add') {
+    if (modalMode === "add") {
       await postQuery({
         url: apiUrls.Category.add,
-        postData: { category: values.categoryName },
+        postData: { category: values.categoryName, image: values.image },
         onSuccess: (res: any) => {
           const newCategory = res?.data;
           if (!newCategory) return;
@@ -106,22 +116,33 @@ export default function Category() {
             prev.concat({
               ...mapApiCategory(newCategory),
               srNo: prev.length + 1,
-            })
+            }),
           );
           setIsFormOpen(false);
         },
       });
     } else if (activeCategory) {
+      console.log("Images in put", values.image);
       await putQuery({
         url: apiUrls.Category.update,
-        putData: { id: activeCategory.id, category: values.categoryName },
+        putData: {
+          id: activeCategory.id,
+          category: values.categoryName,
+          image: values.image,
+        },
         onSuccess: (res: any) => {
           const updated = res?.data;
           if (!updated) return;
           setCategories((prev) =>
             prev.map((c) =>
-              c.id === updated._id ? { ...c, categoryName: updated.category } : c
-            )
+              c.id === updated._id
+                ? {
+                    ...c,
+                    categoryName: updated.category,
+                    image: updated.image,
+                  }
+                : c,
+            ),
           );
           setIsFormOpen(false);
         },
@@ -129,7 +150,8 @@ export default function Category() {
     }
   };
 
-  const requestDelete = (category: Category) => setCategoryPendingDelete(category);
+  const requestDelete = (category: Category) =>
+    setCategoryPendingDelete(category);
 
   const confirmDelete = async () => {
     if (!categoryPendingDelete) return;
@@ -138,7 +160,7 @@ export default function Category() {
       deleteData: { id: categoryPendingDelete.id },
       onSuccess: () => {
         setCategories((prev) =>
-          prev.filter((c) => c.id !== categoryPendingDelete.id)
+          prev.filter((c) => c.id !== categoryPendingDelete.id),
         );
         setCategoryPendingDelete(null);
       },
@@ -150,7 +172,6 @@ export default function Category() {
   return (
     <div className="h-screen bg-slate-50 font-admin-text text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-4 lg:px-4 py-4 ">
-        
         {/* Page header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
@@ -161,26 +182,25 @@ export default function Category() {
               Manage and organize all categories across the system.
             </p>
           </div>
-          <Button 
-            onClick={openAddModal} 
-            variant="primary" 
-            size="md" 
-            icon={<Plus size={18} strokeWidth={2.5} />} 
+          <Button
+            onClick={openAddModal}
+            variant="primary"
+            size="md"
+            icon={<Plus size={18} strokeWidth={2.5} />}
             className="shrink-0 font-admin-text self-start sm:self-auto bg-dark shadow-sm hover:shadow transition-shadow"
           >
             Add Category
           </Button>
         </div>
 
-    
-          {/* Table Area */}
-          <div className="p-0 sm:p-2 mb-4">
-            <CategoryTable 
-              categories={visibleCategories} 
-              onEdit={openEditModal} 
-              onDelete={requestDelete} 
-            />
-          </div>
+        {/* Table Area */}
+        <div className="p-0 sm:p-2 mb-4">
+          <CategoryTable
+            categories={visibleCategories}
+            onEdit={openEditModal}
+            onDelete={requestDelete}
+          />
+        </div>
       </div>
 
       <CategoryFormModal
@@ -197,7 +217,7 @@ export default function Category() {
         description={
           categoryPendingDelete
             ? `This will permanently remove "${categoryPendingDelete.categoryName}". This action cannot be undone.`
-            : ''
+            : ""
         }
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
