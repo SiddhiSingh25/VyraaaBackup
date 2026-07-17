@@ -40,6 +40,7 @@ function Badge({ count, pulse }: { count: number; pulse: boolean }) {
   );
 }
 
+
 export default function Navbar({
   wishlistCount = 0,
   cartCount = 0,
@@ -48,7 +49,7 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  const cartItems = useSelector((state: any) => state.cart.items || []);
+  const cartItems = useSelector((state: any) => state.cart.items);
   const calculatedCartCount = cartItems.reduce((acc: number, item: any) => acc + (item.quantity || item.qty || 1), 0);
 
   const cartPulse = useBadgePulse(calculatedCartCount);

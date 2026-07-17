@@ -6,6 +6,10 @@ import usePostQuery from "../../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../../apis";
 import useGetQuery from "../../../../../hooks/getQuery.hook";
 import { useToast } from "../../../../../hooks/useToast.hook";
+import { useDispatch } from "react-redux";
+import {
+  removeFromCart,
+} from "../../../../../redux/slices/cartSlice";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -28,6 +32,10 @@ const CartItemCard = ({
   const { postQuery } = usePostQuery();
   const { getQuery } = useGetQuery();
   const { toast } = useToast();
+  const dispatch = useDispatch()
+  // const removeItem = (id: string) => {
+  //   dispatch(removeFromCart(id));
+  // };
 
   const updateCart = (data: Number) => {
     postQuery({
@@ -51,7 +59,7 @@ const CartItemCard = ({
     getQuery({
       url: apiUrls.Cart.remove + item.id,
       onSuccess: (res: any) => {
-        dispatch(removeFromCart(id));
+        dispatch(removeFromCart(item.id));
         toast("success", res.message);
         onRefreshCart();
       },
@@ -126,8 +134,11 @@ const CartItemCard = ({
                 onClick={() => {
                   const newQty = item.qty - 1;
                   updateCart(newQty);
+                  // updateCart(newQty); // Assuming this is your API call
                   console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
-                  onQtyChange(item.id, newQty);
+
+                  // ADD FALLBACK: Pass cartItemId, fallback to id if missing
+                  onQtyChange(item?.cartItemId || item?.id, newQty);
                 }}
                 className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Decrease quantity"
@@ -147,8 +158,11 @@ const CartItemCard = ({
                 onClick={() => {
                   const newQty = item.qty + 1;
                   updateCart(newQty);
+                  // updateCart(newQty); // Assuming this is your API call
                   console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
-                  onQtyChange(item.id, newQty);
+
+                  // ADD FALLBACK: Pass cartItemId, fallback to id if missing
+                  onQtyChange(item?.cartItemId || item?.id, newQty);
                 }}
                 className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Increase quantity"

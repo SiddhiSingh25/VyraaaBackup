@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import {
   setCartItems,
   toggleSelectItem,
+  increaseQuantity,
   updateQuantity,
   removeFromCart,
 } from "../../../../redux/slices/cartSlice";
@@ -47,11 +48,11 @@ const Cart = () => {
           const mappedItems = res.data.items.map((apiItem: any) => {
             const product = apiItem.product || {};
             const priceList = product.price || [];
-            // try to derive available sizes from product price entries
             const availableSizes = priceList.map((p: any) => p.size).filter(Boolean);
 
             return {
-              id: apiItem._id,
+              id: apiItem._id, // This is the unique cart item ID from the database
+              cartItemId: apiItem._id, // ADD THIS: So Redux targets this exact row/size
               brand: product.brand || product.manufacturer,
               name: product.title || "Product",
               soldBy: "VYRAAA",
@@ -89,8 +90,9 @@ const Cart = () => {
     dispatch(removeFromCart(id));
   };
 
-  const changeQty = (id: string, qty: number) => {
-    dispatch(updateQuantity({ id, quantity: qty }));
+  const changeQty = (cartItemId: string, qty: number) => {
+    // Now cartItemId correctly references the string passed into the function
+    dispatch(updateQuantity({ cartItemId, quantity: qty }));
   };
 
   // const changeSize = (id: string, size: string) =>
