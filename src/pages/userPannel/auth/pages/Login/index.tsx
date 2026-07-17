@@ -47,7 +47,7 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: yupResolver(loginSchema) as any,
-    defaultValues: { email: "", password: "", rememberMe: false },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = (values: LoginFormValues) => {
@@ -174,7 +174,7 @@ const Login = () => {
           />
 
           <div className="mb-6 flex items-center justify-between">
-            <RememberMe {...register("rememberMe")} />
+            {/* <RememberMe {...register("rememberMe")} /> */}
             <Link
               to="/auth/forgot-password"
               className="text-sm font-medium text-primary hover:text-primary-dark"

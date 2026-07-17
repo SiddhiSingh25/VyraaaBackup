@@ -43,7 +43,7 @@ export const NAV_LINKS: NavLink[] = [
 
   {
     label: "Beauty",
-    to: "/beauty",
+    to: "/clothing",
     columns: [
       {
         title: "Cosmetics",
@@ -69,7 +69,7 @@ export const NAV_LINKS: NavLink[] = [
 
   {
     label: "Perfumes",
-    to: "/perfumes",
+    to: "/clothing",
     columns: [
       {
         title: "Collections",
@@ -85,7 +85,7 @@ export const NAV_LINKS: NavLink[] = [
 
   {
     label: "Shoes",
-    to: "/shoes",
+    to: "/clothing",
     columns: [
       {
         title: "Footwear",
@@ -117,7 +117,7 @@ export const NAV_LINKS: NavLink[] = [
 
   {
     label: "More",
-    to: "/more",
+    to: "/clothing",
     columns: [
       {
         title: "Explore",
