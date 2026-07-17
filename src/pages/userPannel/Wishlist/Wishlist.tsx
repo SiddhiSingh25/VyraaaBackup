@@ -5,8 +5,6 @@ import Navbar from "../../../components/Header/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import WishlistCard from "./components/WishlistCard";
 import type { WishlistProduct } from "./components/types";
-import { RECOMMENDED } from "./components/data"; // Removed INITIAL_WISHLIST as we fetch from API
-import RecommendedCard from "./components/RecomendationCard";
 import useGetQuery from "../../../hooks/getQuery.hook";
 import { apiUrls } from "../../../apis";
 
@@ -147,18 +145,7 @@ export default function WishlistPage() {
 
           {items.length > 0 && (
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                className="flex items-center gap-1.5 text-sm text-body transition-colors hover:text-primary"
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <circle cx="18" cy="5" r="3" />
-                  <circle cx="6" cy="12" r="3" />
-                  <circle cx="18" cy="19" r="3" />
-                  <path d="M8.6 10.5 15.4 6.5M8.6 13.5l6.8 4" />
-                </svg>
-                Share
-              </button>
+
               <button
                 type="button"
                 onClick={moveAllToBag}
@@ -204,19 +191,6 @@ export default function WishlistPage() {
           </>
         )}
 
-        {/* You May Also Like */}
-        <section className="mt-20">
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="font-heading text-2xl text-admin-text">You May Also Like</h2>
-            <span className="hidden text-sm text-muted sm:block">Curated to match your taste</span>
-          </div>
-
-          <div className="-mx-5 flex gap-5 overflow-x-auto px-5 pb-4 sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {RECOMMENDED.map((product) => (
-              <RecommendedCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
       </main>
 
       <Footer />
