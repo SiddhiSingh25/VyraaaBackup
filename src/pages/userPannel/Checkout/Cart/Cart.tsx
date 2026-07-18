@@ -20,6 +20,8 @@ import {
   updateQuantity,
   removeFromCart,
 } from "../../../../redux/slices/cartSlice";
+import Navbar from "@/components/Header/Navbar";
+import Footer from "@/components/Footer/Footer";
 
 const COUPON_DISCOUNT = 60;
 
@@ -50,25 +52,36 @@ const Cart = () => {
             const priceList = product.price || [];
             const availableSizes = priceList.map((p: any) => p.size).filter(Boolean);
 
+            // 1. EXTRACT SINGLE UNIT PRICES
+            const baseMrp = priceList?.[0]?.markupPrice || apiItem.unitPrice || 0;
+            const basePrice = priceList?.[0]?.amount || apiItem.unitPrice || 0;
+            const currentQty = apiItem.quantity || 1;
+
             return {
-              id: apiItem._id, // This is the unique cart item ID from the database
-              cartItemId: apiItem._id, // ADD THIS: So Redux targets this exact row/size
+              id: apiItem._id,
+              cartItemId: apiItem._id,
               brand: product.brand || product.manufacturer,
               name: product.title || "Product",
               soldBy: "VYRAAA",
               image: product.image || product.thumbnail || "",
               size: apiItem.size?.size || availableSizes[0] || "",
               availableSizes: availableSizes,
-              qty: apiItem.quantity || 1,
+              qty: currentQty,
+              quantity: currentQty,
               maxQty: apiItem.maxQty || product.maxQty || 10,
-              mrp: priceList?.[0]?.markupPrice * apiItem.quantity || apiItem.unitPrice || 0,
-              price: apiItem.itemTotal || priceList?.[0]?.amount || 0,
+
+              // 2. STORE BASE PRICES FOR REDUX MATH
+              baseMrp: baseMrp,
+              basePrice: basePrice,
+
+              // 3. CALCULATE INITIAL ROW TOTALS
+              mrp: baseMrp * currentQty,
+              price: apiItem.itemTotal || (basePrice * currentQty),
               returnDays: product.returnDays || 7,
               selected: true,
             } as unknown as CartItem;
           });
 
-          // Update Redux state with real API data
           dispatch(setCartItems(mappedItems));
         }
       },
@@ -108,6 +121,7 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navbar />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface py-20 text-center">
@@ -179,7 +193,11 @@ const Cart = () => {
                 onRemoveCoupon={() => setCouponApplied(false)}
                 onDonationChange={setDonation}
                 onPlaceOrder={() => {
-                  console.log("Placing order", priceDetails);
+                  navigate(`/checkout/address`, {
+                    state: {
+                      from: "cart",
+                    }
+                  });
                 }}
               />
               {/* <div className="mt-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
@@ -189,6 +207,7 @@ const Cart = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

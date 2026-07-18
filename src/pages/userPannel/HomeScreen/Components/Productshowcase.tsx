@@ -77,8 +77,8 @@ export default function ProductShowcase() {
     <section className="bg-surface/50 py-10">
       <div className="px-5 sm:px-10 lg:px-20 ">
 
-           <h2 className="font-serif text-center mb-8 font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
-         Categories
+        <h2 className="font-serif text-center mb-8 font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
+          Categories
         </h2>
 
         {/* Sub-category pills */}
@@ -128,43 +128,43 @@ export default function ProductShowcase() {
         </div> */}
 
         <div className="flex gap-4 overflow-x-auto pb-1 mb-10 justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-  {categories?.map((cat) => (
-    <button
-      key={cat?._id}
-      onClick={() => {
-        const routeParam = cat?.category?.toLowerCase().replace(/\s+/g, '-');
-        navigate(`/clothing`, {
-          state: {
-            categoryId: cat?._id,
-            fullCategoryData: cat
-          }
-        });
-      }}
-      className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0"
-    >
-      <div
-        className={`w-[52px] h-[52px] sm:w-[40px] sm:h-[40px] lg:w-[90px] lg:h-[90px] rounded-xl flex items-center justify-center overflow-hidden border transition-all duration-200 bg-card
+          {categories?.map((cat) => (
+            <button
+              key={cat?._id}
+              onClick={() => {
+                const routeParam = cat?.category?.toLowerCase().replace(/\s+/g, '-');
+                navigate(`/clothing`, {
+                  state: {
+                    categoryId: cat?._id,
+                    fullCategoryData: cat
+                  }
+                });
+              }}
+              className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0"
+            >
+              <div
+                className={`w-[52px] h-[52px] sm:w-[40px] sm:h-[40px] lg:w-[90px] lg:h-[90px] rounded-xl flex items-center justify-center overflow-hidden border transition-all duration-200 bg-card
         ${cat?._id === selectedCategory ? "border-primary" : "border-border"}`}
-      >
-        <img
-          src={cat?.image}
-          alt={cat?.category}
-          className="w-[100%] h-[100%] object-cover"
-          style={{ objectPosition: "top" }}
-        />
-      </div>
-      <span
-        className={`text-[10px] font-medium tracking-wider uppercase
+              >
+                <img
+                  src={cat?.image}
+                  alt={cat?.category}
+                  className="w-[100%] h-[100%] object-cover"
+                  style={{ objectPosition: "top" }}
+                />
+              </div>
+              <span
+                className={`text-[10px] font-medium tracking-wider uppercase
         ${cat?._id === selectedCategory
-            ? "text-admin-text border-b-[1px] pb-1 px-2 border-body"
-            : "text-admin-text/70"
-          }`}
-      >
-        {cat?.category}
-      </span>
-    </button>
-  ))}
-</div>
+                    ? "text-admin-text border-b-[1px] pb-1 px-2 border-body"
+                    : "text-admin-text/70"
+                  }`}
+              >
+                {cat?.category}
+              </span>
+            </button>
+          ))}
+        </div>
 
 
         {/* Gender tabs */}

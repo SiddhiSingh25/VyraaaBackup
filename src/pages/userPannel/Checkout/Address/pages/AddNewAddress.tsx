@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, Plus, MapPin, Edit2, Trash2, ChevronDown } from "lucide-react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux"; // 1. IMPORT useSelector
 
 import AddressForm from "../components/AddressForm";
 import { CheckoutSidebar } from "../components/CheckoutSidebar";
-import { dummyPriceDetails } from "../data/dummyData";
 import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook";
 import useDeleteQuery from "@/hooks/deleteQuery.hook";
@@ -33,7 +33,16 @@ function formatINR(amount: number) {
 }
 
 export default function AddNewAddress() {
-  const navigate = useNavigate();
+
+  // 2. GET CART ITEMS FROM REDUX
+  const cartItems = useSelector((state: any) => state.cart.items);
+
+  // 3. CALCULATE REAL TOTAL AMOUNT dynamically based on Redux state
+  const cartTotalAmount = cartItems.reduce(
+    (total: number, item: any) => total + (item.price || 0),
+    0
+  );
+
   const [view, setView] = useState<"list" | "form">("list");
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -43,6 +52,10 @@ export default function AddNewAddress() {
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
   const { deleteQuery } = useDeleteQuery();
+  const navigate = useNavigate();
+  const location = useLocation()
+  const { from } = location.state
+  // console.log(from, "====")
 
   // 1. Fetch Addresses
   const fetchAddresses = () => {
@@ -139,16 +152,31 @@ export default function AddNewAddress() {
           <div className="rounded-2xl border border-border bg-card/40 p-6 shadow-[0_2px_24px_-8px_rgba(59,48,42,0.12)] sm:p-9">
             {view === "list" ? (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <h1 className="text-2xl font-bold tracking-tight text-admin-text">
                     Select Delivery Address
                   </h1>
-                  <button
-                    onClick={() => handleOpenForm()}
-                    className="flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
-                  >
-                    <Plus size={16} /> Add New
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={() => handleOpenForm()}
+                      className="flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
+                    >
+                      <Plus size={16} /> Add New
+                    </button>
+                    <button
+                      onClick={() => {
+                        // const routeParam = cat?.category?.toLowerCase().replace(/\s+/g, '-');
+                        navigate(`/checkout/payment`, {
+                          state: {
+                            from
+                          }
+                        });
+                      }}
+                      className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+                    >
+                      Go to Payment
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -164,8 +192,8 @@ export default function AddNewAddress() {
                           key={addr._id}
                           onClick={() => !addr.isDefault && handleSetDefault(addr)}
                           className={`relative p-5 rounded-xl border-2 transition-all cursor-pointer select-none hover:shadow-sm ${addr.isDefault
-                              ? "border-primary bg-primary/5"
-                              : "border-border/50 hover:border-primary/40 bg-surface"
+                            ? "border-primary bg-primary/5"
+                            : "border-border/50 hover:border-primary/40 bg-surface"
                             }`}
                         >
                           {addr.isDefault && (
@@ -258,18 +286,19 @@ export default function AddNewAddress() {
 
           {/* Sidebar: sticky on large screens, static stacked on smaller ones */}
           <div className="lg:sticky lg:top-8 lg:self-start">
-            <CheckoutSidebar />
+            <CheckoutSidebar from={from} />
           </div>
         </div>
-      </motion.main>
+      </motion.main >
 
       {/* Mobile sticky CTA */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:hidden" >
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] text-muted">Total</p>
             <p className="font-heading text-base text-admin-text">
-              {formatINR(dummyPriceDetails.total)}
+              {/* 4. RENDER REAL REDUX TOTAL */}
+              {formatINR(cartTotalAmount)}
             </p>
           </div>
           <Link to="/checkout/payment">
@@ -281,22 +310,24 @@ export default function AddNewAddress() {
             </button>
           </Link>
         </div>
-      </div>
+      </div >
 
       {/* Success Toast */}
       <AnimatePresence>
-        {successMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            className="fixed bottom-20 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-xl bg-dark px-5 py-3 text-sm text-white shadow-lg sm:bottom-8"
-          >
-            <CheckCircle2 size={16} className="text-success" />
-            {successMessage}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        {
+          successMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
+              className="fixed bottom-20 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-xl bg-dark px-5 py-3 text-sm text-white shadow-lg sm:bottom-8"
+            >
+              <CheckCircle2 size={16} className="text-success" />
+              {successMessage}
+            </motion.div>
+          )
+        }
+      </AnimatePresence >
+    </div >
   );
 }

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  items: [], // { id, size, name, price, image, quantity, cartItemId, ...otherProductInfo }
+  items: [],
 };
 
 const cartSlice = createSlice({
@@ -10,34 +10,37 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       const newItem = action.payload;
-
-      // 1. MATCH BY ID AND SIZE: Treat different sizes as completely distinct items
       const existingItem = state.items.find(
         (item) => item.id === newItem.id && item.size === newItem.size,
       );
-
       const amt = newItem.quantity || newItem.qty || 1;
 
       if (existingItem) {
         existingItem.quantity =
           (existingItem.quantity || existingItem.qty || 1) + amt;
         existingItem.qty = existingItem.quantity;
+        // RECALCULATE TOTALS
+        existingItem.mrp = (existingItem.baseMrp || 0) * existingItem.quantity;
+        existingItem.price =
+          (existingItem.basePrice || 0) * existingItem.quantity;
       } else {
-        // 2. CREATE A UNIQUE CART ITEM ID (combining Product ID + Size)
-        // This ensures increase/decrease functions target the correct size row!
         const uniqueCartId = newItem._id || `${newItem.id}-${newItem.size}`;
+        // CAPTURE BASE PRICES IF NEW
+        const bMrp = newItem.baseMrp || newItem.mrp || 0;
+        const bPrice = newItem.basePrice || newItem.price || 0;
 
         state.items.push({
           ...newItem,
-          cartItemId: uniqueCartId, // Save the unique ID
+          cartItemId: uniqueCartId,
+          baseMrp: bMrp,
+          basePrice: bPrice,
+          mrp: bMrp * amt,
+          price: bPrice * amt,
           quantity: amt,
           qty: amt,
         });
       }
     },
-
-    // IMPORTANT: For the functions below, action.payload must now be the 'cartItemId',
-    // NOT just the product 'id'. Otherwise, Redux won't know WHICH size to increase!
 
     removeFromCart: (state, action) => {
       state.items = state.items.filter(
@@ -52,6 +55,9 @@ const cartSlice = createSlice({
       if (item) {
         item.quantity = (item.quantity || item.qty || 1) + 1;
         item.qty = item.quantity;
+        // UPDATE ROW TOTALS
+        item.mrp = (item.baseMrp || 0) * item.quantity;
+        item.price = (item.basePrice || 0) * item.quantity;
       }
     },
 
@@ -64,7 +70,24 @@ const cartSlice = createSlice({
         if (currentQty > 1) {
           item.quantity = currentQty - 1;
           item.qty = item.quantity;
+          // UPDATE ROW TOTALS
+          item.mrp = (item.baseMrp || 0) * item.quantity;
+          item.price = (item.basePrice || 0) * item.quantity;
         }
+      }
+    },
+
+    updateQuantity: (state, action) => {
+      const { cartItemId, id, quantity } = action.payload;
+      const item = state.items.find(
+        (item) => (item.cartItemId || item.id) === (cartItemId || id),
+      );
+      if (item) {
+        item.quantity = quantity;
+        item.qty = quantity;
+        // UPDATE ROW TOTALS
+        item.mrp = (item.baseMrp || 0) * item.quantity;
+        item.price = (item.basePrice || 0) * item.quantity;
       }
     },
 
@@ -77,22 +100,9 @@ const cartSlice = createSlice({
       }
     },
 
-    updateQuantity: (state, action) => {
-      const { cartItemId, id, quantity } = action.payload;
-      // Use cartItemId if provided, fallback to id
-      const item = state.items.find(
-        (item) => (item.cartItemId || item.id) === (cartItemId || id),
-      );
-      if (item) {
-        item.quantity = quantity;
-        item.qty = quantity;
-      }
-    },
-
     setCartItems: (state, action) => {
       state.items = action.payload.map((item) => ({
         ...item,
-        // Ensure every item from backend has a unique cartItemId for the frontend to use
         cartItemId: item._id || item.cartItemId || `${item.id}-${item.size}`,
         quantity: item.quantity || item.qty || 1,
         qty: item.quantity || item.qty || 1,

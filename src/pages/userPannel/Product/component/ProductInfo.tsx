@@ -12,7 +12,7 @@ import AddressSidebar from "../../../../components/AddressSidebar/AddressSidebar
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../../redux/slices/cartSlice";
 
-/* ---------------------------- Small building blocks ---------------------------- */
+
 
 
 const StarRating = ({ rating, totalRatings }: any) => (
