@@ -1,14 +1,28 @@
 import { BrandStory } from "@/assets/assets";
 import { useReveal } from "../../../../hooks/gsap/useReveal";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const NOTES = [
-  { label: "Top", value: "Pear", position: "top-[18%] right-[-10%] sm:right-[-15%]" },
-  { label: "Heart", value: "Pink Pepper", position: "top-[46%] right-[-6%] sm:right-[-10%]" },
-  { label: "Base", value: "Orange Blossom", position: "top-[74%] right-[-12%] sm:right-[-18%]" },
+  {
+    label: "Top",
+    value: "Pear",
+    position: "top-[18%] right-[-10%] sm:right-[-15%]",
+  },
+  {
+    label: "Heart",
+    value: "Pink Pepper",
+    position: "top-[46%] right-[-6%] sm:right-[-10%]",
+  },
+  {
+    label: "Base",
+    value: "Orange Blossom",
+    position: "top-[74%] right-[-12%] sm:right-[-18%]",
+  },
 ];
 
 export default function SignatureScent() {
+  const navigate = useNavigate();
+
   const ref = useReveal<HTMLElement>();
 
   return (
@@ -55,25 +69,41 @@ export default function SignatureScent() {
 
           <div className="space-y-4 text-body text-sm sm:text-base leading-relaxed">
             <p>
-              A bold harmony of dark gourmand richness, sensual florals, and warm woody depth.
-              NOCTIS is crafted for those who command attention with quiet confidence and timeless
-              sophistication.
+              A bold harmony of dark gourmand richness, sensual florals, and
+              warm woody depth. NOCTIS is crafted for those who command
+              attention with quiet confidence and timeless sophistication.
             </p>
             <p>
-              Opening with luminous Pear, sparkling Pink Pepper, and delicate Orange Blossom, it
-              reveals an alluring heart of rich Coffee, Jasmine, Bitter Almond.
+              Opening with luminous Pear, sparkling Pink Pepper, and delicate
+              Orange Blossom, it reveals an alluring heart of rich Coffee,
+              Jasmine, Bitter Almond.
             </p>
 
             <p>
-              An oriental-vanilla gourmand fragrance designed for unforgettable evenings, cooler
-              nights, and refined presence beyond ordinary.
+              An oriental-vanilla gourmand fragrance designed for unforgettable
+              evenings, cooler nights, and refined presence beyond ordinary.
             </p>
           </div>
 
-          <Link to="/clothing" className="mt-8 inline-flex items-center gap-2 bg-heading text-surface text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 rounded-sm hover:opacity-90 transition-opacity">
+          <button
+            onClick={() =>
+              navigate(`/perfume`, {
+                state: {
+                  categoryId: "6a562a2f017a6045e6d9979b",
+                  fullCategoryData: {
+                    _id: "6a562a2f017a6045e6d9979b",
+                    image:
+                      "https://macreelinfosoft-bucket.s3.ap-south-1.amazonaws.com/Vyraaa-Admin-Images/1784031329965.jpeg",
+                    category: "Perfumes",
+                  },
+                },
+              })
+            }
+            className="mt-8 inline-flex items-center gap-2 bg-heading text-surface text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 rounded-sm hover:opacity-90 transition-opacity"
+          >
             Shop Now
             <span aria-hidden="true">→</span>
-          </Link>
+          </button>
         </div>
       </div>
     </section>

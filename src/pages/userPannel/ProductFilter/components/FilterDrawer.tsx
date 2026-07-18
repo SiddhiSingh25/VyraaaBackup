@@ -12,6 +12,10 @@ export interface FilterDrawerProps {
   onChange: FilterChangeHandler;
   onClearAll: () => void;
   resultCount: number;
+  categoryId?: string;
+  categories?: any[];
+  subCategories?: any[];
+  colors?: any[];
 }
 
 export default function FilterDrawer({
@@ -21,6 +25,10 @@ export default function FilterDrawer({
   onChange,
   onClearAll,
   resultCount,
+  categoryId,
+  categories = [],
+  subCategories = [],
+  colors = [],
 }: FilterDrawerProps) {
   return (
     <AnimatePresence>
@@ -62,7 +70,14 @@ export default function FilterDrawer({
             </button>
           </div>
           <div className="flex-1 overflow-y-auto px-5">
-            <FilterList filterState={filterState} onChange={onChange} />
+            <FilterList
+              filterState={filterState}
+              onChange={onChange}
+              categoryId={categoryId}
+              categories={categories}
+              subCategories={subCategories}
+              colors={colors}
+            />
           </div>
           <div className="p-4" style={{ borderTop: `1px solid ${C.border}` }}>
             <button
