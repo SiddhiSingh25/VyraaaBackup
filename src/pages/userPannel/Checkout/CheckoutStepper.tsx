@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const checkoutSteps = [
-  { label: "Cart", path: "/checkout/cart" },
+  // { label: "Cart", path: "/checkout/cart" },
   { label: "Address", path: "/checkout/address" },
   { label: "Payment", path: "/checkout/payment" },
   { label: "Review", path: "/checkout/review" },

@@ -83,6 +83,7 @@ const QuickAddProduct = () => {
   const description = watch("description");
   const color = watch("color");
   const brand = watch("brand");
+  const selectedBrand = watch("brand");
   const gender = watch("gender");
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -173,6 +174,19 @@ const QuickAddProduct = () => {
     selectedSubcategoryId,
   );
   const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
+
+  useEffect(() => {
+    setValue("brand", "");
+  }, [effectiveCategoryId, setValue]);
+
+  useEffect(() => {
+    if (effectiveCategoryId && brandOptions.length > 0 && !selectedBrand) {
+      setValue("brand", brandOptions[0].value, {
+        shouldValidate: true,
+        shouldDirty: false,
+      });
+    }
+  }, [effectiveCategoryId, brandOptions, selectedBrand, setValue]);
 
   // Only reset subcategory/type when category actually changes (i.e. the
   // user is picking it manually). When category comes from params this
@@ -314,9 +328,9 @@ const QuickAddProduct = () => {
 
       attributes: data.attributes
         ? data.attributes.map((item) => ({
-          property: item.property,
-          value: item.value,
-        }))
+            property: item.property,
+            value: item.value,
+          }))
         : [],
 
       linkItems: [],
@@ -366,8 +380,8 @@ const QuickAddProduct = () => {
           toast(
             "error",
             err?.response?.data?.message ||
-            err?.data.message ||
-            "Could not add product",
+              err?.data.message ||
+              "Could not add product",
           );
         },
       });
@@ -399,7 +413,7 @@ const QuickAddProduct = () => {
             toast(
               "error",
               firstError?.message?.toString() ||
-              "Please fix the highlighted fields.",
+                "Please fix the highlighted fields.",
             );
           })}
           className="mx-auto flex h-full max-w-5xl flex-col gap-5 py-6 "

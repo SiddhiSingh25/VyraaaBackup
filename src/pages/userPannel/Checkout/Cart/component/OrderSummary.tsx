@@ -122,7 +122,7 @@ const OrderSummary = ({
         .
       </p>
       
-      <Link to="/checkout/address">
+      {/* <Link to="/checkout/address"> */}
         <motion.button
           type="button"
           onClick={onPlaceOrder}
@@ -132,7 +132,7 @@ const OrderSummary = ({
         >
           PLACE ORDER
         </motion.button>
-      </Link>
+      {/* </Link> */}
     </aside>
   );
 };

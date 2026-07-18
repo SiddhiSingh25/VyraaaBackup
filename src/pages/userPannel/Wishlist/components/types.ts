@@ -15,6 +15,7 @@ export interface WishlistProduct {
   reviewCount: number;
   stockStatus: StockStatus;
   badge: Badge;
+  sizeId?: string;
 }
 
 export interface RecommendedProduct {

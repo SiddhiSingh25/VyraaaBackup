@@ -20,14 +20,14 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   return (
     <div
       data-reveal
-      className={`group/header flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-16 border-b border-neutral-100 dark:border-neutral-900 pb-6 sm:pb-8 ${className}`}
+      className={`group/header flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6 sm:mb-10 border-b border-neutral-100 dark:border-neutral-900 pb-6 sm:pb-8 ${className}`}
     >
       {/* Left Side: Typography Stack */}
       <div className="max-w-3xl space-y-3">
         <span className="inline-block text-[11px] font-bold tracking-[0.3em] uppercase text-neutral-500 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-900 px-2.5 py-1 rounded-sm selection:bg-primary/20">
           {tagline}
         </span>
-        
+
         <h2 className="font-serif font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
           {title}
         </h2>
@@ -43,16 +43,16 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
       {viewAllLink && (
         <a
           href={viewAllLink}
-          className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-900 dark:text-neutral-100 transition-colors duration-300 self-start md:self-auto pb-1 relative group/link"
+          className="items-center gap-2 text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-900 dark:text-neutral-100 transition-colors duration-300 self-start md:self-auto pb-1 relative group/link"
         >
           <span>{viewAllText}</span>
-          
+
           {/* Elegant Minimalist Arrow */}
-          <svg 
-            className="w-3.5 h-3.5 transform transition-transform duration-300 ease-out group-hover/link:translate-x-1" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor" 
+          <svg
+            className="w-3.5 h-3.5 transform transition-transform duration-300 ease-out group-hover/link:translate-x-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
             strokeWidth="2"
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />

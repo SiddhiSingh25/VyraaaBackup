@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import ProductCard from "../../Product/component/ProductCard";
 import { apiUrls } from "../../../../apis";
 import useGetQuery from "../../../../hooks/getQuery.hook";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import SectionHeader from "@/components/Common/Headers/SectionHeader";
 
 const GENDERS = ["Men", "Women", "Unisex", "Child"] as const;
 type Gender = (typeof GENDERS)[number] | "";
@@ -58,22 +59,12 @@ export default function ProductShowcase() {
       url: finalUrl,
       onSuccess: (res: any) => {
         if (res.success && Array.isArray(res.data)) {
-          const formattedProducts = res.data.map((item: any) => {
-            return {
-              id: item._id,
-              name: item.title,
-              img: item.image,
-              price: item.price && item.price.length > 0
-                ? item.price[0].amount
-                : "N/A"
-            };
-          });
-          setProducts(formattedProducts);
+          setProducts(res.data);
         }
       },
       onFail: (res: any) => {
         console.log(res);
-      }
+      },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNum, limit, gender, selectedCategory]);
@@ -85,9 +76,12 @@ export default function ProductShowcase() {
   return (
     <section className="bg-surface/50 py-10">
       <div className="px-5 sm:px-10 lg:px-20 ">
+        <h2 className="font-serif text-center mb-8 font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
+          Categories
+        </h2>
 
         {/* Sub-category pills */}
-        <div className="flex gap-4 overflow-x-auto pb-1 mb-10 justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* <div className="flex gap-4 overflow-x-auto pb-1 mb-10 justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categories?.map((cat) => (
             <button
               key={cat?._id}
@@ -130,8 +124,49 @@ export default function ProductShowcase() {
               </span>
             </button>
           ))}
-        </div>
+        </div> */}
 
+        <div className="flex gap-4 overflow-x-auto pb-1 mb-10 justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {categories?.map((cat) => (
+            <button
+              key={cat?._id}
+              onClick={() => {
+                const routeParam = cat?.category
+                  ?.toLowerCase()
+                  .replace(/\s+/g, "-");
+                navigate(`/clothing`, {
+                  state: {
+                    categoryId: cat?._id,
+                    fullCategoryData: cat,
+                  },
+                });
+              }}
+              className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0"
+            >
+              <div
+                className={`w-[52px] h-[52px] sm:w-[40px] sm:h-[40px] lg:w-[90px] lg:h-[90px] rounded-xl flex items-center justify-center overflow-hidden border transition-all duration-200 bg-card
+        ${cat?._id === selectedCategory ? "border-primary" : "border-border"}`}
+              >
+                <img
+                  src={cat?.image}
+                  alt={cat?.category}
+                  className="w-[100%] h-[100%] object-cover"
+                  style={{ objectPosition: "top" }}
+                />
+              </div>
+              <span
+                className={`text-[10px] font-medium tracking-wider uppercase
+        ${
+          cat?._id === selectedCategory
+            ? "text-admin-text border-b-[1px] pb-1 px-2 border-body"
+            : "text-admin-text/70"
+        }`}
+              >
+                {cat?.category}
+              </span>
+            </button>
+          ))}
+        </div>
 
         {/* Gender tabs */}
         <div className="flex justify-center mb-8">
@@ -140,10 +175,11 @@ export default function ProductShowcase() {
               key={"ALL"}
               onClick={() => handleGender("")}
               className={`text-[11px] font-medium tracking-[0.18em] uppercase px-5 py-2 rounded-full transition-all duration-200 flex items-center justify-center
-                  ${"" === gender
-                  ? "bg-dark text-gray-50 shadow-sm font-bold"
-                  : "text-admin-text/90 hover:text-admin-text font-semibold"
-                }`}
+                  ${
+                    "" === gender
+                      ? "bg-dark text-gray-50 shadow-sm font-bold"
+                      : "text-admin-text/90 hover:text-admin-text font-semibold"
+                  }`}
             >
               All
             </button>
@@ -152,9 +188,10 @@ export default function ProductShowcase() {
                 key={g}
                 onClick={() => handleGender(g)}
                 className={`text-[11px] font-medium tracking-[0.18em] uppercase px-5 py-2 rounded-full transition-all duration-200 flex items-center justify-center
-                  ${g === gender
-                    ? "bg-dark text-gray-50 shadow-sm font-bold"
-                    : "text-admin-text/90 hover:text-admin-text font-semibold"
+                  ${
+                    g === gender
+                      ? "bg-dark text-gray-50 shadow-sm font-bold"
+                      : "text-admin-text/90 hover:text-admin-text font-semibold"
                   }`}
               >
                 {g}
@@ -177,12 +214,12 @@ export default function ProductShowcase() {
         </div>
 
         <div className="text-center mt-10">
-          <a
-            href="#"
+          <Link
+            to="/6a562a2f017a6045e6d9979b"
             className="inline-block border border-heading/30 text-admin-text px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-heading hover:text-white transition-all duration-400"
           >
             View All Products
-          </a>
+          </Link>
         </div>
       </div>
     </section>

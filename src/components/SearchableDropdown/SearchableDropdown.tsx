@@ -255,7 +255,7 @@ export const SearchableSelect = forwardRef<
 
     return (
       <div className="w-full">
-        <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-muted font-body">
+        <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted font-body">
           {label} {required && <span className="text-error">*</span>}
         </label>
 
