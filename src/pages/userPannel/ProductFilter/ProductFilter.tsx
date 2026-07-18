@@ -4,7 +4,7 @@ import Navbar from "../../../components/Header/Navbar";
 import SuggestedProduct from "../Product/component/SuggestedProduct";
 import { useLocation, useParams } from "react-router-dom";
 
-import { C, FILTERS, PRODUCTS } from "./constants";
+import { C } from "./constants";
 import { pct } from "./utils";
 import type { ActiveChip, FilterState, FilterValue } from "./types";
 
@@ -28,29 +28,149 @@ import { apiUrls } from "../../../apis";
 export default function ProductFilter() {
   const { getQuery } = useGetQuery();
   const [filterState, setFilterState] = useState<FilterState>({});
-  const [sort, setSort] = useState("recommended");
   const [activeChip, setActiveChip] = useState<string | null>(null);
   // const [wished, setWished] = useState<Record<string, boolean>>({});
-  const [sortSheetOpen, setSortSheetOpen] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState(1)
+  const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [gender, setGender] = useState();
-  const [productData, setProductData] = useState([])
-
+  const [productData, setProductData] = useState([]);
+  // const [categoryId, setCategoryId] = useState();
+  const [categories, setCategories] = useState<any[]>([]);
+  const [subCategories, setSubCategories] = useState<any[]>([]);
+  const [colors, setColors] = useState<any[]>([]);
   // const { category } = useParams();
   const location = useLocation();
-  const categoryId = location.state?.categoryId;
+
+  let categoryId = location?.state?.categoryId;
+
+  // useEffect(() => {
+  //   setCategoryId(location.state?.categoryId);
+  // }, [location]);
+
+  const getCategory = () => {
+    getQuery({
+      url: `${apiUrls.Category.getAll}`,
+      onSuccess: (res: any) => {
+        setCategories(res.data || []);
+      },
+      onFail: (res: any) => {
+        console.error(res);
+      },
+    });
+  };
+
+  const getColor = () => {
+    getQuery({
+      url: `${apiUrls.ColorFamily.getAll}`,
+      onSuccess: (res: any) => {
+        setColors(res.data || []);
+      },
+      onFail: (res: any) => {
+        console.error(res);
+      },
+    });
+  };
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    getCategory();
+    getColor();
+  }, []);
+
+  useEffect(() => {
+    getQuery({
+      url: `${apiUrls.SubCategory.getByCategoryId}/${categoryId}`,
+      onSuccess: (res: any) => {
+        setSubCategories(res.data || []);
+      },
+      onFail: (res: any) => {
+        console.error(res);
+      },
+    });
+  }, [categoryId]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
     const params = new URLSearchParams();
+    const urlParams = new URLSearchParams(location.search);
 
     if (page) params.append("page", String(page));
-    params.append("limit", "16");
-    if (gender) params.append("gender", gender);
-    if (categoryId) params.append("category", categoryId);
+    params.append("limit", "20");
+
+    // 1. search
+    const searchVal = urlParams.get("search");
+    if (searchVal) params.append("search", searchVal);
+
+    // 2. category
+    const categoryVal =
+      filterState["category"] || categoryId || urlParams.get("category");
+    if (categoryVal) {
+      if (Array.isArray(categoryVal) && categoryVal.length > 0) {
+        params.append("category", categoryVal.join(","));
+      } else if (typeof categoryVal === "string") {
+        params.append("category", categoryVal);
+      }
+    }
+
+    // 3. subCategory
+    const subCategoryVal =
+      filterState["subCategory"] || urlParams.get("subCategory");
+    if (subCategoryVal) {
+      if (Array.isArray(subCategoryVal) && subCategoryVal.length > 0) {
+        params.append("subCategory", subCategoryVal.join(","));
+      } else if (typeof subCategoryVal === "string") {
+        params.append("subCategory", subCategoryVal);
+      }
+    }
+
+    // 4. subcategoryType
+    const subcategoryTypeVal = urlParams.get("subcategoryType");
+    if (subcategoryTypeVal)
+      params.append("subcategoryType", subcategoryTypeVal);
+
+    // 5. brand
+    const brandVal = urlParams.get("brand");
+    if (brandVal) params.append("brand", brandVal);
+
+    // 6. color
+    const colorVal = filterState["color"] || urlParams.get("color");
+    if (colorVal) {
+      if (Array.isArray(colorVal) && colorVal.length > 0) {
+        params.append("color", colorVal.join(","));
+      } else if (typeof colorVal === "string") {
+        params.append("color", colorVal);
+      }
+    }
+
+    // 9. minPrice & maxPrice
+    const priceVal = filterState["price"];
+    if (priceVal && Array.isArray(priceVal)) {
+      params.append("minPrice", String(priceVal[0]));
+      params.append("maxPrice", String(priceVal[1]));
+    } else {
+      const minPriceVal = urlParams.get("minPrice");
+      if (minPriceVal) params.append("minPrice", minPriceVal);
+      const maxPriceVal = urlParams.get("maxPrice");
+      if (maxPriceVal) params.append("maxPrice", maxPriceVal);
+    }
+
+    // 10. rating
+    const ratingVal = filterState["rating"] || urlParams.get("rating");
+    if (ratingVal) {
+      params.append("rating", String(ratingVal));
+    }
+
+    // 11. discount
+    const discountVal = filterState["discount"] || urlParams.get("discount");
+    if (discountVal) {
+      if (Array.isArray(discountVal) && discountVal.length > 0) {
+        const minDisc = Math.min(...discountVal.map(Number));
+        params.append("discount", String(minDisc));
+      } else if (typeof discountVal === "string") {
+        params.append("discount", discountVal);
+      }
+    }
 
     const queryString = params.toString();
     const finalUrl = queryString
@@ -61,17 +181,18 @@ export default function ProductFilter() {
       url: finalUrl,
       onSuccess: (res: any) => {
         if (res.success && Array.isArray(res.data)) {
-
           const formattedProducts = res.data.map((item: any) => {
             // 1. Safely extract the first available price object
-            const basePrice = item.price && item.price.length > 0 ? item.price[0] : null;
+            const basePrice =
+              item.price && item.price.length > 0 ? item.price[0] : null;
 
             // 2. Generate badges dynamically based on API flags
             const badges: string[] = [];
             if (basePrice?.isFewLeft) {
               badges.push("Only Few Left");
             }
-            if (!basePrice?.isAvailable) { // Example condition for "Premium"
+            if (!basePrice?.isAvailable) {
+              // Example condition for "Premium"
               badges.push("Not Available");
             }
 
@@ -84,26 +205,24 @@ export default function ProductFilter() {
               brand: item.brand?.brand || "Vyraa", // Safe check, fallback if missing
               price: basePrice ? basePrice.amount : 0, // Must be a number for money()
               mrp: basePrice ? basePrice.markupPrice : 0, // Must be a number for pct()
-              rating: 4.5, // Fallback: Not in API
+              rating: item.averageRating || item.rating || 4.5,
               reviews: 120, // Fallback: Not in API
               badges: badges,
               size: basePrice ? basePrice.size._id : null,
-              sizeName: basePrice ? basePrice.size.size : null
+              sizeName: basePrice ? basePrice.size.size : null,
             };
           });
-          setProductData(formattedProducts)
-          setTotalPages(res.pagination.totalPages)
-          setPage(res.pagination.currentPage)
-          // console.log("Formatted for Card:", formattedProducts);
-          // setProducts(formattedProducts);
+          setProductData(formattedProducts);
+          setTotalPages(res.pagination.totalPages);
+          setPage(res.pagination.currentPage);
         }
       },
       onFail: (res: any) => {
         console.log(res);
-      }
+      },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, gender, location]);
+  }, [filterState, page, categoryId, location.search]);
 
   const handleFilterChange = useCallback((id: string, value: FilterValue) => {
     setLoading(true);
@@ -115,78 +234,6 @@ export default function ProductFilter() {
     setFilterState({});
     setActiveChip(null);
   };
-
-  const activeChips: ActiveChip[] = useMemo(() => {
-    const chips: ActiveChip[] = [];
-    FILTERS.forEach((s) => {
-      const v = filterState[s.id];
-      if (!v) return;
-      if (s.type === "radio" && typeof v === "string") {
-        const opt = s.options?.find((o) => o.id === v);
-        if (opt) {
-          chips.push({
-            key: `${s.id}:${v}`,
-            label: opt.label,
-            sectionId: s.id,
-            remove: null,
-          });
-        }
-      } else if (Array.isArray(v)) {
-        if (s.type === "range") return; // shown separately if needed
-        (v as string[]).forEach((id) => {
-          const opt = s.options?.find((o) => o.id === id);
-          if (opt) {
-            chips.push({
-              key: `${s.id}:${id}`,
-              label: opt.label,
-              sectionId: s.id,
-              remove: id,
-            });
-          }
-        });
-      }
-    });
-    return chips;
-  }, [filterState]);
-
-  const removeChip = (chip: ActiveChip) => {
-    if (chip.remove === null) {
-      setFilterState((prev) => {
-        const n = { ...prev };
-        delete n[chip.sectionId];
-        return n;
-      });
-    } else {
-      setFilterState((prev) => ({
-        ...prev,
-        [chip.sectionId]: (prev[chip.sectionId] as string[]).filter(
-          (v) => v !== chip.remove,
-        ),
-      }));
-    }
-  };
-
-  const activeCount = activeChips.length;
-
-  // Demo filtering: only category-radio and brand actually filter the small mock set,
-  // everything else is fully wired for real API integration.
-  const filtered = useMemo(() => {
-    let list = [...PRODUCTS];
-    const brandSel = filterState.brand as string[] | undefined;
-    if (brandSel && brandSel.length) {
-      list = list.filter(
-        (p) =>
-          brandSel.includes(p.brand.toLowerCase().replace(/\s+/g, "-")) ||
-          brandSel.some((b) => p.brand.toLowerCase().includes(b.split("-")[0])),
-      );
-    }
-    if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
-    if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
-    if (sort === "rating") list.sort((a, b) => b.rating - a.rating);
-    if (sort === "discount")
-      list.sort((a, b) => pct(b.price, b.mrp) - pct(a.price, a.mrp));
-    return list;
-  }, [filterState, sort]);
 
   return (
     <div
@@ -203,17 +250,14 @@ export default function ProductFilter() {
 
       <Navbar />
 
-      <Toolbar
-        sort={sort}
-        setSort={setSort}
-        activeCount={activeCount}
+      {/* <Toolbar
+        activeCount={8}
         onClearAll={clearAll}
-        onOpenSort={() => setSortSheetOpen(true)}
         onOpenFilter={() => setFilterDrawerOpen(true)}
-        count={filtered.length}
+        count={productData.length}
         activeChips={activeChips}
         onRemoveChip={removeChip}
-      />
+      /> */}
 
       <div className=" px-4 md:px-8 flex gap-8 py-3 md:py-5">
         {/* Desktop sidebar */}
@@ -225,7 +269,7 @@ export default function ProductFilter() {
             overflowY: "auto",
           }}
         >
-          <div className="flex items-center justify-between pb-2">
+          {/* <div className="flex items-center justify-between pb-2">
             <span
               className="text-[13px] font-semibold uppercase tracking-wide"
               style={{ color: C.heading }}
@@ -241,8 +285,15 @@ export default function ProductFilter() {
                 Clear all
               </button>
             )}
-          </div>
-          <FilterList filterState={filterState} onChange={handleFilterChange} />
+          </div> */}
+          <FilterList
+            filterState={filterState}
+            onChange={handleFilterChange}
+            categoryId={categoryId}
+            categories={categories}
+            subCategories={subCategories}
+            colors={colors}
+          />
         </aside>
 
         {/* Product grid */}
@@ -255,17 +306,21 @@ export default function ProductFilter() {
                 <ProductCard
                   key={p?.id}
                   product={p}
-                // wished={!!wished[p.id]}
-                // onToggleWish={(id) =>
-                //   setWished((w) => ({ ...w, [id]: !w[id] }))
-                // }
+                  // wished={!!wished[p.id]}
+                  // onToggleWish={(id) =>
+                  //   setWished((w) => ({ ...w, [id]: !w[id] }))
+                  // }
                 />
               ))
             ) : (
               <EmptyState onClear={clearAll} />
             )}
           </div>
-          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </main>
       </div>
 
@@ -273,15 +328,8 @@ export default function ProductFilter() {
       <Footer />
 
       <MobileBottomBar
-        onSort={() => setSortSheetOpen(true)}
         onFilter={() => setFilterDrawerOpen(true)}
-        activeCount={activeCount}
-      />
-      <SortSheet
-        open={sortSheetOpen}
-        onClose={() => setSortSheetOpen(false)}
-        sort={sort}
-        setSort={setSort}
+        // activeCount={activeCount}
       />
       <FilterDrawer
         open={filterDrawerOpen}
@@ -289,7 +337,11 @@ export default function ProductFilter() {
         filterState={filterState}
         onChange={handleFilterChange}
         onClearAll={clearAll}
-        resultCount={filtered.length}
+        resultCount={productData.length}
+        categoryId={categoryId}
+        categories={categories}
+        subCategories={subCategories}
+        colors={colors}
       />
     </div>
   );

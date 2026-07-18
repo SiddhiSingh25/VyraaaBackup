@@ -40,7 +40,6 @@ function Badge({ count, pulse }: { count: number; pulse: boolean }) {
   );
 }
 
-
 export default function Navbar({
   wishlistCount = 0,
   cartCount = 0,
@@ -49,8 +48,13 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  const cartItems = useSelector((state: any) => state.cart.items);
-  const calculatedCartCount = cartItems.reduce((acc: number, item: any) => acc + (item.quantity || item.qty || 1), 0);
+  let { user } = useSelector((state: any) => state.auth);
+
+  const cartItems = useSelector((state: any) => state.cart.items || []);
+  const calculatedCartCount = cartItems.reduce(
+    (acc: number, item: any) => acc + (item.quantity || item.qty || 1),
+    0,
+  );
 
   const cartPulse = useBadgePulse(calculatedCartCount);
   const wishlistPulse = useBadgePulse(wishlistCount);
@@ -66,9 +70,10 @@ export default function Navbar({
     <>
       <header
         className={`sticky top-0 z-50 w-full transition-all duration-300 ease-out
-          ${scrolled
-            ? "bg-background/90 backdrop-blur-xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] border-b border-border/50"
-            : "bg-background border-b border-border/30"
+          ${
+            scrolled
+              ? "bg-background/90 backdrop-blur-xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] border-b border-border/50"
+              : "bg-background border-b border-border/30"
           }`}
       >
         {/* ============ DESKTOP / LAPTOP (lg and up) ============ */}
@@ -132,7 +137,7 @@ export default function Navbar({
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
               <Link
-                to="/profile"
+                to={user.role == "admin" ? "/admin" : "/profile"}
                 className="text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <User size={19} strokeWidth={1.6} />

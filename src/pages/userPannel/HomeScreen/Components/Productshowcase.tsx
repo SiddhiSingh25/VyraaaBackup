@@ -169,7 +169,7 @@ export default function ProductShowcase() {
         </div>
 
         {/* Gender tabs */}
-        <div className="flex justify-center mb-8">
+        {/* <div className="flex justify-center mb-8">
           <div className="flex bg-card rounded-full p-1 gap-0.5 border border-heading/10">
             <button
               key={"ALL"}
@@ -198,7 +198,7 @@ export default function ProductShowcase() {
               </button>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Products grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -215,7 +215,7 @@ export default function ProductShowcase() {
 
         <div className="text-center mt-10">
           <Link
-            to="/6a562a2f017a6045e6d9979b"
+            to="/all-product"
             className="inline-block border border-heading/30 text-admin-text px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-heading hover:text-white transition-all duration-400"
           >
             View All Products
