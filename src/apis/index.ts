@@ -138,4 +138,7 @@ export const apiUrls = {
     getByUserId: "address/get",
     getByAddressId: "address/get-address",
   },
+  Orders: {
+    getAllOrders: "/order",
+  },
 };
