@@ -1,0 +1,47 @@
+1. Student Details
+Full Name: Siddhi Singh
+Roll Number: 2504731549015
+University Enrollment Number: 250473154111151
+Semester: 5th 
+Branch: CSE(DS)
+Mobile Number: 8303638706
+Email ID: singhsiddhi960@gmail.com
+Current Address: Noida, UP
+2. Internship / Job
+Internship / Full-time / Part-time / Apprenticeship? : Full time
+Company Name: Macreel Infosoft Pvt. Ltd.
+Company Address: Noida, UP
+Company Website: https://macreel.co.in/
+Industry: IT
+Work Mode (On-site / Remote / Hybrid): On-site
+Work Location: Noida, Sector 63
+Position/Role: React native Developer
+Department: IT
+Start Date:
+End Date:
+Working Days:
+Working Hours:
+Stipend/Salary (if any):
+3. Reporting Supervisor
+Name:
+Designation:
+Department:
+Official Phone:
+Official Email:
+4. College Coordinator (if known)
+Name:
+Email:
+Phone:
+5. Parent/Guardian
+Parent Name:
+Relationship:
+Mobile:
+Email:
+6. Other
+Today's Date:
+Which option should be checked?
+☐ Internship
+☐ Full-time Employment
+☐ Part-time Employment
+☐ Apprenticeship
+☐ Other

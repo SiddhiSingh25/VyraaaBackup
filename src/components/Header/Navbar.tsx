@@ -48,6 +48,10 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
+  let {user}  = useSelector((state : any)=>state.auth)
+
+
+
   const cartItems = useSelector((state: any) => state.cart.items || []);
   const calculatedCartCount = cartItems.reduce((acc: number, item: any) => acc + (item.quantity || item.qty || 1), 0);
 
@@ -131,7 +135,8 @@ export default function Navbar({
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
               <Link
-                to="/profile"
+                to={user.role =="admin" ? "/admin" : "/profile"  }
+
                 className="text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <User size={19} strokeWidth={1.6} />
