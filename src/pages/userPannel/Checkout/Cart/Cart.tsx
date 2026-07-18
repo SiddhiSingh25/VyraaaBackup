@@ -18,7 +18,7 @@ import {
   toggleSelectItem,
   updateQuantity,
   removeFromCart,
-} from "../../../../redux/slices/cartSlice";
+} from "../../../../redux/slices/cartSlice.js";
 
 const COUPON_DISCOUNT = 60;
 
@@ -77,9 +77,9 @@ const Cart = () => {
     });
   }, [refreshKey]);
 
-  const toggleSelect = (id: string) => {
-    dispatch(toggleSelectItem(id));
-  };
+  // const toggleSelect = (id: string) => {
+  //   dispatch(toggleSelectItem(id));
+  // };
 
   const removeItem = (id: string) => {
     dispatch(removeFromCart(id));
@@ -140,7 +140,7 @@ const Cart = () => {
                       <CartItemCard
                         key={item.id}
                         item={item}
-                        onToggleSelect={toggleSelect}
+                        // onToggleSelect={toggleSelect}
                         onRemove={removeItem}
                         onMoveToWishlist={moveToWishlist}
                         onQtyChange={changeQty}

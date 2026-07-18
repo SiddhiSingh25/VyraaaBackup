@@ -17,14 +17,6 @@ const wishlistSlice = createSlice({
     removeFromWishlist: (state, action) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
     },
-    toggleWishlistItem: (state, action) => {
-      const exists = state.items.find((item) => item.id === action.payload.id);
-      if (exists) {
-        state.items = state.items.filter((item) => item.id !== action.payload.id);
-      } else {
-        state.items.push(action.payload);
-      }
-    },
     setWishlist: (state, action) => {
       state.items = action.payload || [];
     },

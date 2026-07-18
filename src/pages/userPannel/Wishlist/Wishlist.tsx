@@ -5,10 +5,13 @@ import Navbar from "../../../components/Header/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import WishlistCard from "./components/WishlistCard";
 import type { WishlistProduct } from "./components/types";
-import { RECOMMENDED } from "./components/data"; // Removed INITIAL_WISHLIST as we fetch from API
-import RecommendedCard from "./components/RecomendationCard";
 import useGetQuery from "../../../hooks/getQuery.hook";
+import usePostQuery from "../../../hooks/postQuery.hook";
+import { useToast } from "../../../hooks/useToast.hook";
 import { apiUrls } from "../../../apis";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { removeFromWishlist, setWishlist } from "@/redux/slices/wishlistSlice";
+import { addToCart } from "@/redux/slices/cartSlice";
 
 function EmptyWishlist() {
   const navigate = useNavigate();
@@ -43,46 +46,62 @@ function EmptyWishlist() {
 
 export default function WishlistPage() {
   const { getQuery } = useGetQuery();
+  const { postQuery } = usePostQuery();
+  const { toast } = useToast();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  // 1. Add loading state and initialize items as an empty array
   const [isLoading, setIsLoading] = useState(true);
-  const [items, setItems] = useState<WishlistProduct[]>([]);
+  const items = useAppSelector((state) => state.wishlist.items || []);
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     getQuery({
       url: apiUrls.WishList.getByUserId,
       onSuccess: (res: any) => {
+        const validItems = res.data.items.filter((item: any) => {
+          if (!item.product) {
+            console.warn("Wishlist item has a deleted/missing product, skipping:", item._id);
+            return false;
+          }
+          return true;
+        });
 
-        const fetchedItems = res.data.items.map((item: any) => {
-
-
-          const defaultPrice = (item.product.price && item.product.price.length > 0)
-            ? item.product.price[0]
-            : { amount: 0, markupPrice: null, isAvailable: true };
+        const fetchedItems = validItems.map((item: any) => {
+          const priceEntry =
+            item.product.price && item.product.price.length > 0
+              ? item.product.price[0]
+              : { amount: 0, markupPrice: null, isAvailable: true, isFewLeft: false, discount: 0, skuCode: "" };
 
           return {
             id: item.product._id,
+            wishlistItemId: item._id, // useful if you ever need to remove by wishlist entry, not product id
             brand: item.product.brand || "Vyraa",
             name: item.product.title,
             image: item.product.image,
             rating: item.product.rating || 0,
 
+            price: priceEntry.amount,
+            originalPrice: priceEntry.markupPrice,
+            discount: priceEntry.discount || 0,
+            skuCode: priceEntry.skuCode || "",
 
-            price: defaultPrice.amount,
-            originalPrice: defaultPrice.markupPrice,
-            stockStatus: defaultPrice.isAvailable ? "in-stock" : "out-of-stock",
+            stockStatus: priceEntry.isAvailable ? "in-stock" : "out-of-stock",
+            isFewLeft: !!priceEntry.isFewLeft,
 
+            sizeId: priceEntry._id || "",
+            size: priceEntry.size?.size || "Standard",
 
             colorName: "Standard",
             colorHex: "#000000",
-            size: "Standard",
             reviewCount: 0,
-            badge: null,
+            badge: priceEntry.isFewLeft ? "Few Left" : priceEntry.discount ? `${priceEntry.discount}% OFF` : null,
+
+            addedAt: item.addedAt,
           };
         });
 
-        setItems(fetchedItems);
+        dispatch(setWishlist(fetchedItems));
         setIsLoading(false); // Stop loading on success
       },
       onFail: (res: any) => {
@@ -90,14 +109,63 @@ export default function WishlistPage() {
         setIsLoading(false); // Stop loading on failure so UI doesn't hang
       },
     });
-  }, []); // Run once on mount
+  }, [dispatch]); // Run once on mount
 
-  const removeItem = (id: string) =>
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const removeItem = (id: string) => {
+    getQuery({
+      url: apiUrls.WishList.remove + id,
+      onSuccess: (res: any) => {
+        toast("success", res.message || "Removed from wishlist successfully");
+        dispatch(removeFromWishlist(id));
+      },
+      onFail: (res: any) => {
+        console.error("Failed to remove from wishlist:", res);
+        toast("error", res?.data?.message || "Failed to remove from wishlist");
+      },
+    });
+  };
 
   const addToBag = (id: string) => {
-    // hook up to your cart logic
-    console.log("Add to bag:", id);
+    const product = items.find((item) => item.id === id);
+    if (!product) return;
+
+    postQuery({
+      url: apiUrls.Cart.add,
+      postData: {
+        productId: product.id,
+        size: product.sizeId || "",
+        quantity: 1,
+      },
+      onSuccess: (res: any) => {
+        toast("success", res.message || "Added to cart successfully");
+        dispatch(
+          addToCart({
+            id: product.id,
+            brand: product.brand,
+            name: product.name,
+            image: product.image,
+            quantity: 1,
+            qty: 1,
+            size: product.size || "Standard",
+            price: product.price,
+            mrp: product.originalPrice || product.price,
+          })
+        );
+        getQuery({
+          url: apiUrls.WishList.remove + id,
+          onSuccess: () => {
+            dispatch(removeFromWishlist(id));
+          },
+          onFail: (err: any) => {
+            console.error("Failed to delete wishlist item on addToBag:", err);
+          }
+        });
+      },
+      onFail: (res: any) => {
+        console.error("Failed to add to cart:", res);
+        toast("error", res?.data?.message || "Failed to add to cart");
+      },
+    });
   };
 
   const buyNow = (id: string) => {
@@ -147,18 +215,7 @@ export default function WishlistPage() {
 
           {items.length > 0 && (
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                className="flex items-center gap-1.5 text-sm text-body transition-colors hover:text-primary"
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <circle cx="18" cy="5" r="3" />
-                  <circle cx="6" cy="12" r="3" />
-                  <circle cx="18" cy="19" r="3" />
-                  <path d="M8.6 10.5 15.4 6.5M8.6 13.5l6.8 4" />
-                </svg>
-                Share
-              </button>
+
               <button
                 type="button"
                 onClick={moveAllToBag}
@@ -204,19 +261,6 @@ export default function WishlistPage() {
           </>
         )}
 
-        {/* You May Also Like */}
-        <section className="mt-20">
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="font-heading text-2xl text-admin-text">You May Also Like</h2>
-            <span className="hidden text-sm text-muted sm:block">Curated to match your taste</span>
-          </div>
-
-          <div className="-mx-5 flex gap-5 overflow-x-auto px-5 pb-4 sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {RECOMMENDED.map((product) => (
-              <RecommendedCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
       </main>
 
       <Footer />
