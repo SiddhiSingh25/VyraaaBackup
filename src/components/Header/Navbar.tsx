@@ -40,6 +40,7 @@ function Badge({ count, pulse }: { count: number; pulse: boolean }) {
   );
 }
 
+
 export default function Navbar({
   wishlistCount = 0,
   cartCount = 0,
@@ -48,7 +49,7 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  const cartItems = useSelector((state: any) => state.cart.items || []);
+  const cartItems = useSelector((state: any) => state.cart.items);
   const calculatedCartCount = cartItems.reduce((acc: number, item: any) => acc + (item.quantity || item.qty || 1), 0);
 
   const cartPulse = useBadgePulse(calculatedCartCount);
@@ -124,7 +125,7 @@ export default function Navbar({
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
               <Link
-                to="/checkout/cart"
+                to="/cart"
                 className="relative text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <ShoppingBag size={19} strokeWidth={1.6} />
@@ -165,7 +166,7 @@ export default function Navbar({
                 <Heart size={20} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
-              <Link to="/checkout/cart" className="relative text-admin-text/80">
+              <Link to="/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
@@ -204,7 +205,7 @@ export default function Navbar({
                 <Heart size={20} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
-              <Link to="/checkout/cart" className="relative text-admin-text/80">
+              <Link to="/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>

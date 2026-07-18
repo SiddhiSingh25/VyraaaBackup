@@ -79,6 +79,8 @@ export default function ProductShowcase() {
 
         <h2 className="font-serif text-center mb-8 font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
           Categories
+        <h2 className="font-serif text-center mb-8 font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
+          Categories
         </h2>
 
         {/* Sub-category pills */}
@@ -133,7 +135,7 @@ export default function ProductShowcase() {
               key={cat?._id}
               onClick={() => {
                 const routeParam = cat?.category?.toLowerCase().replace(/\s+/g, '-');
-                navigate(`/${routeParam}`, {
+                navigate(`/clothing`, {
                   state: {
                     categoryId: cat?._id,
                     fullCategoryData: cat

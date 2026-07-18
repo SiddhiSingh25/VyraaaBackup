@@ -7,7 +7,10 @@ import { apiUrls } from "../../../../../apis";
 import useGetQuery from "../../../../../hooks/getQuery.hook";
 import { useToast } from "../../../../../hooks/useToast.hook";
 import { useDispatch } from "react-redux";
-
+import {
+  removeFromCart,
+  clearCart,
+} from "../../../../../redux/slices/cartSlice";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -25,22 +28,47 @@ const CartItemCard = ({
   onQtyChange,
   onRefreshCart,
 }: CartItemCardProps) => {
+  // Now relies on dynamically updating MRP and Price from Redux
   const pct = discountPercent(item.mrp, item.price);
+
   const { postQuery } = usePostQuery();
   const { getQuery } = useGetQuery();
   const { toast } = useToast();
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch();
+  const updateCart = (newQty: number) => {
+    // 1. Instantly update UI for snappy feedback
+    onQtyChange(item?.cartItemId || item?.id, newQty);
 
-  const updateCart = (data: Number) => {
+    // 2. Sync to Backend silently
     postQuery({
       url: apiUrls.Cart.update,
       postData: {
         itemId: item.id,
-        quantity: data,
+        quantity: newQty,
       },
       onSuccess: (res: any) => {
-      // dispatch(updateQuantity({item : item.id, quantity: data }));
+        toast("success", "Quantity updated");
+        onRefreshCart();
+      },
+      onFail: (res: any) => {
+        console.log(res?.data);
+        toast("error", "Failed to update quantity");
+      },
+    });
+  };
+
+  const onMoveToWishlist = () => {
+    console.log("dgnjhg");
+  };
+
+  const removeCart = () => {
+    // Instantly hide it from UI
+    dispatch(removeFromCart(item?.cartItemId || item?.id));
+
+    getQuery({
+      url: apiUrls.Cart.remove + item?.cartItemId,
+      onSuccess: (res: any) => {
         toast("success", res.message);
         onRefreshCart();
       },
@@ -49,25 +77,6 @@ const CartItemCard = ({
       },
     });
   };
-
-  const onMoveToWishlist = ()=>{
-    console.log("dgnjhg")
-  }
-
-  const removeCart = () => {
-    getQuery({
-      url: apiUrls.Cart.remove + item.id,
-      onSuccess: (res: any) => {
-        //  dispatch(removeFromCart(item.id));
-        toast("success", res.message);
-        onRefreshCart();
-      },
-      onFail: (res: any) => {
-        console.log(res?.data);
-      },
-    });
-  }
-
 
   return (
     <motion.div
@@ -78,7 +87,6 @@ const CartItemCard = ({
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="relative rounded-lg border border-border bg-background p-4 sm:p-5"
     >
-      {/* Remove */}
       <button
         type="button"
         onClick={() => removeCart()}
@@ -89,15 +97,7 @@ const CartItemCard = ({
       </button>
 
       <div className="flex gap-4 sm:gap-5">
-        {/* Select + image */}
         <div className="flex flex-shrink-0 items-start gap-2.5">
-          {/* <input
-            type="checkbox"
-            checked={item.selected}
-            onChange={() => onToggleSelect(item.id)}
-            className="mt-1 h-4 w-4 accent-primary"
-            aria-label={`Select ${item.name}`}
-          /> */}
           <img
             src={item.image}
             alt={item.name}
@@ -105,7 +105,6 @@ const CartItemCard = ({
           />
         </div>
 
-        {/* Details */}
         <div className="flex-1 min-w-0 pr-6">
           <h3 className="font-heading text-base text-admin-text sm:text-lg">
             {item.brand}
@@ -117,55 +116,37 @@ const CartItemCard = ({
             Sold by: {item.soldBy}
           </p>
 
-          {/* Size (Static) / Qty selector */}
           <div className="mt-3 flex flex-wrap items-center gap-2.5">
-
-            {/* Directly showing the size instead of a dropdown */}
             <div className="flex items-center rounded border border-border bg-surface px-3 py-1.5 font-body text-xs font-medium text-heading">
               Size: {item.size}
             </div>
 
             <div className="flex items-center gap-2 rounded-md border border-border bg-surface p-1">
-              {/* Decrease Button */}
               <button
                 type="button"
                 disabled={item.qty <= 1}
-                onClick={() => {
-                  const newQty = item.qty - 1;
-                  updateCart(newQty);
-                  console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
-                  onQtyChange(item.id, newQty);
-                }}
+                onClick={() => updateCart(item.qty - 1)}
                 className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Decrease quantity"
               >
                 -
               </button>
 
-              {/* Quantity Display */}
               <span className="w-4 text-center font-body text-xs font-medium text-heading">
                 {item.qty}
               </span>
 
-              {/* Increase Button */}
               <button
                 type="button"
                 disabled={item.qty >= item.maxQty}
-                onClick={() => {
-                  const newQty = item.qty + 1;
-                  updateCart(newQty);
-                  console.log(`Updating ${item.name} (ID: ${item.id}) to Quantity: ${newQty}`);
-                  onQtyChange(item.id, newQty);
-                }}
+                onClick={() => updateCart(item.qty + 1)}
                 className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Increase quantity"
               >
                 +
               </button>
             </div>
           </div>
 
-          {/* Price */}
+          {/* Because Redux updates these, the UI will instantly reflect the math */}
           <div className="mt-3 flex items-baseline gap-2">
             <span className="font-heading text-lg text-admin-text">
               {formatINR(item.price)}
@@ -174,7 +155,7 @@ const CartItemCard = ({
               {formatINR(item.mrp)}
             </span>
             <span className="font-body text-sm font-medium text-success">
-              {pct}% OFFs
+              {pct}% OFF
             </span>
           </div>
 

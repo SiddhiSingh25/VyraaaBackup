@@ -24,19 +24,19 @@ const ProductCard = ({ product }: any) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const wishlistItems = useAppSelector((state) => state.wishlist.items || []);
+  const { isAuthenticated } = useAppSelector((state: any) => state.auth);
+  const wishlistItems = useAppSelector((state: any) => state.wishlist.items || []);
   const isWishlisted = wishlistItems.some((item: any) => item.id === product._id);
 
   const [selectedSize, setSelectedSize] = React.useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  console.log(product, "**********")
+  // console.log(product, "**********")
 
   const handleWishlist = (e: React.MouseEvent) => {
 
-    console.log(e,"jv")
+    console.log(e, "jv")
     e.preventDefault();
     e.stopPropagation();
 
@@ -45,30 +45,30 @@ const ProductCard = ({ product }: any) => {
       navigate("/auth/login");
       return;
     }
-    
-
-      getQuery({
 
 
-        url: apiUrls.WishList.add + product?._id,
-        onSuccess: (res: any) => {
+    getQuery({
 
-           dispatch(addToWishlist({
-        id: product._id,
-        brand: getBrandName(product.brand),
-        name: product.name || product.title,
-        image: product.img || product.image,
-        price: typeof product.price === 'number' ? product.price : parseFloat(product.price?.[0]?.amount?.toString().replace(/[^\d\.]/g, '') || product.price?.toString().replace(/[^\d\.]/g, '') || '0'),
-        stockStatus: "in-stock"
-      }));
 
-          toast("success", res.message || "Added to wishlist");
-        },
-        onFail: (error: any) => {
-          console.error(error);
-          toast("error", error.response?.data?.message || "Already Added");
-        },
-      });
+      url: apiUrls.WishList.add + product?._id,
+      onSuccess: (res: any) => {
+
+        dispatch(addToWishlist({
+          id: product._id,
+          brand: getBrandName(product.brand),
+          name: product.name || product.title,
+          image: product.img || product.image,
+          price: typeof product.price === 'number' ? product.price : parseFloat(product.price?.[0]?.amount?.toString().replace(/[^\d\.]/g, '') || product.price?.toString().replace(/[^\d\.]/g, '') || '0'),
+          stockStatus: "in-stock"
+        }));
+
+        toast("success", res.message || "Added to wishlist");
+      },
+      onFail: (error: any) => {
+        console.error(error);
+        toast("error", error.response?.data?.message || "Already Added");
+      },
+    });
   };
 
   const getBrandName = (brand: any) => {
@@ -130,7 +130,7 @@ const ProductCard = ({ product }: any) => {
       url: apiUrls.Cart.add,
       postData: {
         "productId": product._id || product.id,
-        "size": currentPriceObj?._id,
+        "size": product.price[selectedSize].size._id,
         "quantity": 1
       },
       onSuccess: (res: any) => {
@@ -157,6 +157,8 @@ const ProductCard = ({ product }: any) => {
         setIsSubmitting(false);
       },
     });
+
+    setIsSubmitting(false);
   };
 
   return (
