@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check } from "lucide-react";
-import { C, SORT_OPTIONS } from "../constants";
+import { C } from "../constants";
 
 export interface SortSheetProps {
   open: boolean;
