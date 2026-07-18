@@ -233,7 +233,7 @@ export default function FilterSection({
         </div>
       )}
 
-      {section.type === "color" && (
+      {/* {section.type === "color" && (
         <div className="flex flex-wrap gap-3.5">
           {options.map((o) => {
             const active = (val as string[]).includes(o.id);
@@ -297,7 +297,59 @@ export default function FilterSection({
             );
           })}
         </div>
-      )}
+      )} */}
+
+      {section.type === "color" && (
+  <div className="flex flex-col gap-1 max-h-56 overflow-y-auto pr-1 scrollbar-premium">
+    {options.map((o) => {
+      const active = (val as string[]).includes(o.id);
+
+      return (
+        <label
+          key={o.id}
+          className={`flex items-center justify-between cursor-pointer px-2 -mx-2 py-1.5 rounded-lg transition-colors duration-150 ${
+            active ? "bg-primary/5" : "hover:bg-card/60"
+          }`}
+        >
+          <span className="flex items-center gap-2.5">
+            <span
+              className={`min-w-[20px] h-5 px-2 rounded-md flex items-center justify-center text-[10px] font-medium transition-all duration-200 ${
+                active
+                  ? "bg-primary text-white"
+                  : "bg-surface border border-border text-body"
+              }`}
+            >
+              {active && <Check size={10} strokeWidth={3} />}
+            </span>
+
+            <span
+              className={`text-[13px] transition-colors duration-150 ${
+                active
+                  ? "text-heading font-medium"
+                  : "text-body"
+              }`}
+            >
+              {o.label}
+            </span>
+          </span>
+
+          {o.count != null && (
+            <span className="text-[11px] tabular-nums text-muted">
+              {o.count}
+            </span>
+          )}
+
+          <input
+            type="checkbox"
+            className="sr-only"
+            checked={active}
+            onChange={() => toggleMulti(o.id)}
+          />
+        </label>
+      );
+    })}
+  </div>
+)}
 
       {section.type === "range" && (
         <div>
