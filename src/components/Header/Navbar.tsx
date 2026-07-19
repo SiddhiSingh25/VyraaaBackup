@@ -137,7 +137,7 @@ export default function Navbar({
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
               <Link
-                to={user.role == "admin" ? "/admin" : "/profile"}
+                to={user?.role == "admin" ? "/admin" : "/profile"}
                 className="text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <User size={19} strokeWidth={1.6} />
