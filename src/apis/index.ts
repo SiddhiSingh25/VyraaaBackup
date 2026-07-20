@@ -140,5 +140,6 @@ export const apiUrls = {
   },
   Orders: {
     getAllOrders: "/order",
+    getOrderById: "/order",
   },
 };

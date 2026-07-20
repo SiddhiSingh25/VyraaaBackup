@@ -1,3 +1,5 @@
+import { apiUrls } from "@/apis";
+import useGetQuery from "@/hooks/getQuery.hook";
 import {
   ArrowLeft,
   Calendar,
@@ -10,8 +12,8 @@ import {
   ShoppingBag,
   User,
 } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const orderStatuses = [
   "Pending",
@@ -22,71 +24,6 @@ const orderStatuses = [
   "Delivered",
   "Cancelled",
 ];
-
-const dummyOrder = {
-  _id: "6a5b4c759ebfa4e28e231d61",
-
-  user: {
-    _id: "6a573c909f733639de2260fa",
-    email: "ankitwork440@gmail.com",
-  },
-
-  items: [
-    {
-      _id: "6a5b4c759ebfa4e28e231d62",
-
-      product: {
-        _id: "6a58d71161a7ee9ef7807c08",
-        title: "Women Multicolor Shoulder Bag",
-
-        image:
-          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=300",
-
-        category: "Women Bags",
-      },
-
-      size: "Medium",
-
-      quantity: 2,
-
-      purchasingPrice: 500,
-
-      itemTotal: 1000,
-
-      itemStatus: "Processing",
-    },
-  ],
-
-  grandTotal: 1000,
-
-  paymentMethod: "UPI",
-
-  paymentStatus: "Pending",
-
-  orderStatus: "Processing",
-
-  createdAt: "2026-07-18T09:50:45.679Z",
-
-  shippingAddress: {
-    fullName: "Ankit Chaurasia",
-
-    streetAddress: "Flat 402, Sunshine Apartments",
-
-    town: "Sector 62",
-
-    landmark: "Near Fortis Hospital",
-
-    city: "Ballia",
-
-    state: "Uttar Pradesh",
-
-    pinCode: "201309",
-
-    country: "India",
-
-    phoneNumber: "9876543210",
-  },
-};
 
 const getBadgeColor = (status: string) => {
   switch (status) {
@@ -106,11 +43,41 @@ const getBadgeColor = (status: string) => {
 
 const OrderDetails = () => {
   const navigate = useNavigate();
-
-  const order = dummyOrder;
-  const [selectedStatus, setSelectedStatus] = useState(order.orderStatus);
+  const { getQuery } = useGetQuery();
+  const { id } = useParams();
+  console.log("order id ", id);
+  const [order, setOrder] = useState<any>(null);
+  console.log("Order", order);
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const GetOrderById = async () => {
+    getQuery({
+      url: `${apiUrls.Orders.getOrderById}/${id}`,
+      onSuccess: (res: any) => {
+        console.log(res);
+        setOrder(res.data);
+        console.log(res.data);
+        setSelectedStatus(res.data.orderStatus);
+      },
+      onFail: (err: any) => {
+        console.log(err, "Error fetching colors");
+      },
+    });
+  };
+
+  useEffect(() => {
+    GetOrderById();
+  }, []);
+
+  if (!order) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-lg font-medium text-[#8B5E49]">Loading Order...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-slate-50 font-admin-text text-slate-900">
@@ -413,7 +380,7 @@ const OrderDetails = () => {
               </thead>
 
               <tbody>
-                {order.items.map((item) => (
+                {order.items.map((item: any) => (
                   <tr
                     key={item._id}
                     className="border-b border-[#EFE4DB] transition-colors hover:bg-[#FFFDFB]"
@@ -435,10 +402,10 @@ const OrderDetails = () => {
                     </td>
 
                     <td className="px-4 py-3 text-sm text-[#5E4637]">
-                      {item.product.category}
+                      {item.product.category.category}
                     </td>
 
-                    <td className="px-4 py-3">{item.size}</td>
+                    <td className="px-4 py-3">{item.size.size}</td>
 
                     <td className="px-4 py-3">{item.quantity}</td>
 
