@@ -1,118 +1,90 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, ChevronDown } from "lucide-react";
-import PaymentMethodSidebar from "./components/PaymentMethodSidebar";
-import PaymentMethodCard from "./components/PaymentMethodCard";
-import CreditCardForm from "./components/CreditCardForm";
-import UPISection from "./components/UPISection";
-import WalletSection from "./components/WalletSection";
-import NetBankingSection from "./components/NetBankingSection";
-import EMISection from "./components/EMISection";
-import CODSection from "./components/CODSection";
-import GiftCardSection from "./components/GiftCardSection";
-import OrderSummary from "./components/OrderSummary";
-import PriceBreakdown from "./components/PriceBreakdown";
-import CouponCard from "./components/CouponCard";
-import TrustCard from "./components/TrustCard";
-import StickyCheckoutBar from "./components/StickyCheckoutBar";
+import { motion } from "framer-motion";
+import { Loader2, Smartphone, CreditCard, Banknote, CheckCircle2 } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import {
-  paymentCategories,
-  offers,
-  cardBrands,
-  upiApps,
-  wallets,
-  banks,
-  emiPlans,
-  products,
-  priceBreakdown,
-  address,
-} from "./data/dummyData";
-import type { PaymentCategoryId } from "./types";
+// Ensure you only import what you need from your dummy data
+import { priceBreakdown } from "./data/dummyData";
 
 import "./styles/theme.css";
-import Navbar from "../../../../components/Header/Navbar";
-import Footer from "../../../../components/Footer/Footer";
-import { useLocation } from "react-router-dom";
+import usePostQuery from "@/hooks/postQuery.hook";
+import { apiUrls } from "@/apis";
+
+// 1. Strict typing for the three allowed payment modes
+export type PaymentMode = "COD" | "Card" | "UPI";
+
+// 2. Configuration for the 3 direct options
+const paymentMethods = [
+  {
+    id: "UPI",
+    label: "UPI",
+    description: "Pay via Google Pay, PhonePe, Paytm",
+    icon: Smartphone,
+    badge: "Popular"
+  },
+  {
+    id: "Card",
+    label: "Credit / Debit Card",
+    description: "Visa, Mastercard, RuPay, Amex",
+    icon: CreditCard
+  },
+  {
+    id: "COD",
+    label: "Cash on Delivery",
+    description: "Pay when your order is delivered",
+    icon: Banknote
+  },
+] as const;
 
 export default function Payment() {
-  const [activeCategory, setActiveCategory] = useState<PaymentCategoryId>("recommended");
-  const [selectedOption, setSelectedOption] = useState<string>("cod-recommended");
+  // 3. State directly manages the selected option
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>("UPI");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [openMobileAccordion, setOpenMobileAccordion] = useState<PaymentCategoryId | null>(
-    "recommended"
-  );
+  const { postQuery } = usePostQuery()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const {
+    from,
+    selectedAddressId,
+    productId,
+    quantity
+  } = location?.state || {};
 
-  const location = useLocation();
-  console.log(location.state.from, "==========")
-
+  // 4. Handle the payment logic when the button is clicked
   const handleProceed = () => {
     setIsProcessing(true);
-    window.setTimeout(() => setIsProcessing(false), 1800);
-  };
+    if (from === "cart") {
+      postQuery({
+        url: apiUrls.Cart.order,
+        postData: {
+          "shippingAddress": selectedAddressId,
+          "paymentMethod": paymentMode
+        },
+        onSuccess: (res: any) => {
 
-  const renderCategoryContent = (categoryId: PaymentCategoryId) => {
-    switch (categoryId) {
-      case "recommended":
-        return (
-          <div className="space-y-3">
-            <PaymentMethodCard
-              title="UPI — Google Pay"
-              description="Fast, secure, and free. No extra charges."
-              recommended
-              selected={selectedOption === "rec-upi"}
-              onSelect={() => setSelectedOption("rec-upi")}
-              logo={<span className="font-body text-[10px] font-bold text-primary">GP</span>}
-            />
-            <PaymentMethodCard
-              title="Credit / Debit Card"
-              description="Visa, Mastercard, RuPay & Amex accepted"
-              selected={selectedOption === "rec-card"}
-              onSelect={() => setSelectedOption("rec-card")}
-              logo={<span className="font-body text-[9px] font-bold text-primary">VISA</span>}
-            />
-            <PaymentMethodCard
-              title="Cash on Delivery"
-              description="Pay when your order is delivered"
-              selected={selectedOption === "cod-recommended"}
-              onSelect={() => setSelectedOption("cod-recommended")}
-            />
-          </div>
-        );
-      case "upi":
-        return <UPISection apps={upiApps} />;
-      case "card":
-        return (
-          <div>
-            <PaymentMethodCard
-              title="Credit / Debit Card"
-              description="Visa · Mastercard · RuPay · American Express supported"
-              selected
-              onSelect={() => { }}
-            />
-            <CreditCardForm brands={cardBrands} />
-          </div>
-        );
-      case "wallets":
-        return <WalletSection wallets={wallets} />;
-      case "netbanking":
-        return <NetBankingSection banks={banks} />;
-      case "emi":
-        return <EMISection plans={emiPlans} />;
-      case "cod":
-        return <CODSection />;
-      default:
-        return null;
+          setIsProcessing(false)
+          navigate("/")
+          // console.log(isUpdating ? "Address updated!" : "Address added!", res);
+          // fetchAddresses(); // Refresh the list
+          // setView("list"); // Go back to the list view
+        },
+        onFail: (err: any) => {
+          setIsProcessing(false)
+
+        },
+      });
     }
+    // console.log(`Processing payment using: ${paymentMode}`);
+
+    // Simulate API call delay
+    // window.setTimeout(() => setIsProcessing(false), 1800);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* <Navbar/> */}
+      {/* Centered maximum width layout for better readability */}
+      <main className="mx-auto max-w-3xl px-5 pb-28 pt-8 sm:px-8 lg:pb-16">
 
-      {/* <CheckoutProgress currentStep={2} /> */}
-
-      <main className="mx-auto max-w-7xl px-5 pb-28 pt-8 sm:px-8 lg:pb-16">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="font-heading text-[32px] leading-tight text-admin-text sm:text-[38px]">
@@ -123,110 +95,82 @@ export default function Payment() {
           </p>
         </div>
 
-        {/* <OfferCarousel offers={offers} /> */}
+        <div className="space-y-6">
+          {/* Direct Selection Cards */}
+          <div className="flex flex-col gap-4">
+            {paymentMethods.map((method) => {
+              const Icon = method.icon;
+              const isSelected = paymentMode === method.id;
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-10">
-          {/* Left: Payment Methods (70%) */}
-          <div className="lg:col-span-7">
-            {/* Desktop / Tablet: sidebar + content */}
-            <div className="hidden gap-6 sm:grid sm:grid-cols-[220px_1fr] lg:grid-cols-[240px_1fr]">
-              <PaymentMethodSidebar
-                categories={paymentCategories}
-                activeId={activeCategory}
-                onSelect={setActiveCategory}
-              />
-
-              <div>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeCategory}
-                    initial={{ opacity: 0, x: 8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -8 }}
-                    transition={{ duration: 0.25, ease: "easeOut" }}
-                  >
-                    {renderCategoryContent(activeCategory)}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-
-            {/* Mobile: expandable accordions */}
-            <div className="space-y-2.5 sm:hidden">
-              {paymentCategories.map((cat) => {
-                const isOpen = openMobileAccordion === cat.id;
-                return (
+              return (
+                <button
+                  key={method.id}
+                  onClick={() => setPaymentMode(method.id as PaymentMode)}
+                  className={`relative flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition-all duration-200 ${isSelected
+                    ? "border-primary bg-primary/5 shadow-md"
+                    : "border-border bg-surface hover:border-primary/40"
+                    }`}
+                >
+                  {/* Icon Circle */}
                   <div
-                    key={cat.id}
-                    className="overflow-hidden rounded-2xl border border-border bg-surface"
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-colors ${isSelected ? "bg-primary text-background" : "bg-surface-dark text-muted"
+                      }`}
                   >
-                    <button
-                      onClick={() => setOpenMobileAccordion(isOpen ? null : cat.id)}
-                      className="flex w-full items-center justify-between px-4 py-4"
-                    >
-                      <span className="font-body text-[14px] font-semibold text-admin-text">
-                        {cat.label}
-                      </span>
-                      <motion.span
-                        animate={{ rotate: isOpen ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <ChevronDown className="h-4 w-4 text-muted" />
-                      </motion.span>
-                    </button>
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.25, ease: "easeOut" }}
-                          className="overflow-hidden"
-                        >
-                          <div className="px-4 pb-4">{renderCategoryContent(cat.id)}</div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <Icon className="h-6 w-6" />
                   </div>
-                );
-              })}
-            </div>
 
-            <div className="mt-6">
-              <GiftCardSection />
-            </div>
+                  {/* Text Content */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className={`font-body text-[16px] font-semibold ${isSelected ? "text-primary" : "text-heading"}`}>
+                        {method.label}
+                      </h3>
+                      {method?.badge && (
+                        <span className="rounded-full bg-rose-gold/15 px-2.5 py-0.5 font-body text-[10px] font-bold text-[#835240]">
+                          {method?.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1 font-body text-[13.5px] text-muted">
+                      {method.description}
+                    </p>
+                  </div>
+
+                  {/* Radio / Check Indicator */}
+                  <div className="shrink-0">
+                    {isSelected ? (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      >
+                        <CheckCircle2 className="h-6 w-6 text-primary" />
+                      </motion.div>
+                    ) : (
+                      <div className="h-6 w-6 rounded-full border-2 border-border" />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Right: Sticky Order Summary (30%) */}
-          {/* <aside className="lg:col-span-3 lg:sticky lg:top-6  shrink-0 sticky self-start" >
-            <div className="space-y-5 ">
-              <OrderSummary products={products} address={address} />
-              <PriceBreakdown breakdown={priceBreakdown} />
-              <CouponCard />
-              <TrustCard /> */}
-
-          {/* Desktop CTA */}
-          {/* <button
-                onClick={handleProceed}
-                disabled={isProcessing}
-                className="vyraaa-card-shadow-lifted hidden w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-body text-[15px] font-semibold text-background transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 lg:flex"
-              >
-                {isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
-                Proceed to Review →
-              </button>
-            </div>
-          </aside> */}
+          {/* Action Button */}
+          <div className="mt-8 pt-4">
+            <button
+              onClick={handleProceed}
+              disabled={isProcessing}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-body text-[16px] font-semibold text-background transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:pointer-events-none disabled:opacity-75"
+            >
+              {isProcessing ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                `Make Payment • ₹${priceBreakdown?.total?.toLocaleString("en-IN") || "0"}`
+              )}
+            </button>
+          </div>
         </div>
       </main>
-
-      {/* Mobile sticky CTA */}
-      <StickyCheckoutBar
-        total={priceBreakdown.total}
-        onProceed={handleProceed}
-        loading={isProcessing}
-      />
-
-      {/* <Footer/> */}
     </div>
   );
 }

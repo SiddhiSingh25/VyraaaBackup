@@ -6,7 +6,7 @@ const checkoutSteps = [
   // { label: "Cart", path: "/checkout/cart" },
   { label: "Address", path: "/checkout/address" },
   { label: "Payment", path: "/checkout/payment" },
-  { label: "Review", path: "/checkout/review" },
+  // { label: "Review", path: "/checkout/review" },
 ];
 
 export default function CheckoutStepper() {

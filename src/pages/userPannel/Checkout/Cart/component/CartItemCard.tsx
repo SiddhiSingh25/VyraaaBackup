@@ -2,80 +2,39 @@ import { motion } from "motion/react";
 import type { CartItem } from "./cart";
 import { discountPercent, formatINR } from "./pricing";
 import { IconClock, IconClose } from "./icons";
-import usePostQuery from "../../../../../hooks/postQuery.hook";
+import usePostQuery from "../../../../../hooks/getQuery.hook"; // Assuming generic hook usage
 import { apiUrls } from "../../../../../apis";
-import useGetQuery from "../../../../../hooks/getQuery.hook";
-import { useToast } from "../../../../../hooks/useToast.hook";
 import { useDispatch } from "react-redux";
-import {
-  removeFromCart,
-  clearCart,
-} from "../../../../../redux/slices/cartSlice";
+import { removeFromCart } from "../../../../../redux/slices/cartSlice";
 
 interface CartItemCardProps {
   item: CartItem;
-  onToggleSelect: (id: string) => void;
   onRemove: (id: string) => void;
   onMoveToWishlist: (id: string) => void;
-  onQtyChange: (id: string, qty: number) => void;
+  onQtyChange: (cartItemId: string, qty: number) => void;
   onRefreshCart: () => void;
 }
 
 const CartItemCard = ({
   item,
-  onToggleSelect,
   onRemove,
   onQtyChange,
-  onRefreshCart,
 }: CartItemCardProps) => {
-  // Now relies on dynamically updating MRP and Price from Redux
   const pct = discountPercent(item.mrp, item.price);
-
-  const { postQuery } = usePostQuery();
-  const { getQuery } = useGetQuery();
-  const { toast } = useToast();
   const dispatch = useDispatch();
 
+  // Availability Flags
+  const isAvailable = item.isAvailable !== false;
+  const isFewLeft = item.isFewLeft === true;
+
   const updateCart = (newQty: number) => {
-    // 1. Instantly update UI for snappy feedback
-    onQtyChange(item?.cartItemId || item?.id, newQty);
-
-    // 2. Sync to Backend silently
-    postQuery({
-      url: apiUrls.Cart.update,
-      postData: {
-        itemId: item.id,
-        quantity: newQty,
-      },
-      onSuccess: (res: any) => {
-        toast("success", "Quantity updated");
-        onRefreshCart();
-      },
-      onFail: (res: any) => {
-        console.log(res?.data);
-        toast("error", "Failed to update quantity");
-      },
-    });
+    const targetId = item?.cartItemId || item.id;
+    onQtyChange(targetId, newQty);
   };
 
-  const onMoveToWishlist = () => {
-    console.log("dgnjhg");
-  };
-
-  const removeCart = () => {
-    // Instantly hide it from UI
-    dispatch(removeFromCart(item?.cartItemId || item?.id));
-
-    getQuery({
-      url: apiUrls.Cart.remove + item?.cartItemId,
-      onSuccess: (res: any) => {
-        toast("success", res.message);
-        onRefreshCart();
-      },
-      onFail: (res: any) => {
-        console.log(res?.data);
-      },
-    });
+  const handleRemoveCart = () => {
+    const targetId = item?.cartItemId || item?.id;
+    dispatch(removeFromCart(targetId));
   };
 
   return (
@@ -85,11 +44,11 @@ const CartItemCard = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -24 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="relative rounded-lg border border-border bg-background p-4 sm:p-5"
+      className={`relative rounded-lg border border-border bg-background p-4 sm:p-5 ${!isAvailable ? "opacity-60 bg-gray-50" : ""}`}
     >
       <button
         type="button"
-        onClick={() => removeCart()}
+        onClick={handleRemoveCart}
         aria-label={`Remove ${item.name}`}
         className="absolute right-4 top-4 text-muted transition-colors hover:text-error"
       >
@@ -97,91 +56,71 @@ const CartItemCard = ({
       </button>
 
       <div className="flex gap-4 sm:gap-5">
-        <div className="flex flex-shrink-0 items-start gap-2.5">
+        <div className="relative flex flex-shrink-0 items-start gap-2.5">
           <img
             src={item.image}
             alt={item.name}
-            className="h-24 w-20 rounded-md object-cover sm:h-28 sm:w-24"
+            className={`h-24 w-20 rounded-md object-cover sm:h-28 sm:w-24 ${!isAvailable ? "grayscale" : ""}`}
           />
+          {!isAvailable && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
+              <span className="text-[10px] font-bold text-white uppercase tracking-wider">Out of Stock</span>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 min-w-0 pr-6">
-          <h3 className="font-heading text-base text-admin-text sm:text-lg">
+          <h3 className="font-heading text-base text-admin-text sm:text-lg font-semibold">
             {item.brand}
           </h3>
           <p className="mt-0.5 truncate font-body text-sm text-body">
             {item.name}
           </p>
-          <p className="mt-0.5 font-body text-xs text-muted">
-            Sold by: {item.soldBy}
-          </p>
+
+          {/* Stock Status Labels */}
+          {!isAvailable ? (
+            <p className="mt-1 font-body text-xs font-bold text-red-500">Currently Unavailable</p>
+          ) : isFewLeft ? (
+            <p className="mt-1 font-body text-xs font-bold text-orange-500">Hurry! Only a few left.</p>
+          ) : null}
 
           <div className="mt-3 flex flex-wrap items-center gap-2.5">
             <div className="flex items-center rounded border border-border bg-surface px-3 py-1.5 font-body text-xs font-medium text-heading">
               Size: {item.size}
             </div>
 
-            <div className="flex items-center gap-2 rounded-md border border-border bg-surface p-1">
-              <button
-                type="button"
-                disabled={item.qty <= 1}
-                onClick={() => updateCart(item.qty - 1)}
-                className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                -
-              </button>
-
-              <span className="w-4 text-center font-body text-xs font-medium text-heading">
-                {item.qty}
-              </span>
-
-              <button
-                type="button"
-                disabled={item.qty >= item.maxQty}
-                onClick={() => updateCart(item.qty + 1)}
-                className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                +
-              </button>
-            </div>
+            {/* Only show quantity counter if item is available */}
+            {isAvailable && (
+              <div className="flex items-center gap-2 rounded-md border border-border bg-surface p-1">
+                <button
+                  type="button"
+                  disabled={item.qty <= 1}
+                  onClick={() => updateCart(item.qty - 1)}
+                  className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:opacity-50"
+                >
+                  -
+                </button>
+                <span className="w-4 text-center font-body text-xs font-medium text-heading">
+                  {item.qty}
+                </span>
+                <button
+                  type="button"
+                  disabled={item.qty >= item.maxQty}
+                  onClick={() => updateCart(item.qty + 1)}
+                  className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:opacity-50"
+                >
+                  +
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Because Redux updates these, the UI will instantly reflect the math */}
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="font-heading text-lg text-admin-text">
+            <span className="font-heading text-lg text-admin-text font-bold">
               {formatINR(item.price)}
             </span>
-            <span className="font-body text-sm text-muted line-through">
-              {formatINR(item.mrp)}
-            </span>
-            <span className="font-body text-sm font-medium text-success">
-              {pct}% OFF
-            </span>
           </div>
-
-          <p className="mt-2 flex items-center gap-1 font-body text-xs text-muted">
-            <IconClock className="h-3.5 w-3.5" />
-            {item.returnDays} days return available
-          </p>
         </div>
-      </div>
-
-      <div className="mt-4 flex items-center gap-4 border-t border-border pt-3 text-xs font-semibold tracking-wide">
-        <button
-          type="button"
-          onClick={removeCart}
-          className="text-body transition-colors hover:text-error"
-        >
-          REMOVE
-        </button>
-        <span className="h-3.5 w-px bg-border" />
-        <button
-          type="button"
-          onClick={() => onMoveToWishlist(item.id)}
-          className="text-body transition-colors hover:text-primary"
-        >
-          MOVE TO WISHLIST
-        </button>
       </div>
     </motion.div>
   );
