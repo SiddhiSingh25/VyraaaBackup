@@ -33,6 +33,8 @@ import type { PaymentCategoryId } from "./types";
 import "./styles/theme.css";
 import Navbar from "../../../../components/Header/Navbar";
 import Footer from "../../../../components/Footer/Footer";
+import { useLocation } from "react-router-dom";
+
 export default function Payment() {
   const [activeCategory, setActiveCategory] = useState<PaymentCategoryId>("recommended");
   const [selectedOption, setSelectedOption] = useState<string>("cod-recommended");
@@ -40,6 +42,9 @@ export default function Payment() {
   const [openMobileAccordion, setOpenMobileAccordion] = useState<PaymentCategoryId | null>(
     "recommended"
   );
+
+  const location = useLocation();
+  console.log(location.state.from, "==========")
 
   const handleProceed = () => {
     setIsProcessing(true);
@@ -83,7 +88,7 @@ export default function Payment() {
               title="Credit / Debit Card"
               description="Visa · Mastercard · RuPay · American Express supported"
               selected
-              onSelect={() => {}}
+              onSelect={() => { }}
             />
             <CreditCardForm brands={cardBrands} />
           </div>
@@ -193,15 +198,15 @@ export default function Payment() {
           </div>
 
           {/* Right: Sticky Order Summary (30%) */}
-          <aside className="lg:col-span-3 lg:sticky lg:top-6  shrink-0 sticky self-start" >
+          {/* <aside className="lg:col-span-3 lg:sticky lg:top-6  shrink-0 sticky self-start" >
             <div className="space-y-5 ">
               <OrderSummary products={products} address={address} />
               <PriceBreakdown breakdown={priceBreakdown} />
               <CouponCard />
-              <TrustCard />
+              <TrustCard /> */}
 
-              {/* Desktop CTA */}
-              <button
+          {/* Desktop CTA */}
+          {/* <button
                 onClick={handleProceed}
                 disabled={isProcessing}
                 className="vyraaa-card-shadow-lifted hidden w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-body text-[15px] font-semibold text-background transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 lg:flex"
@@ -210,7 +215,7 @@ export default function Payment() {
                 Proceed to Review →
               </button>
             </div>
-          </aside>
+          </aside> */}
         </div>
       </main>
 

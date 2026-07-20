@@ -27,11 +27,7 @@ import {
   FaUsers,
   FaLayerGroup,
 } from "react-icons/fa";
-import {
-  FaProductHunt,
-  FaTags,
-  FaNetworkWired,
-} from "react-icons/fa6";
+import { FaProductHunt, FaTags, FaNetworkWired } from "react-icons/fa6";
 import useGetQuery from "../../hooks/getQuery.hook.ts";
 import { apiUrls } from "../../apis/index.ts";
 
@@ -268,8 +264,8 @@ export default function AdminLayout() {
           backdrop-blur-2xl transition-all duration-300 ease-in-out
           lg:sticky lg:top-0 lg:z-30 lg:translate-x-0
           ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-          ${isAsideExpanded ? "lg:w-[270px]" : "lg:w-[76px]"}
-          w-[290px] max-w-[86vw]
+          ${isAsideExpanded ? "lg:w-67.5" : "lg:w-19"}
+          w-72.5 max-w-[86vw]
         `}
       >
         <div className="border-b border-border/70 px-4 py-4">
@@ -284,7 +280,7 @@ export default function AdminLayout() {
                 ${isAsideExpanded ? "justify-start gap-3" : "justify-center"}
               `}
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-lg shadow-primary/25">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/70 shadow-lg shadow-primary/25">
                 <Bolt size={21} className="text-white" />
               </span>
 
@@ -337,7 +333,7 @@ export default function AdminLayout() {
             type="button"
             onClick={() => navigate("/admin/quick-add")}
             className={`
-              group flex w-full items-center rounded-2xl bg-gradient-to-r
+              group flex w-full items-center rounded-2xl bg-linear-to-r
               from-primary via-primary/90 to-primary/75 px-3 py-2.5 text-xs
               font-semibold uppercase tracking-[0.18em] text-white shadow-lg
               shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5
@@ -375,9 +371,10 @@ export default function AdminLayout() {
                           group flex w-full items-center rounded-2xl px-3 py-2.5
                           text-sm transition-all duration-200
                           ${isAsideExpanded ? "lg:justify-between" : "lg:justify-center"}
-                          ${isParentActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted hover:bg-card hover:"
+                          ${
+                            isParentActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted hover:bg-card hover:"
                           }
                         `}
                       >
@@ -391,9 +388,10 @@ export default function AdminLayout() {
                             className={`
                               flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
                               transition-all duration-200
-                              ${isParentActive
-                                ? "bg-primary text-white shadow-md shadow-primary/20"
-                                : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+                              ${
+                                isParentActive
+                                  ? "bg-primary text-white shadow-md shadow-primary/20"
+                                  : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                               }
                             `}
                           >
@@ -450,18 +448,20 @@ export default function AdminLayout() {
                                       className={`
                                         group relative flex w-full items-center gap-2 rounded-xl
                                         px-3 py-2 text-left text-xs transition-all duration-200
-                                        ${isSubActive
-                                          ? "bg-primary text-white shadow-sm shadow-primary/20"
-                                          : "text-muted hover:bg-card hover:"
+                                        ${
+                                          isSubActive
+                                            ? "bg-primary text-white shadow-sm shadow-primary/20"
+                                            : "text-muted hover:bg-card hover:"
                                         }
                                       `}
                                     >
                                       <span
                                         className={`
-                                          absolute -left-[17px] h-2.5 w-2.5 rounded-full border-2
-                                          ${isSubActive
-                                            ? "border-primary bg-white"
-                                            : "border-primary/40 bg-background"
+                                          absolute -left-4.25 h-2.5 w-2.5 rounded-full border-2
+                                          ${
+                                            isSubActive
+                                              ? "border-primary bg-white"
+                                              : "border-primary/40 bg-background"
                                           }
                                         `}
                                       />
@@ -500,10 +500,11 @@ export default function AdminLayout() {
                         group flex items-center rounded-2xl px-3 py-2.5 text-sm
                         transition-all duration-200
                         ${isAsideExpanded ? "lg:gap-3" : "lg:justify-center"}
-                        ${isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted hover:bg-card hover:"
-                      }
+                        ${
+                          isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted hover:bg-card hover:"
+                        }
                       `
                     }
                   >
@@ -513,9 +514,10 @@ export default function AdminLayout() {
                           className={`
                             flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
                             transition-all duration-200
-                            ${isActive
-                              ? "bg-primary text-white shadow-md shadow-primary/20"
-                              : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+                            ${
+                              isActive
+                                ? "bg-primary text-white shadow-md shadow-primary/20"
+                                : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                             }
                           `}
                         >

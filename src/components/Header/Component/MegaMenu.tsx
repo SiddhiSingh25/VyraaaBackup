@@ -63,6 +63,7 @@ export default function MegaMenu({ columns }: MegaMenuProps) {
                   <Link
                     key={link.label}
                     to={link.to}
+                    state={link.state}
                     className="
                       group/item
                       flex items-center justify-between

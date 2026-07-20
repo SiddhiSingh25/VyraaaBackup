@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Footer from "../../../components/Footer/Footer";
 import Navbar from "../../../components/Header/Navbar";
 import SuggestedProduct from "../Product/component/SuggestedProduct";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 
 import { C } from "./constants";
-import { pct } from "./utils";
 import type { ActiveChip, FilterState, FilterValue } from "./types";
 
 import Toolbar from "./components/Toolbar";
@@ -20,15 +19,61 @@ import MobileBottomBar from "./components/MobileBottomBar";
 import useGetQuery from "../../../hooks/getQuery.hook";
 import { apiUrls } from "../../../apis";
 
+const toSlug = (text: string) => {
+  return text ? text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") : "";
+};
+
 /* ============================================================================
    VYRAAA — Product Listing Page
    Production-ready, API-ready, fully data-driven filter architecture.
 ============================================================================ */
 
+const getInitialFilterState = (params: URLSearchParams): FilterState => {
+  const state: FilterState = {};
+
+  const checkAndSetSingle = (key: string) => {
+    const val = params.get(key);
+    if (val) state[key] = val;
+  };
+
+  const checkAndSetNumberArray = (key: string, param1: string, param2: string) => {
+    const p1 = params.get(param1);
+    const p2 = params.get(param2);
+    if (p1 && p2) {
+      state[key] = [Number(p1), Number(p2)];
+    }
+  };
+
+  checkAndSetSingle("category");
+  checkAndSetSingle("subCategory");
+  checkAndSetSingle("subcategoryType");
+  checkAndSetSingle("brand");
+  checkAndSetSingle("color");
+  checkAndSetSingle("gender");
+  checkAndSetSingle("size");
+  checkAndSetSingle("rating");
+  checkAndSetSingle("discount");
+  checkAndSetSingle("sort");
+
+  checkAndSetNumberArray("price", "minPrice", "maxPrice");
+
+  return state;
+};
+
 export default function ProductFilter() {
   const { getQuery } = useGetQuery();
-  const [filterState, setFilterState] = useState<FilterState>({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const categoryId = location?.state?.categoryId;
+  const subCategoryId = location?.state?.subCategoryId;
+
+  const filterState = useMemo(() =>
+    getInitialFilterState(searchParams),
+    [searchParams]
+  );
+
   const [activeChip, setActiveChip] = useState<string | null>(null);
+  const isInitialSyncDone = useRef(false);
   // const [wished, setWished] = useState<Record<string, boolean>>({});
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,10 +85,55 @@ export default function ProductFilter() {
   const [categories, setCategories] = useState<any[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
   const [colors, setColors] = useState<any[]>([]);
-  // const { category } = useParams();
-  const location = useLocation();
 
-  let categoryId = location?.state?.categoryId;
+  // Synchronize initial categoryId and subCategoryId from location state into URL search params
+  useEffect(() => {
+    if (isInitialSyncDone.current) return;
+
+    let initialCategory = location?.state?.categoryId
+    let initialSubCategory = location?.state?.subCategoryId;
+    let hasChanged = false;
+
+    if (initialCategory || initialSubCategory) {
+      isInitialSyncDone.current = true;
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        if (initialCategory && !next.get("category")) {
+          next.set("category", initialCategory);
+          hasChanged = true;
+        }
+        if (initialSubCategory && !next.get("subCategory")) {
+          next.set("subCategory", initialSubCategory);
+          hasChanged = true;
+        }
+        return hasChanged ? next : prev;
+      }, { replace: true, state: location.state });
+    }
+  }, [location?.state, setSearchParams]);
+
+  const handleFilterChange = useCallback((id: string, value: FilterValue) => {
+    setLoading(true);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value === null || value === undefined) {
+        next.delete(id);
+      } else if (id === "price" && Array.isArray(value)) {
+        next.set("minPrice", String(value[0]));
+        next.set("maxPrice", String(value[1]));
+      } else {
+        next.set(id, String(value));
+      }
+      return next;
+    }, { replace: true, state: location.state });
+    setPage(1);
+    setTimeout(() => setLoading(false), 350);
+  }, [setSearchParams, location.state]);
+
+  const clearAll = () => {
+    setSearchParams(new URLSearchParams(), { replace: true, state: location.state });
+    setActiveChip(null);
+    setPage(1);
+  };
 
   // useEffect(() => {
   //   setCategoryId(location.state?.categoryId);
@@ -78,9 +168,32 @@ export default function ProductFilter() {
     getColor();
   }, []);
 
+  const resolvedCategoryId = useMemo(() => {
+    const param = filterState["category"] || categoryId;
+    if (!param) return undefined;
+    if (/^[0-9a-fA-F]{24}$/.test(param)) return param;
+    const match = categories.find((c) => toSlug(c.category) === param || c._id === param);
+    return match?._id;
+  }, [filterState, categoryId, categories]);
+
+  const resolvedSubCategoryId = useMemo(() => {
+    const param = filterState["subCategory"] || subCategoryId;
+    if (!param) return undefined;
+    if (/^[0-9a-fA-F]{24}$/.test(param)) return param;
+    const match = subCategories.find((sc) => toSlug(sc.subCategory) === param || sc._id === param);
+    return match?._id;
+  }, [filterState, subCategoryId, subCategories]);
+
+  const activeCategoryId = resolvedCategoryId;
+
   useEffect(() => {
+    if (!activeCategoryId) {
+      setSubCategories([]);
+      return;
+    }
+    setSubCategories([])
     getQuery({
-      url: `${apiUrls.SubCategory.getByCategoryId}/${categoryId}`,
+      url: `${apiUrls.SubCategory.getByCategoryId}/${activeCategoryId}`,
       onSuccess: (res: any) => {
         setSubCategories(res.data || []);
       },
@@ -88,12 +201,58 @@ export default function ProductFilter() {
         console.error(res);
       },
     });
-  }, [categoryId]);
+  }, [activeCategoryId]);
+
+  const prevActiveCategoryIdRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (
+      prevActiveCategoryIdRef.current &&
+      activeCategoryId &&
+      prevActiveCategoryIdRef.current !== activeCategoryId
+    ) {
+      handleFilterChange("subCategory", null);
+      handleFilterChange("subcategoryType", null);
+    }
+    if (activeCategoryId) {
+      prevActiveCategoryIdRef.current = activeCategoryId;
+    }
+  }, [activeCategoryId, handleFilterChange]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    const isSyncPending = !isInitialSyncDone.current && (
+      location?.state?.categoryId ||
+      location?.state?.subCategoryId ||
+      location?.state?.fullCategoryData?.category ||
+      location?.state?.fullSubCategoryData?.subCategory
+    );
+
+    const categoryParam = filterState["category"] || categoryId;
+    const isCategorySlug = categoryParam && !/^[0-9a-fA-F]{24}$/.test(categoryParam);
+    const isCategoryUnresolved = isCategorySlug && !resolvedCategoryId;
+
+    const subCategoryParam = filterState["subCategory"] || subCategoryId;
+    const isSubCategorySlug = subCategoryParam && !/^[0-9a-fA-F]{24}$/.test(subCategoryParam);
+    const isSubCategoryUnresolved = isSubCategorySlug && !resolvedSubCategoryId;
+
+    if (isCategoryUnresolved || isSubCategoryUnresolved || isSyncPending) {
+      console.log("DEBUG: Product list fetch skipped", {
+        isCategoryUnresolved,
+        isSubCategoryUnresolved,
+        isSyncPending,
+      });
+      return;
+    }
+
     const params = new URLSearchParams();
     const urlParams = new URLSearchParams(location.search);
+
+    console.log("DEBUG: Product list fetch trigger", {
+      resolvedCategoryId,
+      resolvedSubCategoryId,
+      filterState,
+    });
 
     if (page) params.append("page", String(page));
     params.append("limit", "20");
@@ -103,35 +262,35 @@ export default function ProductFilter() {
     if (searchVal) params.append("search", searchVal);
 
     // 2. category
-    const categoryVal =
-      filterState["category"] || categoryId || urlParams.get("category");
-    if (categoryVal) {
-      if (Array.isArray(categoryVal) && categoryVal.length > 0) {
-        params.append("category", categoryVal.join(","));
-      } else if (typeof categoryVal === "string") {
-        params.append("category", categoryVal);
-      }
+    if (resolvedCategoryId) {
+      params.append("category", resolvedCategoryId);
     }
 
     // 3. subCategory
-    const subCategoryVal =
-      filterState["subCategory"] || urlParams.get("subCategory");
-    if (subCategoryVal) {
-      if (Array.isArray(subCategoryVal) && subCategoryVal.length > 0) {
-        params.append("subCategory", subCategoryVal.join(","));
-      } else if (typeof subCategoryVal === "string") {
-        params.append("subCategory", subCategoryVal);
-      }
+    if (resolvedSubCategoryId) {
+      params.append("subCategory", resolvedSubCategoryId);
     }
 
     // 4. subcategoryType
-    const subcategoryTypeVal = urlParams.get("subcategoryType");
-    if (subcategoryTypeVal)
-      params.append("subcategoryType", subcategoryTypeVal);
+    const subcategoryTypeVal =
+      filterState["subcategoryType"] || urlParams.get("subcategoryType");
+    if (subcategoryTypeVal) {
+      if (Array.isArray(subcategoryTypeVal) && subcategoryTypeVal.length > 0) {
+        params.append("subcategoryType", subcategoryTypeVal.join(","));
+      } else if (typeof subcategoryTypeVal === "string") {
+        params.append("subcategoryType", subcategoryTypeVal);
+      }
+    }
 
     // 5. brand
-    const brandVal = urlParams.get("brand");
-    if (brandVal) params.append("brand", brandVal);
+    const brandVal = filterState["brand"] || urlParams.get("brand");
+    if (brandVal) {
+      if (Array.isArray(brandVal) && brandVal.length > 0) {
+        params.append("brand", brandVal.join(","));
+      } else if (typeof brandVal === "string") {
+        params.append("brand", brandVal);
+      }
+    }
 
     // 6. color
     const colorVal = filterState["color"] || urlParams.get("color");
@@ -143,9 +302,29 @@ export default function ProductFilter() {
       }
     }
 
+    // 7. gender
+    const genderVal = filterState["gender"] || urlParams.get("gender");
+    if (genderVal) {
+      if (Array.isArray(genderVal) && genderVal.length > 0) {
+        params.append("gender", genderVal.join(","));
+      } else if (typeof genderVal === "string") {
+        params.append("gender", genderVal);
+      }
+    }
+
+    // 8. size
+    const sizeVal = filterState["size"] || urlParams.get("size");
+    if (sizeVal) {
+      if (Array.isArray(sizeVal) && sizeVal.length > 0) {
+        params.append("size", sizeVal.join(","));
+      } else if (typeof sizeVal === "string") {
+        params.append("size", sizeVal);
+      }
+    }
+
     // 9. minPrice & maxPrice
     const priceVal = filterState["price"];
-    if (priceVal && Array.isArray(priceVal)) {
+    if (priceVal && Array.isArray(priceVal) && priceVal.length === 2) {
       params.append("minPrice", String(priceVal[0]));
       params.append("maxPrice", String(priceVal[1]));
     } else {
@@ -172,10 +351,18 @@ export default function ProductFilter() {
       }
     }
 
+    // 12. sort
+    const sortVal = filterState["sort"] || urlParams.get("sort");
+    if (sortVal) {
+      params.append("sort", String(sortVal));
+    }
+
     const queryString = params.toString();
     const finalUrl = queryString
       ? `${apiUrls.Product.home}?${queryString}`
       : apiUrls.Product.home;
+
+    console.log("FETCH_TRIGGER: calling API with url:", finalUrl);
 
     getQuery({
       url: finalUrl,
@@ -222,18 +409,67 @@ export default function ProductFilter() {
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterState, page, categoryId, location.search]);
+  }, [resolvedCategoryId, resolvedSubCategoryId, page, location.search]);
 
-  const handleFilterChange = useCallback((id: string, value: FilterValue) => {
-    setLoading(true);
-    setFilterState((prev) => ({ ...prev, [id]: value }));
-    setTimeout(() => setLoading(false), 350);
-  }, []);
+  const activeChips = useMemo((): ActiveChip[] => {
+    const chips: ActiveChip[] = [];
 
-  const clearAll = () => {
-    setFilterState({});
-    setActiveChip(null);
-  };
+    const getOptionLabel = (options: any[], val: string) => {
+      const match = options.find((o) => o._id === val || toSlug(o.category || o.subCategory) === val);
+      return match ? (match.category || match.subCategory || match.colorFamily || match.brand || val) : val;
+    };
+
+    Object.entries(filterState).forEach(([key, value]) => {
+      if (!value) return;
+
+      if (key === "price") {
+        const range = value as [number, number];
+        if (range[0] > 0 || range[1] < 10000) {
+          chips.push({
+            key: `price-${range[0]}-${range[1]}`,
+            label: `₹${range[0]} - ₹${range[1]}`,
+            sectionId: "price",
+            remove: null,
+          });
+        }
+        return;
+      }
+
+      if (key === "sort" || key === "search" || key === "page") return;
+
+      let label = String(value);
+      if (key === "category") {
+        label = getOptionLabel(categories, String(value));
+      } else if (key === "subCategory") {
+        label = getOptionLabel(subCategories, String(value));
+      } else if (key === "color") {
+        label = getOptionLabel(colors, String(value));
+      } else if (key === "rating") {
+        label = `${value} Stars & above`;
+      } else if (key === "discount") {
+        label = `${value}% & above`;
+      } else if (key === "size") {
+        label = `Size: ${value}`;
+      } else if (key === "brand") {
+        label = `Brand: ${value}`;
+      } else if (key === "gender") {
+        label = `Gender: ${value}`;
+      }
+
+      chips.push({
+        key: `${key}-${value}`,
+        label: label,
+        sectionId: key,
+        remove: String(value),
+      });
+    });
+
+    return chips;
+  }, [filterState, categories, subCategories, colors]);
+
+  const removeChip = useCallback((chip: ActiveChip) => {
+    handleFilterChange(chip.sectionId, null);
+  }, [handleFilterChange]);
 
   return (
     <div
@@ -250,14 +486,14 @@ export default function ProductFilter() {
 
       <Navbar />
 
-      {/* <Toolbar
-        activeCount={8}
+      <Toolbar
+        activeCount={activeChips.length}
         onClearAll={clearAll}
         onOpenFilter={() => setFilterDrawerOpen(true)}
         count={productData.length}
         activeChips={activeChips}
         onRemoveChip={removeChip}
-      /> */}
+      />
 
       <div className=" px-4 md:px-8 flex gap-8 py-3 md:py-5">
         {/* Desktop sidebar */}
@@ -306,10 +542,10 @@ export default function ProductFilter() {
                 <ProductCard
                   key={p?.id}
                   product={p}
-                  // wished={!!wished[p.id]}
-                  // onToggleWish={(id) =>
-                  //   setWished((w) => ({ ...w, [id]: !w[id] }))
-                  // }
+                // wished={!!wished[p.id]}
+                // onToggleWish={(id) =>
+                //   setWished((w) => ({ ...w, [id]: !w[id] }))
+                // }
                 />
               ))
             ) : (
@@ -329,7 +565,7 @@ export default function ProductFilter() {
 
       <MobileBottomBar
         onFilter={() => setFilterDrawerOpen(true)}
-        // activeCount={activeCount}
+      // activeCount={activeCount}
       />
       <FilterDrawer
         open={filterDrawerOpen}

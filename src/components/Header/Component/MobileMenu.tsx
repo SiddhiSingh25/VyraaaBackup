@@ -71,6 +71,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
                 <div className="flex items-center justify-between">
                   <Link
                     to={link.to}
+                    state={link.state}
                     onClick={() => !hasChildren && onClose()}
                     className="flex-1 py-4 px-5 text-[13px] font-medium tracking-[0.12em] uppercase text-admin-text/90"
                   >
@@ -106,6 +107,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
                               <Link
                                 key={child.label}
                                 to={child.to}
+                                state={child.state}
                                 onClick={onClose}
                                 className="text-[13px] text-admin-text/70 hover:text-primary-dark transition-colors duration-200"
                               >

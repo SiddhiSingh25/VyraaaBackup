@@ -3,9 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import { Heart, ShoppingBag, User, Menu } from "lucide-react";
 import SearchBar from "./Component/SearchBar";
 import MegaMenu from "./Component/MegaMenu";
-import { NAV_LINKS } from "./Component/navData";
 import MobileMenu from "./Component/MobileMenu";
 import { useSelector } from "react-redux";
+import useGetQuery from "@/hooks/getQuery.hook";
+import { apiUrls } from "@/apis";
 
 interface NavbarProps {
   wishlistCount?: number;
@@ -40,6 +41,11 @@ function Badge({ count, pulse }: { count: number; pulse: boolean }) {
   );
 }
 
+
+const toSlug = (text: string) => {
+  return text?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+};
+
 export default function Navbar({
   wishlistCount = 0,
   cartCount = 0,
@@ -48,12 +54,15 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  let {user}  = useSelector((state : any)=>state.auth)
+  let { user } = useSelector((state: any) => state.auth);
 
-
+  let { getQuery } = useGetQuery();
 
   const cartItems = useSelector((state: any) => state.cart.items || []);
-  const calculatedCartCount = cartItems.reduce((acc: number, item: any) => acc + (item.quantity || item.qty || 1), 0);
+  const calculatedCartCount = cartItems.reduce(
+    (acc: number, item: any) => acc + (item.quantity || item.qty || 1),
+    0,
+  );
 
   const cartPulse = useBadgePulse(calculatedCartCount);
   const wishlistPulse = useBadgePulse(wishlistCount);
@@ -63,6 +72,107 @@ export default function Navbar({
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+
+  const [navLinks, setNavLinks] = useState([])
+
+  // Fetch Categories and Subcategories on mount
+  useEffect(() => {
+    const fetchNavData = () => {
+      getQuery({
+        url: `${apiUrls.Category.getAll}`,
+        onSuccess: (catRes: any) => {
+          const fetchedCategories = catRes.data || [];
+
+          // Split categories
+          const firstThree = fetchedCategories.slice(0, 3);
+          const remaining = fetchedCategories.slice(3);
+
+          // 1. Build initial links for first 3 categories
+          const initialLinks = firstThree.map((cat: any) => ({
+            id: cat._id,
+            label: cat.category,
+            to: `/${toSlug(cat.category)}`,
+            state: {
+              categoryId: cat._id,
+              fullCategoryData: cat,
+            },
+            columns: [
+              {
+                title: "Shop By Category",
+                links: [],
+              },
+            ],
+          }));
+
+          // 2. Build remaining categories for the "More" dropdown
+          const exploredLinks = [
+            ...remaining.map((cat: any) => ({
+              label: cat.category,
+              to: `/${toSlug(cat.category)}`,
+              state: {
+                categoryId: cat._id,
+                fullCategoryData: cat,
+              },
+            })),
+          ];
+
+          const moreItem = {
+            id: "more",
+            label: "More",
+            to: "/clothing",
+            columns: [
+              {
+                title: "Explore",
+                links: exploredLinks,
+              },
+            ],
+          };
+
+          const allLinks = [...initialLinks, moreItem];
+          setNavLinks(allLinks);
+
+          // 3. Fetch subcategories only for the first 3 categories
+          firstThree.forEach((cat: any) => {
+            getQuery({
+              url: `${apiUrls.SubCategory.getByCategoryId}/${cat._id}`,
+              onSuccess: (subRes: any) => {
+                const subCategories = subRes.data || [];
+
+                setNavLinks((prevLinks) =>
+                  prevLinks.map((link) => {
+                    if (link.id === cat._id) {
+                      return {
+                        ...link,
+                        columns: [
+                          {
+                            ...link.columns[0],
+                            links: subCategories.map((sub: any) => ({
+                              label: sub.subCategory,
+                              to: `${link.to}/${toSlug(sub.subCategory)}`,
+                              state: {
+                                categoryId: cat._id,
+                                subCategoryId: sub._id,
+                                fullCategoryData: cat,
+                                fullSubCategoryData: sub,
+                              },
+                            })),
+                          },
+                        ],
+                      };
+                    }
+                    return link;
+                  })
+                );
+              },
+            });
+          });
+        },
+      });
+    };
+
+    fetchNavData();
   }, []);
 
   return (
@@ -95,13 +205,14 @@ export default function Navbar({
 
           <div className="gap-6 xl:gap-8 flex items-center">
             <nav className="flex items-center gap-7 xl:gap-8 shrink-0">
-              {NAV_LINKS.map((link) => {
+              {navLinks.map((link) => {
                 const active =
                   link.to !== "/" && location.pathname.startsWith(link.to);
                 return (
                   <div key={link.label} className="relative group">
                     <Link
                       to={link.to}
+                      state={link.state}
                       className="relative py-2 block text-[11px] font-medium tracking-[0.16em] uppercase text-admin-text/85
                       hover:text-primary-dark transition-colors duration-250"
                     >
@@ -128,15 +239,14 @@ export default function Navbar({
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
               <Link
-                to="/checkout/cart"
+                to="/cart"
                 className="relative text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <ShoppingBag size={19} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
               <Link
-                to={user.role =="admin" ? "/admin" : "/profile"  }
-
+                to={user?.role == "admin" ? "/admin" : "/profile"}
                 className="text-admin-text/80 hover:text-primary-dark hover:scale-110 transition-all duration-200"
               >
                 <User size={19} strokeWidth={1.6} />
@@ -170,7 +280,7 @@ export default function Navbar({
                 <Heart size={20} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
-              <Link to="/checkout/cart" className="relative text-admin-text/80">
+              <Link to="/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
@@ -209,7 +319,7 @@ export default function Navbar({
                 <Heart size={20} strokeWidth={1.6} />
                 <Badge count={wishlistCount} pulse={wishlistPulse} />
               </Link>
-              <Link to="/checkout/cart" className="relative text-admin-text/80">
+              <Link to="/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
@@ -224,7 +334,7 @@ export default function Navbar({
       <MobileMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
-        links={NAV_LINKS}
+        links={navLinks}
       />
     </>
   );

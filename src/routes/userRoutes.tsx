@@ -74,6 +74,10 @@ export const userRoutes = [
     element: <ProductFilter />,
   },
   {
+    path: "/:id/:subId",
+    element: <ProductFilter />,
+  },
+  {
     path: "/productDetails/:id",
     element: <ProductDetails />,
   },
@@ -84,6 +88,10 @@ export const userRoutes = [
   {
     element: <ProtectedRoute allowedRoles={["user", "admin"]} />,
     children: [
+      {
+        path: "cart",
+        element: <Cart />,
+      },
       {
         path: "/profile",
         element: <Profile />,
@@ -96,10 +104,6 @@ export const userRoutes = [
         path: "/checkout",
         element: <CheckoutLayout />,
         children: [
-          {
-            path: "cart",
-            element: <Cart />,
-          },
           {
             path: "address",
             element: <AddNewAddress />,

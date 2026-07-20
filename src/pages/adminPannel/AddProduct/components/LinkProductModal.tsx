@@ -110,9 +110,9 @@ const ProductAddedModal = ({ open, onClose, onLink, product }: Props) => {
             Done
           </Button>
 
-          <Button type="button" variant="primary" onClick={onLink}>
+          {/* <Button type="button" variant="primary" onClick={onLink}>
             Link Similar Products
-          </Button>
+          </Button> */}
         </div>
       </div>
     </Modal>

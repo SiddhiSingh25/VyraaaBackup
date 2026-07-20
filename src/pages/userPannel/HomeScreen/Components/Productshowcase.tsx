@@ -64,7 +64,7 @@ export default function ProductShowcase() {
       },
       onFail: (res: any) => {
         console.log(res);
-      }
+      },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNum, limit, gender, selectedCategory]);
@@ -76,7 +76,6 @@ export default function ProductShowcase() {
   return (
     <section className="bg-surface/50 py-10">
       <div className="px-5 sm:px-10 lg:px-20 ">
-
         <h2 className="font-serif text-center mb-8 font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
           Categories
         </h2>
@@ -132,12 +131,14 @@ export default function ProductShowcase() {
             <button
               key={cat?._id}
               onClick={() => {
-                const routeParam = cat?.category?.toLowerCase().replace(/\s+/g, '-');
+                const routeParam = cat?.category
+                  ?.toLowerCase()
+                  .replace(/\s+/g, "-");
                 navigate(`/${routeParam}`, {
                   state: {
                     categoryId: cat?._id,
-                    fullCategoryData: cat
-                  }
+                    fullCategoryData: cat,
+                  },
                 });
               }}
               className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4 flex-shrink-0"
@@ -166,7 +167,6 @@ export default function ProductShowcase() {
           ))}
         </div>
 
-
         {/* Gender tabs */}
         {/* <div className="flex justify-center mb-8">
           <div className="flex bg-card rounded-full p-1 gap-0.5 border border-heading/10">
@@ -174,10 +174,11 @@ export default function ProductShowcase() {
               key={"ALL"}
               onClick={() => handleGender("")}
               className={`text-[11px] font-medium tracking-[0.18em] uppercase px-5 py-2 rounded-full transition-all duration-200 flex items-center justify-center
-                  ${"" === gender
-                  ? "bg-dark text-gray-50 shadow-sm font-bold"
-                  : "text-admin-text/90 hover:text-admin-text font-semibold"
-                }`}
+                  ${
+                    "" === gender
+                      ? "bg-dark text-gray-50 shadow-sm font-bold"
+                      : "text-admin-text/90 hover:text-admin-text font-semibold"
+                  }`}
             >
               All
             </button>
@@ -186,9 +187,10 @@ export default function ProductShowcase() {
                 key={g}
                 onClick={() => handleGender(g)}
                 className={`text-[11px] font-medium tracking-[0.18em] uppercase px-5 py-2 rounded-full transition-all duration-200 flex items-center justify-center
-                  ${g === gender
-                    ? "bg-dark text-gray-50 shadow-sm font-bold"
-                    : "text-admin-text/90 hover:text-admin-text font-semibold"
+                  ${
+                    g === gender
+                      ? "bg-dark text-gray-50 shadow-sm font-bold"
+                      : "text-admin-text/90 hover:text-admin-text font-semibold"
                   }`}
               >
                 {g}
@@ -212,8 +214,6 @@ export default function ProductShowcase() {
 
         <div className="text-center mt-10">
           <Link
-
-
             to="/all-product"
             className="inline-block border border-heading/30 text-admin-text px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-heading hover:text-white transition-all duration-400"
           >
