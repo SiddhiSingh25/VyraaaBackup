@@ -1,5 +1,6 @@
 import { apiUrls } from "@/apis";
 import useGetQuery from "@/hooks/getQuery.hook";
+import usePostQuery from "@/hooks/postQuery.hook";
 import {
   ArrowLeft,
   Calendar,
@@ -17,33 +18,52 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const orderStatuses = [
   "Pending",
+  "Accepted",
   "Processing",
-  "Packed",
   "Shipped",
-  "Out for Delivery",
+  "In-Transit",
   "Delivered",
   "Cancelled",
 ];
 
 const getBadgeColor = (status: string) => {
   switch (status) {
+    case "Pending":
+      return "bg-yellow-100 text-yellow-800";
+
+    case "Accepted":
+      return "bg-sky-100 text-sky-700";
+
+    case "Processing":
+      return "bg-orange-100 text-orange-700";
+
+    case "Shipped":
+      return "bg-indigo-100 text-indigo-700";
+
+    case "In-Transit":
+      return "bg-blue-100 text-blue-700";
+
     case "Delivered":
       return "bg-green-100 text-green-700";
 
     case "Cancelled":
       return "bg-red-100 text-red-700";
 
-    case "Pending":
-      return "bg-yellow-100 text-yellow-700";
+    case "Return Requested":
+      return "bg-purple-100 text-purple-700";
+
+    case "Refunded":
+      return "bg-emerald-100 text-emerald-700";
 
     default:
-      return "bg-[#F6ECE5] text-[#8B5E49]";
+      return "bg-gray-100 text-gray-700";
   }
 };
 
 const OrderDetails = () => {
   const navigate = useNavigate();
   const { getQuery } = useGetQuery();
+  const { postQuery } = usePostQuery();
   const { id } = useParams();
   console.log("order id ", id);
   const [order, setOrder] = useState<any>(null);
@@ -70,6 +90,19 @@ const OrderDetails = () => {
   useEffect(() => {
     GetOrderById();
   }, []);
+
+  const handleUpdate = async () => {
+    postQuery({
+      url: apiUrls.Orders.updateOrderStatus,
+      postData: { orderId: id, status: selectedStatus },
+      onSuccess: (res: any) => {
+        GetOrderById();
+      },
+      onFail: (err: any) => {
+        console.log(err, "Error fetching categories");
+      },
+    });
+  };
 
   if (!order) {
     return (
@@ -161,9 +194,7 @@ const OrderDetails = () => {
 
             {showConfirm && (
               <button
-                onClick={() => {
-                  console.log(selectedStatus);
-                }}
+                onClick={() => handleUpdate()}
                 className="rounded-lg bg-[#7B523B] px-4 py-2 text-sm font-medium text-white hover:bg-[#684534]"
               >
                 Update
@@ -260,7 +291,7 @@ const OrderDetails = () => {
                   <p className="text-xs text-slate-500">Phone Number</p>
 
                   <p className="font-medium text-[#3F322B]">
-                    {order.shippingAddress.phoneNumber}
+                    {order.shippingAddress?.phoneNumber}
                   </p>
                 </div>
               </div>
@@ -296,7 +327,7 @@ const OrderDetails = () => {
                 <p className="text-xs text-slate-500">Full Name</p>
 
                 <p className="mt-1 font-medium text-[#3F322B]">
-                  {order.shippingAddress.fullName}
+                  {order.shippingAddress?.fullName}
                 </p>
               </div>
 
@@ -304,7 +335,7 @@ const OrderDetails = () => {
                 <p className="text-xs text-slate-500">Phone Number</p>
 
                 <p className="mt-1 font-medium text-[#3F322B]">
-                  {order.shippingAddress.phoneNumber}
+                  {order.shippingAddress?.phoneNumber}
                 </p>
               </div>
 
@@ -312,8 +343,9 @@ const OrderDetails = () => {
                 <p className="text-xs text-slate-500">Address</p>
 
                 <p className="mt-1 font-medium text-[#3F322B]">
-                  {order.shippingAddress.streetAddress},{" "}
-                  {order.shippingAddress.town}, {order.shippingAddress.landmark}
+                  {order.shippingAddress?.streetAddress},{" "}
+                  {order.shippingAddress?.town},{" "}
+                  {order.shippingAddress?.landmark}
                 </p>
               </div>
 
@@ -321,7 +353,7 @@ const OrderDetails = () => {
                 <p className="text-xs text-slate-500">City</p>
 
                 <p className="mt-1 font-medium text-[#3F322B]">
-                  {order.shippingAddress.city}
+                  {order.shippingAddress?.city}
                 </p>
               </div>
 
@@ -329,7 +361,7 @@ const OrderDetails = () => {
                 <p className="text-xs text-slate-500">State</p>
 
                 <p className="mt-1 font-medium text-[#3F322B]">
-                  {order.shippingAddress.state}
+                  {order.shippingAddress?.state}
                 </p>
               </div>
 
@@ -337,7 +369,7 @@ const OrderDetails = () => {
                 <p className="text-xs text-slate-500">Country</p>
 
                 <p className="mt-1 font-medium text-[#3F322B]">
-                  {order.shippingAddress.country}
+                  {order.shippingAddress?.country}
                 </p>
               </div>
 
@@ -345,7 +377,7 @@ const OrderDetails = () => {
                 <p className="text-xs text-slate-500">Pin Code</p>
 
                 <p className="mt-1 font-medium text-[#3F322B]">
-                  {order.shippingAddress.pinCode}
+                  {order.shippingAddress?.pinCode}
                 </p>
               </div>
             </div>
