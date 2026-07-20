@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   Calendar,
+  ChevronDown,
   CreditCard,
   Mail,
   MapPin,
@@ -9,7 +10,18 @@ import {
   ShoppingBag,
   User,
 } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+const orderStatuses = [
+  "Pending",
+  "Processing",
+  "Packed",
+  "Shipped",
+  "Out for Delivery",
+  "Delivered",
+  "Cancelled",
+];
 
 const dummyOrder = {
   _id: "6a5b4c759ebfa4e28e231d61",
@@ -96,6 +108,9 @@ const OrderDetails = () => {
   const navigate = useNavigate();
 
   const order = dummyOrder;
+  const [selectedStatus, setSelectedStatus] = useState(order.orderStatus);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <div className="h-screen bg-slate-50 font-admin-text text-slate-900">
@@ -119,13 +134,75 @@ const OrderDetails = () => {
             </p>
           </div>
 
-          <span
-            className={`rounded-md px-4 py-2 text-sm font-semibold ${getBadgeColor(
-              order.orderStatus,
-            )}`}
-          >
-            {order.orderStatus}
-          </span>
+          <div className="flex items-center gap-3">
+            {/* Current Status */}
+
+            <span
+              className={`rounded-md px-3 py-2 text-sm font-semibold ${getBadgeColor(
+                order.orderStatus,
+              )}`}
+            >
+              {order.orderStatus}
+            </span>
+
+            {/* Status Dropdown */}
+
+            <div className="relative w-56">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex h-10 w-full items-center justify-between rounded-lg border border-[#E3D3C4] bg-white px-3 text-sm text-[#5E4637] transition hover:border-[#8B5E49]"
+              >
+                <span>{selectedStatus}</span>
+
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    showDropdown ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {showDropdown && (
+                <div className="absolute left-0 top-11 z-20 w-full overflow-hidden rounded-xl border border-[#E3D3C4] bg-[#FFF8F2] shadow-lg">
+                  {orderStatuses.map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => {
+                        setSelectedStatus(status);
+                        setShowDropdown(false);
+                        setShowConfirm(status !== order.orderStatus);
+                      }}
+                      className={`flex w-full items-center justify-between px-4 py-3 text-left text-sm transition hover:bg-[#F6ECE5]
+            ${
+              selectedStatus === status
+                ? "bg-[#F6ECE5] font-semibold text-[#7B523B]"
+                : "text-[#5E4637]"
+            }`}
+                    >
+                      {status}
+
+                      {selectedStatus === status && (
+                        <div className="h-2 w-2 rounded-full bg-[#7B523B]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Update Button */}
+
+            {showConfirm && (
+              <button
+                onClick={() => {
+                  console.log(selectedStatus);
+                }}
+                className="rounded-lg bg-[#7B523B] px-4 py-2 text-sm font-medium text-white hover:bg-[#684534]"
+              >
+                Update
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Summary */}
