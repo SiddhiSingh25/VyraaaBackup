@@ -138,4 +138,8 @@ export const apiUrls = {
     getByUserId: "address/get",
     getByAddressId: "address/get-address",
   },
+
+  Search  : {
+    search  : "/api/product/home?page=1&limit=20&search=shirt&category=6a562a2f017a6045e6d99798&subCategory=6a563078251f4bd09af5db0b&subcategoryType=6a5636245a2f60df17a92d5a&brand=6a562f697cf2727ab9a41b0f&color=6a4748006effd9022addc50b&gender=Men&size=6a474523860ccf879fb4a414&minPrice=300&maxPrice=600&rating=4&discount=10&sort=priceLowHigh"
+  }
 };

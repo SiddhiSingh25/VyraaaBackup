@@ -65,6 +65,8 @@ import { Search } from "lucide-react";
 import { SearchModal } from "./search/SearchModal";
 import { getAllProducts } from "./search/mock-products";
 import type { Product } from "./search/search";
+import useGetQuery from "@/hooks/getQuery.hook";
+import { apiUrls } from "@/apis";
 
 
 interface SearchBarProps {
@@ -88,10 +90,57 @@ export default function SearchBar({
   const isMobile = variant === "mobile";
   const isActive = focused || isOpen;
 
+  let  { getQuery} = useGetQuery()
+
   const catalogue = products ?? getAllProducts();
 
   function openModal() {
     setIsOpen(true);
+  }
+
+  const handleSearch  = ()=>{
+      getQuery({
+      url: apiUrls.Search.search,
+      onSuccess: (res: any) => {
+        if (res.success && Array.isArray(res.data)) {
+          const formattedProducts = res.data.map((item: any) => {
+            // 1. Safely extract the first available price object
+            const basePrice =
+              item.price && item.price.length > 0 ? item.price[0] : null;
+
+            // 2. Generate badges dynamically based on API flags
+            const badges: string[] = [];
+            if (basePrice?.isFewLeft) {
+              badges.push("Only Few Left");
+            }
+            if (!basePrice?.isAvailable) {
+              // Example condition for "Premium"
+              badges.push("Not Available");
+            }
+
+            // 3. Return strictly typed object for ProductCard
+            return {
+              id: item._id,
+              name: item.title,
+              img: item.image,
+              img2: item.image, // Fallback to same image since API doesn't provide img2
+              brand: item.brand?.brand || "Vyraa", // Safe check, fallback if missing
+              price: basePrice ? basePrice.amount : 0, // Must be a number for money()
+              mrp: basePrice ? basePrice.markupPrice : 0, // Must be a number for pct()
+              rating: item.averageRating || item.rating || 4.5,
+              reviews: 120, // Fallback: Not in API
+              badges: badges,
+              size: basePrice ? basePrice.size._id : null,
+              sizeName: basePrice ? basePrice.size.size : null,
+            };
+          });
+          
+        }
+      },
+      onFail: (res: any) => {
+        console.log(res);
+      },
+    });
   }
 
   return (

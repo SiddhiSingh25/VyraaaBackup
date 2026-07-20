@@ -11,7 +11,6 @@ export interface FilterSectionProps {
   onChange: FilterChangeHandler;
 }
 
-const LIGHT_SWATCH_VALUES = ["white", "ivory", "gold", "beige", "mustard", "pink"];
 
 export default function FilterSection({
   section,
