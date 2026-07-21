@@ -6,9 +6,10 @@ import { apiUrls } from "@/apis";
 interface Props {
   open: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-const AddVideoModal = ({ open, onClose }: Props) => {
+const AddVideoModal = ({ open, onClose, onSuccess }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [video, setVideo] = useState<File | null>(null);
@@ -66,7 +67,7 @@ const AddVideoModal = ({ open, onClose }: Props) => {
           videoUrl,
         },
       });
-
+      onSuccess();
       // Reset State
       setVideo(null);
       setPreview("");

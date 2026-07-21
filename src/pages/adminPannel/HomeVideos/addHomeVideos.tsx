@@ -198,6 +198,10 @@ const AddHomeVideos = () => {
         <AddVideoModal
           open={showAddModal}
           onClose={() => setShowAddModal(false)}
+          onSuccess={() => {
+            setShowAddModal(false);
+            getVideos();
+          }}
         />
 
         <DeleteVideoModal
