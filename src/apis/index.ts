@@ -110,6 +110,7 @@ export const apiUrls = {
     getByUserId: "cart/getByUserId",
     update: "/cart/update",
     remove: "/cart/remove/",
+    order: "/cart/createOrder"
   },
 
   WishList: {

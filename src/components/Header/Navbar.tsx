@@ -48,21 +48,19 @@ const toSlug = (text: string) => {
 
 export default function Navbar({
   wishlistCount = 0,
-  cartCount = 0,
 }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  let { user } = useSelector((state: any) => state.auth);
+  const { user } = useSelector((state: any) => state.auth);
 
   let { getQuery } = useGetQuery();
 
-  const cartItems = useSelector((state: any) => state.cart.items || []);
-  const calculatedCartCount = cartItems.reduce(
-    (acc: number, item: any) => acc + (item.quantity || item.qty || 1),
-    0,
-  );
+
+  // 1. DIRECTLY PULL TOTAL ITEMS FROM REDUX!
+  // No need for .reduce() anymore, our slice handles this perfectly.
+  const calculatedCartCount = useSelector((state: any) => state.cart.totalItems || 0);
 
   const cartPulse = useBadgePulse(calculatedCartCount);
   const wishlistPulse = useBadgePulse(wishlistCount);
@@ -304,7 +302,7 @@ export default function Navbar({
             >
               <Menu size={22} strokeWidth={1.6} />
             </button>
-            <Link to="/" className="  justify-self-center flex items-center">
+            <Link to="/" className=" justify-self-center flex items-center">
               <img
                 src="/logo.png"
                 alt="VYRAAA"
