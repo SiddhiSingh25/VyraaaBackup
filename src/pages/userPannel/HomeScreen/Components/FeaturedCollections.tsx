@@ -1,6 +1,11 @@
-
-
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { IoArrowBack, IoArrowForward } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
@@ -15,27 +20,18 @@ import sampleVideo from "../../../../assets/video.mp4";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* -------------------------------------------------------------------------- */
-/*  Types                                                                      */
-/* -------------------------------------------------------------------------- */
+// Matches index.css @theme tokens exactly (hex, not CSS vars — we need to
+// append alpha e.g. `${accent}33`, which only works with hex strings).
+const ACCENTS = ["#835240", "#b76e79", "#c98f7a", "#51291a", "#3D2A1E"];
 
-interface Collection {
+interface CollectionVideo {
   _id: string;
-  category: string;
-  tagline?: string;
   video?: string;
   accent?: string;
+  name?: string;
+  title?: string;
+  description?: string;
 }
-
-const FALLBACK_COLLECTIONS: Collection[] = [
-  { _id: "noir", category: "Noir de Minuit", tagline: "Smoked oud, black amber", accent: "#835240" },
-  { _id: "bloom", category: "Fleur Sauvage", tagline: "Tuberose, wild jasmine", accent: "#b76e79" },
-  { _id: "santal", category: "Santal Doré", tagline: "Golden sandalwood, saffron", accent: "#c98f7a" },
-  { _id: "ambre", category: "Ambre Nu", tagline: "Skin musk, warm resin", accent: "#a67c52" },
-  { _id: "iris", category: "Iris Glacé", tagline: "Frosted iris, grey vetiver", accent: "#84746e" },
-];
-
-const ACCENTS = ["#835240", "#b76e79", "#c98f7a", "#a67c52", "#84746e"];
 
 // shortest signed distance from `active` to `i` on a circular track of `total`
 const signedOffset = (i: number, active: number, total: number) => {
@@ -48,18 +44,39 @@ const signedOffset = (i: number, active: number, total: number) => {
 // Fixed card footprint — same on every breakpoint tier so the video never
 // gets stretched or cropped inconsistently between slides.
 const CARD_SIZE = {
-  base: { w: 260, h: 340 },   // < sm
-  sm: { w: 300, h: 400 },     // >= 640px
-  lg: { w: 340, h: 440 },     // >= 1024px
+  base: { w: 300, h: 380 }, // < sm
+  sm: { w: 360, h: 460 }, // >= 640px
+  lg: { w: 420, h: 460 }, // >= 1024px
 };
 
 export default function FeaturedCollections() {
-  const [collections, setCollections] = useState<Collection[]>(FALLBACK_COLLECTIONS);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [videos, setVideos] = useState<CollectionVideo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { getQuery } = useGetQuery();
+
+  const getVideosData = () => {
+    getQuery({
+      url: apiUrls.Videos.getAllVideos,
+      onSuccess: (res: any) => {
+        setVideos(res.data || []);
+        setIsLoading(false);
+      },
+      onFail: (err: any) => {
+        console.log(err);
+        setIsLoading(false);
+      },
+    });
+  };
+
+  useEffect(() => {
+    getVideosData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const navigate = useNavigate();
-  const { getQuery } = useGetQuery();
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const headingRef = useRef<HTMLHeadingElement | null>(null);
@@ -71,23 +88,9 @@ export default function FeaturedCollections() {
   const nextBtnRef = useRef<HTMLButtonElement | null>(null);
   const isMobileRef = useRef(false);
 
-  /* ------------------------------- data fetch ------------------------------ */
-
-  useLayoutEffect(() => {
-    getQuery({
-      url: apiUrls.Category.getAll,
-      onSuccess: (res: any) => {
-        const data = res?.data;
-        if (Array.isArray(data) && data.length > 0) {
-          setCollections(data.slice(0, 10));
-        }
-      },
-      onFail: (err: any) => console.log(err),
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const total = collections.length;
+  const total = videos.length;
+  const activeCollection = videos[activeIndex];
+  const activeAccent = activeCollection?.accent || ACCENTS[activeIndex % ACCENTS.length];
 
   // A handful of static ambient particles — no JS-driven motion, pure CSS
   // keyframes so they cost nothing on the main thread.
@@ -99,7 +102,7 @@ export default function FeaturedCollections() {
         delay: Math.round(Math.random() * 5000) / 1000,
         duration: 12 + Math.round(Math.random() * 6000) / 1000,
       })),
-    []
+    [],
   );
 
   /* --------------------------- positioning math ----------------------------- */
@@ -108,7 +111,7 @@ export default function FeaturedCollections() {
 
   const layout = useCallback((offset: number) => {
     const abs = Math.abs(offset);
-    const spread = isMobileRef.current ? 160 : 320;
+    const spread = isMobileRef.current ? 190 : 380;
 
     // Only the active card plus its immediate left/right neighbor stay
     // visible — that's 3 cards (and 3 videos) on screen at once. Raise
@@ -118,14 +121,15 @@ export default function FeaturedCollections() {
     }
 
     const x = offset * spread;
-    const scale = offset === 0 ? 1 : abs === 1 ? (isMobileRef.current ? 0.8 : 0.86) : 0.68;
+    const scale =
+      offset === 0 ? 1 : abs === 1 ? (isMobileRef.current ? 0.8 : 0.86) : 0.68;
     const opacity = offset === 0 ? 1 : abs === 1 ? 0.5 : 0.25;
     const zIndex = 20 - abs;
     return { x, scale, opacity, zIndex };
   }, []);
 
   const applyLayoutInstant = useCallback(() => {
-    collections.forEach((_, i) => {
+    videos.forEach((_, i) => {
       const el = cardRefs.current[i];
       if (!el) return;
       const offset = signedOffset(i, activeIndex, total);
@@ -141,7 +145,7 @@ export default function FeaturedCollections() {
       });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [collections, activeIndex, total, layout]);
+  }, [videos, activeIndex, total, layout]);
 
   /* --------------------------------- navigate -------------------------------- */
   // One short, simple timeline per click: every card tweens x/scale/opacity to
@@ -158,7 +162,8 @@ export default function FeaturedCollections() {
       const prevIndex = activeIndex;
       const prevVideo = videoRefs.current[prevIndex];
       const nextVideo = videoRefs.current[normalized];
-      const accent = collections[normalized]?.accent || ACCENTS[normalized % ACCENTS.length];
+      const accent =
+        videos[normalized]?.accent || ACCENTS[normalized % ACCENTS.length];
 
       const tl = gsap.timeline({
         defaults: { duration: 0.55, ease: "power3.out" },
@@ -168,27 +173,62 @@ export default function FeaturedCollections() {
         },
       });
 
-      collections.forEach((_, i) => {
+      videos.forEach((_, i) => {
         const el = cardRefs.current[i];
         if (!el) return;
         const offset = signedOffset(i, normalized, total);
         const t = layout(offset);
-        tl.to(el, { x: t.x, scale: t.scale, opacity: t.opacity, zIndex: t.zIndex }, 0);
+        tl.to(
+          el,
+          { x: t.x, scale: t.scale, opacity: t.opacity, zIndex: t.zIndex },
+          0,
+        );
         gsap.set(el, { pointerEvents: offset === 0 ? "auto" : "none" });
       });
 
-      const nextLabel = cardRefs.current[normalized]?.querySelector<HTMLElement>("[data-fc-text]");
+      const nextLabel =
+        cardRefs.current[normalized]?.querySelector<HTMLElement>(
+          "[data-fc-text]",
+        );
       if (nextLabel) {
-        tl.fromTo(nextLabel, { y: 10, opacity: 0.6 }, { y: 0, opacity: 1, duration: 0.4 }, 0.15);
+        tl.fromTo(
+          nextLabel,
+          { y: 10, opacity: 0.6 },
+          { y: 0, opacity: 1, duration: 0.4 },
+          0.15,
+        );
+      }
+
+      // crossfade the tagline copy under the heading to match the incoming card
+      if (taglineRef.current) {
+        tl.to(
+          taglineRef.current,
+          {
+            opacity: 0,
+            y: -6,
+            duration: 0.2,
+            onComplete: () => {
+              if (taglineRef.current) {
+                taglineRef.current.textContent =
+                  videos[normalized]?.description ||
+                  videos[normalized]?.name ||
+                  "Curated pieces, handpicked for you";
+              }
+            },
+          },
+          0,
+        ).to(taglineRef.current, { opacity: 1, y: 0, duration: 0.3 }, 0.25);
       }
 
       if (prevVideo) {
-        tl.to(prevVideo, { opacity: 0.3, duration: 0.35 }, 0).call(() => prevVideo.pause());
+        tl.to(prevVideo, { opacity: 0.3, duration: 0.35 }, 0).call(() =>
+          prevVideo.pause(),
+        );
       }
       if (nextVideo) {
         nextVideo.currentTime = 0;
         tl.set(nextVideo, { opacity: 0 }, 0.1)
-          .call(() => nextVideo.play().catch(() => {}), undefined, 0.1)
+          .call(() => nextVideo.play().catch(() => { }), undefined, 0.1)
           .to(nextVideo, { opacity: 1, duration: 0.5 }, 0.1);
       }
 
@@ -199,7 +239,7 @@ export default function FeaturedCollections() {
         ease: "sine.out",
       } as any);
     },
-    [activeIndex, collections, isAnimating, layout, total]
+    [activeIndex, videos, isAnimating, layout, total],
   );
 
   const handlePrev = () => goTo(activeIndex - 1);
@@ -220,14 +260,24 @@ export default function FeaturedCollections() {
     gsap.fromTo(
       span,
       { scale: 0, opacity: 0.35 },
-      { scale: 2, opacity: 0, duration: 0.5, ease: "power2.out", onComplete: () => span.remove() }
+      {
+        scale: 2,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete: () => span.remove(),
+      },
     );
   };
 
   /* ------------------------------ scroll + mount ----------------------------- */
 
   useLayoutEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (total === 0) return;
+
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     const mq = window.matchMedia("(max-width: 767px)");
     isMobileRef.current = mq.matches;
     const onMq = (ev: MediaQueryListEvent) => {
@@ -238,28 +288,46 @@ export default function FeaturedCollections() {
 
     const ctx = gsap.context(() => {
       applyLayoutInstant();
-      videoRefs.current[activeIndex]?.play().catch(() => {});
+      videoRefs.current[activeIndex]?.play().catch(() => { });
 
       if (!reduced) {
         gsap.set(headingRef.current, { autoAlpha: 0, y: 16 });
         gsap.set(taglineRef.current, { autoAlpha: 0, y: 10 });
-        gsap.set([prevBtnRef.current, nextBtnRef.current], { autoAlpha: 0, y: 10 });
+        gsap.set([prevBtnRef.current, nextBtnRef.current], {
+          autoAlpha: 0,
+          y: 10,
+        });
         cardRefs.current.forEach((el) => el && gsap.set(el, { autoAlpha: 0 }));
 
         const introTl = gsap.timeline({
-          scrollTrigger: { trigger: sectionRef.current, start: "top 75%", once: true },
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 75%",
+            once: true,
+          },
           defaults: { ease: "power3.out" },
         });
 
         introTl
           .to(headingRef.current, { autoAlpha: 1, y: 0, duration: 0.7 })
-          .to(taglineRef.current, { autoAlpha: 1, y: 0, duration: 0.6 }, "-=0.4")
-          .to([prevBtnRef.current, nextBtnRef.current], { autoAlpha: 1, y: 0, duration: 0.5 }, "-=0.4");
+          .to(
+            taglineRef.current,
+            { autoAlpha: 1, y: 0, duration: 0.6 },
+            "-=0.4",
+          )
+          .to(
+            [prevBtnRef.current, nextBtnRef.current],
+            { autoAlpha: 1, y: 0, duration: 0.5 },
+            "-=0.4",
+          );
 
         // cards fade in together, center card landing slightly after — a single
         // light stagger rather than a per-card cascade.
-        const order = collections
-          .map((_, i) => ({ i, offset: Math.abs(signedOffset(i, activeIndex, total)) }))
+        const order = videos
+          .map((_, i) => ({
+            i,
+            offset: Math.abs(signedOffset(i, activeIndex, total)),
+          }))
           .sort((a, b) => b.offset - a.offset);
 
         order.forEach(({ i }, idx) => {
@@ -269,9 +337,17 @@ export default function FeaturedCollections() {
         });
       } else {
         cardRefs.current.forEach((el) => el && gsap.set(el, { autoAlpha: 1 }));
-        gsap.set([headingRef.current, taglineRef.current, prevBtnRef.current, nextBtnRef.current], {
-          autoAlpha: 1,
-        });
+        gsap.set(
+          [
+            headingRef.current,
+            taglineRef.current,
+            prevBtnRef.current,
+            nextBtnRef.current,
+          ],
+          {
+            autoAlpha: 1,
+          },
+        );
       }
     }, sectionRef);
 
@@ -280,18 +356,46 @@ export default function FeaturedCollections() {
       mq.removeEventListener("change", onMq);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [collections.length]);
+  }, [videos.length]);
 
   /* --------------------------------- render ---------------------------------- */
 
-  const activeAccent = collections[activeIndex]?.accent || ACCENTS[activeIndex % ACCENTS.length];
-  const activeCollection = collections[activeIndex];
+  if (isLoading) {
+    return (
+      <section className="relative overflow-hidden bg-background px-5 py-12 sm:px-10 lg:px-16">
+        <div className="mx-auto flex h-[460px] max-w-[1300px] items-center justify-center gap-6 sm:h-[520px] lg:h-[580px]">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={`animate-pulse rounded-3xl bg-card ${i === 1
+                ? "h-[380px] w-[300px] sm:h-[460px] sm:w-[360px] lg:h-[520px] lg:w-[420px]"
+                : "hidden h-[300px] w-[220px] opacity-50 sm:block"
+                }`}
+            />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (total === 0) {
+    return (
+      <section className="bg-background px-5 py-16 text-center">
+        <p className="fc-sans text-muted">No collections to show yet.</p>
+      </section>
+    );
+  }
 
   return (
     <section
       ref={sectionRef}
-      style={{ "--fc-accent": activeAccent, "--fc-accent-30": `${activeAccent}33` } as React.CSSProperties}
-      className="relative isolate overflow-hidden bg-background px-5 py-12 sm:px-10 sm:py-12 lg:px-16"
+      style={
+        {
+          "--fc-accent": activeAccent,
+          "--fc-accent-30": `${activeAccent}33`,
+        } as React.CSSProperties
+      }
+      className="relative isolate overflow-hidden bg-background px-5 py-14 sm:px-10 sm:py-16 lg:px-16 lg:py-20"
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,400&family=Manrope:wght@300;400;500&display=swap');
@@ -319,7 +423,10 @@ export default function FeaturedCollections() {
       <div className="pointer-events-none absolute inset-0">
         <div
           className="absolute inset-0 transition-[background] duration-700"
-          style={{ background: "radial-gradient(55% 45% at 50% 35%, var(--fc-accent-30), transparent 70%)" }}
+          style={{
+            background:
+              "radial-gradient(55% 45% at 50% 35%, var(--fc-accent-30), transparent 70%)",
+          }}
         />
         {particles.map((p) => (
           <span
@@ -335,14 +442,17 @@ export default function FeaturedCollections() {
       </div>
 
       {/* --------------------------------- heading ---------------------------------- */}
-      <div className="relative z-10  text-center mb-6">
+      <div className="relative z-10 mb-8 text-center sm:mb-10">
         <span className="fc-sans mb-2 inline-block text-[11px] font-medium uppercase tracking-[0.4em] text-muted">
-          The Collection
+          BEST SELLERS
         </span>
-        <h2 ref={headingRef} className="fc-serif text-4xl font-light italic text-heading sm:text-6xl">
-          Popular
+        <h2
+          ref={headingRef}
+          className="fc-serif text-3xl font-light italic text-heading sm:text-6xl"
+        >
+          Loved Around the World
         </h2>
-      
+
       </div>
 
       {/* ---------------------------------- stage ------------------------------------ */}
@@ -350,63 +460,45 @@ export default function FeaturedCollections() {
           quirks on mobile browser chrome show/hide — keeps the video crop stable. */}
       <div
         ref={stageRef}
-        className="relative z-10 mx-auto h-[420px] max-w-[1300px] sm:h-[460px] lg:h-[500px]"
+        className="relative z-10 mx-auto h-[460px]  sm:h-[480px] "
       >
-        {collections.map((cat, i) => {
+        {videos.map((cat, i) => {
           const isActive = i === activeIndex;
           const videoSrc = cat.video || sampleVideo;
           return (
             <div
               key={cat._id}
-              ref={(el) => (cardRefs.current[i] = el)}
-              onClick={() => {
-                if (!isActive) {
-                  goTo(i);
-                  return;
-                }
-                const routeParam = cat.category?.toLowerCase().replace(/\s+/g, "-");
-                navigate(`/${routeParam}`, { state: { categoryId: cat._id, fullCategoryData: cat } });
+              ref={(el) => {
+                cardRefs.current[i] = el;
               }}
-              className={`fc-card group absolute left-1/2 top-1/2 cursor-pointer overflow-hidden rounded-3xl border border-border bg-card shadow-[0_20px_50px_-25px_rgba(59,48,42,0.35)] ${
-                isActive ? "ring-1 ring-primary/25" : ""
-              }`}
+              onClick={() => i !== activeIndex && goTo(i)}
+              className={`fc-card group absolute left-1/2 top-1/2 cursor-pointer overflow-hidden rounded-[28px] border bg-card shadow-[0_25px_60px_-25px_rgba(59,48,42,0.4)] transition-[border-color,box-shadow] duration-300 ${isActive
+                ? "border-primary/30 shadow-[0_30px_70px_-20px_rgba(131,82,64,0.45)]"
+                : "border-border"
+                }`}
               data-fc-card
             >
               {/* Fixed-size wrapper + object-cover: video always fills the card
                   frame edge-to-edge with no letterboxing, regardless of source
                   aspect ratio. */}
               <video
-                ref={(el) => (videoRefs.current[i] = el)}
+                ref={(el) => {
+                  videoRefs.current[i] = el;
+                }}
                 src={videoSrc}
                 muted
                 loop
                 playsInline
                 preload="metadata"
-                className="absolute inset-0 h-full w-full object-cover object-center"
+                className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
 
-              <div data-fc-text className="absolute inset-x-0 bottom-0 flex flex-col p-6 sm:p-7">
-                <span className="fc-sans mb-2 text-[10px] tracking-[0.3em] uppercase text-white/60">
-                  {String(i + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-                </span>
-                <h3 className="fc-serif mb-1 text-2xl font-light italic text-white sm:text-3xl">
-                  {cat.category}
-                </h3>
-                {cat.tagline && (
-                  <p className="fc-sans mb-3 text-xs font-light text-white/70">{cat.tagline}</p>
-                )}
-                {isActive && (
-                  <div className="fc-sans flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/85 transition-all duration-300 group-hover:gap-4 group-hover:text-white">
-                    Discover
-                    <IoArrowForward className="text-base" />
-                  </div>
-                )}
-              </div>
+
 
               <div
-                className="pointer-events-none absolute inset-0 rounded-3xl"
+                className="pointer-events-none absolute inset-0 rounded-[28px]"
                 style={{
                   boxShadow: isActive
                     ? "inset 0 0 0 1px rgba(255,255,255,0.18)"
@@ -419,7 +511,7 @@ export default function FeaturedCollections() {
       </div>
 
       {/* ------------------------------- navigation ---------------------------------- */}
-      <div className="relative z-20 mt-10 flex items-center justify-center gap-6 sm:mt-14">
+      <div className="relative z-20 mt-6 flex items-center justify-center gap-6 ">
         <button
           ref={prevBtnRef}
           onClick={(e) => {
@@ -428,20 +520,24 @@ export default function FeaturedCollections() {
           }}
           aria-label="Previous collection"
           disabled={isAnimating}
-          className="relative flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-border bg-surface text-heading transition-transform duration-200 hover:scale-105 hover:bg-card disabled:opacity-40"
+          className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-border bg-surface text-heading transition-transform duration-200 hover:scale-105 hover:bg-card disabled:opacity-40 sm:h-13 sm:w-13"
           style={{ boxShadow: "0 8px 20px -12px rgba(59,48,42,0.25)" }}
         >
           <IoArrowBack className="relative z-10 text-lg" />
         </button>
 
         <div className="fc-sans flex items-center gap-2">
-          {collections.map((_, i) => (
+          {videos.map((_, i) => (
             <button
               key={i}
               aria-label={`Go to collection ${i + 1}`}
               onClick={() => i !== activeIndex && goTo(i)}
               className="h-1.5 w-1.5 rounded-full bg-border transition-all duration-300"
-              style={i === activeIndex ? { width: 20, background: "var(--fc-accent)" } : undefined}
+              style={
+                i === activeIndex
+                  ? { width: 20, background: "var(--fc-accent)" }
+                  : undefined
+              }
             />
           ))}
         </div>
@@ -454,18 +550,12 @@ export default function FeaturedCollections() {
           }}
           aria-label="Next collection"
           disabled={isAnimating}
-          className="relative flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-border bg-surface text-heading transition-transform duration-200 hover:scale-105 hover:bg-card disabled:opacity-40"
+          className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-border bg-surface text-heading transition-transform duration-200 hover:scale-105 hover:bg-card disabled:opacity-40 sm:h-13 sm:w-13"
           style={{ boxShadow: "0 8px 20px -12px rgba(59,48,42,0.25)" }}
         >
           <IoArrowForward className="relative z-10 text-lg" />
         </button>
       </div>
-
-      {activeCollection && (
-        <p className="fc-sans relative z-10 mt-6 text-center text-[11px] uppercase tracking-[0.3em] text-muted">
-          Viewing — {activeCollection.category}
-        </p>
-      )}
     </section>
   );
 }

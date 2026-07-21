@@ -32,7 +32,6 @@ const ProductCard = ({ product }: any) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  // console.log(product, "**********")
 
   const handleWishlist = (e: React.MouseEvent) => {
 
