@@ -53,6 +53,29 @@ export default function ProductFilter() {
     return seeded;
   });
 
+
+useEffect(() => {
+  const next: FilterState = {};
+
+  if (navState.categoryId) {
+    next.category = navState.categoryId;
+  }
+
+  if (navState.subCategoryId) {
+    next.subCategory = navState.subCategoryId;
+  }
+
+  if (navState.search) {
+    next.search = navState.search;
+  }
+
+  setFilterState(next);
+  setPage(1);
+}, [
+  location.key, // or location.state
+]);
+
+
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [productLoading, setProductLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
