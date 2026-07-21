@@ -13,7 +13,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../../redux/slices/cartSlice";
 
 
-
+const isVideoUrl = (url: string) => {
+  if (!url) return false;
+  // Checks for common video extensions. Expand this list if your backend uses others.
+  return /\.(mp4|webm|ogg|mov)$/i.test(url);
+};
 
 const StarRating = ({ rating, totalRatings }: any) => (
   <div className="flex items-center gap-1.5 mt-1">
