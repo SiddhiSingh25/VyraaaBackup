@@ -414,7 +414,7 @@ const ProductInfo = () => {
                   <button
                     disabled={selectedSize === null || productData?.price?.[selectedSize]?.isAvailable === false}
                     onClick={() => {
-                      if (selectedSize === null) return;
+                      if (selectedSize === null) return;  
 
                       navigate(`/checkout/address`, {
                         state: {
