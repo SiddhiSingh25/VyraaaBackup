@@ -5,6 +5,7 @@ import AddVideoModal from "./components/AddVideoModal";
 import DeleteVideoModal from "./components/DeleteVideoModal";
 import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
+import usePostQuery from "@/hooks/postQuery.hook";
 
 interface HomeVideo {
   _id: string;
@@ -14,7 +15,7 @@ interface HomeVideo {
 const AddHomeVideos = () => {
   const [videos, setVideos] = useState<HomeVideo[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const { postQuery } = usePostQuery();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -207,9 +208,24 @@ const AddHomeVideos = () => {
         <DeleteVideoModal
           open={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
-          onDelete={() => {
-            console.log(selectedVideo);
-            setShowDeleteModal(false);
+          onDelete={async () => {
+            if (!selectedVideo) return;
+
+            try {
+              await postQuery({
+                url: apiUrls.Home.deleteVideo,
+                postData: {
+                  videoId: selectedVideo._id,
+                },
+              });
+
+              setShowDeleteModal(false);
+              setSelectedVideo(null);
+
+              getVideos(); // Refresh list
+            } catch (err) {
+              console.error(err);
+            }
           }}
         />
       </div>
