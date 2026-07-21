@@ -5,6 +5,7 @@ import { apiBaseUrl } from "./index.ts";
 // import { console } from "../utils/console";
 
 const apiInstance = () => {
+  let isRedirecting = false;
   const api = axios.create({
     baseURL: apiBaseUrl,
   });
@@ -31,9 +32,20 @@ const apiInstance = () => {
       return response;
     },
     (error: any) => {
-      console.log("ERROR", error.response?.data?.detail || error.message);
+      console.log("ERROR", error.status);
+      if (error?.status === 401 && !isRedirecting) {
+        isRedirecting = true;
+        // Clear authentication data
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("root");
+
+        // Redirect to login page
+        window.location.replace("/");
+      }
+
       throw error;
-    }
+    },
   );
 
   return api;

@@ -141,6 +141,8 @@ export const apiUrls = {
   },
   Orders: {
     getAllOrders: "/order",
-    getByUserId: "/order/getByUserId"
+    getByUserId: "/order/getByUserId",
+    getOrderById: "/order",
+    updateOrderStatus: "order/updateOrderStatus",
   },
 };

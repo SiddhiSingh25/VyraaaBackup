@@ -13,9 +13,9 @@ interface Props {
 const statusOptions = [
   { label: "All", value: "" },
   { label: "Pending", value: "Pending" },
-  { label: "Processing", value: "Processing" },
-  { label: "Packed", value: "Packed" },
+  { label: "Accepted", value: "Accepted" },
   { label: "Shipped", value: "Shipped" },
+  { label: "In-Transit", value: "In-Transit" },
   { label: "Delivered", value: "Delivered" },
   { label: "Cancelled", value: "Cancelled" },
 ];
@@ -52,7 +52,7 @@ const OrderFilters = ({
         onChange={(e) => setStatus(String(e.target.value))}
       />
 
-      <SearchableSelect
+      {/* <SearchableSelect
         label="Payment Status"
         options={paymentStatusOptions}
         value={paymentStatus}
@@ -66,7 +66,7 @@ const OrderFilters = ({
         value={paymentMethod}
         placeholder="Select Payment Method"
         onChange={(e) => setPaymentMethod(String(e.target.value))}
-      />
+      /> */}
     </div>
   );
 };

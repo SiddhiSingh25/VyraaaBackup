@@ -61,7 +61,8 @@ function WishlistCard({
       exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.25 } }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       // Updated onClick logic here
-      onClick={() => navigate({ pathname: `/productDeatils/${product?.id}` })}
+      // to={`/productDetails/${product.id || product._id}`}
+      onClick={() => navigate(`/productDetails/${product?.id}`)}
       className="group cursor-pointer rounded-xl border border-border bg-surface overflow-hidden shadow-[0_1px_3px_rgba(59,48,42,0.06)] hover:shadow-[0_18px_40px_-16px_rgba(59,48,42,0.25)] transition-shadow duration-500"
     >
       {/* Image */}

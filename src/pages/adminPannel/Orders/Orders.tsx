@@ -5,9 +5,11 @@ import { apiUrls } from "@/apis";
 import OrdersTable from "./component/OrdersTable";
 import OrderFilters from "./component/OrderFilters";
 import type { Order } from "./component/types";
+import { useNavigate } from "react-router-dom";
 
 const Orders = () => {
   const { getQuery } = useGetQuery();
+  const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -66,7 +68,10 @@ const Orders = () => {
           setPaymentMethod={setPaymentMethod}
         />
 
-        <OrdersTable items={orders} onView={(order) => console.log(order)} />
+        <OrdersTable
+          items={orders}
+          onView={(order) => navigate(`/admin/orders/${order._id}`)}
+        />
       </div>
     </div>
   );
