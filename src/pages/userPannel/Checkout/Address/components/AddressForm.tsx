@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { Address } from "../pages/AddNewAddress"; // Adjust path to where Address interface lives
+import type { Address } from "../pages/AddNewAddress";
 
 interface AddressFormProps {
   initialData?: Address | null;
