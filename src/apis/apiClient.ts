@@ -32,16 +32,23 @@ const apiInstance = () => {
       return response;
     },
     (error: any) => {
-      console.log("ERROR", error.status);
-      if (error?.status === 401 && !isRedirecting) {
-        isRedirecting = true;
-        // Clear authentication data
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("root");
+      console.log("ERROR", error.response?.data?.detail || error.message);
 
-        // Redirect to login page
-        window.location.replace("/");
+      const isAuthExpired =
+        error.response?.status === 401 ||
+        error.response?.data?.error === "Authentication failed: jwt expired" ||
+        ((error.response?.data?.message || "") && error.response.data.message.includes("jwt expired"));
+
+      if (isAuthExpired) {
+        console.log("AUTH EXPIRED");
+        localStorage.removeItem("token");
+        document.cookie = "token=; max-age=0; path=/";
+        // Dynamically import store and logout to prevent circular dependency
+        import("../redux/store").then(({ store }) => {
+          import("../redux/slices/authSlice").then(({ logout }) => {
+            store.dispatch(logout());
+          });
+        });
       }
 
       throw error;

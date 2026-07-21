@@ -134,7 +134,7 @@ export default function ProductShowcase() {
                 const routeParam = cat?.category
                   ?.toLowerCase()
                   .replace(/\s+/g, "-");
-                navigate(`/clothing`, {
+                navigate(`/${routeParam}`, {
                   state: {
                     categoryId: cat?._id,
                     fullCategoryData: cat,
@@ -156,11 +156,10 @@ export default function ProductShowcase() {
               </div>
               <span
                 className={`text-[10px] font-medium tracking-wider uppercase
-        ${
-          cat?._id === selectedCategory
-            ? "text-admin-text border-b-[1px] pb-1 px-2 border-body"
-            : "text-admin-text/70"
-        }`}
+        ${cat?._id === selectedCategory
+                    ? "text-admin-text border-b-[1px] pb-1 px-2 border-body"
+                    : "text-admin-text/70"
+                  }`}
               >
                 {cat?.category}
               </span>
