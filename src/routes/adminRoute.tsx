@@ -15,6 +15,7 @@ import Property from "../pages/adminPannel/masterData/Property/Property";
 import PropertyValues from "../pages/adminPannel/masterData/PropertyValues/PropertyValues";
 import Orders from "@/pages/adminPannel/Orders/Orders";
 import OrderDetails from "@/pages/adminPannel/Orders/OrderDetails";
+import AddHomeVideos from "../pages/adminPannel/HomeVideos/addHomeVideos";
 
 export const adminRoutes = [
   {
@@ -90,6 +91,10 @@ export const adminRoutes = [
           {
             path: "master-channel/property-values",
             element: <PropertyValues />,
+          },
+          {
+            path: "/admin/Add-Home-Videos",
+            element: <AddHomeVideos />,
           },
         ],
       },
