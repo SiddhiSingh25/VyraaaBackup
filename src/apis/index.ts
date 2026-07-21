@@ -148,6 +148,7 @@ export const apiUrls = {
     getByUserId: "/order/getByUserId",
     getOrderById: "/order",
     updateOrderStatus: "order/updateOrderStatus",
+    createOrder : "/order/createOrder"
   },
 
   Videos : {
