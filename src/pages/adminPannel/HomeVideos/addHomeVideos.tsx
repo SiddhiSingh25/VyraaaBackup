@@ -3,29 +3,13 @@ import { Film, Plus, Upload, Play, Trash2, Video, Clock3 } from "lucide-react";
 
 import AddVideoModal from "./components/AddVideoModal";
 import DeleteVideoModal from "./components/DeleteVideoModal";
+import useGetQuery from "@/hooks/getQuery.hook";
+import { apiUrls } from "@/apis";
 
 interface HomeVideo {
   _id: string;
   video: string;
 }
-
-const dummyVideos: HomeVideo[] = [
-  {
-    _id: "1",
-    video:
-      "https://macreelinfosoft-bucket.s3.ap-south-1.amazonaws.com/Vyraaa-Admin-Images/1784612978778.mp4",
-  },
-  {
-    _id: "2",
-    video:
-      "https://macreelinfosoft-bucket.s3.ap-south-1.amazonaws.com/Vyraaa-Admin-Images/1784612978778.mp4",
-  },
-  {
-    _id: "3",
-    video:
-      "https://macreelinfosoft-bucket.s3.ap-south-1.amazonaws.com/Vyraaa-Admin-Images/1784612978778.mp4",
-  },
-];
 
 const AddHomeVideos = () => {
   const [videos, setVideos] = useState<HomeVideo[]>([]);
@@ -38,11 +22,25 @@ const AddHomeVideos = () => {
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
+  const { getQuery } = useGetQuery();
+
+  const getVideos = async () => {
+    getQuery({
+      url: apiUrls.Home.getVideos,
+      onSuccess: (res: any) => {
+        setVideos(res.data);
+        console.log("Fetched Addresses:", res.data);
+        setLoading(false);
+      },
+      onFail: (err: any) => {
+        setLoading(false);
+        console.log("Failed to fetch addresses:", err);
+      },
+    });
+  };
+
   useEffect(() => {
-    setTimeout(() => {
-      setVideos(dummyVideos);
-      setLoading(false);
-    }, 600);
+    getVideos();
   }, []);
 
   const totalStorage = useMemo(() => {
