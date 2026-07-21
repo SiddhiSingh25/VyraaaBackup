@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { UploadCloud, Video, X } from "lucide-react";
+import usePostQuery from "@/hooks/postQuery.hook";
+import { apiUrls } from "@/apis";
 
 interface Props {
   open: boolean;
@@ -10,6 +12,7 @@ const AddVideoModal = ({ open, onClose }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [video, setVideo] = useState<File | null>(null);
+  const { postQuery } = usePostQuery();
 
   const [preview, setPreview] = useState("");
 
@@ -34,12 +37,44 @@ const AddVideoModal = ({ open, onClose }: Props) => {
     setPreview("");
   };
 
-  const handleSubmit = () => {
-    console.log(video);
+  const handleSubmit = async () => {
+    if (!video) return;
 
-    // upload api here
+    try {
+      // Upload Video
+      const formData = new FormData();
+      formData.append("file", video);
 
-    onClose();
+      const uploadResponse = await postQuery({
+        url: apiUrls.Image.upload,
+        postData: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (!uploadResponse?.data) {
+        throw new Error("Video upload failed");
+      }
+
+      const videoUrl = uploadResponse.data;
+
+      // Save Video URL
+      await postQuery({
+        url: apiUrls.Home.addVideos,
+        postData: {
+          videoUrl,
+        },
+      });
+
+      // Reset State
+      setVideo(null);
+      setPreview("");
+
+      onClose();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

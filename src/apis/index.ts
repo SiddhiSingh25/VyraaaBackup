@@ -152,5 +152,6 @@ export const apiUrls = {
   },
   Home: {
     getVideos: "home/getHomeVideos",
+    addVideos: "home/addVideo",
   },
 };
