@@ -732,28 +732,29 @@ export default function ProductFilter() {
       url: finalUrl,
       onSuccess: (res: any) => {
         if (res.success && Array.isArray(res.data)) {
-          const formattedProducts = res.data.map((item: any) => {
-            const basePrice = item.price?.length ? item.price[0] : null;
-            const badges: string[] = [];
-            if (basePrice?.isFewLeft) badges.push("Only Few Left");
-            if (!basePrice?.isAvailable) badges.push("Not Available");
+          console.log(res.data, " ############################")
+          // const formattedProducts = res.data.map((item: any) => {
+          //   const basePrice = item.price?.length ? item.price[0] : null;
+          //   const badges: string[] = [];
+          //   if (basePrice?.isFewLeft) badges.push("Only Few Left");
+          //   if (!basePrice?.isAvailable) badges.push("Not Available");
 
-            return {
-              id: item._id,
-              name: item.title,
-              img: item.image,
-              img2: item.image,
-              brand: item.brand?.brand || "Vyraa",
-              price: basePrice ? basePrice.amount : 0,
-              mrp: basePrice ? basePrice.markupPrice : 0,
-              rating: item.averageRating || item.rating || 4.5,
-              reviews: 120,
-              badges,
-              size: basePrice ? basePrice.size._id : null,
-              sizeName: basePrice ? basePrice.size.size : null,
-            };
-          });
-          setProductData(formattedProducts);
+          //   return {
+          //     id: item._id,
+          //     name: item.title,
+          //     img: item.image,
+          //     img2: item.image,
+          //     brand: item.brand?.brand || "Vyraa",
+          //     price: basePrice ? basePrice.amount : 0,
+          //     mrp: basePrice ? basePrice.markupPrice : 0,
+          //     rating: item.averageRating || item.rating || 4.5,
+          //     reviews: 120,
+          //     badges,
+          //     size: basePrice ? basePrice.size._id : null,
+          //     sizeName: basePrice ? basePrice.size.size : null,
+          //   };
+          // });
+          setProductData(res.data);
           setTotalPages(res.pagination?.totalPages || 1);
           setPage(res.pagination?.currentPage || 1);
         }
