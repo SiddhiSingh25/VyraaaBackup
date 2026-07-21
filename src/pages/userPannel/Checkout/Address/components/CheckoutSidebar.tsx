@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { ShieldCheck, Shield, Truck, RefreshCcw } from "lucide-react";
-import useGetQuery from "@/hooks/getQuery.hook"; // Adjust path if needed
-import { apiUrls } from "@/apis"; // Adjust path if needed
+import useGetQuery from "@/hooks/getQuery.hook";
+import { apiUrls } from "@/apis";
 
-// Utility for formatting currency
 function formatINR(amount: number) {
   return `₹${amount.toLocaleString("en-IN")}`;
 }
@@ -15,13 +14,16 @@ const BADGES = [
   { icon: RefreshCcw, label: "Easy Returns & Exchanges" },
 ];
 
-export function CheckoutSidebar(props: any) {
-  const fromProp = props.from;
+interface CheckoutSidebarProps {
+  from: string;
+  productId?: string;
+  size?: string; // size ID sent from product details page
+  quantity?: number;
+  onTotalChange?: (total: number) => void;
+}
 
-  // 1. Get items from Redux purely for rendering the visual list 
-  const items = useSelector((state: any) => state.cart.items || []);
-
-  // 2. Local state to hold the EXACT totals calculated by your backend API
+export function CheckoutSidebar({ from, productId, size, quantity = 1, onTotalChange }: CheckoutSidebarProps) {
+  const [items, setItems] = useState<any[]>([]);
   const [totals, setTotals] = useState({
     itemCount: 0,
     totalMrp: 0,
@@ -29,36 +31,82 @@ export function CheckoutSidebar(props: any) {
     discountOnMrp: 0,
   });
 
+  const cartReduxItems = useSelector((state: any) => state.cart.items || []);
   const { getQuery } = useGetQuery();
 
-  // 3. Fetch exact math from the database to prevent Redux calculation bugs
   useEffect(() => {
-    // Only fetch totals if we are supposed to show them (based on your fromProp logic)
-    if (fromProp !== "cart") {
-      setTotals({ itemCount: 0, totalMrp: 0, totalAmount: 0, discountOnMrp: 0 });
-      return;
+    if (from === "cart") {
+      // 1. Fetch Cart Data
+      getQuery({
+        url: apiUrls.Cart.getByUserId,
+        onSuccess: (res: any) => {
+          if (res.data) {
+            setItems(cartReduxItems.length > 0 ? cartReduxItems : res.data.items || []);
+            const nextTotals = {
+              itemCount: res.data.totalItems || 0,
+              totalMrp: res.data.cartTotalMarkupPrice || 0,
+              totalAmount: res.data.cartTotalAmount || 0,
+              discountOnMrp: res.data.cartTotalDiscount || 0,
+            };
+            setTotals(nextTotals);
+            onTotalChange?.(nextTotals.totalAmount);
+          }
+        },
+        onFail: (err: any) => {
+          console.error("Failed to fetch cart totals:", err);
+        },
+      });
+    } else if (from === "product" && productId) {
+      // 2. Fetch Single Product Data for "Buy Now" flow
+      getQuery({
+        url: `${apiUrls.Product.getById}${productId}`,
+        onSuccess: (res: any) => {
+          if (res.data) {
+            const product = res.data;
+
+            // Match the provided size ID with product.price array
+            const matchedPriceObj = product.price.find(
+              (p: any) => String(p.size._id) === String(size) || String(p._id) === String(size)
+            );
+
+            const unitAmount = matchedPriceObj ? matchedPriceObj.amount : product.price?.[0]?.amount || 0;
+            const unitMarkup = matchedPriceObj ? matchedPriceObj.markupPrice : product.price?.[0]?.markupPrice || unitAmount;
+            const itemQty = quantity || 1;
+
+            const totalMrpCalc = unitMarkup * itemQty;
+            const totalAmountCalc = unitAmount * itemQty;
+            const discountCalc = totalMrpCalc - totalAmountCalc;
+
+            // Format single item to match display list structure
+            const singleFormattedItem = {
+              id: product._id,
+              name: product.title,
+              image: product.image,
+              color: product.color,
+              brand: product.brand,
+              size: matchedPriceObj ? matchedPriceObj.size.size : "Standard",
+              quantity: itemQty,
+              price: totalAmountCalc,
+            };
+
+            setItems([singleFormattedItem]);
+            const nextTotals = {
+              itemCount: itemQty,
+              totalMrp: totalMrpCalc,
+              totalAmount: totalAmountCalc,
+              discountOnMrp: discountCalc > 0 ? discountCalc : 0,
+            };
+            setTotals(nextTotals);
+            onTotalChange?.(nextTotals.totalAmount);
+          }
+        },
+        onFail: (err: any) => {
+          console.error("Failed to fetch product for checkout:", err);
+        },
+      });
     }
+  }, [from, productId, size, quantity]);
 
-    getQuery({
-      url: apiUrls.Cart.getByUserId,
-      onSuccess: (res: any) => {
-        if (res.data) {
-          // Map the exact JSON fields from your API response
-          setTotals({
-            itemCount: res.data.totalItems || 0,
-            totalMrp: res.data.cartTotalMarkupPrice || 0,
-            totalAmount: res.data.cartTotalAmount || 0,
-            discountOnMrp: res.data.cartTotalDiscount || 0,
-          });
-        }
-      },
-      onFail: (err: any) => {
-        console.error("Failed to fetch cart totals for sidebar:", err);
-      },
-    });
-  }, [fromProp]);
-
-  // 4. Dynamically generate the rows using the API's totals
   const rows = [
     { label: "Total MRP", value: formatINR(totals.totalMrp) },
     { label: "Discount", value: `- ${formatINR(totals.discountOnMrp)}` },
@@ -73,7 +121,7 @@ export function CheckoutSidebar(props: any) {
           {totals.itemCount} {totals.itemCount === 1 ? "item" : "items"}
         </p>
 
-        {/* --- CART ITEMS LIST (Uses Redux for fast UI mapping) --- */}
+        {/* --- ITEMS LIST --- */}
         <ul className="mt-5 space-y-5">
           {items.map((item: any) => (
             <li key={item.cartItemId || item.id} className="flex gap-3">

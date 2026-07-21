@@ -8,7 +8,6 @@ import { apiBaseUrl, apiUrls } from "../../../../apis";
 import { useToast } from "../../../../hooks/useToast.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { Heart } from "lucide-react";
-import AddressSidebar from "../../../../components/AddressSidebar/AddressSidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../../redux/slices/cartSlice";
 
@@ -239,7 +238,7 @@ const ProductInfo = () => {
       },
     ],
   };
-  const [isAddressSidebarOpen, setIsAddressSidebarOpen] = useState(false);
+  // const [isAddressSidebarOpen, setIsAddressSidebarOpen] = useState(false);
   const [thumbnail, setThumbnail] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
 
@@ -278,14 +277,14 @@ const ProductInfo = () => {
     product && productData && (
 
       <section className="bg-[#fdf9f3] py-5">
-        <AddressSidebar
+        {/* <AddressSidebar
           isOpen={isAddressSidebarOpen}
           onClose={() => setIsAddressSidebarOpen(false)}
-        />
+        /> */}
         <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
           <div className="max-w-6xl w-full ">
             <p className="text-[10.5px] tracking-[0.08em] uppercase text-[#84746e]">
-              <span>Home</span> /<span> Products</span> /
+              <span>Home</span> /<span> Products</span>
               <span> {product.category}</span> /
               <span className="text-[#835240]"> {product.name}</span>
             </p>
@@ -413,9 +412,24 @@ const ProductInfo = () => {
                     Add to Cart
                   </button>
                   <button
-                    onClick={() => setIsAddressSidebarOpen(true)}
+                    disabled={selectedSize === null || productData?.price?.[selectedSize]?.isAvailable === false}
+                    onClick={() => {
+                      if (selectedSize === null) return;
+
+                      navigate(`/checkout/address`, {
+                        state: {
+                          from: "product",
+                          productId: id,
+                          size: productData?.price?.[selectedSize]?.size?._id,
+                          quantity: quantity || 1, // Pass the quantity here
+                        },
+                      });
+                    }}
                     type="button"
-                    className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] text-[#835240] rounded-sm hover:bg-[#835240] hover:text-[#fdf9f3] transition-colors duration-200"
+                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null || productData?.price?.[selectedSize]?.isAvailable === false
+                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
+                      : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
+                      }`}
                   >
                     Buy Now
                   </button>
