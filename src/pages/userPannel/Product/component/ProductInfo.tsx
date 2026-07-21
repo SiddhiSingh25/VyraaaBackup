@@ -295,19 +295,71 @@ const ProductInfo = () => {
 
             <div className="flex flex-col md:flex-row gap-10 mt-4">
               <div className="flex gap-3 sticky top-24 self-start">
+                 <div className="flex gap-3 sticky top-24 self-start">
+                {/* Thumbnails Section */}
                 <div className="flex flex-col gap-2.5">
-                  {productData?.subImages?.map((image: any, index: number) => (
-                    <div
-                      key={index}
-                      onClick={() => setThumbnail(index)}
-                      className="border max-w-[70px] border-gray-500/30 rounded overflow-hidden cursor-pointer"
-                    >
-                      <img src={image} alt={`Thumbnail ${index + 1}`} />
-                    </div>
-                  ))}
+                  {productData?.subImages?.map((media: any, index: number) => {
+                    const isVid = isVideoUrl(media);
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => setThumbnail(index)}
+                        className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${
+                          thumbnail === index ? "border-[#835240]" : "border-gray-500/30"
+                        }`}
+                      >
+                        {isVid ? (
+                          <video
+                            src={media}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="w-full h-full object-cover pointer-events-none"
+                          />
+                        ) : (
+                          <img src={media} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
+                {/* Main Image/Video Section */}
                 <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
+                  <button
+                    onClick={handleWishlist}
+                    aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                    className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
+                  >
+                    <Heart
+                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
+                        isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
+                      }`}
+                      strokeWidth={2}
+                    />
+                  </button>
+
+                  {/* Render Main Selected Media */}
+                  {(() => {
+                    const activeMedia = productData?.subImages?.[thumbnail];
+                    return isVideoUrl(activeMedia) ? (
+                      <video
+                        src={activeMedia}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img src={activeMedia} alt="Selected product" className="w-full h-full object-cover" />
+                    );
+                  })()}
+                </div>
+              </div>
+
+                {/* <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
                   <button
                     onClick={handleWishlist}
                     aria-label={
@@ -322,7 +374,7 @@ const ProductInfo = () => {
                     />
                   </button>
                   <img src={productData?.subImages?.[thumbnail]} alt="Selected product" className="w-full h-full object-cover" />
-                </div>
+                </div> */}
               </div>
 
               <div className="w-full md:w-1/2">
@@ -389,7 +441,7 @@ const ProductInfo = () => {
                   <SectionLabel>
                     Colour — <span className="text-[#84746e] normal-case tracking-normal">{productData?.color}</span>
                   </SectionLabel>
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     {productData?.linkItems?.map((item: any) => (
                       <button
                         key={item._id}
@@ -404,6 +456,37 @@ const ProductInfo = () => {
                         <img src={item?.image} alt={item._id} className="w-full h-full object-cover" />
                       </button>
                     ))}
+                  </div> */}
+                   <div className="flex items-center gap-2">
+                    {productData?.linkItems?.map((item: any) => {
+                      const isVid = isVideoUrl(item?.image);
+                      return (
+                        <button
+                          key={item._id}
+                          type="button"
+                          onClick={() => navigate({ pathname: `/productDeatils/${item?._id}` })}
+                          aria-label={item?.name}
+                          className={`relative w-8 h-8 rounded-full overflow-hidden border transition-all duration-200 ${
+                            selectedColor === item?._id
+                              ? "border-[#835240] ring-1 ring-[#c98f7a] ring-offset-1 ring-offset-[#fdf9f3]"
+                              : "border-[#e6d9cf]"
+                          }`}
+                        >
+                          {isVid ? (
+                            <video
+                              src={item?.image}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              className="w-full h-full object-cover pointer-events-none"
+                            />
+                          ) : (
+                            <img src={item?.image} alt={item._id} className="w-full h-full object-cover" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 

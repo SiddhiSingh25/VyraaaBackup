@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Footer from "../../../components/Footer/Footer";
 import Navbar from "../../../components/Header/Navbar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { C } from "./constants";
 import type { ActiveChip, FilterState, FilterValue } from "./types";
@@ -29,11 +29,13 @@ interface NavState {
   subCategoryId?: string;
   fullCategoryData?: any;
   fullSubCategoryData?: any;
+  search?: string;
 }
 
 export default function ProductFilter() {
   const { getQuery } = useGetQuery();
   const location = useLocation();
+  const navigate = useNavigate();
   const navState = (location.state || {}) as NavState;
 
   // ---- reference data (loaded once, independent of filters) ----
@@ -113,6 +115,7 @@ export default function ProductFilter() {
     if (filterState.rating) params.append("rating", String(filterState.rating));
     if (filterState.discount) params.append("discount", String(filterState.discount));
     if (filterState.sort) params.append("sort", String(filterState.sort));
+    if (filterState.search) params.append("search", String(filterState.search));
 
     const priceVal = filterState.price as [number, number] | undefined;
     if (priceVal && Array.isArray(priceVal)) {
@@ -126,28 +129,7 @@ export default function ProductFilter() {
       url: finalUrl,
       onSuccess: (res: any) => {
         if (res.success && Array.isArray(res.data)) {
-          console.log(res.data, " ############################")
-          // const formattedProducts = res.data.map((item: any) => {
-          //   const basePrice = item.price?.length ? item.price[0] : null;
-          //   const badges: string[] = [];
-          //   if (basePrice?.isFewLeft) badges.push("Only Few Left");
-          //   if (!basePrice?.isAvailable) badges.push("Not Available");
-
-          //   return {
-          //     id: item._id,
-          //     name: item.title,
-          //     img: item.image,
-          //     img2: item.image,
-          //     brand: item.brand?.brand || "Vyraa",
-          //     price: basePrice ? basePrice.amount : 0,
-          //     mrp: basePrice ? basePrice.markupPrice : 0,
-          //     rating: item.averageRating || item.rating || 4.5,
-          //     reviews: 120,
-          //     badges,
-          //     size: basePrice ? basePrice.size._id : null,
-          //     sizeName: basePrice ? basePrice.size.size : null,
-          //   };
-          // });
+        
           setProductData(res.data);
           setTotalPages(res.pagination?.totalPages || 1);
           setPage(res.pagination?.currentPage || 1);
@@ -171,9 +153,18 @@ export default function ProductFilter() {
     filterState.rating,
     filterState.discount,
     filterState.sort,
+    filterState.search,
     JSON.stringify(filterState.price),
     page,
   ]);
+
+
+  useEffect(() => {
+  if (navState.search === undefined) return;
+  setFilterState((prev) => ({ ...prev, search: navState.search }));
+  setPage(1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [navState.search]);
 
   // ---------------------------------------------------------------------
   // Single handler for every filter change. Toolbar / FilterList /
@@ -195,12 +186,17 @@ export default function ProductFilter() {
       return next;
     });
     setPage(1);
-  }, []);
+
+    if (id === "search" && (value === null || value === undefined || value === "")) {
+      navigate(location.pathname, { replace: true, state: { ...location.state, search: undefined } });
+    }
+  }, [location.pathname, location.state, navigate]);
 
   const clearAll = useCallback(() => {
     setFilterState({});
     setPage(1);
-  }, []);
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.pathname, navigate]);
 
   // ---------------------------------------------------------------------
   // Active chips — derived purely from filterState + reference lists.
@@ -251,6 +247,8 @@ export default function ProductFilter() {
         label = `Brand: ${value}`;
       } else if (key === "gender") {
         label = `Gender: ${value}`;
+      } else if (key === "search") {
+        label = `Search: "${value}"`;
       }
 
       chips.push({ key: `${key}-${value}`, label, sectionId: key, remove: String(value) });
