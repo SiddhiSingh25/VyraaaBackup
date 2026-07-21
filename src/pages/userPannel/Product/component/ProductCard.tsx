@@ -116,13 +116,11 @@ const ProductCard = ({ product }: any) => {
 
     const currentPriceObj = product.price[selectedSize];
 
-    console.log(currentPriceObj?.size?._id, "88")
     if (!currentPriceObj?.isAvailable) {
       toast("error", "Selected size is not available");
       return;
     }
 
-    console.log(currentPriceObj?._id)
 
     setIsSubmitting(true);
 

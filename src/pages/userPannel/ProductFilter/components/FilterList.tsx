@@ -2,6 +2,10 @@ import React, { useMemo } from "react";
 import FilterSection from "./FilterSection";
 import type { FilterChangeHandler, FilterState, FilterSectionConfig } from "../types";
 
+const toSlug = (text: string) => {
+  return text ? text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") : "";
+};
+
 export interface FilterListProps {
   filterState: FilterState;
   onChange: FilterChangeHandler;
@@ -23,35 +27,35 @@ export default function FilterList({
   const filterSections = useMemo((): FilterSectionConfig[] => {
     const sections: FilterSectionConfig[] = [];
 
-    // 0. Category (if categoryId is not provided and options exist)
-    if (!categoryId && categories && categories.length > 0) {
-      sections.push({
-        id: "category",
-        title: "Category",
-        type: "checkbox",
-        searchable: categories.length > 6,
-        options: categories.map((cat: any) => ({
-          id: cat._id,
-          label: cat.category || "",
-          value: cat._id,
-        })),
-      });
-    }
+   // 0. Category
+if (categories && categories.length > 0) {
+  sections.push({
+    id: "category",
+    title: "Category",
+    type: "checkbox",
+    searchable: categories.length > 6,
+    options: categories.map((cat: any) => ({
+      id: cat._id,
+      label: cat.category || "",
+      value: cat._id,
+    })),
+  });
+}
 
-    // 1. Subcategory (if we have any options)
-    if (subCategories && subCategories.length > 0) {
-      sections.push({
-        id: "subCategory",
-        title: "Subcategory",
-        type: "checkbox",
-        searchable: subCategories.length > 6,
-        options: subCategories.map((sc: any) => ({
-          id: sc._id,
-          label: sc.subCategory || "",
-          value: sc._id,
-        })),
-      });
-    }
+// 1. Subcategory
+if (subCategories && subCategories.length > 0) {
+  sections.push({
+    id: "subCategory",
+    title: "Subcategory",
+    type: "checkbox",
+    searchable: subCategories.length > 6,
+    options: subCategories.map((sc: any) => ({
+      id: sc._id,
+      label: sc.subCategory || "",
+      value: sc._id,
+    })),
+  });
+}
 
     // 2. Color
     if (colors && colors.length > 0) {
