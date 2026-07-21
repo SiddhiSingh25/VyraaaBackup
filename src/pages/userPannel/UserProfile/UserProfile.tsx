@@ -111,7 +111,7 @@ export default function Profile() {
   useEffect(() => {
     getQuery({
       url: apiUrls.Auth.profile,
-      onSuccess: (res) => {
+      onSuccess: (res: any) => {
         const profile = res?.data;
         if (!profile) return;
 
@@ -150,7 +150,7 @@ export default function Profile() {
           loyaltyPoints: profile.totalReviews ?? 0,
         });
       },
-      onFail: (err) => {
+      onFail: (err: any) => {
         console.log(err)
       }
     })
@@ -264,7 +264,7 @@ export default function Profile() {
                   )}
 
                   {activeTab === "orders" && (
-                    <OrdersTab orders={sampleOrders} />
+                    <OrdersTab  />
                   )}
 
                   {activeTab === "addresses" && (

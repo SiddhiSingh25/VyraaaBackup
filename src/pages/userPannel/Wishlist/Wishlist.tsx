@@ -52,7 +52,7 @@ export default function WishlistPage() {
   const dispatch = useAppDispatch();
 
   const [isLoading, setIsLoading] = useState(true);
-  const items = useAppSelector((state) => state.wishlist.items || []);
+  const items = useAppSelector((state: any) => state.wishlist.items || []);
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -126,7 +126,7 @@ export default function WishlistPage() {
   };
 
   const addToBag = (id: string) => {
-    const product = items.find((item) => item.id === id);
+    const product = items.find((item: any) => item.id === id);
     if (!product) return;
 
     postQuery({
@@ -179,8 +179,8 @@ export default function WishlistPage() {
 
   const moveAllToBag = () => {
     items
-      .filter((item) => item.stockStatus !== "out-of-stock")
-      .forEach((item) => addToBag(item.id));
+      .filter((item: any) => item.stockStatus !== "out-of-stock")
+      .forEach((item: any) => addToBag(item.id));
   };
 
   // 3. Render a loading skeleton or spinner while fetching
@@ -239,7 +239,7 @@ export default function WishlistPage() {
               className="grid grid-cols-1 gap-6 pt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               <AnimatePresence mode="popLayout">
-                {items.map((product) => (
+                {items.map((product: any) => (
                   <WishlistCard
                     key={product.id}
                     product={product}

@@ -5,6 +5,7 @@ import { apiBaseUrl } from "./index.ts";
 // import { console } from "../utils/console";
 
 const apiInstance = () => {
+  let isRedirecting = false;
   const api = axios.create({
     baseURL: apiBaseUrl,
   });
@@ -51,7 +52,7 @@ const apiInstance = () => {
       }
 
       throw error;
-    }
+    },
   );
 
   return api;

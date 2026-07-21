@@ -171,8 +171,8 @@ export default function AdminLayout() {
       },
       {
         icon: FaUsers,
-        label: "All Customers",
-        path: "/admin/customers",
+        label: "Add Videos",
+        path: "/admin/Add-Home-Videos",
       },
     ],
     [productNavItems],
