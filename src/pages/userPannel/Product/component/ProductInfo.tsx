@@ -108,7 +108,7 @@ const ProductInfo = () => {
 
 
   const cart = useSelector((state: any) => state.cart.items);
-  console.log(cart, "=====cart");
+  // console.log(cart, "=====cart");
 
   useEffect(() => {
     if (!id) return;
@@ -131,7 +131,7 @@ const ProductInfo = () => {
 
   const handleWishlist = () => {
     setIsWishlisted(true);
-    console.log("Hello0 from the other side ")
+    // console.log("Hello0 from the other side ")
   }
 
   const handleAddToCart = () => {
