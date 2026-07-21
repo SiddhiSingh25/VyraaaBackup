@@ -1,11 +1,13 @@
 import { motion } from "motion/react";
 import type { CartItem } from "./cart";
 import { discountPercent, formatINR } from "./pricing";
-import { IconClock, IconClose } from "./icons";
-import usePostQuery from "../../../../../hooks/getQuery.hook"; // Assuming generic hook usage
+import { IconClock, IconClose } from "./icons";// Assuming generic hook usage
 import { apiUrls } from "../../../../../apis";
 import { useDispatch } from "react-redux";
 import { removeFromCart } from "../../../../../redux/slices/cartSlice";
+import useGetQuery from "../../../../../hooks/getQuery.hook";
+import usePostQuery from "@/hooks/postQuery.hook";
+import { useToast } from "@/hooks/useToast.hook";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -22,6 +24,9 @@ const CartItemCard = ({
 }: CartItemCardProps) => {
   const pct = discountPercent(item.mrp, item.price);
   const dispatch = useDispatch();
+  const { getQuery } = useGetQuery()
+  const { postQuery } = usePostQuery()
+  const toast = useToast()
 
   // Availability Flags
   const isAvailable = item.isAvailable !== false;
@@ -30,11 +35,37 @@ const CartItemCard = ({
   const updateCart = (newQty: number) => {
     const targetId = item?.cartItemId || item.id;
     onQtyChange(targetId, newQty);
+    postQuery({
+      url: apiUrls.Cart.update,
+      postData: {
+        itemId: targetId,
+        quantity: newQty,
+      },
+      onSuccess: (res: any) => {
+        // toast("success", "Quantity updated");
+        // onRefreshCart();
+      },
+      onFail: (res: any) => {
+        console.log(res?.data);
+        // toast("error", "Failed to update quantity");
+      },
+    });
   };
 
   const handleRemoveCart = () => {
     const targetId = item?.cartItemId || item?.id;
     dispatch(removeFromCart(targetId));
+    getQuery({
+      url: apiUrls.Cart.remove + item?.cartItemId,
+      onSuccess: (res: any) => {
+        // toast("success", res.message);
+        // onRefreshCart();
+      },
+      onFail: (res: any) => {
+        console.log(res?.data);
+      },
+    });
+
   };
 
   return (

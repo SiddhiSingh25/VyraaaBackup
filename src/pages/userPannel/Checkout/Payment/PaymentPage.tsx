@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2, Smartphone, CreditCard, Banknote, CheckCircle2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { clearCart } from "../../../../redux/slices/cartSlice";
 
 // Ensure you only import what you need from your dummy data
 import { priceBreakdown } from "./data/dummyData";
@@ -9,6 +10,7 @@ import { priceBreakdown } from "./data/dummyData";
 import "./styles/theme.css";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { apiUrls } from "@/apis";
+import { useDispatch } from "react-redux";
 
 // 1. Strict typing for the three allowed payment modes
 export type PaymentMode = "COD" | "Card" | "UPI";
@@ -43,6 +45,7 @@ export default function Payment() {
   const { postQuery } = usePostQuery()
   const navigate = useNavigate()
   const location = useLocation()
+  const dispatch = useDispatch()
   const {
     from,
     selectedAddressId,
@@ -63,6 +66,7 @@ export default function Payment() {
         onSuccess: (res: any) => {
 
           setIsProcessing(false)
+          dispatch(clearCart())
           navigate("/")
           // console.log(isUpdating ? "Address updated!" : "Address added!", res);
           // fetchAddresses(); // Refresh the list
