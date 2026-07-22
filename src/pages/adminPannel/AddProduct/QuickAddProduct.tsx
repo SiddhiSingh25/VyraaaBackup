@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
 import FormHeader from "./components/FormHeader";
 import SuccessBanner from "./components/SuccessBanner";
 import TaxonomySection from "./components/TaxonomySection";
@@ -9,12 +8,10 @@ import CoreInfoSection from "./components/CoreInfoSection";
 import VariantsSection from "./components/VariantsSection";
 import AttributesSection from "./components/AttributesSection";
 import MediaSection from "./components/MediaSection";
-
 import useCategoryData from "./api/useCategoryData";
 import useTaxonomyData from "./api/useTaxonomyData";
 import useColorFamilyData from "./api/useColorFamilyData";
 import useSizeTypeData from "./api/useSizeTypeData";
-
 import { quickAddSchema, quickAddDefaultValues } from "./schema";
 import type { QuickAddValues } from "./types";
 import useSubCategoryTypeData from "./api/useSubCategoryTypes";
@@ -27,8 +24,9 @@ import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
 import { useParams } from "react-router-dom";
 import Button from "../../../components/tableComponents/Button";
-import SkuSection from "./components/SKUCode";
 import ProductAddedModal from "./components/LinkProductModal";
+import GiftSection from "./components/GiftSection/GiftSection";
+import type { GiftItem } from "./types";
 
 const TOTAL_SECTIONS = 4;
 
@@ -38,7 +36,7 @@ const QuickAddProduct = () => {
   const [showProductModal, setShowProductModal] = useState(false);
 
   // categoryId coming from the route params (e.g. /category/:categoryId/quick-add)
-  const { categorySlug, categoryId: categoryIdFromParams } = useParams();
+  const { categoryId: categoryIdFromParams } = useParams();
 
   const { toast } = useToast();
 
@@ -87,6 +85,7 @@ const QuickAddProduct = () => {
   const gender = watch("gender");
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [gifts, setGifts] = useState<GiftItem[]>([]);
 
   // The single source of truth for "which category are we working under".
   // Params always win — if the user arrived via a category-scoped route,
@@ -284,6 +283,7 @@ const QuickAddProduct = () => {
   const resetForm = useCallback(() => {
     reset(getInitialValues());
     setImageFiles([]);
+    setGifts([]);
   }, [reset, getInitialValues]);
 
   const handleClear = () => {
@@ -332,6 +332,12 @@ const QuickAddProduct = () => {
             value: item.value,
           }))
         : [],
+
+      gifts: gifts.map((gift) => ({
+        product: gift.product,
+        quantity: gift.quantity,
+        size: gift.size,
+      })),
 
       linkItems: [],
     };
@@ -498,6 +504,8 @@ const QuickAddProduct = () => {
                 onRemoveImage={handleRemoveImage}
                 errorMessage={errors.images?.message as string | undefined}
               />
+
+              <GiftSection gifts={gifts} setGifts={setGifts} />
             </div>
 
             {/* Action Buttons */}
