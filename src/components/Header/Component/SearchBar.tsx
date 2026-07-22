@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Search, X } from "lucide-react";
 
 interface SearchBarProps {
@@ -7,24 +8,65 @@ interface SearchBarProps {
   className?: string;
 }
 
+const SEARCH_DEBOUNCE_MS = 450;
+const PRODUCT_LISTING_PATH = "/products"; // <-- adjust to your actual listing route
+
 export default function SearchBar({
   variant = "desktop",
   placeholder = "Search for products, brands and more",
   className = "",
 }: SearchBarProps) {
-  const [value, setValue] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navSearch = (location.state as any)?.search || "";
+  const [value, setValue] = useState(navSearch);
   const [focused, setFocused] = useState(false);
   const isMobile = variant === "mobile";
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Sync input value with router state search term
+  useEffect(() => {
+    setValue(navSearch);
+  }, [navSearch]);
+
+  // Debounced navigation as-you-type
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    const trimmed = value.trim();
+    const currentSearch = (location.state as any)?.search || "";
+
+    if (trimmed !== currentSearch) {
+      debounceRef.current = setTimeout(() => {
+        const nextState = trimmed ? { search: trimmed } : {};
+        navigate(PRODUCT_LISTING_PATH, { state: nextState });
+      }, SEARCH_DEBOUNCE_MS);
+    }
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, navSearch, navigate]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      const trimmed = value.trim();
+      const nextState = trimmed ? { search: trimmed } : {};
+      navigate(PRODUCT_LISTING_PATH, { state: nextState });
+    }
+  };
 
   return (
     <div className={`relative w-full ${isMobile ? "h-10" : "h-10"} ${className}`}>
       <div
         className={`flex items-center w-full h-full rounded-full border bg-heading/[0.035]
           transition-all duration-300 ease-out
-          ${
-            focused
-              ? "border-primary/40 bg-background shadow-[0_0_0_4px_rgba(0,0,0,0.03)] ring-2 ring-primary/15"
-              : "border-border/70 hover:border-border"
+          ${focused
+            ? "border-primary/40 bg-background shadow-[0_0_0_4px_rgba(0,0,0,0.03)] ring-2 ring-primary/15"
+            : "border-border/70 hover:border-border"
           }`}
       >
         <Search
@@ -38,11 +80,12 @@ export default function SearchBar({
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={placeholder}
           className="w-full h-full bg-transparent px-3 text-[13px] tracking-wide text-admin-text
-            placeholder:text-admin-text/50 focus:outline-none "
+            placeholder:text-admin-text/50 focus:outline-none"
         />
         {value && (
           <button
@@ -58,8 +101,3 @@ export default function SearchBar({
     </div>
   );
 }
-
-
-
-
-

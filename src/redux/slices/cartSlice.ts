@@ -1,8 +1,31 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
+export interface CartItem {
+  id: string;
+  cartItemId: string;
+  size: string;
+  quantity: number;
+  qty: number;
+  baseMrp: number;
+  basePrice: number;
+  mrp: number;
+  price: number;
+  selected: boolean;
+  isAvailable?: boolean;
+  isFewLeft?: boolean;
+  [key: string]: any;
+}
+
+export interface CartState {
+  items: CartItem[];
+  totalItems: number;
+  cartTotalAmount: number;
+  cartTotalMarkupPrice: number;
+  cartTotalDiscount: number;
+}
+
+const initialState: CartState = {
   items: [],
-  // New states to track totals
   totalItems: 0,
   cartTotalAmount: 0,
   cartTotalMarkupPrice: 0,
@@ -10,7 +33,7 @@ const initialState = {
 };
 
 // Helper function to recalculate all totals dynamically
-const recalculateCartTotals = (state) => {
+const recalculateCartTotals = (state: CartState) => {
   // 1. Calculate total distinct items (quantity of 3 still counts as 1 row/item)
   state.totalItems = state.items.length;
 
@@ -34,7 +57,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action) => {
+    addToCart: (state, action: PayloadAction<any>) => {
       const newItem = action.payload;
       const existingItem = state.items.find(
         (item) => item.id === newItem.id && item.size === newItem.size,
@@ -65,6 +88,7 @@ const cartSlice = createSlice({
           price: bPrice * amt,
           quantity: amt,
           qty: amt,
+          selected: newItem.selected !== undefined ? newItem.selected : true,
         });
       }
 
@@ -72,7 +96,7 @@ const cartSlice = createSlice({
       recalculateCartTotals(state);
     },
 
-    removeFromCart: (state, action) => {
+    removeFromCart: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(
         (item) => (item.cartItemId || item.id) !== action.payload,
       );
@@ -81,7 +105,7 @@ const cartSlice = createSlice({
       recalculateCartTotals(state);
     },
 
-    increaseQuantity: (state, action) => {
+    increaseQuantity: (state, action: PayloadAction<string>) => {
       const item = state.items.find(
         (item) => (item.cartItemId || item.id) === action.payload,
       );
@@ -98,7 +122,7 @@ const cartSlice = createSlice({
       recalculateCartTotals(state);
     },
 
-    decreaseQuantity: (state, action) => {
+    decreaseQuantity: (state, action: PayloadAction<string>) => {
       const item = state.items.find(
         (item) => (item.cartItemId || item.id) === action.payload,
       );
@@ -118,7 +142,10 @@ const cartSlice = createSlice({
       recalculateCartTotals(state);
     },
 
-    updateQuantity: (state, action) => {
+    updateQuantity: (
+      state,
+      action: PayloadAction<{ cartItemId?: string; id?: string; quantity: number }>,
+    ) => {
       const { cartItemId, id, quantity } = action.payload;
       const item = state.items.find(
         (item) => (item.cartItemId || item.id) === (cartItemId || id),
@@ -136,24 +163,21 @@ const cartSlice = createSlice({
       recalculateCartTotals(state);
     },
 
-    toggleSelectItem: (state, action) => {
+    toggleSelectItem: (state, action: PayloadAction<string>) => {
       const item = state.items.find(
         (item) => (item.cartItemId || item.id) === action.payload,
       );
       if (item) {
         item.selected = item.selected === undefined ? false : !item.selected;
       }
-
-      // NOTE: If you only want selected items to be calculated in the grand total,
-      // you can update the `recalculateCartTotals` function to filter by `item.selected === true`.
     },
 
-    setCartItems: (state, action) => {
+    setCartItems: (state, action: PayloadAction<any>) => {
       const incomingItems = Array.isArray(action.payload)
         ? action.payload
         : action.payload.items || [];
 
-      state.items = incomingItems.map((item) => {
+      state.items = incomingItems.map((item: any) => {
         const qty = item.quantity || item.qty || 1;
         const priceArrayObj = item.product?.price?.[0] || {};
 

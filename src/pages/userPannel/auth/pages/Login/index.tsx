@@ -119,9 +119,7 @@ const Login = () => {
                     price: defaultPrice.amount,
                     originalPrice: defaultPrice.markupPrice,
                     stockStatus: defaultPrice.isAvailable ? "in-stock" : "out-of-stock",
-                    colorName: "Standard",
-                    colorHex: "#000000",
-                    size: "Standard",
+                  
                     reviewCount: 0,
                     badge: null,
                   };

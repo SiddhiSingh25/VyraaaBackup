@@ -11,8 +11,11 @@ import { Heart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../../redux/slices/cartSlice";
 
-
-
+const isVideoUrl = (url: string) => {
+  if (!url) return false;
+  // Checks for common video extensions. Expand this list if your backend uses others.
+  return /\.(mp4|webm|ogg|mov)$/i.test(url);
+};
 
 const StarRating = ({ rating, totalRatings }: any) => (
   <div className="flex items-center gap-1.5 mt-1">
@@ -20,7 +23,14 @@ const StarRating = ({ rating, totalRatings }: any) => (
       {Array(5)
         .fill("")
         .map((_, i) => (
-          <svg key={i} width="12" height="11" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            key={i}
+            width="12"
+            height="11"
+            viewBox="0 0 18 17"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               d="M8.049.927c.3-.921 1.603-.921 1.902 0l1.294 3.983a1 1 0 0 0 .951.69h4.188c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 0 0-.364 1.118l1.295 3.983c.299.921-.756 1.688-1.54 1.118L9.589 13.63a1 1 0 0 0-1.176 0l-3.389 2.46c-.783.57-1.838-.197-1.539-1.118L4.78 10.99a1 1 0 0 0-.363-1.118L1.028 7.41c-.783-.57-.38-1.81.588-1.81h4.188a1 1 0 0 0 .95-.69z"
               fill={rating > i ? "#835240" : "#e6d9cf"}
@@ -36,7 +46,9 @@ const StarRating = ({ rating, totalRatings }: any) => (
 
 const SectionLabel = ({ children, action }: any) => (
   <div className="flex items-center justify-between mb-2">
-    <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium">{children}</p>
+    <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium">
+      {children}
+    </p>
     {action}
   </div>
 );
@@ -57,8 +69,18 @@ const SpecCell = ({ label, value }: any) => (
 
 const TruckIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <path d="M2 7h13v9H2z" stroke="#835240" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M15 10h4l3 3v3h-7v-6z" stroke="#835240" strokeWidth="1.5" strokeLinejoin="round" />
+    <path
+      d="M2 7h13v9H2z"
+      stroke="#835240"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15 10h4l3 3v3h-7v-6z"
+      stroke="#835240"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
     <circle cx="6.5" cy="18" r="1.8" stroke="#835240" strokeWidth="1.5" />
     <circle cx="17.5" cy="18" r="1.8" stroke="#835240" strokeWidth="1.5" />
   </svg>
@@ -66,14 +88,31 @@ const TruckIcon = () => (
 
 const ReturnIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <path d="M4 4v6h6" stroke="#835240" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M4.5 14a8 8 0 1 0 2-8.5L4 10" stroke="#835240" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M4 4v6h6"
+      stroke="#835240"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4.5 14a8 8 0 1 0 2-8.5L4 10"
+      stroke="#835240"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const ShieldIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <path d="M12 2L4 5v6c0 5 3.4 8.7 8 9.9C16.6 19.7 20 16 20 11V5l-8-3z" stroke="#835240" strokeWidth="1.5" strokeLinejoin="round" />
+    <path
+      d="M12 2L4 5v6c0 5 3.4 8.7 8 9.9C16.6 19.7 20 16 20 11V5l-8-3z"
+      stroke="#835240"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
@@ -91,7 +130,7 @@ const HeartIcon = ({ filled }: any) => (
 /* ---------------------------------- Main ---------------------------------- */
 
 const ProductInfo = () => {
-  // FIX 1: Initialized with <any>(null) instead of <{}>(). 
+  // FIX 1: Initialized with <any>(null) instead of <{}>().
   // This prevents TS errors when accessing deeply nested properties like productData.price
   const [productData, setProductData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -101,10 +140,11 @@ const ProductInfo = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { toast } = useToast();
-  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: any) => state.auth.isAuthenticated,
+  );
 
-
-
+ 
 
   const cart = useSelector((state: any) => state.cart.items);
   // console.log(cart, "=====cart");
@@ -117,8 +157,11 @@ const ProductInfo = () => {
       url: apiUrls.Product.getById + id,
       onSuccess: (res: any) => {
         // console.log(res.data, "====");
-        const subImages = res?.data?.image ? [res.data.image, ...(res?.data?.subImages || [])] : (res?.data?.subImages || []);
+        const subImages = res?.data?.image
+          ? [res.data.image, ...(res?.data?.subImages || [])]
+          : res?.data?.subImages || [];
         setProductData({ ...res.data, subImages });
+        console.log(res.data, "78975897777")
         setIsLoading(false);
       },
       onFail: (res: any) => {
@@ -131,7 +174,7 @@ const ProductInfo = () => {
   const handleWishlist = () => {
     setIsWishlisted(true);
     // console.log("Hello0 from the other side ")
-  }
+  };
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -143,9 +186,9 @@ const ProductInfo = () => {
     postQuery({
       url: apiUrls.Cart.add,
       postData: {
-        "productId": productData._id,
-        "size": productData?.price?.[selectedSize]?.size?._id,
-        "quantity": 1
+        productId: productData._id,
+        size: productData?.price?.[selectedSize]?.size?._id,
+        quantity: 1,
       },
       onSuccess: (res: any) => {
         toast("success", res.message);
@@ -160,7 +203,7 @@ const ProductInfo = () => {
             size: productData?.price?.[selectedSize]?.size?.size || "",
             price: productData?.price?.[selectedSize]?.amount || 0,
             mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
-          })
+          }),
         );
       },
       onFail: (res: any) => {
@@ -221,7 +264,8 @@ const ProductInfo = () => {
         verified: true,
         date: "2 weeks ago",
         title: "Excellent Quality",
-        review: "Very comfortable shoes. Material feels premium, lightweight and perfect for everyday wear.",
+        review:
+          "Very comfortable shoes. Material feels premium, lightweight and perfect for everyday wear.",
         helpful: 122,
         images: [kidsFootwear, kidsFootwear],
       },
@@ -232,7 +276,8 @@ const ProductInfo = () => {
         verified: true,
         date: "1 month ago",
         title: "Loved It",
-        review: "Beautiful design, excellent cushioning and true to size. Definitely worth buying.",
+        review:
+          "Beautiful design, excellent cushioning and true to size. Definitely worth buying.",
         helpful: 73,
         images: [kidsFootwear, kidsFootwear, kidsFootwear],
       },
@@ -240,9 +285,9 @@ const ProductInfo = () => {
   };
   // const [isAddressSidebarOpen, setIsAddressSidebarOpen] = useState(false);
   const [thumbnail, setThumbnail] = React.useState(0);
-  const [selectedColor, setSelectedColor] = React.useState(product.colorOptions[0].name);
-
-
+  const [selectedColor, setSelectedColor] = React.useState(
+    product.colorOptions[0].name,
+  );
 
   const [selectedSize, setSelectedSize] = React.useState<number>(0);
 
@@ -255,8 +300,6 @@ const ProductInfo = () => {
     setSelectedSize(0);
     setIsWishlisted(false);
   }, [productData]);
-
-
 
   if (isLoading) {
     return (
@@ -274,8 +317,8 @@ const ProductInfo = () => {
   }
 
   return (
-    product && productData && (
-
+    product &&
+    productData && (
       <section className="bg-[#fdf9f3] py-5">
         {/* <AddressSidebar
           isOpen={isAddressSidebarOpen}
@@ -291,19 +334,89 @@ const ProductInfo = () => {
 
             <div className="flex flex-col md:flex-row gap-10 mt-4">
               <div className="flex gap-3 sticky top-24 self-start">
-                <div className="flex flex-col gap-2.5">
-                  {productData?.subImages?.map((image: any, index: number) => (
-                    <div
-                      key={index}
-                      onClick={() => setThumbnail(index)}
-                      className="border max-w-[70px] border-gray-500/30 rounded overflow-hidden cursor-pointer"
+                <div className="flex gap-3 sticky top-24 self-start">
+                  {/* Thumbnails Section */}
+                  <div className="flex flex-col gap-2.5">
+                    {productData?.subImages?.map(
+                      (media: any, index: number) => {
+                        const isVid = isVideoUrl(media);
+                        return (
+                          <div
+                            key={index}
+                            onClick={() => setThumbnail(index)}
+                            className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${
+                              thumbnail === index
+                                ? "border-[#835240]"
+                                : "border-gray-500/30"
+                            }`}
+                          >
+                            {isVid ? (
+                              <video
+                                src={media}
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                className="w-full h-full object-cover pointer-events-none"
+                              />
+                            ) : (
+                              <img
+                                src={media}
+                                alt={`Thumbnail ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                        );
+                      },
+                    )}
+                  </div>
+
+                  {/* Main Image/Video Section */}
+                  <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
+                    <button
+                      onClick={handleWishlist}
+                      aria-label={
+                        isWishlisted
+                          ? "Remove from wishlist"
+                          : "Add to wishlist"
+                      }
+                      className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
                     >
-                      <img src={image} alt={`Thumbnail ${index + 1}`} />
-                    </div>
-                  ))}
+                      <Heart
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
+                          isWishlisted
+                            ? "fill-red-500 text-red-500"
+                            : "text-gray-700"
+                        }`}
+                        strokeWidth={2}
+                      />
+                    </button>
+
+                    {/* Render Main Selected Media */}
+                    {(() => {
+                      const activeMedia = productData?.subImages?.[thumbnail];
+                      return isVideoUrl(activeMedia) ? (
+                        <video
+                          src={activeMedia}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <img
+                          src={activeMedia}
+                          alt="Selected product"
+                          className="w-full h-full object-cover"
+                        />
+                      );
+                    })()}
+                  </div>
                 </div>
 
-                <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
+                {/* <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
                   <button
                     onClick={handleWishlist}
                     aria-label={
@@ -318,7 +431,7 @@ const ProductInfo = () => {
                     />
                   </button>
                   <img src={productData?.subImages?.[thumbnail]} alt="Selected product" className="w-full h-full object-cover" />
-                </div>
+                </div> */}
               </div>
 
               <div className="w-full md:w-1/2">
@@ -329,7 +442,14 @@ const ProductInfo = () => {
                   {productData?.title}
                 </h1>
 
-                <StarRating rating={productData?.averageRating} totalRatings={product.totalRatings} />
+                {productData.averageRating == 0 ? (
+                  ""
+                ) : (
+                  <StarRating
+                    rating={productData?.averageRating}
+                    // totalRatings={product.totalRatings}
+                  />
+                )}
 
                 <div className="mt-3 flex items-baseline gap-2">
                   <span className="text-[22px] text-[#3b302a] font-semibold leading-none">
@@ -342,22 +462,17 @@ const ProductInfo = () => {
                     ({productData?.price?.[selectedSize]?.discount || 0}% OFF)
                   </span>
                 </div>
-                {productData?.price?.[selectedSize]?.discount != 0 &&
+                {productData?.price?.[selectedSize]?.discount != 0 && (
                   <p className="mt-0.5 text-[11px] text-[#84746e]">
-                    inclusive of all taxes · you save ₹{productData?.price?.[selectedSize]?.markupPrice - productData?.price?.[selectedSize]?.amount}
+                    inclusive of all taxes · you save ₹
+                    {productData?.price?.[selectedSize]?.markupPrice -
+                      productData?.price?.[selectedSize]?.amount}
                   </p>
-                }
+                )}
 
                 <div className="mt-4">
                   <SectionLabel
-                    action={
-                      <button
-                        type="button"
-                        className="text-[10.5px] text-[#b76e79] underline underline-offset-2 decoration-[#e6d9cf] hover:decoration-[#b76e79]"
-                      >
-                        Size Chart &gt;
-                      </button>
-                    }
+                  
                   >
                     Select Size
                   </SectionLabel>
@@ -368,12 +483,13 @@ const ProductInfo = () => {
                         type="button"
                         disabled={!size.isAvailable}
                         onClick={() => setSelectedSize(index)}
-                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${!size.isAvailable
-                          ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
-                          : selectedSize === index
-                            ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
-                            : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
-                          }`}
+                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${
+                          !size.isAvailable
+                            ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
+                            : selectedSize === index
+                              ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
+                              : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
+                        }`}
                       >
                         {size.size.size}
                       </button>
@@ -383,9 +499,12 @@ const ProductInfo = () => {
 
                 <div className="mt-4">
                   <SectionLabel>
-                    Colour — <span className="text-[#84746e] normal-case tracking-normal">{productData?.color}</span>
+                    Colour —{" "}
+                    <span className="text-[#84746e] normal-case tracking-normal">
+                      {productData?.color}
+                    </span>
                   </SectionLabel>
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     {productData?.linkItems?.map((item: any) => (
                       <button
                         key={item._id}
@@ -400,6 +519,45 @@ const ProductInfo = () => {
                         <img src={item?.image} alt={item._id} className="w-full h-full object-cover" />
                       </button>
                     ))}
+                  </div> */}
+                  <div className="flex items-center gap-2">
+                    {productData?.linkItems?.map((item: any) => {
+                      const isVid = isVideoUrl(item?.image);
+                      return (
+                        <button
+                          key={item._id}
+                          type="button"
+                          onClick={() =>
+                            navigate({
+                              pathname: `/productDeatils/${item?._id}`,
+                            })
+                          }
+                          aria-label={item?.name}
+                          className={`relative w-8 h-8 rounded-full overflow-hidden border transition-all duration-200 ${
+                            selectedColor === item?._id
+                              ? "border-[#835240] ring-1 ring-[#c98f7a] ring-offset-1 ring-offset-[#fdf9f3]"
+                              : "border-[#e6d9cf]"
+                          }`}
+                        >
+                          {isVid ? (
+                            <video
+                              src={item?.image}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              className="w-full h-full object-cover pointer-events-none"
+                            />
+                          ) : (
+                            <img
+                              src={item?.image}
+                              alt={item._id}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -412,7 +570,10 @@ const ProductInfo = () => {
                     Add to Cart
                   </button>
                   <button
-                    disabled={selectedSize === null || productData?.price?.[selectedSize]?.isAvailable === false}
+                    disabled={
+                      selectedSize === null ||
+                      productData?.price?.[selectedSize]?.isAvailable === false
+                    }
                     onClick={() => {
                       if (selectedSize === null) return;  
 
@@ -426,10 +587,12 @@ const ProductInfo = () => {
                       });
                     }}
                     type="button"
-                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null || productData?.price?.[selectedSize]?.isAvailable === false
-                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
-                      : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
-                      }`}
+                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${
+                      selectedSize === null ||
+                      productData?.price?.[selectedSize]?.isAvailable === false
+                        ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
+                        : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
+                    }`}
                   >
                     Buy Now
                   </button>
@@ -444,9 +607,15 @@ const ProductInfo = () => {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
-                  <TrustLine icon={<ShieldIcon />}>100% Original Products</TrustLine>
-                  <TrustLine icon={<TruckIcon />}>Free shipping, pan-India</TrustLine>
-                  <TrustLine icon={<ReturnIcon />}>Easy 7-day returns & exchanges</TrustLine>
+                  <TrustLine icon={<ShieldIcon />}>
+                    100% Original Products
+                  </TrustLine>
+                  <TrustLine icon={<TruckIcon />}>
+                    Free shipping, pan-India
+                  </TrustLine>
+                  <TrustLine icon={<ReturnIcon />}>
+                    Easy 7-day returns & exchanges
+                  </TrustLine>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-[#e6d9cf]">
@@ -462,7 +631,11 @@ const ProductInfo = () => {
                   </p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                     {productData?.attributes?.map((spec: any) => (
-                      <SpecCell key={spec._id} label={spec.property} value={spec.value} />
+                      <SpecCell
+                        key={spec._id}
+                        label={spec.property}
+                        value={spec.value}
+                      />
                     ))}
                   </div>
                 </div>

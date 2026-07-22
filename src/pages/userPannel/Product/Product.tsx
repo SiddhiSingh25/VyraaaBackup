@@ -15,7 +15,7 @@ export default function ProductDetails() {
    <Navbar/>
    <ProductInfo/>
    <SuggestedProduct/>
-   <CustomerLiked/>
+   {/* <CustomerLiked/> */}
    <Footer/>
    </>
   );

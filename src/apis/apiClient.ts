@@ -44,8 +44,8 @@ const apiInstance = () => {
         localStorage.removeItem("token");
         document.cookie = "token=; max-age=0; path=/";
         // Dynamically import store and logout to prevent circular dependency
-        import("../redux/store").then(({ store }) => {
-          import("../redux/slices/authSlice").then(({ logout }) => {
+        import("../redux/store.ts").then(({ store }) => {
+          import("../redux/slices/authSlice.ts").then(({ logout }) => {
             store.dispatch(logout());
           });
         });
