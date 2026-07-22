@@ -150,4 +150,7 @@ export const apiUrls = {
     updateOrderStatus: "order/updateOrderStatus",
     createOrder : "/order/createOrder"
   },
+  Review : {
+    add : "/review/add"
+  }
 };
