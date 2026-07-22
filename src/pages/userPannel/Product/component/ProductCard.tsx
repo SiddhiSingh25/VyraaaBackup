@@ -256,7 +256,7 @@ const handleWishlist = (e: React.MouseEvent<HTMLButtonElement>) => {
       >
         <div className="relative overflow-hidden rounded-2xl bg-[#F2E8DD]" style={{ aspectRatio: "4 / 5" }}>
           <img
-            src={hover && product.subImages?.[0] ? product.subImages[0] : product.image}
+            src={product.image}
             alt={product.title}
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-[400ms] ease-out"

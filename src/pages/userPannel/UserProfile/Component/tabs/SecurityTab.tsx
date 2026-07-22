@@ -5,9 +5,7 @@ import { useToast } from "@/hooks/useToast.hook";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { apiUrls } from "@/apis";
 import { Loader2 } from "lucide-react";
-
-const inputClasses =
-  "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-body placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-shadow disabled:opacity-60";
+import { PasswordInput } from "@/pages/userPannel/auth/components";
 
 type SecurityFormValues = {
   currentPassword: string;
@@ -71,41 +69,32 @@ export function SecurityTab() {
         <h2 className="font-heading text-lg text-admin-text">Change password</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div className="flex flex-col gap-1">
-            <input
-              type="password"
+            <PasswordInput
+            label="Current password"
               placeholder="Current password"
-              className={`${inputClasses} ${errors.currentPassword ? "border-red-500 focus:ring-red-500" : ""}`}
               disabled={loading}
+              error={errors.currentPassword?.message}
               {...register("currentPassword")}
             />
-            {errors.currentPassword?.message && (
-              <span className="text-xs text-red-500 px-1">{errors.currentPassword.message}</span>
-            )}
           </div>
           <div />
           <div className="flex flex-col gap-1">
-            <input
-              type="password"
+            <PasswordInput
+              label="New password"
               placeholder="New password"
-              className={`${inputClasses} ${errors.newPassword ? "border-red-500 focus:ring-red-500" : ""}`}
               disabled={loading}
+              error={errors.newPassword?.message}
               {...register("newPassword")}
             />
-            {errors.newPassword?.message && (
-              <span className="text-xs text-red-500 px-1">{errors.newPassword.message}</span>
-            )}
           </div>
           <div className="flex flex-col gap-1">
-            <input
-              type="password"
+            <PasswordInput
+            label="Confirm new password"
               placeholder="Confirm new password"
-              className={`${inputClasses} ${errors.confirmNewPassword ? "border-red-500 focus:ring-red-500" : ""}`}
               disabled={loading}
+              error={errors.confirmNewPassword?.message}
               {...register("confirmNewPassword")}
             />
-            {errors.confirmNewPassword?.message && (
-              <span className="text-xs text-red-500 px-1">{errors.confirmNewPassword.message}</span>
-            )}
           </div>
         </div>
         <div>
