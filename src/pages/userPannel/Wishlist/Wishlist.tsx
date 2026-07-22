@@ -31,7 +31,7 @@ function EmptyWishlist() {
       </div>
       <button
         type="button"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/products")}
         className="mt-2 rounded-full bg-heading px-6 py-2.5 text-sm font-medium text-background transition-colors hover:bg-primary-dark"
       >
         Continue Shopping
@@ -213,18 +213,7 @@ export default function WishlistPage() {
             <p className="mt-2 text-sm text-body">Pieces you love, saved for later.</p>
           </div>
 
-          {items.length > 0 && (
-            <div className="flex items-center gap-3">
-
-              <button
-                type="button"
-                onClick={moveAllToBag}
-                className="flex items-center gap-1.5 rounded-full bg-heading px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-primary-dark"
-              >
-                Move All to Bag
-              </button>
-            </div>
-          )}
+          
         </div>
 
         {/* Grid */}
