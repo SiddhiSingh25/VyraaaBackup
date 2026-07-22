@@ -276,12 +276,18 @@ const handleWishlist = (e: React.MouseEvent<HTMLButtonElement>) => {
             className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full flex items-center justify-center transition-colors z-10 disabled:opacity-60"
             style={{ background: "rgba(253,249,243,0.9)" }}
           >
-            <Heart
+            {/* <Heart
               size={16}
               strokeWidth={1.8}
-              fill={isWished ? "#B76E79" : "none"}
+              // fill-red-500 text-red-500
+              fill={isWished ? "fill-red-500 text-red-500 " : "none"}
               color={isWished ? "#B76E79" : "#3B302A"}
-            />
+            /> */}
+            <Heart
+  size={16}
+  strokeWidth={1.8}
+  className={isWished ? "fill-red-500 text-red-500" : "fill-none text-[#3B302A]"}
+/>
           </button>
 
           <AnimatePresence>
