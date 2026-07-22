@@ -10,7 +10,7 @@ import useGetQuery from "../../../../hooks/getQuery.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../apis";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   setCartItems,
   toggleSelectItem,
@@ -146,12 +146,12 @@ const Cart = () => {
             <p className="font-body text-sm text-muted">
               Looks like you haven't added anything to your bag yet.
             </p>
-            <a
-              href="#"
+            <Link
+              to="/products"
               className="mt-2 rounded-md bg-primary px-6 py-2.5 font-body text-sm font-semibold tracking-wide text-background transition-colors hover:bg-primary-dark"
             >
               CONTINUE SHOPPING
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">

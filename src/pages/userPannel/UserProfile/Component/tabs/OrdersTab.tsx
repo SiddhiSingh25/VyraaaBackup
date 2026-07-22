@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
   Truck,
@@ -8,14 +8,16 @@ import {
   Headphones,
   Star,
   X,
-  Package
+  Package,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useGetQuery from "@/hooks/getQuery.hook";
+import usePostQuery from "@/hooks/postQuery.hook"; // <-- Added
 import { apiUrls } from "@/apis";
 
 export function OrdersTab() {
   const { getQuery } = useGetQuery();
+  const { postQuery } = usePostQuery(); // <-- Added
   const [orders, setOrders] = useState<any[]>([]);
 
   // Review Modal State
@@ -23,15 +25,16 @@ export function OrdersTab() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [reviewText, setReviewText] = useState("");
   const [reviewImages, setReviewImages] = useState<File[]>([]);
+  const [rating, setRating] = useState<number>(5); // <-- Added Rating State
+  const [isSubmitting, setIsSubmitting] = useState(false); // <-- Added loading state
 
   useEffect(() => {
     getQuery({
       url: apiUrls.Orders.getByUserId,
       onSuccess: (res: any) => {
-        // Flatten orders because status and product info live inside the items array
         const formattedOrders = res.data.flatMap((order: any) =>
           order.items.map((item: any) => ({
-            id: item._id,
+            id: item._id, // This is the orderItemId
             orderId: order._id,
             placedOn: new Date(order.createdAt).toLocaleDateString("en-US", {
               day: "numeric",
@@ -57,20 +60,93 @@ export function OrdersTab() {
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setReviewImages((prev) => [...prev, ...Array.from(e.target.files!)]);
+      const newFiles = Array.from(e.target.files);
+      setReviewImages((prev) => {
+        const combined = [...prev, ...newFiles];
+        // Enforce maximum 2 images limit
+        if (combined.length > 2) {
+          alert("You can only upload a maximum of 2 images.");
+          return combined.slice(0, 2);
+        }
+        return combined;
+      });
     }
   };
 
-  const handleSubmitReview = () => {
-    console.log("Submitting review for item:", selectedOrder?.id);
-    console.log("Message:", reviewText);
-    console.log("Images:", reviewImages);
-    // Add API call here (e.g., postQuery to submit the review)
+  const uploadImages = async (files: File[]) => {
+    const imageUrls: string[] = [];
 
-    setIsReviewModalOpen(false);
-    setReviewText("");
-    setReviewImages([]);
-    setSelectedOrder(null);
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Using a Promise to wrap the postQuery for async/await behavior
+      const uploadResponse = await new Promise((resolve, reject) => {
+        postQuery({
+          url: apiUrls.Image.upload, // Make sure this matches your APIs config
+          postData: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          onSuccess: (res: any) => resolve(res),
+          onFail: (err: any) => reject(err),
+        });
+      });
+
+      if (!(uploadResponse as any)?.data) {
+        throw new Error("Image upload failed");
+      }
+
+      imageUrls.push((uploadResponse as any).data);
+    }
+    return imageUrls;
+  };
+
+  const handleSubmitReview = async () => {
+    if (!selectedOrder) return;
+    setIsSubmitting(true);
+
+    try {
+      // 1. Upload Images (if any)
+      let uploadedImageUrls: string[] = [];
+      if (reviewImages.length > 0) {
+        uploadedImageUrls = await uploadImages(reviewImages);
+      }
+
+      // 2. Prepare Payload matching your controller expectations
+      const payload = {
+        orderItemId: selectedOrder.id,
+        productId: selectedOrder.productId,
+        rating: Number(rating),
+        message: reviewText,
+        images: uploadedImageUrls,
+      };
+      // console.log(payload, "=======")
+      // 3. Submit Review
+      postQuery({
+        url: apiUrls.Review.add, // Replace with your actual review endpoint in apiUrls
+        postData: payload,
+        onSuccess: (res: any) => {
+          console.log("Review submitted successfully!", res);
+          // Reset Modal States
+          setIsReviewModalOpen(false);
+          setReviewText("");
+          setReviewImages([]);
+          setRating(5);
+          setSelectedOrder(null);
+          // Optional: Refetch orders here to update the UI
+        },
+        onFail: (err: any) => {
+          console.error("Failed to submit review:", err);
+          alert(err?.response?.data?.message || "Failed to submit review.");
+        },
+      });
+    } catch (error: any) {
+      console.error("Error during submission:", error);
+      alert("An error occurred while uploading images or submitting the review.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!orders.length) {
@@ -122,13 +198,13 @@ export function OrdersTab() {
             <div>
               <h3 className="font-semibold text-admin-text">{status}</h3>
               <p className="text-xs text-muted">
-                {list.length} item{list.length > 1 && "s"}
+                {list?.length} item{list?.length > 1 && "s"}
               </p>
             </div>
           </div>
 
           <div className="space-y-3">
-            {list.map((order, index) => (
+            {list?.map((order: any, index: any) => (
               <motion.div
                 key={order.id}
                 initial={{ opacity: 0, y: 8 }}
@@ -182,10 +258,14 @@ export function OrdersTab() {
                         setSelectedOrder(order);
                         setIsReviewModalOpen(true);
                       }}
-                      className="flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-xs font-medium text-primary hover:bg-primary/5 transition"
+                      disabled={!!order.review} // Disable if review exists
+                      className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition ${order.review
+                        ? "border-muted text-muted bg-surface cursor-not-allowed"
+                        : "border-primary text-primary hover:bg-primary/5"
+                        }`}
                     >
                       <Star size={14} />
-                      Write a Review
+                      {order.review ? "Review Submitted" : "Write a Review"}
                     </button>
                   ) : (
                     status !== "Cancelled" &&
@@ -252,7 +332,29 @@ export function OrdersTab() {
                 </div>
               </div>
 
+              {/* Added Rating Stars UI */}
               <div className="mb-4">
+                <label className="block text-sm font-medium text-admin-text mb-2">
+                  Rating
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={`${star <= rating ? "text-yellow-400" : "text-gray-300"
+                        } hover:scale-110 transition-transform`}
+                    >
+                      <Star size={24} fill={star <= rating ? "currentColor" : "none"} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-admin-text mb-2">
+                  Review Details
+                </label>
                 <textarea
                   className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary text-admin-text resize-none"
                   rows={4}
@@ -264,14 +366,15 @@ export function OrdersTab() {
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-admin-text mb-2">
-                  Add Photos
+                  Add Photos (Max 2)
                 </label>
                 <input
                   type="file"
                   multiple
                   accept="image/*"
                   onChange={handleImageSelect}
-                  className="block w-full text-sm text-muted file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer"
+                  disabled={reviewImages.length >= 2}
+                  className="block w-full text-sm text-muted file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer disabled:opacity-50"
                 />
 
                 {reviewImages.length > 0 && (
@@ -284,7 +387,11 @@ export function OrdersTab() {
                           className="h-16 w-16 rounded-lg object-cover border border-border"
                         />
                         <button
-                          onClick={() => setReviewImages(reviewImages.filter((_, idx) => idx !== i))}
+                          onClick={() =>
+                            setReviewImages(
+                              reviewImages.filter((_, idx) => idx !== i)
+                            )
+                          }
                           className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-sm hover:bg-red-600"
                         >
                           <X size={12} />
@@ -297,9 +404,10 @@ export function OrdersTab() {
 
               <button
                 onClick={handleSubmitReview}
-                className="w-full rounded-full bg-primary py-3 text-sm font-medium text-white hover:opacity-90 transition-opacity"
+                disabled={isSubmitting || !reviewText.trim()}
+                className="w-full rounded-full bg-primary py-3 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Submit Review
+                {isSubmitting ? "Submitting..." : "Submit Review"}
               </button>
             </motion.div>
           </div>

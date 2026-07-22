@@ -1,4 +1,4 @@
-import { combineReducers } from "@reduxjs/toolkit";
+import { combineReducers, type UnknownAction } from "@reduxjs/toolkit";
 
 import authReducer from "./slices/authSlice";
 import cartReducer from "./slices/cartSlice";
@@ -10,7 +10,10 @@ const appReducer = combineReducers({
   wishlist: wishlistReducer,
 });
 
-const rootReducer = (state, action) => {
+const rootReducer = (
+  state: ReturnType<typeof appReducer> | undefined,
+  action: UnknownAction
+) => {
   if (action.type === "auth/logout") {
     // Reset state to undefined, which forces all Redux reducers to return their initial state.
     state = undefined;

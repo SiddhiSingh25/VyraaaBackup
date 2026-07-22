@@ -4,9 +4,6 @@ import { Loader2, Smartphone, CreditCard, Banknote, CheckCircle2 } from "lucide-
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearCart } from "../../../../redux/slices/cartSlice";
 
-// Ensure you only import what you need from your dummy data
-import { priceBreakdown } from "./data/dummyData";
-
 import "./styles/theme.css";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { apiUrls } from "@/apis";
@@ -39,54 +36,73 @@ const paymentMethods = [
 ] as const;
 
 export default function Payment() {
-  // 3. State directly manages the selected option
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("UPI");
   const [isProcessing, setIsProcessing] = useState(false);
-  const { postQuery } = usePostQuery()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const dispatch = useDispatch()
+  const { postQuery } = usePostQuery();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+
+  // Extract necessary fields from location state, including product details if coming from Buy Now
   const {
     from,
     selectedAddressId,
     productId,
-    quantity
+    size,
+    quantity,
+    totalPrice
   } = location?.state || {};
 
   // 4. Handle the payment logic when the button is clicked
   const handleProceed = () => {
     setIsProcessing(true);
+
     if (from === "cart") {
+      // --- Cart Checkout Flow ---
       postQuery({
-        url: apiUrls.Cart.order,
+        url: apiUrls.Cart.order, // Make sure this matches your Cart order endpoint
         postData: {
-          "shippingAddress": selectedAddressId,
-          "paymentMethod": paymentMode
+          shippingAddress: selectedAddressId,
+          paymentMethod: paymentMode
         },
         onSuccess: (res: any) => {
-
-          setIsProcessing(false)
-          dispatch(clearCart())
-          navigate("/")
-          // console.log(isUpdating ? "Address updated!" : "Address added!", res);
-          // fetchAddresses(); // Refresh the list
-          // setView("list"); // Go back to the list view
+          setIsProcessing(false);
+          dispatch(clearCart());
+          navigate("/");
         },
         onFail: (err: any) => {
-          setIsProcessing(false)
-
+          setIsProcessing(false);
+          console.error("Cart order failed:", err);
         },
       });
+    } else if (from === "product") {
+      // --- Single Item / Buy Now Flow ---
+      postQuery({
+        url: apiUrls.Orders.createOrder, // Ensure apiUrls.Order.createOrder points to your single item order endpoint (e.g., "/orders/createOrder")
+        postData: {
+          productId: productId,
+          size: size,
+          quantity: quantity || 1,
+          shippingAddress: selectedAddressId,
+          paymentMethod: paymentMode
+        },
+        onSuccess: (res: any) => {
+          setIsProcessing(false);
+          navigate("/"); // Redirect to success page or home  
+        },
+        onFail: (err: any) => {
+          setIsProcessing(false);
+          console.error("Single item order failed:", err);
+        },
+      });
+    } else {
+      setIsProcessing(false);
+      console.error("Unknown checkout source path.");
     }
-    // console.log(`Processing payment using: ${paymentMode}`);
-
-    // Simulate API call delay
-    // window.setTimeout(() => setIsProcessing(false), 1800);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Centered maximum width layout for better readability */}
       <main className="mx-auto max-w-3xl px-5 pb-28 pt-8 sm:px-8 lg:pb-16">
 
         {/* Page Header */}
@@ -109,6 +125,7 @@ export default function Payment() {
               return (
                 <button
                   key={method.id}
+                  type="button"
                   onClick={() => setPaymentMode(method.id as PaymentMode)}
                   className={`relative flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition-all duration-200 ${isSelected
                     ? "border-primary bg-primary/5 shadow-md"
@@ -162,6 +179,7 @@ export default function Payment() {
           {/* Action Button */}
           <div className="mt-8 pt-4">
             <button
+              type="button"
               onClick={handleProceed}
               disabled={isProcessing}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-body text-[16px] font-semibold text-background transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:pointer-events-none disabled:opacity-75"
@@ -169,7 +187,7 @@ export default function Payment() {
               {isProcessing ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                `Make Payment • ₹${priceBreakdown?.total?.toLocaleString("en-IN") || "0"}`
+                `Make Payment • ₹${totalPrice?.toLocaleString("en-IN") || "0"}`
               )}
             </button>
           </div>

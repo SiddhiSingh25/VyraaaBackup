@@ -44,6 +44,7 @@ export default function AddNewAddress() {
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [expandedAddresses, setExpandedAddresses] = useState<Record<string, boolean>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [totalPrice, setTotalPrice] = useState<number>(cartTotalAmount);
 
   // State to store the currently SELECTED address for this checkout session
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -53,7 +54,12 @@ export default function AddNewAddress() {
   const { deleteQuery } = useDeleteQuery();
   const navigate = useNavigate();
   const location = useLocation();
-  const { from } = location.state || {};
+  const {
+    from,
+    productId,
+    size
+  } = location?.state || {};
+  console.log(from, productId, size, "=====")
   const { user } = useSelector((state: any) => state.auth);
 
   // Fetch Addresses
@@ -183,8 +189,9 @@ export default function AddNewAddress() {
                           state: {
                             from,
                             selectedAddressId,
-                            productId: "654654654",
-                            quantity: "5634"
+                            productId,
+                            size,
+                            totalPrice: totalPrice || cartTotalAmount,
                           }
                         });
                       }}
@@ -259,7 +266,13 @@ export default function AddNewAddress() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleSelectAddress(addr);
-                                navigate('/checkout/payment', { state: { from, selectedAddressId: addr._id } });
+                                navigate('/checkout/payment', {
+                                  state: {
+                                    from,
+                                    selectedAddressId: addr._id,
+                                    totalPrice: totalPrice || cartTotalAmount,
+                                  }
+                                });
                               }}
                               className="text-sm font-bold text-primary hover:underline"
                             >
@@ -323,7 +336,15 @@ export default function AddNewAddress() {
           </div>
 
           <div className="lg:sticky lg:top-8 lg:self-start">
-            <CheckoutSidebar from={from} />
+            <div className="lg:sticky lg:top-8 lg:self-start">
+              <CheckoutSidebar
+                from={from}
+                productId={productId}
+                size={size}
+                quantity={1}
+                onTotalChange={setTotalPrice}
+              />
+            </div>
           </div>
         </div>
       </motion.main>
@@ -334,7 +355,7 @@ export default function AddNewAddress() {
           <div>
             <p className="text-[11px] text-muted">Total</p>
             <p className="font-heading text-base text-admin-text">
-              {formatINR(cartTotalAmount)}
+              {formatINR(totalPrice || cartTotalAmount)}
             </p>
           </div>
           <button
@@ -344,7 +365,11 @@ export default function AddNewAddress() {
                 return;
               }
               navigate(`/checkout/payment`, {
-                state: { from, selectedAddressId }
+                state: {
+                  from,
+                  selectedAddressId,
+                  totalPrice: totalPrice || cartTotalAmount,
+                }
               });
             }}
             type="button"

@@ -4,38 +4,68 @@ import Heading from "../../../../components/Common/Heading";
 import ProductCard from "./ProductCard";
 
 let products = [
-  {
-    name: "Oxford Linen Shirt",
-    cat: "Shirts",
-    price: "₹290",
-    img: "https://images.unsplash.com/photo-1607345366928-199ea26cfe3e?w=700&q=80&fit=crop",
-  },
-  { name: "Slim Poplin Shirt", cat: "Shirts", price: "₹240", img: shirts },
-  {
-    name: "Chambray Relaxed",
-    cat: "Shirts",
-    price: "₹265",
-    img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=700&q=80&fit=crop",
-  },
-  { name: "Slim Poplin Jacket", cat: "Shirts", price: "₹240", img: jacket },
-  {
-    name: "Bifold Leather",
-    cat: "Accessories",
-    price: "₹220",
-    img: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=700&q=80&fit=crop",
-  },
-  {
-    name: "Travel Cardholder",
-    cat: "Accessories",
-    price: "₹195",
-    img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=700&q=80&fit=crop",
-  },
-  {
-    name: "The Minimalist",
-    cat: "Accessories",
-    price: "₹160",
-    img: "https://images.unsplash.com/photo-1559656914-a30970c1affd?w=700&q=80&fit=crop",
-  },
+{
+        "_id": "6a5de56313b4a9e0d5857005",
+        "title": "test",
+        "description": "test",
+        "rating": 0,
+        "image": "https://macreelinfosoft-bucket.s3.ap-south-1.amazonaws.com/Vyraaa-Admin-Images/1784538466929.jpeg",
+        "subImages": [],
+        "appendSizeTypeToSize": true,
+        "color": "Scarlet",
+        "category": "Clothes",
+        "subCategory": "Jeans",
+        "subcategoryType": "6a5636245a2f60df17a92d5c",
+        "brand": "Zara",
+        "gender": "Men",
+        "ageRange": "Adult",
+        "sizeType": "Alpha",
+        "price": [
+            {
+                "size": {
+                    "_id": "6a474523860ccf879fb4a414",
+                    "size": "S"
+                },
+                "amount": 340.2,
+                "isAvailable": true,
+                "isFewLeft": false,
+                "markupPrice": 567,
+                "discount": 40,
+                "skuCode": "jj",
+                "_id": "6a5de56313b4a9e0d5857006"
+            }
+        ],
+        "attributes": [
+            {
+                "property": "Waist Rise",
+                "value": "jhj",
+                "_id": "6a5de56313b4a9e0d5857007"
+            }
+        ],
+        "linkItems": [],
+        "averageRating": 0,
+        "searchKeywords": [
+            "test",
+            "clothes",
+            "jeans",
+            "bottom",
+            "zara",
+            "scarlet",
+            "men",
+            "adult",
+            "alpha",
+            "s",
+            "waist rise",
+            "waistrise",
+            "waist",
+            "rise",
+            "jhj"
+        ],
+        "createdAt": "2026-07-20T09:07:47.987Z",
+        "updatedAt": "2026-07-20T09:07:48.098Z",
+        "__v": 0,
+        "isDeleted": false
+    }
 ];
 
 const buttons = [
