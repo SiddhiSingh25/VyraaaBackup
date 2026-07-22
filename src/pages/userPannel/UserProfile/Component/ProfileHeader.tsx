@@ -34,7 +34,9 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
+        
         <StatChip
+        to="/profile"
           label="Orders placed"
           value={String(stats.totalOrders)}
           icon={
@@ -45,6 +47,7 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
           }
         />
         <StatChip
+        to="/wishlist"
           label="Wishlist items"
           value={String(stats.wishlistCount)}
           icon={
@@ -53,7 +56,7 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
             </svg>
           }
         />
-        <StatChip
+        {/* <StatChip
           label="Reviews"
           value={stats.loyaltyPoints.toLocaleString("en-IN")}
           icon={
@@ -61,7 +64,7 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
               <path d="M12 2l2.7 6.6L21 9.3l-5 4.5 1.5 7.2L12 17.3l-5.5 3.7L8 13.8l-5-4.5 6.3-.7z" />
             </svg>
           }
-        />
+        /> */}
       </div>
     </motion.div>
   );

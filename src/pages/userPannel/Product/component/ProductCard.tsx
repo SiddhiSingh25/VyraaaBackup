@@ -311,12 +311,13 @@ const handleWishlist = (e: React.MouseEvent<HTMLButtonElement>) => {
           <span className="text-[13.5px] leading-snug line-clamp-1 text-[#3B302A] font-serif">
             {product.title}
           </span>
-          <div className="flex items-center gap-1.5 text-[11.5px] text-[#84746E]">
+          {product.averageRating === 0 ? "" :  <div className="flex items-center gap-1.5 text-[11.5px] text-[#84746E]">
             <span className="flex items-center gap-0.5 text-[#3B302A]">
               <Star size={11} fill="#F59E0B" color="#F59E0B" />
               {product.averageRating ?? product.rating}
             </span>
-          </div>
+          </div> }
+         
           {displayEntry && (
             <div className="flex items-center gap-2 pt-0.5">
               <span className="text-[15px] font-semibold text-[#3B302A]">
