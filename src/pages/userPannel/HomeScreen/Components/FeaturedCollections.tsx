@@ -59,7 +59,7 @@ export default function FeaturedCollections() {
 
   const getVideosData = () => {
     getQuery({
-      url: apiUrls.Videos.getAllVideos,
+      url: apiUrls.Home.getVideos,
       onSuccess: (res: any) => {
         setVideos(res.data || []);
         setIsLoading(false);

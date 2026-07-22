@@ -13,8 +13,8 @@ export default function SignatureScent() {
    <>
    <Navbar/>
    <ProductInfo/>
-   <SuggestedProduct/>
-   <CustomerLiked/>
+   {/* <SuggestedProduct/>
+   <CustomerLiked/> */}
    <Footer/>
    </>
   );

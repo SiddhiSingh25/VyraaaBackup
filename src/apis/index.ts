@@ -110,7 +110,7 @@ export const apiUrls = {
     getByUserId: "cart/getByUserId",
     update: "/cart/update",
     remove: "/cart/remove/",
-    order: "/cart/createOrder"
+    order: "/cart/createOrder",
   },
 
   WishList: {
@@ -150,9 +150,12 @@ export const apiUrls = {
     updateOrderStatus: "order/updateOrderStatus",
     createOrder : "/order/createOrder"
   },
-
-  Videos : {
-    getAllVideos : "/home/getHomeVideos",
-    addVideo :  "/home/addVideo"
+  Home: {
+    getVideos: "home/getHomeVideos",
+    addVideos: "home/addVideo",
+    deleteVideo: "home/deleteVideos",
+  },
+  Review : {
+    add : "/review/add"
   }
 };
