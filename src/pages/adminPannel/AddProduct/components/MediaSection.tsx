@@ -1,162 +1,14 @@
-// import { useState } from "react";
-// import type { ChangeEvent, DragEvent } from "react";
-// import { ImImages } from "react-icons/im";
-// import { RiImageAddLine, RiCloseLine } from "react-icons/ri";
-
-// const MAX_IMAGES = 5;
-
-// type MediaSectionProps = {
-//   images: string[];
-//   setImages: (images: string[]) => void;
-//   onFilesSelected?: (files: File[]) => void;
-//   onRemoveImage?: (index: number) => void;
-//   errorMessage?: string;
-// };
-
-// const MediaSection = ({
-//   images,
-//   setImages,
-//   onFilesSelected,
-//   onRemoveImage,
-//   errorMessage,
-// }: MediaSectionProps) => {
-//   const [isDragging, setIsDragging] = useState(false);
-//   const remainingSlots = MAX_IMAGES - images.length;
-
-//   const addFiles = (files: FileList | null) => {
-//     if (!files || remainingSlots <= 0) return;
-//     const fileArray = Array.from(files).slice(0, remainingSlots);
-//     const nextUrls = fileArray.map((file) => URL.createObjectURL(file));
-//     setImages([...images, ...nextUrls]);
-//     onFilesSelected?.(fileArray);
-//   };
-
-//   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-//     addFiles(e.target.files);
-//     e.target.value = "";
-//   };
-
-//   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-//     e.preventDefault();
-//     setIsDragging(false);
-//     addFiles(e.dataTransfer.files);
-//   };
-
-//   return (
-//     <section className="rounded-xl border border-border bg-surface p-6 shadow-sm sticky top-6">
-//       <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
-//         <div className="flex items-center gap-3">
-//           <ImImages className="text-primary text-xl" />
-//           <h3 className="text-lg  text-sm font-semibold tracking-tight  font-semibold">Product Images</h3>
-//         </div>
-//         <span className="rounded-md bg-card px-3 py-1 text-xs font-semibold text-primary-dark border border-border">
-//           {images.length}/{MAX_IMAGES}
-//         </span>
-//       </div>
-//       {errorMessage && <p className="mb-4 text-xs text-error">{errorMessage}</p>}
-
-//       {/* Primary Image Display */}
-//       <div
-//         onDragOver={(e) => {
-//           e.preventDefault();
-//           if (remainingSlots > 0) setIsDragging(true);
-//         }}
-//         onDragLeave={() => setIsDragging(false)}
-//         onDrop={handleDrop}
-//         className={`group relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-xl border transition ${
-//           isDragging
-//             ? "border-primary bg-primary-light/10"
-//             : "border-border bg-card hover:border-primary-light"
-//         }`}
-//       >
-//         {images.length > 0 ? (
-//           <>
-//             <span className="absolute left-3 top-3 z-10 rounded-sm bg-dark/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-background backdrop-blur-md">
-//               Primary
-//             </span>
-//             <img src={images[0]} alt="Primary" className="h-full w-full object-cover" />
-//             <button
-//               type="button"
-//               onClick={() => onRemoveImage?.(0)}
-//               aria-label="Remove primary image"
-//               className="absolute right-3 top-3 z-10 rounded-full bg-background/90 p-2 text-error shadow-sm hover:bg-error hover:text-white transition"
-//             >
-//               <RiCloseLine size={16} />
-//             </button>
-//           </>
-//         ) : (
-//           <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center p-6 text-center text-muted">
-//             <RiImageAddLine className="mx-auto h-10 w-10 mb-3 opacity-50" />
-//             <span className="block text-sm font-medium">Add primary image</span>
-//             <span className="mt-1 block text-xs text-muted">
-//               Drag & drop, or click to browse
-//             </span>
-//             <input
-//               type="file"
-//               accept="image/*"
-//               multiple
-//               className="hidden"
-//               onChange={handleImageUpload}
-//             />
-//           </label>
-//         )}
-//       </div>
-
-//       {/* Grid for extra images */}
-//       <div className="mt-4 grid grid-cols-4 gap-2">
-//         {images.slice(1).map((img, idx) => (
-//           <div
-//             key={idx}
-//             className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-card"
-//           >
-//             <img src={img} alt={`Extra ${idx}`} className="h-full w-full object-cover" />
-//             <button
-//               type="button"
-//               onClick={() => onRemoveImage?.(idx + 1)}
-//               aria-label={`Remove image ${idx + 2}`}
-//               className="absolute inset-0 flex items-center justify-center bg-dark/50 text-white opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
-//             >
-//               <RiCloseLine size={20} />
-//             </button>
-//           </div>
-//         ))}
-
-//         {remainingSlots > 0 && (
-//           <label className="flex aspect-square cursor-pointer items-center justify-center rounded-lg border border-dashed border-primary-light bg-card text-primary-light hover:bg-primary-light/10 hover:text-primary transition">
-//             <RiImageAddLine size={20} />
-//             <input
-//               type="file"
-//               accept="image/*"
-//               multiple
-//               className="hidden"
-//               onChange={handleImageUpload}
-//             />
-//           </label>
-//         )}
-//       </div>
-
-//       {images.length > 0 && (
-//         <p className="mt-3 text-xs text-muted">
-//           {remainingSlots > 0
-//             ? `You can add ${remainingSlots} more image${remainingSlots === 1 ? "" : "s"}.`
-//             : "Maximum of 5 images reached."}
-//         </p>
-//       )}
-//     </section>
-//   );
-// };
-
-// export default MediaSection;
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent, DragEvent } from "react";
-import { 
-  RiGalleryLine, 
-  RiImageAddLine, 
-  RiCloseLine, 
-  RiUploadCloud2Line 
+import {
+  RiGalleryLine,
+  RiImageAddLine,
+  RiCloseLine,
+  RiUploadCloud2Line,
+  RiVideoLine,
 } from "react-icons/ri";
 
-const MAX_IMAGES = 5;
+const MAX_MEDIA = 5;
 
 type MediaSectionProps = {
   images: string[];
@@ -166,26 +18,85 @@ type MediaSectionProps = {
   errorMessage?: string;
 };
 
+// Sub-component to safely render either image or video
+const SmartMediaPreview = ({
+  src,
+  className,
+}: {
+  src: string;
+  className: string;
+}) => {
+  const [isVideo, setIsVideo] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!src) return;
+
+    // 1. Direct Extension or Data URI Check
+    const isVideoExtension = /\.(mp4|webm|ogg|mov|mkv|avi|m4v)($|\?)/i.test(
+      src,
+    );
+    const isDataVideo = src.startsWith("data:video/");
+
+    if (isVideoExtension || isDataVideo) {
+      setIsVideo(true);
+      return;
+    }
+
+    const isDataImage = src.startsWith("data:image/");
+    const isImageExtension = /\.(jpg|jpeg|png|gif|webp|svg)($|\?)/i.test(src);
+    if (isDataImage || isImageExtension) {
+      setIsVideo(false);
+      return;
+    }
+
+    // 2. For Blob URLs (created from local uploads), fetch header / test via Image element
+    if (src.startsWith("blob:")) {
+      // Quick fallback: load via Image first. If it errors out, it's a video!
+      const img = new Image();
+      img.src = src;
+      img.onload = () => setIsVideo(false);
+      img.onerror = () => setIsVideo(true);
+    } else {
+      setIsVideo(false);
+    }
+  }, [src]);
+
+  if (isVideo === null) {
+    // Loading skeleton while determining type
+    return <div className={`bg-card animate-pulse ${className}`} />;
+  }
+
+  if (isVideo) {
+    return (
+      <video src={src} className={className} muted autoPlay loop playsInline />
+    );
+  }
+
+  return <img src={src} alt="Uploaded Media" className={className} />;
+};
+
 const MediaSection = ({
-  images,
-  setImages,
+  images: mediaItems,
+  setImages: setMediaItems,
   onFilesSelected,
   onRemoveImage,
   errorMessage,
 }: MediaSectionProps) => {
   const [isDragging, setIsDragging] = useState(false);
-  const remainingSlots = MAX_IMAGES - images.length;
+  const remainingSlots = MAX_MEDIA - mediaItems.length;
 
-  // --- Logic (Unchanged) ---
   const addFiles = (files: FileList | null) => {
     if (!files || remainingSlots <= 0) return;
     const fileArray = Array.from(files).slice(0, remainingSlots);
+
+    // Standard valid Object URLs
     const nextUrls = fileArray.map((file) => URL.createObjectURL(file));
-    setImages([...images, ...nextUrls]);
+
+    setMediaItems([...mediaItems, ...nextUrls]);
     onFilesSelected?.(fileArray);
   };
 
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     addFiles(e.target.files);
     e.target.value = "";
   };
@@ -195,12 +106,16 @@ const MediaSection = ({
     setIsDragging(false);
     addFiles(e.dataTransfer.files);
   };
-  // -------------------------
 
-  const removeImage = (index: number) => {
-    const next = [...images];
-    next.splice(index, 1);
-    setImages(next);
+  const removeMedia = (index: number) => {
+    const next = [...mediaItems];
+    const removedUrl = next.splice(index, 1)[0];
+
+    if (removedUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(removedUrl);
+    }
+
+    setMediaItems(next);
     onRemoveImage?.(index);
   };
 
@@ -212,12 +127,12 @@ const MediaSection = ({
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <RiGalleryLine size={18} />
           </div>
-          <h3 className=" text-sm font-semibold tracking-tight ">
+          <h3 className="text-sm font-semibold tracking-tight">
             Media & Gallery
           </h3>
         </div>
         <span className="flex items-center justify-center rounded-full border border-border/60 bg-card px-2.5 py-1 text-[11px] font-medium tracking-wide text-primary-dark shadow-sm">
-          {images.length} / {MAX_IMAGES}
+          {mediaItems.length} / {MAX_MEDIA}
         </span>
       </div>
 
@@ -227,7 +142,7 @@ const MediaSection = ({
         </p>
       )}
 
-      {/* Primary Image Display / Dropzone */}
+      {/* Primary Media Display / Dropzone */}
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -241,20 +156,19 @@ const MediaSection = ({
             : "border-dashed border-border bg-card/50 hover:border-primary/50 hover:bg-card"
         }`}
       >
-        {images.length > 0 ? (
+        {mediaItems.length > 0 ? (
           <>
-            <span className="absolute left-3 top-3 z-10 rounded-md bg-black/60 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white backdrop-blur-md">
+            <span className="absolute left-3 top-3 z-10 rounded-md bg-black/60 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white backdrop-blur-md flex items-center gap-1">
               Primary
             </span>
-            <img 
-              src={images[0]} 
-              alt="Primary" 
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+            <SmartMediaPreview
+              src={mediaItems[0]}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <button
               type="button"
-              onClick={() => removeImage(0)}
-              aria-label="Remove primary image"
+              onClick={() => removeMedia(0)}
+              aria-label="Remove primary media"
               className="absolute right-3 top-3 z-10 rounded-full bg-black/40 p-1.5 text-white/90 backdrop-blur-md transition-all hover:bg-error hover:text-white hover:scale-110"
             >
               <RiCloseLine size={16} />
@@ -265,40 +179,39 @@ const MediaSection = ({
             <div className="mb-3 rounded-full bg-primary/10 p-3 text-primary transition-transform duration-300 group-hover:-translate-y-1">
               <RiUploadCloud2Line size={24} />
             </div>
-            <span className="text-sm font-medium ">
+            <span className="text-sm font-medium">
               Click to upload or drag & drop
             </span>
             <span className="mt-1 text-[11px] text-muted">
-              SVG, PNG, JPG or GIF (max. 800x400px)
+              Images or Videos (MP4, WEBM, MOV)
             </span>
             <input
               type="file"
               accept="image/*"
               multiple
               className="hidden"
-              onChange={handleImageUpload}
+              onChange={handleFileUpload}
             />
           </label>
         )}
       </div>
 
-      {/* Grid for Extra Images */}
+      {/* Grid for Extra Media */}
       <div className="mt-3 grid grid-cols-4 gap-3">
-        {images.slice(1).map((img, idx) => (
+        {mediaItems.slice(1).map((src, idx) => (
           <div
             key={idx}
             className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-card shadow-sm"
           >
-            <img 
-              src={img} 
-              alt={`Extra ${idx}`} 
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" 
+            <SmartMediaPreview
+              src={src}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
             <button
               type="button"
-              onClick={() => removeImage(idx + 1)}
-              aria-label={`Remove image ${idx + 2}`}
+              onClick={() => removeMedia(idx + 1)}
+              aria-label={`Remove item ${idx + 2}`}
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 p-1.5 text-white opacity-0 backdrop-blur-sm transition-all duration-200 hover:bg-error group-hover:opacity-100"
             >
               <RiCloseLine size={16} />
@@ -310,25 +223,27 @@ const MediaSection = ({
         {remainingSlots > 0 && (
           <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-card/50 text-muted transition-all hover:border-primary/50 hover:bg-card hover:text-primary">
             <RiImageAddLine size={20} className="mb-1" />
-            <span className="text-[10px] font-medium uppercase tracking-wider">Add</span>
+            <span className="text-[10px] font-medium uppercase tracking-wider">
+              Add
+            </span>
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               multiple
               className="hidden"
-              onChange={handleImageUpload}
+              onChange={handleFileUpload}
             />
           </label>
         )}
       </div>
 
       {/* Footer Status */}
-      {images.length > 0 && (
+      {mediaItems.length > 0 && (
         <div className="mt-4 flex items-center justify-between text-[11px] text-muted">
           <span>
             {remainingSlots > 0
               ? `${remainingSlots} slot${remainingSlots === 1 ? "" : "s"} available`
-              : "Maximum images reached"}
+              : "Maximum media limit reached"}
           </span>
           <span className="font-medium text-primary-dark/70">
             High quality recommended
