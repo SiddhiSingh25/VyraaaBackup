@@ -666,7 +666,7 @@ export default function FeaturedCollections() {
               {/* top + bottom scrims so the wordmark and title stay legible over
                   any footage, without a flat overlay muddying the whole frame */}
               <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/55 via-black/10 to-transparent sm:h-20" />
-              <div className="absolute inset-0 "/>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
               <div className="absolute inset-x-0 top-0 flex justify-center pt-3 sm:pt-4">
                 <BrandMark />
