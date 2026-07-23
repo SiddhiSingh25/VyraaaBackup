@@ -167,7 +167,7 @@ export default function FeaturedCollections() {
     const x = offset * spread;
     const scale =
       abs === 0 ? 1 : abs === 1 ? (isMobileRef.current ? 0.82 : 0.86) : isMobileRef.current ? 0.62 : 0.7;
-    const opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : 0.55;
+    const opacity = 1
     const zIndex = 20 - abs;
     return { x, scale, opacity, zIndex };
   }, []);
@@ -470,7 +470,7 @@ export default function FeaturedCollections() {
           "--fc-accent-30": `${activeAccent}33`,
         } as React.CSSProperties
       }
-      className="relative isolate overflow-hidden bg-background px-5 py-10 sm:px-10 sm:py-12 lg:px-16 lg:py-14"
+      className="relative isolate overflow-hidden bg-background px-5 py-6 sm:px-10 sm:py-12 lg:px-16 lg:py-6"
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,400&family=Manrope:wght@300;400;500;600&display=swap');
@@ -566,8 +566,8 @@ export default function FeaturedCollections() {
       </div>
 
       {/* --------------------------------- heading ---------------------------------- */}
-      <div className="relative z-10 mb-7 text-center sm:mb-9">
-        <div className="mb-3 flex items-center justify-center gap-3">
+      <div className="relative z-10 mb-4 text-center ">
+        <div className=" flex items-center justify-center gap-3">
           <span className="h-px w-6 bg-border" />
           <span className="fc-sans text-[10px] font-semibold uppercase tracking-[0.32em] text-muted">
             Best Sellers
@@ -580,14 +580,7 @@ export default function FeaturedCollections() {
         >
           Loved Around the World
         </h2>
-        <p
-          ref={taglineRef}
-          className="fc-sans mx-auto mt-3 max-w-md text-[13px] leading-relaxed text-muted sm:text-sm"
-        >
-          {activeCollection?.description ||
-            activeCollection?.name ||
-            "Curated pieces, handpicked for you"}
-        </p>
+        
       </div>
 
       {/* ---------------------------------- stage ------------------------------------ */}
@@ -688,34 +681,7 @@ export default function FeaturedCollections() {
                 </div>
               )}
 
-              {(cat.title || cat.name) && (
-                <div
-                  data-fc-text
-                  className="fc-sans absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 px-3 pb-3 pt-8 sm:px-4 sm:pb-4"
-                >
-                  <p
-                    className={`text-[11px] font-medium tracking-wide text-white transition-opacity duration-200 sm:text-[13px] ${
-                      isActive ? "opacity-100" : "opacity-0"
-                    }`}
-                  >
-                    {cat.title || cat.name}
-                  </p>
-
-                  {/* Per-card Explore — visible on the active card (always) and
-                      on hover for neighbors. Stops propagation so it doesn't
-                      also trigger the card's re-center click. */}
-                  <button
-                    onClick={(e) => handleCardExplore(e, cat)}
-                    className={`fc-card-explore fc-sans shrink-0 rounded-full border border-white/25 bg-black/20 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-widest text-white backdrop-blur-md transition-opacity duration-200 sm:px-3 sm:py-1.5 sm:text-[10px] ${
-                      isActive
-                        ? "opacity-100"
-                        : "opacity-0 group-hover:opacity-100"
-                    }`}
-                  >
-                    Explore
-                  </button>
-                </div>
-              )}
+            
 
               <div
                 className="pointer-events-none absolute inset-0 rounded-[20px]"
@@ -731,7 +697,7 @@ export default function FeaturedCollections() {
       </div>
 
       {/* ------------------------------- dots only ---------------------------------- */}
-      <div className="relative z-20 mt-6 flex items-center justify-center sm:mt-7">
+      <div className="relative z-20 mt-1 flex items-center justify-center sm:mt-1">
         <div className="fc-sans flex items-center gap-2">
           {videos.map((_, i) => (
             <button
