@@ -43,12 +43,15 @@ const OrderFilters = ({
   setPaymentMethod,
 }: Props) => {
   return (
-    <div className="mb-5 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="w-full text-xs">
+      {/* Container customized to apply smaller typography/padding bounds. 
+        Assuming SearchableSelect inherits the parent's generic styles. 
+      */}
       <SearchableSelect
         label="Order Status"
         options={statusOptions}
         value={status}
-        placeholder="Select Order Status"
+        placeholder="Select Status"
         onChange={(e) => setStatus(String(e.target.value))}
       />
 
@@ -66,7 +69,8 @@ const OrderFilters = ({
         value={paymentMethod}
         placeholder="Select Payment Method"
         onChange={(e) => setPaymentMethod(String(e.target.value))}
-      /> */}
+      /> 
+      */}
     </div>
   );
 };

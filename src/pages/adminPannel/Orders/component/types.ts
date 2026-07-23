@@ -21,6 +21,7 @@ export interface OrderItem {
 }
 
 export interface Order {
+  orderId: string;
   _id: string;
   user: OrderUser;
   items: OrderItem[];
@@ -32,5 +33,7 @@ export interface Order {
 
 export interface OrdersTableProps {
   items: Order[];
+  page: Number;
+  limit: Number;
   onView?: (order: Order) => void;
 }

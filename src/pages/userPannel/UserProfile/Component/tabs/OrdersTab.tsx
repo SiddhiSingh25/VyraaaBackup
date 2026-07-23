@@ -14,8 +14,10 @@ import React, { useEffect, useState } from "react";
 import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook"; // <-- Added
 import { apiUrls } from "@/apis";
+import { useNavigate } from "react-router-dom";
 
 export function OrdersTab() {
+  const navigate = useNavigate()
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery(); // <-- Added
   const [orders, setOrders] = useState<any[]>([]);
@@ -121,25 +123,34 @@ export function OrdersTab() {
         message: reviewText,
         images: uploadedImageUrls,
       };
-      // console.log(payload, "=======")
-      // 3. Submit Review
-      postQuery({
-        url: apiUrls.Review.add, // Replace with your actual review endpoint in apiUrls
-        postData: payload,
-        onSuccess: (res: any) => {
-          console.log("Review submitted successfully!", res);
-          // Reset Modal States
-          setIsReviewModalOpen(false);
-          setReviewText("");
-          setReviewImages([]);
-          setRating(5);
-          setSelectedOrder(null);
-          // Optional: Refetch orders here to update the UI
-        },
-        onFail: (err: any) => {
-          console.error("Failed to submit review:", err);
-          alert(err?.response?.data?.message || "Failed to submit review.");
-        },
+
+      // 3. Submit Review and wait for callback
+      await new Promise((resolve, reject) => {
+        postQuery({
+          url: apiUrls.Review.add,
+          postData: payload,
+          onSuccess: (res: any) => {
+            // Update local orders state to mark this item as reviewed
+            setOrders((prev) =>
+              prev.map((o) =>
+                o.id === selectedOrder.id ? { ...o, review: res?.data || true } : o,
+              ),
+            );
+
+            // Reset Modal States
+            setIsReviewModalOpen(false);
+            setReviewText("");
+            setReviewImages([]);
+            setRating(5);
+            setSelectedOrder(null);
+            resolve(res);
+          },
+          onFail: (err: any) => {
+            console.error("Failed to submit review:", err);
+            alert(err?.response?.data?.message || "Failed to submit review.");
+            reject(err);
+          },
+        });
       });
     } catch (error: any) {
       console.error("Error during submission:", error);
@@ -206,6 +217,12 @@ export function OrdersTab() {
           <div className="space-y-3">
             {list?.map((order: any, index: any) => (
               <motion.div
+                onClick={() => navigate(`/orderDeatils`, {
+                  state: {
+                    id: order?.orderId
+                  }
+                })}
+                // onClick={() => console.log(order.orderId, "===")}
                 key={order.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -252,7 +269,7 @@ export function OrdersTab() {
 
                 {/* Buttons */}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {status === "Delivered" ? (
+                  {status === "Delivered" && (
                     <button
                       onClick={() => {
                         setSelectedOrder(order);
@@ -267,32 +284,35 @@ export function OrdersTab() {
                       <Star size={14} />
                       {order.review ? "Review Submitted" : "Write a Review"}
                     </button>
-                  ) : (
-                    status !== "Cancelled" &&
-                    status !== "Refunded" && (
-                      <>
-                        <button className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
-                          <MapPinned size={14} />
-                          Track Order
-                        </button>
+                  )
+                    // : (
+                    //   status !== "Cancelled" &&
+                    //   status !== "Refunded" && (
+                    //     <>
+                    //       <button className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
+                    //         <MapPinned size={14} />
+                    //         Track Order
+                    //       </button>
 
-                        <button className="rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
-                          Cancel Item
-                        </button>
-                      </>
-                    )
-                  )}
+                    //       <button className="rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
+                    //         Cancel Item
+                    //       </button>
+                    //     </>
+                    //   )
+                    // )
+                  }
 
-                  <button className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
+                  {/* <button className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
                     <Headphones size={14} />
                     Need Help
-                  </button>
+                  </button> */}
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
-      ))}
+      ))
+      }
 
       {/* Review Modal */}
       <AnimatePresence>
@@ -413,6 +433,6 @@ export function OrdersTab() {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 }

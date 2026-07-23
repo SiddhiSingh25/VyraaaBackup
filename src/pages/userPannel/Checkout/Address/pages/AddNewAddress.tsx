@@ -59,7 +59,6 @@ export default function AddNewAddress() {
     productId,
     size
   } = location?.state || {};
-  console.log(from, productId, size, "=====")
   const { user } = useSelector((state: any) => state.auth);
 
   // Fetch Addresses

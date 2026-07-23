@@ -77,7 +77,6 @@ const CoreInfoSection = ({
               <SearchableSelect
                 {...field}
                 label="Color Family"
-                required
                 showAddButton
                 addButtonText="Create new color family"
                 onAdd={addColorFamily}
@@ -93,7 +92,6 @@ const CoreInfoSection = ({
               <SearchableSelect
                 {...field}
                 label="Specific Color"
-                required
                 disabled={!selectedColorFamily}
                 error={errors.color?.message}
                 options={colorOptions}
@@ -132,7 +130,6 @@ const CoreInfoSection = ({
               <SearchableSelect
                 {...field}
                 label="Brand"
-                required
                 disabled={!selectedCategory}
                 showAddButton
                 addButtonText="Create new brand"

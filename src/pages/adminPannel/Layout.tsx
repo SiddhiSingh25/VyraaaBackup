@@ -235,7 +235,16 @@ export default function AdminLayout() {
   };
 
   const handleLogout = () => {
-    navigate("/");
+    localStorage.removeItem("token");
+    document.cookie = "token=; max-age=0; path=/";
+    // Dynamically import store and logout to prevent circular dependency
+    import("../../redux/store.ts").then(({ store }) => {
+      import("../../redux/slices/authSlice.ts").then(({ logout }) => {
+        store.dispatch(logout());
+      });
+    });
+
+    // navigate("/");
   };
 
   const handleNavigation = (sub: NavSubItem) => {
@@ -274,7 +283,7 @@ export default function AdminLayout() {
           >
             <button
               type="button"
-              onClick={() => navigate("/admin/dashboard")}
+              // onClick={() => navigate("/admin/dashboard")}
               className={`
                 flex w-full min-w-0 items-center rounded-xl transition-all duration-200
                 ${isAsideExpanded ? "justify-start gap-3" : "justify-center"}

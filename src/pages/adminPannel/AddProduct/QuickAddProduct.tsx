@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
 import FormHeader from "./components/FormHeader";
 import SuccessBanner from "./components/SuccessBanner";
 import TaxonomySection from "./components/TaxonomySection";
@@ -9,12 +8,10 @@ import CoreInfoSection from "./components/CoreInfoSection";
 import VariantsSection from "./components/VariantsSection";
 import AttributesSection from "./components/AttributesSection";
 import MediaSection from "./components/MediaSection";
-
 import useCategoryData from "./api/useCategoryData";
 import useTaxonomyData from "./api/useTaxonomyData";
 import useColorFamilyData from "./api/useColorFamilyData";
 import useSizeTypeData from "./api/useSizeTypeData";
-
 import { quickAddSchema, quickAddDefaultValues } from "./schema";
 import type { QuickAddValues } from "./types";
 import useSubCategoryTypeData from "./api/useSubCategoryTypes";
@@ -27,8 +24,10 @@ import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
 import { useParams } from "react-router-dom";
 import Button from "../../../components/tableComponents/Button";
-import SkuSection from "./components/SKUCode";
 import ProductAddedModal from "./components/LinkProductModal";
+import GiftSection from "./components/GiftSection/GiftSection";
+import type { GiftItem } from "./types";
+import useGetQuery from "@/hooks/getQuery.hook";
 
 const TOTAL_SECTIONS = 4;
 
@@ -36,9 +35,12 @@ const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [addedProduct, setAddedProduct] = useState<any>(null);
   const [showProductModal, setShowProductModal] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const { getQuery } = useGetQuery();
+  console.log("poroductId", id);
 
   // categoryId coming from the route params (e.g. /category/:categoryId/quick-add)
-  const { categorySlug, categoryId: categoryIdFromParams } = useParams();
+  const { categoryId: categoryIdFromParams } = useParams();
 
   const { toast } = useToast();
 
@@ -81,12 +83,10 @@ const QuickAddProduct = () => {
   const appendSizeType = watch("appendSizeType");
   const productName = watch("name");
   const description = watch("description");
-  const color = watch("color");
-  const brand = watch("brand");
-  const selectedBrand = watch("brand");
   const gender = watch("gender");
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [gifts, setGifts] = useState<GiftItem[]>([]);
 
   // The single source of truth for "which category are we working under".
   // Params always win — if the user arrived via a category-scoped route,
@@ -179,15 +179,6 @@ const QuickAddProduct = () => {
     setValue("brand", "");
   }, [effectiveCategoryId, setValue]);
 
-  useEffect(() => {
-    if (effectiveCategoryId && brandOptions.length > 0 && !selectedBrand) {
-      setValue("brand", brandOptions[0].value, {
-        shouldValidate: true,
-        shouldDirty: false,
-      });
-    }
-  }, [effectiveCategoryId, brandOptions, selectedBrand, setValue]);
-
   // Only reset subcategory/type when category actually changes (i.e. the
   // user is picking it manually). When category comes from params this
   // still only fires once, harmlessly, on mount.
@@ -261,14 +252,7 @@ const QuickAddProduct = () => {
       effectiveCategoryId && selectedSubcategoryId && selectedSubcategoryTypeId,
     ), // Category
 
-    Boolean(
-      productName &&
-      description &&
-      selectedColorFamily &&
-      color &&
-      brand &&
-      gender,
-    ),
+    Boolean(productName && description && gender),
 
     variants.length > 0, // Inventory & Pricing
 
@@ -284,6 +268,7 @@ const QuickAddProduct = () => {
   const resetForm = useCallback(() => {
     reset(getInitialValues());
     setImageFiles([]);
+    setGifts([]);
   }, [reset, getInitialValues]);
 
   const handleClear = () => {
@@ -299,8 +284,8 @@ const QuickAddProduct = () => {
       title: data.name,
       appendSizeTypeToSize: appendSizeType,
       description: data.description,
-      brand: data.brand,
-      color: data.color,
+      brand: data.brand || null,
+      color: data.color || null,
       category: effectiveCategoryId,
       subCategory: data.subcategory,
       subcategoryType: data.subcategoryType || null,
@@ -308,7 +293,7 @@ const QuickAddProduct = () => {
       gender:
         data.gender === "Boys" || data.gender === "Girls"
           ? "Child"
-          : data.gender,
+          : data.gender || null,
       ageRange: data.ageRange || null,
 
       price: data.variants.map((variant) => {
@@ -332,6 +317,12 @@ const QuickAddProduct = () => {
             value: item.value,
           }))
         : [],
+
+      gifts: gifts.map((gift) => ({
+        product: gift.product,
+        quantity: gift.quantity,
+        size: gift.size,
+      })),
 
       linkItems: [],
     };
@@ -392,6 +383,24 @@ const QuickAddProduct = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (!id) return;
+
+    getQuery({
+      url: `${apiUrls.Product.getById}${id}`,
+      onSuccess: (res: any) => {
+        console.log("Product Details:", res);
+      },
+      onFail: (err: any) => {
+        console.error("Failed to fetch product:", err);
+        toast(
+          "error",
+          err?.response?.data?.message || "Failed to fetch product",
+        );
+      },
+    });
+  }, [id]);
 
   return (
     <div className="flex h-screen flex-col bg-background font-admin-text selection:bg-rose-gold/30">
@@ -498,6 +507,8 @@ const QuickAddProduct = () => {
                 onRemoveImage={handleRemoveImage}
                 errorMessage={errors.images?.message as string | undefined}
               />
+
+              <GiftSection gifts={gifts} setGifts={setGifts} />
             </div>
 
             {/* Action Buttons */}
