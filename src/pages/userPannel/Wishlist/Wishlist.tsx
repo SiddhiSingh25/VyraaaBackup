@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "../../../components/Header/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import WishlistCard from "./components/WishlistCard";
-import type { WishlistProduct } from "./components/types";
 import useGetQuery from "../../../hooks/getQuery.hook";
 import usePostQuery from "../../../hooks/postQuery.hook";
 import { useToast } from "../../../hooks/useToast.hook";
@@ -12,33 +11,10 @@ import { apiUrls } from "../../../apis";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { removeFromWishlist, setWishlist } from "@/redux/slices/wishlistSlice";
 import { addToCart } from "@/redux/slices/cartSlice";
+import { FiHeart } from "react-icons/fi";
+import { EmptyState } from "@/components/Common/EmptyList/EmptyList";
 
-function EmptyWishlist() {
-  const navigate = useNavigate();
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border bg-surface py-24 text-center"
-    >
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="1.5">
-        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
-      </svg>
-      <div>
-        <p className="font-heading text-lg text-admin-text">Your wishlist is empty</p>
-        <p className="mt-1 text-sm text-muted">Save pieces you love and find them here anytime.</p>
-      </div>
-      <button
-        type="button"
-        onClick={() => navigate("/products")}
-        className="mt-2 rounded-full bg-heading px-6 py-2.5 text-sm font-medium text-background transition-colors hover:bg-primary-dark"
-      >
-        Continue Shopping
-      </button>
-    </motion.div>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /* Page                                                              */
@@ -219,7 +195,13 @@ export default function WishlistPage() {
         {/* Grid */}
         {items.length === 0 ? (
           <div className="pt-10">
-            <EmptyWishlist />
+  <EmptyState
+    icon={<FiHeart size={28} className="text-dark/50" />}
+    title="Your wishlist is empty"
+    description="Save pieces you love and find them here anytime."
+    actionText="Continue Shopping"
+    onAction={() => navigate("/products")}
+  />
           </div>
         ) : (
           <>

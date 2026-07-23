@@ -58,18 +58,18 @@ if (subCategories && subCategories.length > 0) {
 }
 
     // 2. Color
-    if (colors && colors.length > 0) {
-      sections.push({
-        id: "color",
-        title: "Color",
-        type: "color",
-        options: colors.map((c: any) => ({
-          id: c._id,
-          label: c.colorFamily,
-          value: c.colorFamily,
-        })),
-      });
-    }
+    // if (colors && colors.length > 0) {
+    //   sections.push({
+    //     id: "color",
+    //     title: "Color",
+    //     type: "color",
+    //     options: colors.map((c: any) => ({
+    //       id: c._id,
+    //       label: c.colorFamily,
+    //       value: c.colorFamily,
+    //     })),
+    //   });
+    // }
 
     // 3. Price Range (represented as a slider range config)
     sections.push({
