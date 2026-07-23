@@ -120,7 +120,7 @@ const MediaSection = ({
   };
 
   return (
-    <section className="sticky top-6 rounded-2xl border border-border/80 bg-surface p-5 shadow-sm">
+    <section className="rounded-2xl border border-border/80 bg-surface p-5 shadow-sm">
       {/* Header Area */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
