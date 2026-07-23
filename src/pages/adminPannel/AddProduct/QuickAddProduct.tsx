@@ -27,6 +27,7 @@ import Button from "../../../components/tableComponents/Button";
 import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
 import type { GiftItem } from "./types";
+import useGetQuery from "@/hooks/getQuery.hook";
 
 const TOTAL_SECTIONS = 4;
 
@@ -34,6 +35,9 @@ const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [addedProduct, setAddedProduct] = useState<any>(null);
   const [showProductModal, setShowProductModal] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const { getQuery } = useGetQuery();
+  console.log("poroductId", id);
 
   // categoryId coming from the route params (e.g. /category/:categoryId/quick-add)
   const { categoryId: categoryIdFromParams } = useParams();
@@ -379,6 +383,24 @@ const QuickAddProduct = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (!id) return;
+
+    getQuery({
+      url: `${apiUrls.Product.getById}${id}`,
+      onSuccess: (res: any) => {
+        console.log("Product Details:", res);
+      },
+      onFail: (err: any) => {
+        console.error("Failed to fetch product:", err);
+        toast(
+          "error",
+          err?.response?.data?.message || "Failed to fetch product",
+        );
+      },
+    });
+  }, [id]);
 
   return (
     <div className="flex h-screen flex-col bg-background font-admin-text selection:bg-rose-gold/30">
