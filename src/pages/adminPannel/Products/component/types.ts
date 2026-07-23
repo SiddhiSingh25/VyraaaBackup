@@ -38,6 +38,15 @@ export interface ProductTableProps {
   items: ProductItem[];
   search: string;
   onSearch: (value: string) => void;
+  pagination: ProductPagination;
+  onPageChange: (page: number) => void;
   onEdit: (item: ProductItem) => void;
   onDelete: (item: ProductItem) => void;
+}
+
+export interface ProductPagination {
+  totalProducts: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
 }

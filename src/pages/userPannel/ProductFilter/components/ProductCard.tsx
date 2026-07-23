@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { addToCart } from "../../../../redux/slices/cartSlice";
 // ✅ add a wishlist slice mirroring cartSlice's shape — adjust path/action names to match yours
-import { addToWishlist, removeFromWishlist } from "../../../../redux/slices/wishlistSlice";
+import { addToWishlist } from "../../../../redux/slices/wishlistSlice";
 import Modal from "@/components/tableComponents/Modal";
 
 interface PriceEntry {

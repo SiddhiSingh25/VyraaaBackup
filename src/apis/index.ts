@@ -147,7 +147,7 @@ export const apiUrls = {
     getAllOrders: "/order",
     getByUserId: "/order/getByUserId",
     getOrderById: "/order",
-    updateOrderStatus: "order/updateOrderStatus",
+    updateOrderStatus: "order/updateOrderStatus", 
     createOrder : "/order/createOrder"
   },
   Home: {
