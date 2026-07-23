@@ -34,7 +34,9 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
+        
         <StatChip
+        to="/profile"
           label="Orders placed"
           value={String(stats.totalOrders)}
           icon={
@@ -45,6 +47,7 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
           }
         />
         <StatChip
+        to="/wishlist"
           label="Wishlist items"
           value={String(stats.wishlistCount)}
           icon={

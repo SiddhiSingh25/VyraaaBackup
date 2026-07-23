@@ -1,26 +1,51 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 
 import ProductTable from "./component/ProductTable";
 
-import type { ProductItem } from "./component/types";
+import type { ProductItem, ProductPagination } from "./component/types";
 import Button from "@/components/tableComponents/Button";
+import ConfirmDialog from "@/components/tableComponents/ConfirmDialog";
 import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
 import { useNavigate } from "react-router-dom";
+import usePostQuery from "@/hooks/postQuery.hook";
 
 const Product = () => {
   const [search, setSearch] = useState("");
-  const [products, SetProducts] = useState([]);
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<ProductPagination>({
+    totalProducts: 0,
+    totalPages: 1,
+    currentPage: 1,
+    limit: 10,
+  });
+  const [pendingDelete, setPendingDelete] = useState<ProductItem | null>(null);
   const { getQuery } = useGetQuery();
+  const { postQuery } = usePostQuery();
   const navigate = useNavigate();
 
   const fetchProducts = () => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: pagination.limit.toString(),
+    });
+
+    if (search) params.set("search", search);
+
     getQuery({
-      url: apiUrls.Product.getAll,
+      url: `${apiUrls.Product.getAll}?${params.toString()}`,
       onSuccess: (res: any) => {
-        console.log("Fetched Addresses:", res.data);
-        SetProducts(res.data);
+        setProducts(res.data || []);
+        setPagination(
+          res.pagination || {
+            totalProducts: 0,
+            totalPages: 1,
+            currentPage: page,
+            limit: pagination.limit,
+          },
+        );
       },
       onFail: (err: any) => {
         console.log("Failed to fetch addresses:", err);
@@ -30,24 +55,34 @@ const Product = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [search, page]);
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((item: any) => {
-      return (
-        item.title.toLowerCase().includes(search.toLowerCase()) ||
-        item.category.toLowerCase().includes(search.toLowerCase()) ||
-        item.subCategory.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-  }, [products, search]);
-
-  const handleEdit = (item: ProductItem) => {
-    console.log("Edit", item);
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setPage(1);
   };
 
-  const handleDelete = (item: ProductItem) => {
-    console.log("Delete", item);
+  const handleEdit = (item: ProductItem) => {
+    console.log("Edit", item._id);
+  };
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+
+    postQuery({
+      url: apiUrls.Product.delete,
+      postData: {
+        id: pendingDelete._id,
+      },
+      onSuccess: (res: any) => {
+        console.log(res);
+        setPendingDelete(null);
+        fetchProducts();
+      },
+      onFail: (err: any) => {
+        console.log(err, "Error creating brand");
+      },
+    });
   };
 
   return (
@@ -73,13 +108,27 @@ const Product = () => {
         </div>
 
         <ProductTable
-          items={filteredProducts}
+          items={products}
           search={search}
-          onSearch={setSearch}
+          onSearch={handleSearch}
+          pagination={pagination}
+          onPageChange={setPage}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={setPendingDelete}
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={Boolean(pendingDelete)}
+        title="Delete product?"
+        description={
+          pendingDelete
+            ? `Are you sure you want to delete \"${pendingDelete.title}\"? This action cannot be undone.`
+            : ""
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 };

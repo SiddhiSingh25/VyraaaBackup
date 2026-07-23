@@ -5,9 +5,15 @@ const ProductTable = ({
   items,
   search,
   onSearch,
+  pagination,
+  onPageChange,
   onEdit,
   onDelete,
 }: ProductTableProps) => {
+  const { currentPage, totalPages, totalProducts, limit } = pagination;
+  const firstEntry = totalProducts === 0 ? 0 : (currentPage - 1) * limit + 1;
+  const lastEntry = Math.min(currentPage * limit, totalProducts);
+
   return (
     <div className="overflow-hidden rounded-2xl border border-[#E7D8CC] bg-[#FFF8F2]">
       {/* Search */}
@@ -66,7 +72,7 @@ const ProductTable = ({
                   {/* Sr No */}
 
                   <td className="px-4 py-3 text-sm text-[#5E4637]">
-                    {index + 1}
+                    {firstEntry + index}
                   </td>
 
                   {/* Product */}
@@ -196,21 +202,35 @@ const ProductTable = ({
 
       <div className="flex items-center justify-between border-t border-[#E8D8CC] px-4 py-3 text-sm text-[#8B5E49]">
         <p>
-          Showing <b>{items.length}</b> entries
+          Showing <b>{firstEntry}-{lastEntry}</b> of <b>{totalProducts}</b> entries
         </p>
 
         <div className="flex items-center gap-2">
-          <button className="rounded border border-[#E5D7CC] p-1 hover:bg-white">
+          <button
+            type="button"
+            aria-label="Previous page"
+            disabled={currentPage <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            className="rounded border border-[#E5D7CC] p-1 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <ChevronLeft size={16} />
           </button>
 
           <button className="rounded bg-[#7B523B] px-3 py-1 text-white">
-            1
+            {currentPage}
           </button>
 
-          <button className="rounded border border-[#E5D7CC] p-1 hover:bg-white">
+          <button
+            type="button"
+            aria-label="Next page"
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            className="rounded border border-[#E5D7CC] p-1 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <ChevronRight size={16} />
           </button>
+
+          <span className="text-xs text-[#9B7B69]">of {totalPages}</span>
         </div>
       </div>
     </div>

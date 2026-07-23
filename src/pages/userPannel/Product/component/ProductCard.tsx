@@ -276,12 +276,18 @@ const handleWishlist = (e: React.MouseEvent<HTMLButtonElement>) => {
             className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full flex items-center justify-center transition-colors z-10 disabled:opacity-60"
             style={{ background: "rgba(253,249,243,0.9)" }}
           >
-            <Heart
+            {/* <Heart
               size={16}
               strokeWidth={1.8}
-              fill={isWished ? "#B76E79" : "none"}
+              // fill-red-500 text-red-500
+              fill={isWished ? "fill-red-500 text-red-500 " : "none"}
               color={isWished ? "#B76E79" : "#3B302A"}
-            />
+            /> */}
+            <Heart
+  size={16}
+  strokeWidth={1.8}
+  className={isWished ? "fill-red-500 text-red-500" : "fill-none text-[#3B302A]"}
+/>
           </button>
 
           <AnimatePresence>
@@ -311,12 +317,13 @@ const handleWishlist = (e: React.MouseEvent<HTMLButtonElement>) => {
           <span className="text-[13.5px] leading-snug line-clamp-1 text-[#3B302A] font-serif">
             {product.title}
           </span>
-          <div className="flex items-center gap-1.5 text-[11.5px] text-[#84746E]">
+          {product.averageRating === 0 ? "" :  <div className="flex items-center gap-1.5 text-[11.5px] text-[#84746E]">
             <span className="flex items-center gap-0.5 text-[#3B302A]">
               <Star size={11} fill="#F59E0B" color="#F59E0B" />
               {product.averageRating ?? product.rating}
             </span>
-          </div>
+          </div> }
+         
           {displayEntry && (
             <div className="flex items-center gap-2 pt-0.5">
               <span className="text-[15px] font-semibold text-[#3B302A]">
