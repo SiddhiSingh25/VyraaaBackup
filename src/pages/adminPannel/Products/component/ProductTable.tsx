@@ -1,13 +1,27 @@
-import { Edit2, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Edit2,
+  Eye,
+  Trash2,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import type { ProductTableProps } from "./types";
 
 const ProductTable = ({
   items,
   search,
   onSearch,
+  pagination,
+  onPageChange,
+  onView,
   onEdit,
   onDelete,
 }: ProductTableProps) => {
+  const { currentPage, totalPages, totalProducts, limit } = pagination;
+  const firstEntry = totalProducts === 0 ? 0 : (currentPage - 1) * limit + 1;
+  const lastEntry = Math.min(currentPage * limit, totalProducts);
+
   return (
     <div className="overflow-hidden rounded-2xl border border-[#E7D8CC] bg-[#FFF8F2]">
       {/* Search */}
@@ -66,7 +80,7 @@ const ProductTable = ({
                   {/* Sr No */}
 
                   <td className="px-4 py-3 text-sm text-[#5E4637]">
-                    {index + 1}
+                    {firstEntry + index}
                   </td>
 
                   {/* Product */}
@@ -118,7 +132,7 @@ const ProductTable = ({
 
                   <td className="px-4 py-3">
                     <span className="rounded bg-[#F6ECE5] px-2 py-1 text-xs font-medium text-[#7C5945]">
-                      {product.color}
+                      {product.color || "_ _ _"}
                     </span>
                   </td>
 
@@ -171,6 +185,17 @@ const ProductTable = ({
                   <td className="px-4 py-3">
                     <div className="flex justify-center gap-2">
                       <button
+                        type="button"
+                        aria-label={`View ${product.title}`}
+                        onClick={() => onView(product)}
+                        className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
+                      >
+                        <Eye size={15} className="text-[#7A5442]" />
+                      </button>
+
+                      <button
+                        type="button"
+                        aria-label={`Edit ${product.title}`}
                         onClick={() => onEdit(product)}
                         className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
                       >
@@ -178,6 +203,8 @@ const ProductTable = ({
                       </button>
 
                       <button
+                        type="button"
+                        aria-label={`Delete ${product.title}`}
                         onClick={() => onDelete(product)}
                         className="rounded-md border border-[#F2D6D6] bg-white p-2 hover:bg-red-50"
                       >
@@ -196,21 +223,39 @@ const ProductTable = ({
 
       <div className="flex items-center justify-between border-t border-[#E8D8CC] px-4 py-3 text-sm text-[#8B5E49]">
         <p>
-          Showing <b>{items.length}</b> entries
+          Showing{" "}
+          <b>
+            {firstEntry}-{lastEntry}
+          </b>{" "}
+          of <b>{totalProducts}</b> entries
         </p>
 
         <div className="flex items-center gap-2">
-          <button className="rounded border border-[#E5D7CC] p-1 hover:bg-white">
+          <button
+            type="button"
+            aria-label="Previous page"
+            disabled={currentPage <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            className="rounded border border-[#E5D7CC] p-1 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <ChevronLeft size={16} />
           </button>
 
           <button className="rounded bg-[#7B523B] px-3 py-1 text-white">
-            1
+            {currentPage}
           </button>
 
-          <button className="rounded border border-[#E5D7CC] p-1 hover:bg-white">
+          <button
+            type="button"
+            aria-label="Next page"
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            className="rounded border border-[#E5D7CC] p-1 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <ChevronRight size={16} />
           </button>
+
+          <span className="text-xs text-[#9B7B69]">of {totalPages}</span>
         </div>
       </div>
     </div>

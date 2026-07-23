@@ -125,7 +125,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
           })}
         </nav>
 
-        <div className="flex items-center justify-around py-5 border-t border-border/60 shrink-0">
+        {/* <div className="flex items-center justify-around py-5 border-t border-border/60 shrink-0">
           <button className="flex flex-col items-center gap-1.5 text-admin-text/70">
             <Search size={19} strokeWidth={1.6} />
             <span className="text-[9px] tracking-widest uppercase">Search</span>
@@ -142,7 +142,7 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
             <User size={19} strokeWidth={1.6} />
             <span className="text-[9px] tracking-widest uppercase">Profile</span>
           </Link>
-        </div>
+        </div> */}
       </aside>
     </>
   );

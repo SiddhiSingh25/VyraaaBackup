@@ -76,6 +76,57 @@ export interface VariantEntry {
   sku: string;
 }
 
+export interface GiftProduct {
+  _id: string;
+  title: string;
+  image: string;
+
+  brand?: {
+    _id: string;
+    brand: string;
+  };
+
+  price: {
+    size: {
+      _id: string;
+      size: string;
+    };
+    skuCode: string;
+  }[];
+}
+
+export interface GiftItem {
+  product: string;
+  quantity: number;
+  size: string;
+
+  productDetails: {
+    title: string;
+    image: string;
+    brand: string;
+    sku?: string;
+    sizes: Option[];
+  };
+}
+export interface ProductSearchItem {
+  _id: string;
+  title: string;
+  image: string;
+
+  brand?: {
+    _id: string;
+    brand: string;
+  };
+
+  price: {
+    size: {
+      _id: string;
+      size: string;
+    };
+    skuCode: string;
+  }[];
+}
+
 export interface DraftVariant {
   size: any;
   price: string;
@@ -114,4 +165,5 @@ export type QuickAddValues = {
   images: string[];
   sku: string;
   appendSizeType: boolean;
+  gifts: GiftItem[];
 };

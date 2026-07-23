@@ -118,7 +118,11 @@ const ShieldIcon = () => (
 
 /* ---------------------------------- Main ---------------------------------- */
 
-const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => void }) => {
+const ProductInfo = ({
+  onProductLoaded,
+}: {
+  onProductLoaded?: (data: any) => void;
+}) => {
   // Initialized with <any>(null) instead of <{}>() to avoid TS errors
   // when accessing deeply nested properties like productData.price
   const [productData, setProductData] = useState<any>(null);
@@ -243,8 +247,11 @@ const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => voi
             {/* FIX: productData.name -> productData.title (API doesn't return `name`) */}
             <p className="text-[10.5px] tracking-[0.08em] uppercase text-[#84746e]">
               <span>Home</span> /<span> Products</span>
-              <span> {productData.category?.category || productData.category}</span> /
-              <span className="text-[#835240]"> {productData.title}</span>
+              <span>
+                {" "}
+                {productData.category?.category || productData.category}
+              </span>{" "}
+              /<span className="text-[#835240]"> {productData.title}</span>
             </p>
 
             <div className="flex flex-col md:flex-row gap-10 mt-4">
@@ -259,10 +266,11 @@ const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => voi
                           <div
                             key={index}
                             onClick={() => setThumbnail(index)}
-                            className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${thumbnail === index
-                              ? "border-[#835240]"
-                              : "border-gray-500/30"
-                              }`}
+                            className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${
+                              thumbnail === index
+                                ? "border-[#835240]"
+                                : "border-gray-500/30"
+                            }`}
                           >
                             {isVid ? (
                               <video
@@ -298,10 +306,11 @@ const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => voi
                       className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
                     >
                       <Heart
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWishlisted
-                          ? "fill-red-500 text-red-500"
-                          : "text-gray-700"
-                          }`}
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
+                          isWishlisted
+                            ? "fill-red-500 text-red-500"
+                            : "text-gray-700"
+                        }`}
                         strokeWidth={2}
                       />
                     </button>
@@ -382,12 +391,13 @@ const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => voi
                         type="button"
                         disabled={!size.isAvailable}
                         onClick={() => setSelectedSize(index)}
-                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${!size.isAvailable
-                          ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
-                          : selectedSize === index
-                            ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
-                            : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
-                          }`}
+                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${
+                          !size.isAvailable
+                            ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
+                            : selectedSize === index
+                              ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
+                              : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
+                        }`}
                       >
                         {size.size.size}
                       </button>
@@ -395,53 +405,52 @@ const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => voi
                   </div>
                 </div>
 
+                {!productData?.color ||
+                  (productData?.color !== "" && (
+                    <div className="mt-4">
+                      <SectionLabel>
+                        Colour —{" "}
+                        <span className="text-[#84746e] normal-case tracking-normal">
+                          {productData?.color}
+                        </span>
+                      </SectionLabel>
 
-
-
-                {!productData?.color || productData?.color !== "" && <div className="mt-4">
-                  <SectionLabel>
-                    Colour —{" "}
-                    <span className="text-[#84746e] normal-case tracking-normal">
-                      {productData?.color}
-                    </span>
-                  </SectionLabel>
-
-                  <div className="flex items-center gap-2">
-                    {productData?.linkItems?.map((item: any) => {
-                      const isVid = isVideoUrl(item?.image);
-                      return (
-                        <button
-                          key={item._id}
-                          type="button"
-                          onClick={() =>
-                            navigate({
-                              pathname: `/productDetails/${item?._id}`,
-                            })
-                          }
-                          aria-label={item?.name}
-                        >
-                          {isVid ? (
-                            <video
-                              src={item?.image}
-                              autoPlay
-                              muted
-                              loop
-                              playsInline
-                              className="w-full h-full object-cover pointer-events-none"
-                            />
-                          ) : (
-                            <img
-                              src={item?.image}
-                              alt={item._id}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>}
-
+                      <div className="flex items-center gap-2">
+                        {productData?.linkItems?.map((item: any) => {
+                          const isVid = isVideoUrl(item?.image);
+                          return (
+                            <button
+                              key={item._id}
+                              type="button"
+                              onClick={() =>
+                                navigate({
+                                  pathname: `/productDetails/${item?._id}`,
+                                })
+                              }
+                              aria-label={item?.name}
+                            >
+                              {isVid ? (
+                                <video
+                                  src={item?.image}
+                                  autoPlay
+                                  muted
+                                  loop
+                                  playsInline
+                                  className="w-full h-full object-cover pointer-events-none"
+                                />
+                              ) : (
+                                <img
+                                  src={item?.image}
+                                  alt={item._id}
+                                  className="w-full h-full object-cover"
+                                />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
 
                 <div className="mt-4 flex items-center gap-2">
                   <button
@@ -469,16 +478,18 @@ const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => voi
                       });
                     }}
                     type="button"
-                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null || activePrice?.isAvailable === false
-                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
-                      : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
-                      }`}
+                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${
+                      selectedSize === null ||
+                      activePrice?.isAvailable === false
+                        ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
+                        : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
+                    }`}
                   >
                     Buy Now
                   </button>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
+                {/* <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
                   <TrustLine icon={<ShieldIcon />}>
                     100% Original Products
                   </TrustLine>
@@ -488,9 +499,9 @@ const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => voi
                   <TrustLine icon={<ReturnIcon />}>
                     Easy 7-day returns & exchanges
                   </TrustLine>
-                </div>
+                </div> */}
 
-                <div className="mt-4 pt-4 border-t border-[#e6d9cf]">
+                <div className="mt-4 py-4 border-y border-[#e6d9cf]">
                   <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium mb-2">
                     Product Details
                   </p>
@@ -501,7 +512,7 @@ const ProductInfo = ({ onProductLoaded }: { onProductLoaded?: (data: any) => voi
                   <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-bold mt-4 mb-2">
                     Specifications
                   </p>
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3 ">
                     {productData?.attributes?.map((spec: any) => (
                       <SpecCell
                         key={spec._id}
