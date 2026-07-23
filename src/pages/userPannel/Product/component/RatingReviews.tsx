@@ -68,49 +68,14 @@ const FadeIn = ({
 }) => (
   <div
     style={{ transitionDelay: `${delay}ms` }}
-    className={`transition-all duration-700 ease-out ${
-      trigger ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-    } ${className}`}
+    className={`transition-all duration-700 ease-out ${trigger ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      } ${className}`}
   >
     {children}
   </div>
 );
 
-const RatingBar = ({
-  star,
-  count,
-  total,
-  active,
-  delay,
-}: {
-  star: number;
-  count: number;
-  total: number;
-  active: boolean;
-  delay: number;
-}) => {
-  const [width, setWidth] = useState(0);
-  const percent = total > 0 ? (count / total) * 100 : 0;
-
-  useEffect(() => {
-    if (!active) return;
-    const t = setTimeout(() => setWidth(percent), delay);
-    return () => clearTimeout(t);
-  }, [active, percent, delay]);
-
-  return (
-    <div className="flex items-center gap-2 text-[12px]">
-      <span className="w-7 shrink-0 text-[#3b302a]">{star} ★</span>
-      <div className="flex-1 h-1.5 rounded-full bg-[#f2e8dd] overflow-hidden">
-        <div
-          className="h-full rounded-full bg-[#835240] transition-all duration-[1100ms] ease-out"
-          style={{ width: `${width}%` }}
-        />
-      </div>
-      <span className="w-8 text-right text-[#84746e]">{count}</span>
-    </div>
-  );
-};
+// Rating distribution UI removed — we show individual reviews only.
 
 const FeatureCard = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
   <div className="flex flex-col items-center text-center gap-1.5 py-4 px-2 rounded-xl border border-[#e6d9cf] bg-[#fdf9f3] hover:border-[#835240] transition-colors duration-200">
@@ -123,7 +88,7 @@ const ReviewCard = ({
   review,
   onImageClick,
 }: {
-  review: Review;
+  review: any;
   onImageClick: (images: string[], index: number) => void;
 }) => (
   <div className="border border-[#e6d9cf] rounded-xl p-5 bg-[#fdf9f3]">
@@ -163,13 +128,13 @@ const ReviewCard = ({
 
     <div className="mt-3 flex items-center justify-between">
       <span className="text-[12.5px] text-[#84746e]">— {review.name}</span>
-      <button
+      {/* <button
         type="button"
         className="flex items-center gap-1.5 text-[12px] text-[#84746e] hover:text-[#835240] transition-colors duration-200"
       >
         <HelpfulIcon />
         Helpful ({review.helpful})
-      </button>
+      </button> */}
     </div>
   </div>
 );
@@ -194,9 +159,8 @@ const Lightbox = ({
   return (
     <div
       onClick={onClose}
-      className={`fixed inset-0 z-50 bg-[#1c1512]/80 backdrop-blur-sm flex items-center justify-center p-6 transition-opacity duration-200 ${
-        mounted ? "opacity-100" : "opacity-0"
-      }`}
+      className={`fixed inset-0 z-50 bg-[#1c1512]/80 backdrop-blur-sm flex items-center justify-center p-6 transition-opacity duration-200 ${mounted ? "opacity-100" : "opacity-0"
+        }`}
     >
       <button
         type="button"
@@ -244,24 +208,14 @@ const Lightbox = ({
 
 /* ---------------------------------- Types ---------------------------------- */
 
-export interface Review {
-  id: number;
-  name: string;
-  rating: number;
-  verified: boolean;
-  date: string;
-  title: string;
-  review: string;
-  helpful: number;
-  images?: string[];
-}
-
+// Accept flexible review shape coming from API
+type ApiReview = any;
 interface RatingsAndReviewsProps {
   rating: number;
   totalRatings: number;
   totalReviews: number;
-  ratingDistribution: Record<number, number>;
-  reviews: Review[];
+  ratingDistribution: Record<number, number> | any;
+  reviews: ApiReview[];
 }
 
 /* ---------------------------------- Main ---------------------------------- */
@@ -318,42 +272,35 @@ const RatingsAndReviews = ({
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-center">
-        <div className="flex md:flex-col items-center md:items-start gap-4 md:gap-1">
-          <div className="flex items-baseline gap-1">
-            <span className="text-[44px] leading-none font-semibold text-[#3b302a]">{rating}</span>
-            <svg width="22" height="22" viewBox="0 0 18 17" fill="#835240" className="ml-0.5">
-              <path d="M8.049.927c.3-.921 1.603-.921 1.902 0l1.294 3.983a1 1 0 0 0 .951.69h4.188c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 0 0-.364 1.118l1.295 3.983c.299.921-.756 1.688-1.54 1.118L9.589 13.63a1 1 0 0 0-1.176 0l-3.389 2.46c-.783.57-1.838-.197-1.539-1.118L4.78 10.99a1 1 0 0 0-.363-1.118L1.028 7.41c-.783-.57-.38-1.81.588-1.81h4.188a1 1 0 0 0 .95-.69z" />
-            </svg>
-          </div>
-          <div className="text-[12.5px] text-[#84746e] md:mt-1">
-            <p>{totalRatings} Ratings</p>
-            <p>{totalReviews} Reviews</p>
-          </div>
+      {/* Summary (simple): show average and counts */}
+      <div className="mt-6 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <StarRow rating={Math.round(rating)} size={16} />
+          <div className="text-[13px] text-[#3b302a] font-medium">{rating} / 5</div>
         </div>
-
-        <div className="flex flex-col gap-2 w-full max-w-md">
-          {[5, 4, 3, 2, 1].map((star, i) => (
-            <RatingBar
-              key={star}
-              star={star}
-              count={ratingDistribution[star] || 0}
-              total={totalRatings}
-              active={visible}
-              delay={i * 120}
-            />
-          ))}
-        </div>
+        <div className="text-[12.5px] text-[#84746e]">{totalReviews} Reviews</div>
       </div>
 
       <div className="my-6 h-px bg-[#e6d9cf]" />
 
-      {/* Customer Reviews */}
+      {/* Customer Reviews: render all individual reviews from API */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {reviews.slice(0, 2).map((review, i) => (
-          <FadeIn key={review.id} trigger={visible} delay={i * 150}>
-            <ReviewCard review={review} onImageClick={handleImageClick} />
+        {reviews.map((review, i) => (
+          <FadeIn key={review._id || review.id || i} trigger={visible} delay={i * 80}>
+            <ReviewCard
+              review={{
+                id: review._id || review.id || i,
+                name: review.user ? `${review.user.firstName || ''} ${review.user.lastName || ''}`.trim() : review.name || "Customer",
+                rating: review.rating,
+                verified: review.verified || false,
+                date: review.createdAt ? new Date(review.createdAt).toLocaleDateString() : review.date || "",
+                title: review.title || "",
+                review: review.message || review.review || "",
+                helpful: review.helpful || 0,
+                images: review.images || [],
+              }}
+              onImageClick={handleImageClick}
+            />
           </FadeIn>
         ))}
       </div>
@@ -372,11 +319,11 @@ const RatingsAndReviews = ({
       </div>
 
       {/* Feature icons */}
-      <div className="mt-6 pt-6 border-t border-[#e6d9cf] grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {/* <div className="mt-6 pt-6 border-t border-[#e6d9cf] grid grid-cols-1 sm:grid-cols-3 gap-3">
         <FeatureCard icon={<TruckIcon />} label="Free Shipping" />
         <FeatureCard icon={<CashIcon />} label="Cash on Delivery" />
         <FeatureCard icon={<ReturnIcon />} label="Easy Returns" />
-      </div>
+      </div> */}
 
       {lightbox && (
         <Lightbox

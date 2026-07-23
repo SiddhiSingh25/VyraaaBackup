@@ -121,25 +121,34 @@ export function OrdersTab() {
         message: reviewText,
         images: uploadedImageUrls,
       };
-      // console.log(payload, "=======")
-      // 3. Submit Review
-      postQuery({
-        url: apiUrls.Review.add, // Replace with your actual review endpoint in apiUrls
-        postData: payload,
-        onSuccess: (res: any) => {
-          console.log("Review submitted successfully!", res);
-          // Reset Modal States
-          setIsReviewModalOpen(false);
-          setReviewText("");
-          setReviewImages([]);
-          setRating(5);
-          setSelectedOrder(null);
-          // Optional: Refetch orders here to update the UI
-        },
-        onFail: (err: any) => {
-          console.error("Failed to submit review:", err);
-          alert(err?.response?.data?.message || "Failed to submit review.");
-        },
+
+      // 3. Submit Review and wait for callback
+      await new Promise((resolve, reject) => {
+        postQuery({
+          url: apiUrls.Review.add,
+          postData: payload,
+          onSuccess: (res: any) => {
+            // Update local orders state to mark this item as reviewed
+            setOrders((prev) =>
+              prev.map((o) =>
+                o.id === selectedOrder.id ? { ...o, review: res?.data || true } : o,
+              ),
+            );
+
+            // Reset Modal States
+            setIsReviewModalOpen(false);
+            setReviewText("");
+            setReviewImages([]);
+            setRating(5);
+            setSelectedOrder(null);
+            resolve(res);
+          },
+          onFail: (err: any) => {
+            console.error("Failed to submit review:", err);
+            alert(err?.response?.data?.message || "Failed to submit review.");
+            reject(err);
+          },
+        });
       });
     } catch (error: any) {
       console.error("Error during submission:", error);

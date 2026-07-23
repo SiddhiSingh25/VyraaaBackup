@@ -144,7 +144,7 @@ const ProductInfo = () => {
     (state: any) => state.auth.isAuthenticated,
   );
 
- 
+
 
   const cart = useSelector((state: any) => state.cart.items);
   // console.log(cart, "=====cart");
@@ -344,11 +344,10 @@ const ProductInfo = () => {
                           <div
                             key={index}
                             onClick={() => setThumbnail(index)}
-                            className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${
-                              thumbnail === index
+                            className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${thumbnail === index
                                 ? "border-[#835240]"
                                 : "border-gray-500/30"
-                            }`}
+                              }`}
                           >
                             {isVid ? (
                               <video
@@ -384,11 +383,10 @@ const ProductInfo = () => {
                       className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
                     >
                       <Heart
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
-                          isWishlisted
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWishlisted
                             ? "fill-red-500 text-red-500"
                             : "text-gray-700"
-                        }`}
+                          }`}
                         strokeWidth={2}
                       />
                     </button>
@@ -447,7 +445,7 @@ const ProductInfo = () => {
                 ) : (
                   <StarRating
                     rating={productData?.averageRating}
-                    // totalRatings={product.totalRatings}
+                  // totalRatings={product.totalRatings}
                   />
                 )}
 
@@ -465,14 +463,16 @@ const ProductInfo = () => {
                 {productData?.price?.[selectedSize]?.discount != 0 && (
                   <p className="mt-0.5 text-[11px] text-[#84746e]">
                     inclusive of all taxes · you save ₹
-                    {productData?.price?.[selectedSize]?.markupPrice -
-                      productData?.price?.[selectedSize]?.amount}
+                    {(
+                      productData?.price?.[selectedSize]?.markupPrice -
+                      productData?.price?.[selectedSize]?.amount
+                    ).toFixed(2)}
                   </p>
                 )}
 
                 <div className="mt-4">
                   <SectionLabel
-                  
+
                   >
                     Select Size
                   </SectionLabel>
@@ -483,13 +483,12 @@ const ProductInfo = () => {
                         type="button"
                         disabled={!size.isAvailable}
                         onClick={() => setSelectedSize(index)}
-                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${
-                          !size.isAvailable
+                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${!size.isAvailable
                             ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
                             : selectedSize === index
                               ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
                               : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
-                        }`}
+                          }`}
                       >
                         {size.size.size}
                       </button>
@@ -533,11 +532,10 @@ const ProductInfo = () => {
                             })
                           }
                           aria-label={item?.name}
-                          className={`relative w-8 h-8 rounded-full overflow-hidden border transition-all duration-200 ${
-                            selectedColor === item?._id
+                          className={`relative w-8 h-8 rounded-full overflow-hidden border transition-all duration-200 ${selectedColor === item?._id
                               ? "border-[#835240] ring-1 ring-[#c98f7a] ring-offset-1 ring-offset-[#fdf9f3]"
                               : "border-[#e6d9cf]"
-                          }`}
+                            }`}
                         >
                           {isVid ? (
                             <video
@@ -575,7 +573,7 @@ const ProductInfo = () => {
                       productData?.price?.[selectedSize]?.isAvailable === false
                     }
                     onClick={() => {
-                      if (selectedSize === null) return;  
+                      if (selectedSize === null) return;
 
                       navigate(`/checkout/address`, {
                         state: {
@@ -587,12 +585,11 @@ const ProductInfo = () => {
                       });
                     }}
                     type="button"
-                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${
-                      selectedSize === null ||
-                      productData?.price?.[selectedSize]?.isAvailable === false
+                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null ||
+                        productData?.price?.[selectedSize]?.isAvailable === false
                         ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
                         : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
-                    }`}
+                      }`}
                   >
                     Buy Now
                   </button>
@@ -606,7 +603,7 @@ const ProductInfo = () => {
                   </button> */}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
+                {/* <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
                   <TrustLine icon={<ShieldIcon />}>
                     100% Original Products
                   </TrustLine>
@@ -616,9 +613,9 @@ const ProductInfo = () => {
                   <TrustLine icon={<ReturnIcon />}>
                     Easy 7-day returns & exchanges
                   </TrustLine>
-                </div>
+                </div> */}
 
-                <div className="mt-4 pt-4 border-t border-[#e6d9cf]">
+                <div className="mt-4 py-4 border-y border-[#e6d9cf]">
                   <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium mb-2">
                     Product Details
                   </p>
@@ -629,7 +626,7 @@ const ProductInfo = () => {
                   <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-bold mt-4 mb-2">
                     Specifications
                   </p>
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3 ">
                     {productData?.attributes?.map((spec: any) => (
                       <SpecCell
                         key={spec._id}
@@ -640,15 +637,15 @@ const ProductInfo = () => {
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-[#e6d9cf] text-[11.5px] text-[#84746e]">
+                {/* <div className="mt-4 pt-3 border-t border-[#e6d9cf] text-[11.5px] text-[#84746e]">
                   Product Code: <span className="text-[#3b302a]">39052859</span>
-                </div>
+                </div> */}
                 <RatingsAndReviews
-                  rating={product.rating}
-                  totalRatings={product.totalRatings}
-                  totalReviews={product.totalReviews}
-                  ratingDistribution={product.ratingDistribution}
-                  reviews={product.reviews}
+                  rating={productData?.averageRating || 0}
+                  totalRatings={productData?.reviews?.length || 0}
+                  totalReviews={productData?.reviews?.length || 0}
+                  ratingDistribution={{}}
+                  reviews={productData?.reviews || []}
                 />
               </div>
             </div>
