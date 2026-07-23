@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
+import Navbar from "@/components/Header/Navbar";
+import Footer from "@/components/Footer/Footer";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -16,7 +18,9 @@ const PageTransition = ({ children }: PageTransitionProps) => {
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
+      <Navbar/>
       {children}
+      <Footer/>
     </motion.div>
   );
 };

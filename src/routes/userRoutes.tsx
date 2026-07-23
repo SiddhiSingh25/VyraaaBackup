@@ -1,4 +1,3 @@
-
 /* =========================
    Auth Pages
 ========================= */
@@ -27,6 +26,8 @@ import CheckoutLayout from "../pages/userPannel/Checkout/CheckoutLayout";
 import Cart from "../pages/userPannel/Checkout/Cart/Cart";
 import AddNewAddress from "../pages/userPannel/Checkout/Address/pages/AddNewAddress";
 import Payment from "../pages/userPannel/Checkout/Payment/PaymentPage";
+import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/privacypolicy";
+import TermsAndConditions from "@/pages/userPannel/HomeScreen/Components/TermsCondition";
 import OrderDeatils from "../pages/userPannel/OrderDeatils/OrderDeatils";
 
 export const userRoutes = [
@@ -69,7 +70,14 @@ export const userRoutes = [
     path: "/aboutus",
     element: <AboutUs />,
   },
-
+  {
+    path: "/privacy-policy",
+    element: <PrivacyPolicy />,
+  },
+  {
+    path: "/terms-condtions",
+    element: <TermsAndConditions />,
+  },
   {
     path: "/aboutus",
     element: <AboutUs />,

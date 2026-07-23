@@ -1,14 +1,15 @@
 import { motion } from "motion/react";
 import { LoyaltyAvatar } from "./LoyaltyAvatar";
 import { StatChip } from "./StatChip";
-import type { AccountStats, UserProfile } from "./account";
+import type { AccountStats, UserProfile, AccountTabId } from "./account";
 
 interface ProfileHeaderProps {
   user: UserProfile;
   stats: AccountStats;
+  onTabChange?: (tab: AccountTabId) => void;
 }
 
-export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
+export function ProfileHeader({ user, stats, onTabChange }: ProfileHeaderProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -36,7 +37,13 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
       <div className="mt-6 flex flex-wrap gap-3">
         
         <StatChip
-        to="/profile"
+          to="/profile"
+          onClick={(e) => {
+            if (onTabChange) {
+              e.preventDefault();
+              onTabChange("orders");
+            }
+          }}
           label="Orders placed"
           value={String(stats.totalOrders)}
           icon={
@@ -69,3 +76,4 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
     </motion.div>
   );
 }
+

@@ -116,22 +116,15 @@ const ShieldIcon = () => (
   </svg>
 );
 
-const HeartIcon = ({ filled }: any) => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M12 20.5s-7.5-4.6-9.8-9.2C.6 7.8 2.3 4 6 4c2.1 0 3.6 1.1 4.5 2.4C11.4 5.1 12.9 4 15 4c3.7 0 5.4 3.8 3.8 7.3-2.3 4.6-9.8 9.2-9.8 9.2z"
-      stroke="#835240"
-      strokeWidth="1.6"
-      fill={filled ? "#835240" : "none"}
-    />
-  </svg>
-);
-
 /* ---------------------------------- Main ---------------------------------- */
 
-const ProductInfo = () => {
-  // FIX 1: Initialized with <any>(null) instead of <{}>().
-  // This prevents TS errors when accessing deeply nested properties like productData.price
+const ProductInfo = ({
+  onProductLoaded,
+}: {
+  onProductLoaded?: (data: any) => void;
+}) => {
+  // Initialized with <any>(null) instead of <{}>() to avoid TS errors
+  // when accessing deeply nested properties like productData.price
   const [productData, setProductData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   let { id } = useParams();
@@ -144,10 +137,13 @@ const ProductInfo = () => {
     (state: any) => state.auth.isAuthenticated,
   );
 
-
-
   const cart = useSelector((state: any) => state.cart.items);
-  // console.log(cart, "=====cart");
+
+  const [thumbnail, setThumbnail] = React.useState(0);
+  const [selectedSize, setSelectedSize] = React.useState<number>(0);
+  const [quantity, setQuantity] = React.useState(1);
+  const [isWishlisted, setIsWishlisted] = React.useState(false);
+  const ref = useReveal();
 
   useEffect(() => {
     if (!id) return;
@@ -156,24 +152,32 @@ const ProductInfo = () => {
     getQuery({
       url: apiUrls.Product.getById + id,
       onSuccess: (res: any) => {
-        // console.log(res.data, "====");
         const subImages = res?.data?.image
           ? [res.data.image, ...(res?.data?.subImages || [])]
           : res?.data?.subImages || [];
-        setProductData({ ...res.data, subImages });
-        console.log(res.data, "78975897777")
+        const fullData = { ...res.data, subImages };
+        setProductData(fullData);
         setIsLoading(false);
+        if (onProductLoaded) {
+          onProductLoaded(fullData);
+        }
       },
       onFail: (res: any) => {
         console.log(res);
         setIsLoading(false);
       },
     });
-  }, [id]);
+  }, [id, onProductLoaded]);
 
+  useEffect(() => {
+    setThumbnail(0);
+    setSelectedSize(0);
+    setIsWishlisted(false);
+  }, [productData]);
+
+  // FIX: toggle wishlist state instead of always setting true
   const handleWishlist = () => {
-    setIsWishlisted(true);
-    // console.log("Hello0 from the other side ")
+    setIsWishlisted((prev) => !prev);
   };
 
   const handleAddToCart = () => {
@@ -214,93 +218,6 @@ const ProductInfo = () => {
     });
   };
 
-  const product = {
-    brand: "Campus",
-    name: "HIGHBIRD Women Colourblocked Sneakers",
-    category: "Footwear",
-    subCategory: "Sneakers",
-    mrp: 2999,
-    sellingPrice: 1659,
-    discount: 45,
-    rating: 4.6,
-    totalRatings: 480,
-    images: [kidsFootwear, kidsFootwear, kidsFootwear, kidsFootwear],
-    colorOptions: [
-      { name: "Grey", image: kidsFootwear },
-      { name: "Lavender", image: kidsFootwear },
-      { name: "White", image: kidsFootwear },
-    ],
-    availableSizes: [
-      { size: "4", stock: true },
-      { size: "5", stock: true },
-      { size: "6", stock: true },
-      { size: "7", stock: true },
-      { size: "8", stock: true },
-    ],
-    description: [
-      "Colourblocked premium sneakers for women.",
-      "Breathable mesh upper with synthetic overlays.",
-    ],
-    specs: [
-      { label: "Material", value: "Mesh & synthetic upper" },
-      { label: "Sole", value: "EVA cushioned sole" },
-      { label: "Closure", value: "Lace-up" },
-      { label: "Fit", value: "True to size" },
-    ],
-    inStock: true,
-    totalReviews: 128,
-    ratingDistribution: {
-      5: 312,
-      4: 103,
-      3: 38,
-      2: 16,
-      1: 11,
-    },
-    reviews: [
-      {
-        id: 1,
-        name: "Rahul Sharma",
-        rating: 5,
-        verified: true,
-        date: "2 weeks ago",
-        title: "Excellent Quality",
-        review:
-          "Very comfortable shoes. Material feels premium, lightweight and perfect for everyday wear.",
-        helpful: 122,
-        images: [kidsFootwear, kidsFootwear],
-      },
-      {
-        id: 2,
-        name: "Priya Singh",
-        rating: 5,
-        verified: true,
-        date: "1 month ago",
-        title: "Loved It",
-        review:
-          "Beautiful design, excellent cushioning and true to size. Definitely worth buying.",
-        helpful: 73,
-        images: [kidsFootwear, kidsFootwear, kidsFootwear],
-      },
-    ],
-  };
-  // const [isAddressSidebarOpen, setIsAddressSidebarOpen] = useState(false);
-  const [thumbnail, setThumbnail] = React.useState(0);
-  const [selectedColor, setSelectedColor] = React.useState(
-    product.colorOptions[0].name,
-  );
-
-  const [selectedSize, setSelectedSize] = React.useState<number>(0);
-
-  const [quantity, setQuantity] = React.useState(1);
-  const [isWishlisted, setIsWishlisted] = React.useState(false);
-  const ref = useReveal();
-
-  useEffect(() => {
-    setThumbnail(0);
-    setSelectedSize(0);
-    setIsWishlisted(false);
-  }, [productData]);
-
   if (isLoading) {
     return (
       <section className="bg-[#fdf9f3] py-5">
@@ -316,20 +233,25 @@ const ProductInfo = () => {
     );
   }
 
+  const activePrice = productData?.price?.[selectedSize];
+  const savedAmount =
+    activePrice?.markupPrice != null && activePrice?.amount != null
+      ? Math.round(activePrice.markupPrice - activePrice.amount)
+      : 0;
+
   return (
-    product &&
     productData && (
       <section className="bg-[#fdf9f3] py-5">
-        {/* <AddressSidebar
-          isOpen={isAddressSidebarOpen}
-          onClose={() => setIsAddressSidebarOpen(false)}
-        /> */}
         <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
           <div className="max-w-6xl w-full ">
+            {/* FIX: productData.name -> productData.title (API doesn't return `name`) */}
             <p className="text-[10.5px] tracking-[0.08em] uppercase text-[#84746e]">
               <span>Home</span> /<span> Products</span>
-              <span> {product.category}</span> /
-              <span className="text-[#835240]"> {product.name}</span>
+              <span>
+                {" "}
+                {productData.category?.category || productData.category}
+              </span>{" "}
+              /<span className="text-[#835240]"> {productData.title}</span>
             </p>
 
             <div className="flex flex-col md:flex-row gap-10 mt-4">
@@ -344,10 +266,11 @@ const ProductInfo = () => {
                           <div
                             key={index}
                             onClick={() => setThumbnail(index)}
-                            className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${thumbnail === index
+                            className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${
+                              thumbnail === index
                                 ? "border-[#835240]"
                                 : "border-gray-500/30"
-                              }`}
+                            }`}
                           >
                             {isVid ? (
                               <video
@@ -383,10 +306,11 @@ const ProductInfo = () => {
                       className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
                     >
                       <Heart
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWishlisted
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
+                          isWishlisted
                             ? "fill-red-500 text-red-500"
                             : "text-gray-700"
-                          }`}
+                        }`}
                         strokeWidth={2}
                       />
                     </button>
@@ -413,23 +337,6 @@ const ProductInfo = () => {
                     })()}
                   </div>
                 </div>
-
-                {/* <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
-                  <button
-                    onClick={handleWishlist}
-                    aria-label={
-                      isWishlisted ? "Remove from wishlist" : "Add to wishlist"
-                    }
-                    className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150"
-                  >
-                    <Heart
-                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
-                        }`}
-                      strokeWidth={2}
-                    />
-                  </button>
-                  <img src={productData?.subImages?.[thumbnail]} alt="Selected product" className="w-full h-full object-cover" />
-                </div> */}
               </div>
 
               <div className="w-full md:w-1/2">
@@ -440,55 +347,57 @@ const ProductInfo = () => {
                   {productData?.title}
                 </h1>
 
+                {/* FIX: pass totalRatings — API has no totalRatings field, derive from reviews.length */}
                 {productData.averageRating == 0 ? (
                   ""
                 ) : (
                   <StarRating
                     rating={productData?.averageRating}
-                  // totalRatings={product.totalRatings}
+                    totalRatings={productData?.reviews?.length || 0}
                   />
                 )}
 
+                {/* FIX: round amounts — API can return decimals like 332.5 */}
                 <div className="mt-3 flex items-baseline gap-2">
                   <span className="text-[22px] text-[#3b302a] font-semibold leading-none">
-                    ₹{productData?.price?.[selectedSize]?.amount}
+                    ₹{Math.round(activePrice?.amount)}
                   </span>
-                  <span className="text-[13px] text-[#84746e] line-through">
-                    MRP ₹{productData?.price?.[selectedSize]?.markupPrice}
-                  </span>
-                  <span className="text-[13px] text-[#835240] font-medium">
-                    ({productData?.price?.[selectedSize]?.discount || 0}% OFF)
-                  </span>
+
+                  {activePrice?.discount > 0 && (
+                    <>
+                      <span className="text-[13px] text-[#84746e] line-through">
+                        MRP ₹{Math.round(activePrice?.markupPrice)}
+                      </span>
+
+                      <span className="text-[13px] text-[#835240] font-medium">
+                        ({activePrice.discount}% OFF)
+                      </span>
+                    </>
+                  )}
                 </div>
-                {productData?.price?.[selectedSize]?.discount != 0 && (
+
+                {activePrice?.discount > 0 && (
                   <p className="mt-0.5 text-[11px] text-[#84746e]">
-                    inclusive of all taxes · you save ₹
-                    {(
-                      productData?.price?.[selectedSize]?.markupPrice -
-                      productData?.price?.[selectedSize]?.amount
-                    ).toFixed(2)}
+                    inclusive of all taxes · you save ₹{savedAmount}
                   </p>
                 )}
 
                 <div className="mt-4">
-                  <SectionLabel
-
-                  >
-                    Select Size
-                  </SectionLabel>
+                  <SectionLabel>Select Size</SectionLabel>
                   <div className="flex flex-wrap gap-2">
                     {productData?.price?.map((size: any, index: number) => (
                       <button
-                        key={index} // Changed from key={size} to key={index} because objects as keys throw errors
+                        key={size._id || index} // prefer stable _id if present
                         type="button"
                         disabled={!size.isAvailable}
                         onClick={() => setSelectedSize(index)}
-                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${!size.isAvailable
+                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${
+                          !size.isAvailable
                             ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
                             : selectedSize === index
                               ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
                               : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
-                          }`}
+                        }`}
                       >
                         {size.size.size}
                       </button>
@@ -496,68 +405,52 @@ const ProductInfo = () => {
                   </div>
                 </div>
 
-                <div className="mt-4">
-                  <SectionLabel>
-                    Colour —{" "}
-                    <span className="text-[#84746e] normal-case tracking-normal">
-                      {productData?.color}
-                    </span>
-                  </SectionLabel>
-                  {/* <div className="flex items-center gap-2">
-                    {productData?.linkItems?.map((item: any) => (
-                      <button
-                        key={item._id}
-                        type="button"
-                        onClick={() => navigate({ pathname: `/productDeatils/${item?._id}` })}
-                        aria-label={item?.name}
-                        className={`relative w-8 h-8 rounded-full overflow-hidden border transition-all duration-200 ${selectedColor === item?._id
-                          ? "border-[#835240] ring-1 ring-[#c98f7a] ring-offset-1 ring-offset-[#fdf9f3]"
-                          : "border-[#e6d9cf]"
-                          }`}
-                      >
-                        <img src={item?.image} alt={item._id} className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div> */}
-                  <div className="flex items-center gap-2">
-                    {productData?.linkItems?.map((item: any) => {
-                      const isVid = isVideoUrl(item?.image);
-                      return (
-                        <button
-                          key={item._id}
-                          type="button"
-                          onClick={() =>
-                            navigate({
-                              pathname: `/productDeatils/${item?._id}`,
-                            })
-                          }
-                          aria-label={item?.name}
-                          className={`relative w-8 h-8 rounded-full overflow-hidden border transition-all duration-200 ${selectedColor === item?._id
-                              ? "border-[#835240] ring-1 ring-[#c98f7a] ring-offset-1 ring-offset-[#fdf9f3]"
-                              : "border-[#e6d9cf]"
-                            }`}
-                        >
-                          {isVid ? (
-                            <video
-                              src={item?.image}
-                              autoPlay
-                              muted
-                              loop
-                              playsInline
-                              className="w-full h-full object-cover pointer-events-none"
-                            />
-                          ) : (
-                            <img
-                              src={item?.image}
-                              alt={item._id}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                {!productData?.color ||
+                  (productData?.color !== "" && (
+                    <div className="mt-4">
+                      <SectionLabel>
+                        Colour —{" "}
+                        <span className="text-[#84746e] normal-case tracking-normal">
+                          {productData?.color}
+                        </span>
+                      </SectionLabel>
+
+                      <div className="flex items-center gap-2">
+                        {productData?.linkItems?.map((item: any) => {
+                          const isVid = isVideoUrl(item?.image);
+                          return (
+                            <button
+                              key={item._id}
+                              type="button"
+                              onClick={() =>
+                                navigate({
+                                  pathname: `/productDetails/${item?._id}`,
+                                })
+                              }
+                              aria-label={item?.name}
+                            >
+                              {isVid ? (
+                                <video
+                                  src={item?.image}
+                                  autoPlay
+                                  muted
+                                  loop
+                                  playsInline
+                                  className="w-full h-full object-cover pointer-events-none"
+                                />
+                              ) : (
+                                <img
+                                  src={item?.image}
+                                  alt={item._id}
+                                  className="w-full h-full object-cover"
+                                />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
 
                 <div className="mt-4 flex items-center gap-2">
                   <button
@@ -570,7 +463,7 @@ const ProductInfo = () => {
                   <button
                     disabled={
                       selectedSize === null ||
-                      productData?.price?.[selectedSize]?.isAvailable === false
+                      activePrice?.isAvailable === false
                     }
                     onClick={() => {
                       if (selectedSize === null) return;
@@ -579,28 +472,21 @@ const ProductInfo = () => {
                         state: {
                           from: "product",
                           productId: id,
-                          size: productData?.price?.[selectedSize]?.size?._id,
-                          quantity: quantity || 1, // Pass the quantity here
+                          size: activePrice?.size?._id,
+                          quantity: quantity || 1,
                         },
                       });
                     }}
                     type="button"
-                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null ||
-                        productData?.price?.[selectedSize]?.isAvailable === false
+                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${
+                      selectedSize === null ||
+                      activePrice?.isAvailable === false
                         ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
                         : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
-                      }`}
+                    }`}
                   >
                     Buy Now
                   </button>
-                  {/* <button
-                    type="button"
-                    onClick={() => setIsWishlisted((w) => !w)}
-                    aria-label="Add to wishlist"
-                    className="w-11 h-11 flex items-center justify-center shrink-0 border border-[#e6d9cf] rounded-sm hover:border-[#835240] transition-colors duration-200"
-                  >
-                    <HeartIcon filled={isWishlisted} />
-                  </button> */}
                 </div>
 
                 {/* <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
@@ -637,16 +523,13 @@ const ProductInfo = () => {
                   </div>
                 </div>
 
-                {/* <div className="mt-4 pt-3 border-t border-[#e6d9cf] text-[11.5px] text-[#84746e]">
-                  Product Code: <span className="text-[#3b302a]">39052859</span>
-                </div> */}
-                <RatingsAndReviews
-                  rating={productData?.averageRating || 0}
-                  totalRatings={productData?.reviews?.length || 0}
-                  totalReviews={productData?.reviews?.length || 0}
-                  ratingDistribution={{}}
-                  reviews={productData?.reviews || []}
-                />
+                {/* FIX: real per-variant SKU instead of hardcoded product code */}
+                <div className="mt-4 pt-3 border-t border-[#e6d9cf] text-[11.5px] text-[#84746e]">
+                  Product Code:{" "}
+                  <span className="text-[#3b302a]">
+                    {activePrice?.skuCode || productData?._id}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

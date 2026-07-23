@@ -8,7 +8,6 @@ import type { ActiveChip, FilterState, FilterValue } from "./types";
 
 import Toolbar from "./components/Toolbar";
 import FilterList from "./components/FilterList";
-import ProductCard from "./components/ProductCard";
 import SkeletonCard from "./components/SkeletonCard";
 import EmptyState from "./components/EmptyState";
 import Pagination from "./components/Pagination";
@@ -16,6 +15,7 @@ import FilterDrawer from "./components/FilterDrawer";
 import MobileBottomBar from "./components/MobileBottomBar";
 import useGetQuery from "../../../hooks/getQuery.hook";
 import { apiUrls } from "../../../apis";
+import ProductCard from "../Product/component/ProductCard";
 
 /* ============================================================================
    VYRAAA — Product Listing Page
