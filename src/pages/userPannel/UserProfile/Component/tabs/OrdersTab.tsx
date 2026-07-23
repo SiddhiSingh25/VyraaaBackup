@@ -261,7 +261,7 @@ export function OrdersTab() {
 
                 {/* Buttons */}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {status === "Delivered" ? (
+                  {status === "Delivered" && (
                     <button
                       onClick={() => {
                         setSelectedOrder(order);
@@ -276,26 +276,28 @@ export function OrdersTab() {
                       <Star size={14} />
                       {order.review ? "Review Submitted" : "Write a Review"}
                     </button>
-                  ) : (
-                    status !== "Cancelled" &&
-                    status !== "Refunded" && (
-                      <>
-                        <button className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
-                          <MapPinned size={14} />
-                          Track Order
-                        </button>
+                  )
+                    // : (
+                    //   status !== "Cancelled" &&
+                    //   status !== "Refunded" && (
+                    //     <>
+                    //       <button className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
+                    //         <MapPinned size={14} />
+                    //         Track Order
+                    //       </button>
 
-                        <button className="rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
-                          Cancel Item
-                        </button>
-                      </>
-                    )
-                  )}
+                    //       <button className="rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
+                    //         Cancel Item
+                    //       </button>
+                    //     </>
+                    //   )
+                    // )
+                  }
 
-                  <button className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
+                  {/* <button className="flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-surface transition text-admin-text">
                     <Headphones size={14} />
                     Need Help
-                  </button>
+                  </button> */}
                 </div>
               </motion.div>
             ))}
