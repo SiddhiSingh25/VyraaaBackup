@@ -27,6 +27,7 @@ import CheckoutLayout from "../pages/userPannel/Checkout/CheckoutLayout";
 import Cart from "../pages/userPannel/Checkout/Cart/Cart";
 import AddNewAddress from "../pages/userPannel/Checkout/Address/pages/AddNewAddress";
 import Payment from "../pages/userPannel/Checkout/Payment/PaymentPage";
+import OrderDeatils from "../pages/userPannel/OrderDeatils/OrderDeatils";
 
 export const userRoutes = [
   /* =========================
@@ -69,7 +70,7 @@ export const userRoutes = [
     element: <AboutUs />,
   },
 
-    {
+  {
     path: "/aboutus",
     element: <AboutUs />,
   },
@@ -103,6 +104,10 @@ export const userRoutes = [
       {
         path: "/wishlist",
         element: <Wishlist />,
+      },
+      {
+        path: "/orderDeatils",
+        element: <OrderDeatils />,
       },
       {
         path: "/checkout",
