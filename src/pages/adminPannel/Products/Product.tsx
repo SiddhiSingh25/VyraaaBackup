@@ -5,6 +5,7 @@ import ProductTable from "./component/ProductTable";
 
 import type { ProductItem } from "./component/types";
 import Button from "@/components/tableComponents/Button";
+import ConfirmDialog from "@/components/tableComponents/ConfirmDialog";
 import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,7 @@ import usePostQuery from "@/hooks/postQuery.hook";
 const Product = () => {
   const [search, setSearch] = useState("");
   const [products, SetProducts] = useState([]);
+  const [pendingDelete, setPendingDelete] = useState<ProductItem | null>(null);
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
@@ -41,14 +43,17 @@ const Product = () => {
     console.log("Edit", item._id);
   };
 
-  const handleDelete = (item: ProductItem) => {
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+
     postQuery({
       url: apiUrls.Product.delete,
       postData: {
-        id: item._id,
+        id: pendingDelete._id,
       },
       onSuccess: (res: any) => {
         console.log(res);
+        setPendingDelete(null);
         fetchProducts();
       },
       onFail: (err: any) => {
@@ -84,9 +89,21 @@ const Product = () => {
           search={search}
           onSearch={setSearch}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={setPendingDelete}
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={Boolean(pendingDelete)}
+        title="Delete product?"
+        description={
+          pendingDelete
+            ? `Are you sure you want to delete \"${pendingDelete.title}\"? This action cannot be undone.`
+            : ""
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 };
