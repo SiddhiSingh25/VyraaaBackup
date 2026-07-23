@@ -14,7 +14,7 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
   // Basic Details
   name: yup.string().required("Product Name is required"),
   description: yup.string().required("Description is required"),
-  brand: yup.string().required("Brand is required"),
+  brand: yup.string().optional(),
   gender: yup
     .string()
     .oneOf(["Men", "Women", "Unisex", "Boys", "Girls"])
@@ -45,8 +45,8 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
     .default([]),
 
   // Variants (Simplified for Quick Add)
-  colorFamily: yup.string().required("Color Family is required"),
-  color: yup.string().required("Specific Color is required"),
+  colorFamily: yup.string().optional(),
+  color: yup.string().optional(),
   sizeType: yup.string().required("Size Type is required"),
   variants: yup
     .array()

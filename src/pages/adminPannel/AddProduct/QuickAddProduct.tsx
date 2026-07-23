@@ -27,6 +27,7 @@ import Button from "../../../components/tableComponents/Button";
 import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
 import type { GiftItem } from "./types";
+import useGetQuery from "@/hooks/getQuery.hook";
 
 const TOTAL_SECTIONS = 4;
 
@@ -34,6 +35,9 @@ const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [addedProduct, setAddedProduct] = useState<any>(null);
   const [showProductModal, setShowProductModal] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const { getQuery } = useGetQuery();
+  console.log("poroductId", id);
 
   // categoryId coming from the route params (e.g. /category/:categoryId/quick-add)
   const { categoryId: categoryIdFromParams } = useParams();
@@ -79,9 +83,6 @@ const QuickAddProduct = () => {
   const appendSizeType = watch("appendSizeType");
   const productName = watch("name");
   const description = watch("description");
-  const color = watch("color");
-  const brand = watch("brand");
-  const selectedBrand = watch("brand");
   const gender = watch("gender");
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -178,15 +179,6 @@ const QuickAddProduct = () => {
     setValue("brand", "");
   }, [effectiveCategoryId, setValue]);
 
-  useEffect(() => {
-    if (effectiveCategoryId && brandOptions.length > 0 && !selectedBrand) {
-      setValue("brand", brandOptions[0].value, {
-        shouldValidate: true,
-        shouldDirty: false,
-      });
-    }
-  }, [effectiveCategoryId, brandOptions, selectedBrand, setValue]);
-
   // Only reset subcategory/type when category actually changes (i.e. the
   // user is picking it manually). When category comes from params this
   // still only fires once, harmlessly, on mount.
@@ -260,14 +252,7 @@ const QuickAddProduct = () => {
       effectiveCategoryId && selectedSubcategoryId && selectedSubcategoryTypeId,
     ), // Category
 
-    Boolean(
-      productName &&
-      description &&
-      selectedColorFamily &&
-      color &&
-      brand &&
-      gender,
-    ),
+    Boolean(productName && description && gender),
 
     variants.length > 0, // Inventory & Pricing
 
@@ -299,8 +284,8 @@ const QuickAddProduct = () => {
       title: data.name,
       appendSizeTypeToSize: appendSizeType,
       description: data.description,
-      brand: data.brand,
-      color: data.color,
+      brand: data.brand || null,
+      color: data.color || null,
       category: effectiveCategoryId,
       subCategory: data.subcategory,
       subcategoryType: data.subcategoryType || null,
@@ -308,7 +293,7 @@ const QuickAddProduct = () => {
       gender:
         data.gender === "Boys" || data.gender === "Girls"
           ? "Child"
-          : data.gender,
+          : data.gender || null,
       ageRange: data.ageRange || null,
 
       price: data.variants.map((variant) => {
@@ -398,6 +383,24 @@ const QuickAddProduct = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (!id) return;
+
+    getQuery({
+      url: `${apiUrls.Product.getById}${id}`,
+      onSuccess: (res: any) => {
+        console.log("Product Details:", res);
+      },
+      onFail: (err: any) => {
+        console.error("Failed to fetch product:", err);
+        toast(
+          "error",
+          err?.response?.data?.message || "Failed to fetch product",
+        );
+      },
+    });
+  }, [id]);
 
   return (
     <div className="flex h-screen flex-col bg-background font-admin-text selection:bg-rose-gold/30">
