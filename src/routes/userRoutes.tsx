@@ -69,6 +69,10 @@ export const userRoutes = [
     element: <AboutUs />,
   },
 
+    {
+    path: "/aboutus",
+    element: <AboutUs />,
+  },
   {
     path: "/:id",
     element: <ProductFilter />,
