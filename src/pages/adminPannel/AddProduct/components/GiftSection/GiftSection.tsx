@@ -22,10 +22,19 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
   const [products, setProducts] = useState<GiftProduct[]>([]);
 
   useEffect(() => {
-    if (!query.trim()) {
+    const search = query.trim();
+
+    if (!search) {
       setProducts([]);
+      setLoading(false);
       return;
     }
+
+    const controller = new AbortController();
+
+    // Results always come from the API for the current search term.
+    // Clearing the old list prevents it from being mistaken for new results.
+    setProducts([]);
 
     const timer = setTimeout(async () => {
       try {
@@ -35,20 +44,32 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
           `${apiBaseUrl}${apiBaseUrl.endsWith("/") ? "" : "/"}product/home`,
           {
             params: {
-              search: query,
+              search,
+              page: 1,
+              limit: 20,
             },
+            signal: controller.signal,
           },
         );
 
-        setProducts(res.data.data || []);
+        if (!controller.signal.aborted) {
+          setProducts(res.data.data || []);
+        }
       } catch (err) {
-        console.log(err);
+        if (!axios.isCancel(err)) {
+          console.error("Unable to search gift products:", err);
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }, 400);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [query]);
 
   const selectedIds = useMemo(() => gifts.map((g) => g.product), [gifts]);

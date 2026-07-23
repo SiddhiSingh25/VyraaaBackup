@@ -17,7 +17,7 @@ const Product = () => {
 
   const fetchProducts = () => {
     getQuery({
-      url: apiUrls.Product.getAll,
+      url: apiUrls.Product.getAll + "?search=" + search,
       onSuccess: (res: any) => {
         console.log("Fetched Addresses:", res.data);
         SetProducts(res.data);
@@ -29,18 +29,11 @@ const Product = () => {
   };
 
   useEffect(() => {
+    if (search) {
+      SetProducts([]);
+    }
     fetchProducts();
-  }, []);
-
-  const filteredProducts = useMemo(() => {
-    return products.filter((item: any) => {
-      return (
-        item.title.toLowerCase().includes(search.toLowerCase()) ||
-        item.category.toLowerCase().includes(search.toLowerCase()) ||
-        item.subCategory.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-  }, [products, search]);
+  }, [search]);
 
   const handleEdit = (item: ProductItem) => {
     console.log("Edit", item);
@@ -73,7 +66,7 @@ const Product = () => {
         </div>
 
         <ProductTable
-          items={filteredProducts}
+          items={products}
           search={search}
           onSearch={setSearch}
           onEdit={handleEdit}
