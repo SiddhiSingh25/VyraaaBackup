@@ -8,11 +8,13 @@ import Button from "@/components/tableComponents/Button";
 import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
 import { useNavigate } from "react-router-dom";
+import usePostQuery from "@/hooks/postQuery.hook";
 
 const Product = () => {
   const [search, setSearch] = useState("");
   const [products, SetProducts] = useState([]);
   const { getQuery } = useGetQuery();
+  const { postQuery } = usePostQuery();
   const navigate = useNavigate();
 
   const fetchProducts = () => {
@@ -36,11 +38,23 @@ const Product = () => {
   }, [search]);
 
   const handleEdit = (item: ProductItem) => {
-    console.log("Edit", item);
+    console.log("Edit", item._id);
   };
 
   const handleDelete = (item: ProductItem) => {
-    console.log("Delete", item);
+    postQuery({
+      url: apiUrls.Product.delete,
+      postData: {
+        id: item._id,
+      },
+      onSuccess: (res: any) => {
+        console.log(res);
+        fetchProducts();
+      },
+      onFail: (err: any) => {
+        console.log(err, "Error creating brand");
+      },
+    });
   };
 
   return (

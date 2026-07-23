@@ -31,10 +31,7 @@ const useBrandData = (categoryId: string) => {
     });
   };
 
-  const addBrand = (
-    brandName: string,
-    onSuccess?: (newBrand: any) => void,
-  ) => {
+  const addBrand = (brandName: string, onSuccess?: (newBrand: any) => void) => {
     if (!categoryId || !brandName?.trim()) return;
 
     postQuery({
@@ -45,7 +42,7 @@ const useBrandData = (categoryId: string) => {
       },
       onSuccess: (res: any) => {
         const newBrand = res.data;
-        setBrands((prevBrands) =>
+        setBrands((prevBrands: any) =>
           Array.isArray(newBrand) ? newBrand : [...prevBrands, newBrand],
         );
         onSuccess?.(newBrand);
