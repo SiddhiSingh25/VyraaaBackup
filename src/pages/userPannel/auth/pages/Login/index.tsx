@@ -150,7 +150,6 @@ const Login = () => {
 
   return (
     <PageTransition>
-      {/* <Navbar /> */}
       <AuthLayout image={authImage} imageAlt="Vyraaa perfume bottle">
         <AuthHeader title="Welcome" highlight="Back" subtitle="Please login to your account" />
 
