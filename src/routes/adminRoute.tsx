@@ -34,7 +34,7 @@ export const adminRoutes = [
             element: <Dashboard />,
           },
           {
-            path: "/admin/quick-add",
+            path: "/admin/quick-add/:id?",
             element: <QuickAddProduct />,
           },
 

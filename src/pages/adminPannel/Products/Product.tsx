@@ -64,6 +64,8 @@ const Product = () => {
 
   const handleEdit = (item: ProductItem) => {
     console.log("Edit", item._id);
+
+    navigate(`/admin/quick-add/${item._id}`);
   };
 
   const handleView = (item: ProductItem) => {

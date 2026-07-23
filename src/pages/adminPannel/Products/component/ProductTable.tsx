@@ -1,4 +1,11 @@
-import { Edit2, Eye, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Edit2,
+  Eye,
+  Trash2,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import type { ProductTableProps } from "./types";
 
 const ProductTable = ({
@@ -125,7 +132,7 @@ const ProductTable = ({
 
                   <td className="px-4 py-3">
                     <span className="rounded bg-[#F6ECE5] px-2 py-1 text-xs font-medium text-[#7C5945]">
-                      {product.color}
+                      {product.color || "_ _ _"}
                     </span>
                   </td>
 
@@ -216,7 +223,11 @@ const ProductTable = ({
 
       <div className="flex items-center justify-between border-t border-[#E8D8CC] px-4 py-3 text-sm text-[#8B5E49]">
         <p>
-          Showing <b>{firstEntry}-{lastEntry}</b> of <b>{totalProducts}</b> entries
+          Showing{" "}
+          <b>
+            {firstEntry}-{lastEntry}
+          </b>{" "}
+          of <b>{totalProducts}</b> entries
         </p>
 
         <div className="flex items-center gap-2">
