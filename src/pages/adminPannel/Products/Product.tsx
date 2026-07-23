@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 
 import ProductTable from "./component/ProductTable";
 
-import type { ProductItem } from "./component/types";
+import type { ProductItem, ProductPagination } from "./component/types";
 import Button from "@/components/tableComponents/Button";
 import ConfirmDialog from "@/components/tableComponents/ConfirmDialog";
 import useGetQuery from "@/hooks/getQuery.hook";
@@ -13,18 +13,39 @@ import usePostQuery from "@/hooks/postQuery.hook";
 
 const Product = () => {
   const [search, setSearch] = useState("");
-  const [products, SetProducts] = useState([]);
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<ProductPagination>({
+    totalProducts: 0,
+    totalPages: 1,
+    currentPage: 1,
+    limit: 10,
+  });
   const [pendingDelete, setPendingDelete] = useState<ProductItem | null>(null);
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
 
   const fetchProducts = () => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: pagination.limit.toString(),
+    });
+
+    if (search) params.set("search", search);
+
     getQuery({
-      url: apiUrls.Product.getAll + "?search=" + search,
+      url: `${apiUrls.Product.getAll}?${params.toString()}`,
       onSuccess: (res: any) => {
-        console.log("Fetched Addresses:", res.data);
-        SetProducts(res.data);
+        setProducts(res.data || []);
+        setPagination(
+          res.pagination || {
+            totalProducts: 0,
+            totalPages: 1,
+            currentPage: page,
+            limit: pagination.limit,
+          },
+        );
       },
       onFail: (err: any) => {
         console.log("Failed to fetch addresses:", err);
@@ -33,11 +54,13 @@ const Product = () => {
   };
 
   useEffect(() => {
-    if (search) {
-      SetProducts([]);
-    }
     fetchProducts();
-  }, [search]);
+  }, [search, page]);
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   const handleEdit = (item: ProductItem) => {
     console.log("Edit", item._id);
@@ -87,7 +110,9 @@ const Product = () => {
         <ProductTable
           items={products}
           search={search}
-          onSearch={setSearch}
+          onSearch={handleSearch}
+          pagination={pagination}
+          onPageChange={setPage}
           onEdit={handleEdit}
           onDelete={setPendingDelete}
         />
