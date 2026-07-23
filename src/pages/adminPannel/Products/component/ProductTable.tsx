@@ -1,4 +1,4 @@
-import { Edit2, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Edit2, Eye, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import type { ProductTableProps } from "./types";
 
 const ProductTable = ({
@@ -7,6 +7,7 @@ const ProductTable = ({
   onSearch,
   pagination,
   onPageChange,
+  onView,
   onEdit,
   onDelete,
 }: ProductTableProps) => {
@@ -177,6 +178,17 @@ const ProductTable = ({
                   <td className="px-4 py-3">
                     <div className="flex justify-center gap-2">
                       <button
+                        type="button"
+                        aria-label={`View ${product.title}`}
+                        onClick={() => onView(product)}
+                        className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
+                      >
+                        <Eye size={15} className="text-[#7A5442]" />
+                      </button>
+
+                      <button
+                        type="button"
+                        aria-label={`Edit ${product.title}`}
                         onClick={() => onEdit(product)}
                         className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
                       >
@@ -184,6 +196,8 @@ const ProductTable = ({
                       </button>
 
                       <button
+                        type="button"
+                        aria-label={`Delete ${product.title}`}
                         onClick={() => onDelete(product)}
                         className="rounded-md border border-[#F2D6D6] bg-white p-2 hover:bg-red-50"
                       >
