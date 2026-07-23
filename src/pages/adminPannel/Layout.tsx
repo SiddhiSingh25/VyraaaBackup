@@ -148,12 +148,12 @@ export default function AdminLayout() {
         path: "/admin/master-channel",
         items: masterChannelNavItems, // <-- static list, defined below
       },
-      {
-        icon: FaProductHunt,
-        label: "Product",
-        path: "/admin/product",
-        items: productNavItems,
-      },
+      // {
+      //   icon: FaProductHunt,
+      //   label: "Product",
+      //   path: "/admin/product",
+      //   items: productNavItems,
+      // },
       // {
       //   icon: FaTags,
       //   label: "Coupons",
