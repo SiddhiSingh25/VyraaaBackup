@@ -40,6 +40,7 @@ export interface ProductTableProps {
   onSearch: (value: string) => void;
   pagination: ProductPagination;
   onPageChange: (page: number) => void;
+  onView: (item: ProductItem) => void;
   onEdit: (item: ProductItem) => void;
   onDelete: (item: ProductItem) => void;
 }

@@ -14,8 +14,10 @@ import React, { useEffect, useState } from "react";
 import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook"; // <-- Added
 import { apiUrls } from "@/apis";
+import { useNavigate } from "react-router-dom";
 
 export function OrdersTab() {
+  const navigate = useNavigate()
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery(); // <-- Added
   const [orders, setOrders] = useState<any[]>([]);
@@ -215,6 +217,12 @@ export function OrdersTab() {
           <div className="space-y-3">
             {list?.map((order: any, index: any) => (
               <motion.div
+                onClick={() => navigate(`/orderDeatils`, {
+                  state: {
+                    id: order?.orderId
+                  }
+                })}
+                // onClick={() => console.log(order.orderId, "===")}
                 key={order.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -303,7 +311,8 @@ export function OrdersTab() {
             ))}
           </div>
         </div>
-      ))}
+      ))
+      }
 
       {/* Review Modal */}
       <AnimatePresence>
@@ -424,6 +433,6 @@ export function OrdersTab() {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 }

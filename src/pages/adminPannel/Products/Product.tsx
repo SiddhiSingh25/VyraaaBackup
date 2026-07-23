@@ -64,6 +64,12 @@ const Product = () => {
 
   const handleEdit = (item: ProductItem) => {
     console.log("Edit", item._id);
+
+    navigate(`/admin/quick-add/${item._id}`);
+  };
+
+  const handleView = (item: ProductItem) => {
+    navigate(`/productDetails/${item._id}`);
   };
 
   const confirmDelete = () => {
@@ -113,6 +119,7 @@ const Product = () => {
           onSearch={handleSearch}
           pagination={pagination}
           onPageChange={setPage}
+          onView={handleView}
           onEdit={handleEdit}
           onDelete={setPendingDelete}
         />
