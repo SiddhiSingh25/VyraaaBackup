@@ -101,6 +101,7 @@ const Orders = () => {
           </div>
 
           <div className="w-full sm:flex-1 pt-5">
+            
             <input
               className="w-full rounded-md border border-[#E7D8CC] bg-white px-3 py-2.5 text-xs sm:text-sm text-[#3F322B] transition-colors focus:border-[#8B5E49] focus:outline-none focus:ring-1 focus:ring-[#8B5E49]"
               placeholder="Search orders by Order ID..."
