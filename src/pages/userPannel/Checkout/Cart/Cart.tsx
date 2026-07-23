@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { CartItem } from "./component/cart";
-// import { sampleCartItems } from "./component/sampleCart"; // You can remove this now
 import { computePriceDetails } from "./component/pricing";
-// import OffersStrip from "./component/OffersStrip";
 import CartListHeader from "./component/CartListHeader";
 import CartItemCard from "./component/CartItemCard";
 import OrderSummary from "./component/OrderSummary";
@@ -12,21 +10,34 @@ import useGetQuery from "../../../../hooks/getQuery.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../../apis";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   setCartItems,
   toggleSelectItem,
+  increaseQuantity,
   updateQuantity,
   removeFromCart,
-} from "../../../../redux/slices/cartSlice.js";
+} from "../../../../redux/slices/cartSlice";
+import Navbar from "@/components/Header/Navbar";
+import Footer from "@/components/Footer/Footer";
+import { EmptyState } from "@/components/Common/EmptyList/EmptyList";
+import { FiShoppingBag } from "react-icons/fi";
 
 const COUPON_DISCOUNT = 60;
 
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // Bind items to Redux store cart items
-  const items = useSelector((state: any) => state.cart.items);
+
+
+  const {
+    items,
+    totalItems,
+    cartTotalAmount,
+    cartTotalMarkupPrice,
+    cartTotalDiscount,
+  } = useSelector((state: any) => state.cart);
+
   const [couponApplied, setCouponApplied] = useState(false);
   const [donation, setDonation] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -41,33 +52,61 @@ const Cart = () => {
       url: apiUrls.Cart.getByUserId,
       onSuccess: (res: any) => {
         setCartData(res.data);
-        console.log(res.data.items[0].product.title)
-        // 2. Map the API response to the frontend `CartItem` shape with safe defaults
+
+        // 2. Map the API response. 
+        // Note: The new Redux slice handles the math beautifully, but we keep this mapping 
+        // to ensure frontend-specific properties (like availableSizes, soldBy) reach the UI components.
         if (res.data && res.data.items) {
           const mappedItems = res.data.items.map((apiItem: any) => {
             const product = apiItem.product || {};
             const priceList = product.price || [];
-            // try to derive available sizes from product price entries
-            const availableSizes = priceList.map((p: any) => p.size).filter(Boolean);
+
+            // Extract available size strings for UI dropdowns
+            const availableSizes = priceList
+              .map((p: any) => p.size?.size || p.size)
+              .filter(Boolean);
+
+            // ==========================================
+            // NEW: FIND EXACT SIZE DATA FOR THIS ITEM
+            // ==========================================
+            const currentSizeId = apiItem.size?._id || apiItem.size;
+            const sizeData = priceList.find(
+              (p: any) => String(p.size?._id || p.size) === String(currentSizeId)
+            ) || priceList[0] || {}; // Fallback to first if somehow missing
+
+            // Extract exact prices based on the matched size data
+            const baseMrp = sizeData.markupPrice || apiItem.unitPrice || 0;
+            const basePrice = sizeData.amount || apiItem.unitPrice || 0;
+            const currentQty = apiItem.quantity || 1;
 
             return {
+              ...apiItem,
               id: apiItem._id,
-              brand: product.brand || product.manufacturer,
+              cartItemId: apiItem._id,
+              brand: product.brand?.brand || product.brand || product.manufacturer,
               name: product.title || "Product",
               soldBy: "VYRAAA",
               image: product.image || product.thumbnail || "",
               size: apiItem.size?.size || availableSizes[0] || "",
               availableSizes: availableSizes,
-              qty: apiItem.quantity || 1,
+              qty: currentQty,
+              quantity: currentQty,
               maxQty: apiItem.maxQty || product.maxQty || 10,
-              mrp: priceList?.[0]?.markupPrice * apiItem.quantity || apiItem.unitPrice || 0,
-              price: apiItem.itemTotal || priceList?.[0]?.amount || 0,
+              baseMrp: baseMrp,
+              basePrice: basePrice,
+              mrp: baseMrp * currentQty,
+              price: apiItem.itemTotal || basePrice * currentQty,
               returnDays: product.returnDays || 7,
               selected: true,
+
+              // ==========================================
+              // NEW: CAPTURE AVAILABILITY FLAGS
+              // ==========================================
+              isAvailable: sizeData.isAvailable !== false, // Defaults to true unless explicitly false
+              isFewLeft: sizeData.isFewLeft === true,
             } as unknown as CartItem;
           });
 
-          // Update Redux state with real API data
           dispatch(setCartItems(mappedItems));
         }
       },
@@ -77,10 +116,6 @@ const Cart = () => {
     });
   }, [refreshKey]);
 
-  // const toggleSelect = (id: string) => {
-  //   dispatch(toggleSelectItem(id));
-  // };
-
   const removeItem = (id: string) => {
     dispatch(removeFromCart(id));
   };
@@ -89,63 +124,45 @@ const Cart = () => {
     dispatch(removeFromCart(id));
   };
 
-  const changeQty = (id: string, qty: number) => {
-    dispatch(updateQuantity({ id, quantity: qty }));
+  const changeQty = (cartItemId: string, qty: number) => {
+    dispatch(updateQuantity({ cartItemId, quantity: qty }));
   };
 
-  // const changeSize = (id: string, size: string) =>
-  //   setItems((prev) => prev.map((i) => (i.id === id ? { ...i, size } : i)));
-
+  // We keep this just in case your OrderSummary component uses the 'details' prop 
+  // for extra non-Redux logic (like delivery fees or taxes).
   const priceDetails = useMemo(
     () =>
       computePriceDetails(items, couponApplied ? COUPON_DISCOUNT : 0, donation),
-    [items, couponApplied, donation]
+    [items, couponApplied, donation],
   );
-
-  const selectedCount = items.filter((i) => i.selected).length;
 
   return (
     <div className="min-h-screen bg-background">
+      <Navbar />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface py-20 text-center">
-            <p className="font-heading text-xl text-admin-text">
-              Your bag is empty
-            </p>
-            <p className="font-body text-sm text-muted">
-              Looks like you haven't added anything to your bag yet.
-            </p>
-            <a
-              href="#"
-              className="mt-2 rounded-md bg-primary px-6 py-2.5 font-body text-sm font-semibold tracking-wide text-background transition-colors hover:bg-primary-dark"
-            >
-              CONTINUE SHOPPING
-            </a>
-          </div>
+     <EmptyState
+  icon={<FiShoppingBag size={28} className="text-dark/50" />}
+  title="Your cart is empty"
+  description="Looks like you haven't added anything yet. Discover our collections and find your perfect fragrance."
+  actionText="Continue Shopping"
+  onAction={() => navigate("/products")}
+/>
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* Left: bag items */}
             <section className="space-y-4">
-              {/* <OffersStrip /> */}
-
               <div className="rounded-lg border border-border bg-surface p-4 sm:p-5">
-                {/* <CartListHeader
-                  selectedCount={selectedCount}
-                  totalCount={items.length}
-                /> */}
-
                 <div className="mt-4 space-y-3">
                   <AnimatePresence mode="popLayout">
-                    {items.map((item) => (
+                    {items.map((item: any) => (
                       <CartItemCard
                         key={item.id}
                         item={item}
-                        // onToggleSelect={toggleSelect}
                         onRemove={removeItem}
                         onMoveToWishlist={moveToWishlist}
                         onQtyChange={changeQty}
                         onRefreshCart={refreshCart}
-                      // onSizeChange={changeSize}
                       />
                     ))}
                   </AnimatePresence>
@@ -155,7 +172,7 @@ const Cart = () => {
               <motion.button
                 type="button"
                 whileHover={{ x: 2 }}
-                onClick={() => navigate("/wishlist")} // 3. Add the navigation trigger
+                onClick={() => navigate("/wishlist")}
                 className="flex w-full items-center justify-between rounded-lg border border-border bg-surface px-5 py-4 font-body text-sm font-medium text-admin-text transition-colors hover:border-primary-light"
               >
                 Add More From Wishlist
@@ -166,27 +183,30 @@ const Cart = () => {
             {/* Right: order summary */}
             <div className="lg:sticky lg:top-24 lg:self-start">
               <OrderSummary
-                // 3. Fallback to your local computed details if API totals aren't updating locally on qty change
-                itemCount={cartData?.totalItems || priceDetails.itemCount}
-                totalMrp={cartData?.cartTotalMarkupPrice || priceDetails.totalMrp}
-                discountOnMrp={cartData?.cartTotalDiscount || priceDetails.discountOnMrp}
-                totalAmount={cartData?.cartTotalAmount || priceDetails.totalAmount}
+                // 3. PUMP REDUX LIVE DATA DIRECTLY INTO THE UI 
+                itemCount={totalItems}
+                totalMrp={cartTotalMarkupPrice}
+                discountOnMrp={cartTotalDiscount}
+                totalAmount={cartTotalAmount}
+
                 details={priceDetails}
                 couponApplied={couponApplied}
                 onApplyCoupon={() => setCouponApplied(true)}
                 onRemoveCoupon={() => setCouponApplied(false)}
                 onDonationChange={setDonation}
                 onPlaceOrder={() => {
-                  console.log("Placing order", priceDetails);
+                  navigate(`/checkout/address`, {
+                    state: {
+                      from: "cart",
+                    },
+                  });
                 }}
               />
-              {/* <div className="mt-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
-                <TrustBadges />
-              </div> */}
             </div>
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

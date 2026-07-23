@@ -7,11 +7,13 @@ import type { ProductItem } from "./component/types";
 import Button from "@/components/tableComponents/Button";
 import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
+import { useNavigate } from "react-router-dom";
 
 const Product = () => {
   const [search, setSearch] = useState("");
   const [products, SetProducts] = useState([]);
   const { getQuery } = useGetQuery();
+  const navigate = useNavigate();
 
   const fetchProducts = () => {
     getQuery({
@@ -60,7 +62,12 @@ const Product = () => {
             </p>
           </div>
 
-          <Button variant="primary" size="md" icon={<Plus size={18} />}>
+          <Button
+            onClick={() => navigate("/admin/quick-add")}
+            variant="primary"
+            size="md"
+            icon={<Plus size={18} />}
+          >
             Add Product
           </Button>
         </div>

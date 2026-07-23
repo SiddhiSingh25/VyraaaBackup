@@ -1,160 +1,103 @@
-// import { useState } from "react";
-// import { Search, X } from "lucide-react";
-
-// interface SearchBarProps {
-//   variant?: "desktop" | "mobile";
-//   placeholder?: string;
-//   className?: string;
-// }
-
-// export default function SearchBar({
-//   variant = "desktop",
-//   placeholder = "Search for products, brands and more",
-//   className = "",
-// }: SearchBarProps) {
-//   const [value, setValue] = useState("");
-//   const [focused, setFocused] = useState(false);
-//   const isMobile = variant === "mobile";
-
-//   return (
-//     <div className={`relative w-full ${isMobile ? "h-10" : "h-10"} ${className}`}>
-//       <div
-//         className={`flex items-center w-full h-full rounded-full border bg-heading/[0.035]
-//           transition-all duration-300 ease-out
-//           ${
-//             focused
-//               ? "border-primary/40 bg-background shadow-[0_0_0_4px_rgba(0,0,0,0.03)] ring-2 ring-primary/15"
-//               : "border-border/70 hover:border-border"
-//           }`}
-//       >
-//         <Search
-//           size={16}
-//           strokeWidth={1.8}
-//           className={`ml-4 shrink-0 transition-colors duration-300 ${
-//             focused ? "text-primary-dark" : "text-admin-text/40"
-//           }`}
-//         />
-//         <input
-//           type="text"
-//           value={value}
-//           onChange={(e) => setValue(e.target.value)}
-//           onFocus={() => setFocused(true)}
-//           onBlur={() => setFocused(false)}
-//           placeholder={placeholder}
-//           className="w-full h-full bg-transparent px-3 text-[13px] tracking-wide text-admin-text
-//             placeholder:text-admin-text/50 focus:outline-none "
-//         />
-//         {value && (
-//           <button
-//             type="button"
-//             onClick={() => setValue("")}
-//             aria-label="Clear search"
-//             className="mr-3 text-admin-text/30 hover:text-admin-text/60 transition-colors duration-200"
-//           >
-//             <X size={14} />
-//           </button>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-"use client";
-
-import { useState } from "react";
-import { Search } from "lucide-react";
-import { SearchModal } from "./search/SearchModal";
-import { getAllProducts } from "./search/mock-products";
-import type { Product } from "./search/search";
-
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Search, X } from "lucide-react";
 
 interface SearchBarProps {
   variant?: "desktop" | "mobile";
   placeholder?: string;
   className?: string;
-  /** Optional override — defaults to the shared catalogue used by SearchModal. */
-  products?: Product[];
-  onSelectProduct?: (product: Product) => void;
 }
+
+const SEARCH_DEBOUNCE_MS = 450;
+const PRODUCT_LISTING_PATH = "/products"; // <-- adjust to your actual listing route
 
 export default function SearchBar({
   variant = "desktop",
   placeholder = "Search for products, brands and more",
   className = "",
-  products,
-  onSelectProduct,
 }: SearchBarProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navSearch = (location.state as any)?.search || "";
+  const [value, setValue] = useState(navSearch);
   const [focused, setFocused] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const isMobile = variant === "mobile";
-  const isActive = focused || isOpen;
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const catalogue = products ?? getAllProducts();
+  // Sync input value with router state search term
+  useEffect(() => {
+    setValue(navSearch);
+  }, [navSearch]);
 
-  function openModal() {
-    setIsOpen(true);
-  }
+  // Debounced navigation as-you-type
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    const trimmed = value.trim();
+    const currentSearch = (location.state as any)?.search || "";
+
+    if (trimmed !== currentSearch) {
+      debounceRef.current = setTimeout(() => {
+        const nextState = trimmed ? { search: trimmed } : {};
+        navigate(PRODUCT_LISTING_PATH, { state: nextState });
+      }, SEARCH_DEBOUNCE_MS);
+    }
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, navSearch, navigate]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      const trimmed = value.trim();
+      const nextState = trimmed ? { search: trimmed } : {};
+      navigate(PRODUCT_LISTING_PATH, { state: nextState });
+    }
+  };
 
   return (
-    <>
-      <div className={`relative w-full ${isMobile ? "h-10" : "h-10"} ${className}`}>
-        {/*
-          This bar is a trigger, not a live input — all typing happens in the
-          centered SearchModal (matches the "click to expand" brief). Clicking
-          anywhere on the pill, or focusing the input via keyboard, opens it.
-        */}
-        <div
-          onClick={openModal}
-          role="button"
-          tabIndex={0}
-          aria-haspopup="dialog"
-          aria-expanded={isOpen}
-          aria-label="Open search"
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              openModal();
-            }
-          }}
-          className={`flex items-center w-full h-full rounded-full border bg-heading/[0.035] cursor-pointer
-            transition-all duration-300 ease-out
-            ${
-              isActive
-                ? "border-primary/40 bg-background shadow-[0_0_0_4px_rgba(0,0,0,0.03)] ring-2 ring-primary/15"
-                : "border-border/70 hover:border-border"
-            }`}
-        >
-          <Search
-            size={16}
-            strokeWidth={1.8}
-            className={`ml-4 shrink-0 transition-colors duration-300 ${
-              isActive ? "text-primary-dark" : "text-admin-text/40"
-            }`}
-          />
-          <input
-            type="text"
-            value=""
-            readOnly
-            onFocus={() => {
-              setFocused(true);
-              // openModal();
-            }}
-            onBlur={() => setFocused(false)}
-            placeholder={placeholder}
-            className="w-full h-full bg-transparent px-3 text-[13px] tracking-wide text-admin-text
-              placeholder:text-admin-text/50 focus:outline-none cursor-pointer"
-          />
-        </div>
+    <div className={`relative w-full ${isMobile ? "h-10" : "h-10"} ${className}`}>
+      <div
+        className={`flex items-center w-full h-full rounded-full border bg-heading/[0.035]
+          transition-all duration-300 ease-out
+          ${focused
+            ? "border-primary/40 bg-background shadow-[0_0_0_4px_rgba(0,0,0,0.03)] ring-2 ring-primary/15"
+            : "border-border/70 hover:border-border"
+          }`}
+      >
+        <Search
+          size={16}
+          strokeWidth={1.8}
+          className={`ml-4 shrink-0 transition-colors duration-300 ${
+            focused ? "text-primary-dark" : "text-admin-text/40"
+          }`}
+        />
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={placeholder}
+          className="w-full h-full bg-transparent px-3 text-[13px] tracking-wide text-admin-text
+            placeholder:text-admin-text/50 focus:outline-none"
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={() => setValue("")}
+            aria-label="Clear search"
+            className="mr-3 text-admin-text/30 hover:text-admin-text/60 transition-colors duration-200"
+          >
+            <X size={14} />
+          </button>
+        )}
       </div>
-
-      <SearchModal
-        isOpen={isOpen}
-        onClose={() => {
-    console.log("Closing modal");
-    setIsOpen(false);
-  }}
-        products={catalogue}
-        onSelectProduct={onSelectProduct}
-      />
-    </>
+    </div>
   );
 }

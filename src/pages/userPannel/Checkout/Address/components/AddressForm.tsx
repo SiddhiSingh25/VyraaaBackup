@@ -1,238 +1,208 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
-import { AddressInput } from "./AddressInput";
-import { AddressTypeSelector } from "./AddressTypeSelector";
-import { DefaultCheckbox } from "./DefaultCheckbox";
-import { DeliveryInfoCard } from "./DeliveryInfoCard";
-import { PageHeader } from "./PageHeader";
-import { emptyAddress, lookupPinCode } from "../data/dummyData";
-import type { AddressFormData, AddressType, FieldErrors } from "../types/address";
-import {Link} from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import type { Address } from "../pages/AddNewAddress";
 
 interface AddressFormProps {
-  onSave: (address: AddressFormData) => void;
+  initialData?: Address | null;
+  onSubmit: (address: Address) => void;
   onCancel: () => void;
 }
 
-const REQUIRED_FIELDS: (keyof AddressFormData)[] = [
-  "fullName",
-  "mobileNumber",
-  "pinCode",
-  "houseNumber",
-  "streetAddress",
-  "area",
-  "city",
-  "state",
-  "country",
-];
+const INITIAL_FORM_STATE: Address = {
+  addressType: "Home",
+  isDefault: false,
+  fullName: "",
+  town: "",
+  streetAddress: "",
+  landmark: "",
+  city: "",
+  state: "",
+  pinCode: "",
+  country: "India",
+  phoneNumber: "",
+  userId: "",
+};
 
-function validate(data: AddressFormData): FieldErrors {
-  const errors: FieldErrors = {};
+export default function AddressForm({ initialData, onSubmit, onCancel }: AddressFormProps) {
+  const [formData, setFormData] = useState<Address>(INITIAL_FORM_STATE);
 
-  for (const field of REQUIRED_FIELDS) {
-    if (!String(data[field]).trim()) {
-      errors[field] = "This field is required";
+  // Populate form if we are editing an existing address
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      setFormData(INITIAL_FORM_STATE);
     }
-  }
+  }, [initialData]);
 
-  if (data.mobileNumber && !/^\d{10}$/.test(data.mobileNumber)) {
-    errors.mobileNumber = "Enter a valid 10-digit mobile number";
-  }
-
-  if (data.email && !/^\S+@\S+\.\S+$/.test(data.email)) {
-    errors.email = "Enter a valid email address";
-  }
-
-  if (data.pinCode && !/^\d{6}$/.test(data.pinCode)) {
-    errors.pinCode = "PIN code must be 6 digits";
-  }
-
-  return errors;
-}
-
-export function AddressForm({ onSave, onCancel }: AddressFormProps) {
-  const [formData, setFormData] = useState<AddressFormData>(emptyAddress);
-  const [errors, setErrors] = useState<FieldErrors>({});
-  const [pinResolved, setPinResolved] = useState(false);
-  const [isLookingUpPin, setIsLookingUpPin] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const setField = <K extends keyof AddressFormData>(field: K, value: AddressFormData[K]) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  const handlePinChange = (value: string) => {
-    const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
-    setField("pinCode", digitsOnly);
-    setPinResolved(false);
-
-    if (digitsOnly.length === 6) {
-      setIsLookingUpPin(true);
-      // Simulated network latency for the auto-fill lookup
-      window.setTimeout(() => {
-        const result = lookupPinCode(digitsOnly);
-        if (result) {
-          setFormData((prev) => ({ ...prev, city: result.city, state: result.state }));
-          setPinResolved(true);
-        }
-        setIsLookingUpPin(false);
-      }, 600);
-    }
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const validationErrors = validate(formData);
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
-
-    setIsSaving(true);
-    // Simulated save — no backend, state only
-    window.setTimeout(() => {
-      setIsSaving(false);
-      onSave(formData);
-    }, 900);
+    onSubmit(formData);
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="rounded-2xl border border-border bg-card/40 p-6 shadow-[0_2px_24px_-8px_rgba(59,48,42,0.12)] sm:p-9"
-    >
-      <PageHeader
-        title="Add New Address"
-        subtitle="Save your delivery details for faster checkout."
-      />
-
-      {/* Contact Details */}
-      <section>
-        <h2 className="mb-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
-          Contact Details
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight text-admin-text">
+          {initialData ? "Edit Address" : "Add New Address"}
         </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <AddressInput
-            label="Full Name"
+        <p className="mt-1 text-sm text-muted">
+          Save your delivery details for faster checkout.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+            Full Name
+          </label>
+          <input
             required
+            name="fullName"
             value={formData.fullName}
-            onChange={(v) => setField("fullName", v)}
-            error={errors.fullName}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow"
+            placeholder="John Doe"
           />
-          <AddressInput
-            label="Mobile Number"
-            required
-            inputMode="numeric"
-            value={formData.mobileNumber}
-            onChange={(v) => setField("mobileNumber", v.replace(/\D/g, "").slice(0, 10))}
-            error={errors.mobileNumber}
-          />
-          <div className="sm:col-span-2">
-            <AddressInput
-              label="Email (optional)"
-              type="email"
-              value={formData.email}
-              onChange={(v) => setField("email", v)}
-              error={errors.email}
-            />
-          </div>
         </div>
-      </section>
 
-      <div className="stitch-rule my-8" aria-hidden />
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+            Phone Number
+          </label>
+          <input
+            required
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow"
+            placeholder="10-digit mobile number"
+          />
+        </div>
 
-      {/* Delivery Address */}
-      <section>
-        <h2 className="mb-4 text-xs font-semibold tracking-[0.1em] text-muted uppercase">
-          Delivery Address
-        </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <AddressInput
-              label="PIN Code"
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+              Pincode
+            </label>
+            <input
               required
-              inputMode="numeric"
+              name="pinCode"
               value={formData.pinCode}
-              onChange={handlePinChange}
-              error={errors.pinCode}
-              success={pinResolved}
-              hint={isLookingUpPin ? "Looking up your area…" : undefined}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow"
+              placeholder="e.g. 110001"
             />
           </div>
-          <AddressInput
-            label="House No / Flat / Building"
-            required
-            value={formData.houseNumber}
-            onChange={(v) => setField("houseNumber", v)}
-            error={errors.houseNumber}
-          />
-          <div className="sm:col-span-2">
-            <AddressInput
-              label="Street Address"
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+              Town/Locality
+            </label>
+            <input
               required
-              value={formData.streetAddress}
-              onChange={(v) => setField("streetAddress", v)}
-              error={errors.streetAddress}
-            />
-          </div>
-          <AddressInput
-            label="Area / Locality"
-            required
-            value={formData.area}
-            onChange={(v) => setField("area", v)}
-            error={errors.area}
-          />
-          <AddressInput
-            label="Landmark (optional)"
-            value={formData.landmark}
-            onChange={(v) => setField("landmark", v)}
-          />
-          <AddressInput
-            label="City"
-            required
-            value={formData.city}
-            onChange={(v) => setField("city", v)}
-            error={errors.city}
-            success={pinResolved}
-          />
-          <AddressInput
-            label="State"
-            required
-            value={formData.state}
-            onChange={(v) => setField("state", v)}
-            error={errors.state}
-            success={pinResolved}
-          />
-          <div className="sm:col-span-2">
-            <AddressInput
-              label="Country"
-              required
-              value={formData.country}
-              onChange={(v) => setField("country", v)}
-              error={errors.country}
+              name="town"
+              value={formData.town}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow"
             />
           </div>
         </div>
-      </section>
 
-      <div className="stitch-rule my-8" aria-hidden />
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+            Street Address / House No.
+          </label>
+          <input
+            required
+            name="streetAddress"
+            value={formData.streetAddress}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow"
+            placeholder="House/Flat No., Building name, Street"
+          />
+        </div>
 
-      <section className="space-y-6">
-        <AddressTypeSelector
-          value={formData.addressType}
-          onChange={(v: AddressType) => setField("addressType", v)}
-        />
-        <DefaultCheckbox
-          checked={formData.isDefault}
-          onChange={(v) => setField("isDefault", v)}
-        />
-        <DeliveryInfoCard />
-      </section>
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+            Landmark (Optional)
+          </label>
+          <input
+            name="landmark"
+            value={formData.landmark || ""}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow"
+            placeholder="e.g. Near Apollo Hospital"
+          />
+        </div>
 
-      <div className="mt-9 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+              City
+            </label>
+            <input
+              required
+              name="city"
+              value={formData.city}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+              State
+            </label>
+            <input
+              required
+              name="state"
+              value={formData.state}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">
+            Address Type
+          </label>
+          <select
+            name="addressType"
+            value={formData.addressType}
+            onChange={handleInputChange}
+            className="w-full px-4 py-3 bg-surface border border-border/60 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-shadow appearance-none"
+          >
+            <option value="Home">Home (7 AM - 9 PM delivery)</option>
+            <option value="Work">Work (10 AM - 6 PM delivery)</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div className="pt-2 flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="isDefault"
+            name="isDefault"
+            checked={formData.isDefault}
+            onChange={handleInputChange}
+            className="w-5 h-5 text-primary border-border/60 rounded focus:ring-primary"
+          />
+          <label htmlFor="isDefault" className="text-sm font-medium text-admin-text cursor-pointer select-none">
+            Make this my default delivery address
+          </label>
+        </div>
+      </div>
+
+      <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-6 border-t border-border/50">
         <button
           type="button"
           onClick={onCancel}
@@ -240,18 +210,12 @@ export function AddressForm({ onSave, onCancel }: AddressFormProps) {
         >
           Cancel
         </button>
-        <Link to="/checkout/payment">
-        <motion.button
+        <button
           type="submit"
-          disabled={isSaving}
-          whileHover={{ y: -2 }}
-          whileTap={{ y: 0 }}
-          className="flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-medium text-white shadow-[0_8px_20px_-8px_rgba(131,82,64,0.55)] transition-shadow hover:shadow-[0_12px_28px_-8px_rgba(131,82,64,0.6)] disabled:opacity-70"
+          className="flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3 text-sm font-medium text-white shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30"
         >
-          {isSaving && <Loader2 size={16} className="animate-spin" />}
-          {isSaving ? "Saving Address…" : "Save Address"}
-        </motion.button>
-        </Link>
+          {initialData ? "Update Address" : "Save Address"}
+        </button>
       </div>
     </form>
   );

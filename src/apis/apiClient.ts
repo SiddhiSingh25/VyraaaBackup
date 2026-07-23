@@ -5,6 +5,7 @@ import { apiBaseUrl } from "./index.ts";
 // import { console } from "../utils/console";
 
 const apiInstance = () => {
+  let isRedirecting = false;
   const api = axios.create({
     baseURL: apiBaseUrl,
   });
@@ -32,8 +33,26 @@ const apiInstance = () => {
     },
     (error: any) => {
       console.log("ERROR", error.response?.data?.detail || error.message);
+
+      const isAuthExpired =
+        error.response?.status === 401 ||
+        error.response?.data?.error === "Authentication failed: jwt expired" ||
+        ((error.response?.data?.message || "") && error.response.data.message.includes("jwt expired"));
+
+      if (isAuthExpired) {
+        console.log("AUTH EXPIRED");
+        localStorage.removeItem("token");
+        document.cookie = "token=; max-age=0; path=/";
+        // Dynamically import store and logout to prevent circular dependency
+        import("../redux/store.ts").then(({ store }) => {
+          import("../redux/slices/authSlice.ts").then(({ logout }) => {
+            store.dispatch(logout());
+          });
+        });
+      }
+
       throw error;
-    }
+    },
   );
 
   return api;

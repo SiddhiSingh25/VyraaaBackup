@@ -12,17 +12,17 @@ import Testimonials from "./Components/Testimonials";
 export default function HomeScreen() {
   return (
     <div className="bg-background text-body font-body selection:bg-rose-gold selection:text-white">
-      <Navbar/>
-      <MarqueeBar/>
+      <Navbar />
+      <MarqueeBar />
       {/* <HeroSlider/>
        */}
-       <HeroSlider/>
-      <ProductShowcase/>
-      <FeaturedCollections/>
-      <BrandStory/>
-      <Testimonials/>
-      <Newsletter/>
-      <Footer/>
+      <HeroSlider />
+      <ProductShowcase />
+      <FeaturedCollections />
+      <BrandStory />
+      {/* <Testimonials/> */}
+      <Newsletter />
+      <Footer />
     </div>
   );
 }

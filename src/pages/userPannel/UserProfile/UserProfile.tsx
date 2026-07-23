@@ -111,7 +111,7 @@ export default function Profile() {
   useEffect(() => {
     getQuery({
       url: apiUrls.Auth.profile,
-      onSuccess: (res) => {
+      onSuccess: (res: any) => {
         const profile = res?.data;
         if (!profile) return;
 
@@ -150,7 +150,7 @@ export default function Profile() {
           loyaltyPoints: profile.totalReviews ?? 0,
         });
       },
-      onFail: (err) => {
+      onFail: (err: any) => {
         console.log(err)
       }
     })
@@ -241,7 +241,7 @@ export default function Profile() {
           />
 
           <div className="flex flex-col gap-5 min-w-0">
-            <ProfileHeader user={user} stats={stats} />
+            <ProfileHeader user={user} stats={stats} onTabChange={setActiveTab} />
 
             <div className="rounded-2xl border border-border bg-surface p-4 md:p-5 min-h-[420px]">
               <h2 className="text-xl font-semibold text-admin-text mb-5">
@@ -264,7 +264,7 @@ export default function Profile() {
                   )}
 
                   {activeTab === "orders" && (
-                    <OrdersTab orders={sampleOrders} />
+                    <OrdersTab  />
                   )}
 
                   {activeTab === "addresses" && (

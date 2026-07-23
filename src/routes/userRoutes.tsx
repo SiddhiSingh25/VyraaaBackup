@@ -27,6 +27,8 @@ import CheckoutLayout from "../pages/userPannel/Checkout/CheckoutLayout";
 import Cart from "../pages/userPannel/Checkout/Cart/Cart";
 import AddNewAddress from "../pages/userPannel/Checkout/Address/pages/AddNewAddress";
 import Payment from "../pages/userPannel/Checkout/Payment/PaymentPage";
+import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/privacypolicy";
+import TermsAndConditions from "@/pages/userPannel/HomeScreen/Components/TermsCondition";
 
 export const userRoutes = [
   /* =========================
@@ -70,7 +72,19 @@ export const userRoutes = [
   },
 
   {
+    path: "/privacy-policy",
+    element: <PrivacyPolicy />,
+  },
+  {
+    path: "/terms-condtions",
+    element: <TermsAndConditions />,
+  },
+  {
     path: "/:id",
+    element: <ProductFilter />,
+  },
+  {
+    path: "/:id/:subId",
     element: <ProductFilter />,
   },
   {
@@ -85,6 +99,10 @@ export const userRoutes = [
     element: <ProtectedRoute allowedRoles={["user", "admin"]} />,
     children: [
       {
+        path: "cart",
+        element: <Cart />,
+      },
+      {
         path: "/profile",
         element: <Profile />,
       },
@@ -96,10 +114,6 @@ export const userRoutes = [
         path: "/checkout",
         element: <CheckoutLayout />,
         children: [
-          {
-            path: "cart",
-            element: <Cart />,
-          },
           {
             path: "address",
             element: <AddNewAddress />,

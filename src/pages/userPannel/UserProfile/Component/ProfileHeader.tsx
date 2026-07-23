@@ -1,14 +1,15 @@
 import { motion } from "motion/react";
 import { LoyaltyAvatar } from "./LoyaltyAvatar";
 import { StatChip } from "./StatChip";
-import type { AccountStats, UserProfile } from "./account";
+import type { AccountStats, UserProfile, AccountTabId } from "./account";
 
 interface ProfileHeaderProps {
   user: UserProfile;
   stats: AccountStats;
+  onTabChange?: (tab: AccountTabId) => void;
 }
 
-export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
+export function ProfileHeader({ user, stats, onTabChange }: ProfileHeaderProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -34,7 +35,15 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
+        
         <StatChip
+          to="/profile"
+          onClick={(e) => {
+            if (onTabChange) {
+              e.preventDefault();
+              onTabChange("orders");
+            }
+          }}
           label="Orders placed"
           value={String(stats.totalOrders)}
           icon={
@@ -45,6 +54,7 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
           }
         />
         <StatChip
+        to="/wishlist"
           label="Wishlist items"
           value={String(stats.wishlistCount)}
           icon={
@@ -53,7 +63,7 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
             </svg>
           }
         />
-        <StatChip
+        {/* <StatChip
           label="Reviews"
           value={stats.loyaltyPoints.toLocaleString("en-IN")}
           icon={
@@ -61,8 +71,9 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
               <path d="M12 2l2.7 6.6L21 9.3l-5 4.5 1.5 7.2L12 17.3l-5.5 3.7L8 13.8l-5-4.5 6.3-.7z" />
             </svg>
           }
-        />
+        /> */}
       </div>
     </motion.div>
   );
 }
+

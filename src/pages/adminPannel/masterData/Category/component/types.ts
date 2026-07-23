@@ -1,6 +1,7 @@
 export interface Category {
   id: string;
   srNo: number;
+  image?: string;
   categoryName: string;
   categoryHead: string;
   fatherName: string;
@@ -10,6 +11,14 @@ export interface Category {
 }
 
 /** Shape used by the Add/Edit form — no id/srNo, those are managed by the table. */
-export type CategoryFormValues = Omit<Category, 'id' | 'srNo' | 'profileImageUrl'>;
+export interface CategoryFormValues {
+  categoryName: string;
+  image: File | string | null;
 
-export type ModalMode = 'add' | 'edit';
+  categoryHead: string;
+  fatherName: string;
+  cast: string;
+  contact: string;
+}
+
+export type ModalMode = "add" | "edit";
