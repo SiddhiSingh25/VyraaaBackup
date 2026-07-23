@@ -241,7 +241,7 @@ export default function Profile() {
           />
 
           <div className="flex flex-col gap-5 min-w-0">
-            <ProfileHeader user={user} stats={stats} />
+            <ProfileHeader user={user} stats={stats} onTabChange={setActiveTab} />
 
             <div className="rounded-2xl border border-border bg-surface p-4 md:p-5 min-h-[420px]">
               <h2 className="text-xl font-semibold text-admin-text mb-5">

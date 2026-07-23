@@ -20,6 +20,8 @@ import {
 } from "../../../../redux/slices/cartSlice";
 import Navbar from "@/components/Header/Navbar";
 import Footer from "@/components/Footer/Footer";
+import { EmptyState } from "@/components/Common/EmptyList/EmptyList";
+import { FiShoppingBag } from "react-icons/fi";
 
 const COUPON_DISCOUNT = 60;
 
@@ -139,20 +141,13 @@ const Cart = () => {
       <Navbar />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-surface py-20 text-center">
-            <p className="font-heading text-xl text-admin-text">
-              Your bag is empty
-            </p>
-            <p className="font-body text-sm text-muted">
-              Looks like you haven't added anything to your bag yet.
-            </p>
-            <Link
-              to="/products"
-              className="mt-2 rounded-md bg-primary px-6 py-2.5 font-body text-sm font-semibold tracking-wide text-background transition-colors hover:bg-primary-dark"
-            >
-              CONTINUE SHOPPING
-            </Link>
-          </div>
+     <EmptyState
+  icon={<FiShoppingBag size={28} className="text-dark/50" />}
+  title="Your cart is empty"
+  description="Looks like you haven't added anything yet. Discover our collections and find your perfect fragrance."
+  actionText="Continue Shopping"
+  onAction={() => navigate("/products")}
+/>
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* Left: bag items */}

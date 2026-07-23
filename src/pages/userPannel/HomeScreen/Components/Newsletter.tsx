@@ -1,18 +1,7 @@
-
-
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Newsletter() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    // TODO: wire up to a real subscribe endpoint
-    console.log("subscribe:", email);
-    setSubmitted(true);
-    setEmail("");
-  };
+  const navigate = useNavigate();
 
   return (
     <section className="relative bg-card pt-20 sm:pt-24 pb-28 sm:pb-32 px-5 sm:px-10 text-center overflow-hidden">
@@ -31,64 +20,28 @@ export default function Newsletter() {
           className="block font-body text-[10px] sm:text-[11px] tracking-[0.35em] uppercase mb-5"
           style={{ color: "var(--color-primary)" }}
         >
-          Private Client List
+          Vyraaa People
         </span>
 
         <h2 className="font-heading text-admin-text font-normal text-[clamp(32px,5vw,52px)] leading-tight mb-6">
           Step into{" "}
-          <span className="italic font-light text-primary" >
-            your new era
+          <span className="italic font-light text-primary">
+            your signature era
           </span>
         </h2>
 
         <p className="font-body text-body text-sm sm:text-base leading-relaxed max-w-xl mx-auto mb-10">
-          Subscribe and be the first to hear about fresh collections,
-          behind-the-scenes notes, and the occasional just-for-you offer
-          landing straight in your inbox.
+          Create an exclusive account today to explore our collections, build your private wishlist, and purchase authentic products from Vyraaa.
         </p>
 
-        {submitted ? (
-          <p
-            className="font-bodytext-sm tracking-wide"
-            style={{ color: "var(--color-heading)" }}
+        <div className="flex justify-center">
+          <button
+            onClick={() => navigate("/auth/signup")}
+            className="group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden rounded-sm bg-primary text-background font-body text-xs  tracking-[0.2em] uppercase transition-all duration-300 hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(131,82,64,0.35)]"
           >
-            You're on the list. Welcome in.
-          </p>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row max-w-md mx-auto bg-background shadow-[0_4px_24px_-8px_rgba(81,41,26,0.18)] border border-border rounded-sm overflow-hidden focus-within:border-primary transition-colors duration-300"
-          >
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Your email address"
-              className="flex-1 bg-transparent px-5 py-4 text-sm font-body text-head placeholder:text-muted focus:outline-none min-w-0"
-            />
-            <button
-              type="submit"
-              className="px-6 py-4 text-[11px] font-medium tracking-[0.18em] uppercase text-background shrink-0 border-t sm:border-t-0 sm:border-l border-border transition-colors duration-300"
-              style={{ backgroundColor: "var(--color-primary)" }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "var(--color-primary-dark)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "var(--color-primary)")
-              }
-            >
-              Request Access
-            </button>
-          </form>
-        )}
-
-        <p
-          className="mt-6 text-[10px] tracking-[0.15em] uppercase font-body"
-          style={{ color: "var(--color-muted)" }}
-        >
-          No spam. Unsubscribe anytime.
-        </p>
+            Create Your Account
+          </button>
+        </div>
       </div>
 
       {/* refined scalloped bottom edge, two-tone for depth */}

@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Mail, Phone, Globe } from "lucide-react";
 import { FaFacebook, FaInstagram } from "react-icons/fa6";
 import { FaTwitter, FaYoutube } from "react-icons/fa";
-const SHOP_LINKS = ["Women", "Men", "Beauty", "Jewellery", "Shoes", "Accessories"];
-const SUPPORT_LINKS = ["Contact", "FAQs", "Shipping", "Returns", "Track Order", "Privacy Policy"];
+import { Link } from "react-router-dom";
+import useGetQuery from "@/hooks/getQuery.hook";
+import { apiUrls } from "@/apis";
+
+const toSlug = (text: string) => {
+  return text?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+};
 
 const SOCIALS = [
   { icon: FaInstagram, label: "Instagram" },
@@ -12,7 +17,10 @@ const SOCIALS = [
   { icon: FaYoutube, label: "YouTube" },
 ];
 
-const PAYMENT_ICONS = ["Visa", "Mastercard", "Amex", "UPI", "PayPal"];
+const SUPPORT_LINKS = [
+  { label: "Privacy Policy", to: "/privacy-policy" },
+  { label: "Terms and Conditions", to: "/terms-condtions" },
+];
 
 /** Small hook: fades a section up into view once, with an optional stagger delay. */
 function useFadeUp(delay = 0) {
@@ -29,7 +37,7 @@ function useFadeUp(delay = 0) {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -39,29 +47,39 @@ function useFadeUp(delay = 0) {
     ref,
     style: {
       opacity: visible ? 1 : 0,
-      transform: visible ? "translateY(0)" : "translateY(16px)",
-      transition: "opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)",
+      transform: visible ? "translateY(0)" : "translateY(20px)",
+      transition: "opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
     },
   };
 }
 
-function FooterColumnTitle({ children } :any) {
+function FooterColumnTitle({ children }: any) {
   return (
-    <h4 className="text-[11px] font-semibold tracking-[0.22em] uppercase text-[#F7F5F1] mb-5">
+    <h4 className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#C5A880] mb-6">
       {children}
     </h4>
   );
 }
 
-function FooterLink({ children } : any) {
+interface FooterLinkProps {
+  children: React.ReactNode;
+  to?: string;
+  state?: any;
+}
+
+function FooterLink({ children, to, state }: FooterLinkProps) {
+  const linkClasses = "group relative inline-flex items-center text-xs text-[#dbd3c4]/80 hover:text-[#C5A880] transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 hover:after:w-full after:bg-[#C5A880] after:transition-all after:duration-300 after:ease-out";
+
+  if (to) {
+    return (
+      <Link to={to} state={state} className={linkClasses}>
+        <span>{children}</span>
+      </Link>
+    );
+  }
   return (
-    <a
-      href="#"
-      className="group inline-flex items-center text-sm text-[#dbd3c4] hover:text-[#1E1E1E] transition-colors duration-300"
-    >
-      <span className="transition-transform duration-300 group-hover:translate-x-[3px]">
-        {children}
-      </span>
+    <a href="#" onClick={(e) => e.preventDefault()} className={linkClasses}>
+      <span>{children}</span>
     </a>
   );
 }
@@ -73,100 +91,134 @@ export default function Footer() {
   const col4 = useFadeUp(240);
   const bottom = useFadeUp(320);
 
-  return (
-    <footer className="relative bg-dark border-t border-[rgba(0,0,0,0.08)] ">
-      {/* hairline accent */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#B89B5E]/50 to-transparent" />
+  const { getQuery } = useGetQuery();
+  const [categories, setCategories] = useState<any[]>([]);
 
-      <div className="max-w-[1320px] mx-auto px-6 sm:px-10 lg:px-16 pt-16 sm:pt-8 pb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-12 lg:gap-x-12">
-          {/* Column 1 — Brand */}
-          <div ref={col1.ref} style={col1.style} className="flex flex-col">
-            <h3 className="font-serif text-[26px] tracking-[0.12em] text-[#fff] mb-3">
-              VYRAAA
-            </h3>
-            <p className="text-xs leading-relaxed text-[#dbd3c4] max-w-[220px] mb-6">
-              Curated fashion, fine jewellery, and fragrance for those who
-              value craft over noise. Est. 2014.
-            </p>
-            <div className="flex items-center gap-2.5">
-              {SOCIALS.map(({ icon: Icon, label }) => (
-                <a
-                  key={label}
-                  href="#"
-                  aria-label={label}
-                  className="w-8 h-8 rounded-full border border-[rgba(0,0,0,0.1)] flex items-center justify-center text-[#F7F5F1]/60 hover:text-[#1E1E1E] hover:bg-[#B89B5E]/10 hover:border-[#B89B5E]/40 hover:-translate-y-0.5 transition-all duration-300"
-                >
-                  <Icon size={14} strokeWidth={1.5} />
+  useEffect(() => {
+    getQuery({
+      url: apiUrls.Category.getAll,
+      onSuccess: (res: any) => {
+        if (res.success && Array.isArray(res.data)) {
+          setCategories(res.data.slice(0, 6)); // show first 6 categories
+        }
+      },
+      onFail: (err: any) => {
+        console.error("Failed to fetch footer categories:", err);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <footer className="relative bg-[#0d0a08] overflow-hidden">
+      {/* Luxury radial background glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(131,82,64,0.1),transparent_50%)] pointer-events-none" />
+
+      {/* Sophisticated top aesthetic border */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C5A880]/30 to-transparent" />
+
+      <div className="max-w-[1240px] mx-auto px-6 sm:px-10 lg:px-12 pt-20 pb-10 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-y-12 md:gap-x-12 lg:gap-x-16 pb-16">
+
+          {/* Column 1 — Brand Column (Span 4) */}
+          <div ref={col1.ref} style={col1.style} className="md:col-span-4 flex flex-col justify-between">
+            <div>
+              <h3 className="font-heading text-2xl tracking-[0.25em] text-white mb-5 transition-colors duration-300 hover:text-[#C5A880]">
+                VYRAAA
+              </h3>
+              <p className="text-xs leading-relaxed text-[#dbd3c4]/70 max-w-[280px] mb-6 font-light">
+                Curated fashion, fine products, and fragrance for those who
+                value craft over noise.
+              </p>
+
+              {/* Verified contact layout */}
+              <div className="space-y-3.5 mb-8 text-xs font-light text-[#dbd3c4]/80">
+                <a href="mailto:support@vyraaa.com" className="flex items-center gap-3 group hover:text-[#C5A880] transition-colors duration-300">
+                  <Mail size={13} className="text-[#C5A880]/70 group-hover:scale-110 transition-transform" />
+                  <span>support@vyraaa.com</span>
                 </a>
+            
+                <a href="tel:8796571232" className="flex items-center gap-3 group hover:text-[#C5A880] transition-colors duration-300">
+                  <Phone size={13} className="text-[#C5A880]/70 group-hover:scale-110 transition-transform" />
+                  <span>8796571232</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {SOCIALS.map(({ icon: Icon, label }) => (
+                <Link
+                  key={label}
+                  to="/"
+                  aria-label={label}
+                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-[#dbd3c4]/60 hover:text-[#0d0a08] hover:bg-[#C5A880] hover:border-[#C5A880] transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-[0_4px_12px_rgba(197,168,128,0.25)]"
+                >
+                  <Icon size={14} />
+                </Link>
               ))}
             </div>
           </div>
 
-          {/* Column 2 — Shop */}
-          <div ref={col2.ref} style={col2.style} className="flex flex-col">
+          {/* Column 2 — Shop (Span 2) */}
+          <div ref={col2.ref} style={col2.style} className="md:col-span-2 flex flex-col">
             <FooterColumnTitle>Shop</FooterColumnTitle>
             <ul className="flex flex-col gap-3">
-              {SHOP_LINKS.map((label) => (
-                <li key={label}>
-                  <FooterLink>{label}</FooterLink>
+              {categories.map((cat: any) => (
+                <li key={cat._id}>
+                  <FooterLink
+                    to={`/${toSlug(cat.category)}`}
+                    state={{
+                      categoryId: cat._id,
+                      fullCategoryData: cat,
+                    }}
+                  >
+                    {cat.category}
+                  </FooterLink>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Column 3 — Support */}
-          <div ref={col3.ref} style={col3.style} className="flex flex-col">
+          {/* Column 3 — Support (Span 2) */}
+          <div ref={col3.ref} style={col3.style} className="md:col-span-2 flex flex-col">
             <FooterColumnTitle>Support</FooterColumnTitle>
             <ul className="flex flex-col gap-3">
-              {SUPPORT_LINKS.map((label) => (
-                <li key={label}>
-                  <FooterLink>{label}</FooterLink>
+              {SUPPORT_LINKS.map((link) => (
+                <li key={link.label}>
+                  <FooterLink to={link.to}>{link.label}</FooterLink>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Column 4 — Newsletter */}
-          <div ref={col4.ref} style={col4.style} className="flex flex-col">
-            <FooterColumnTitle>Newsletter</FooterColumnTitle>
-            <p className="text-xs leading-relaxed text-[#dbd3c4] mb-5 max-w-[240px]">
-              Be first to know about new arrivals and private events.
+          {/* Column 4 — Join Client List (Span 4) */}
+          <div ref={col4.ref} style={col4.style} className="md:col-span-4 flex flex-col justify-start">
+            <FooterColumnTitle>Vyraaa People</FooterColumnTitle>
+            <p className="text-xs leading-relaxed text-[#dbd3c4]/70 mb-6 max-w-[280px] font-light">
+              Create an exclusive account to explore our collections, build your private wishlist, and purchase original products.
             </p>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex items-center w-full max-w-[260px] border-b border-[rgba(243,243,243,0.18)] focus-within:border-[rgba(243,243,243,0.18)]] transition-colors duration-300"
-            >
-              <input
-                type="email"
-                required
-                placeholder="Email address"
-                className="w-full bg-transparent py-2.5 text-sm placeholder:text-[#dbd3c4] text-[#dbd3c4] placeholder:text-[#777]/60 focus:outline-none"
-              />
-              <button
-                type="submit"
-                aria-label="Subscribe"
-                className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[#1E1E1E] hover:bg-[#B89B5E] hover:text-white transition-all duration-300 hover:scale-[1.02]"
+            <div>
+              <Link
+                to="/auth/signup"
+                className="group relative inline-flex items-center justify-center px-8 py-3.5 overflow-hidden rounded-sm bg-[#C5A880] hover:bg-[#b09366] text-[#0d0a08] font-body text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(197,168,128,0.25)]"
               >
-                <ArrowRight size={15} strokeWidth={1.5} />
-              </button>
-            </form>
+                Create Account
+              </Link>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Delicate Golden Divider */}
+        <div ref={bottom.ref} style={bottom.style} className="border-t border-white/5 pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-[10px] tracking-[0.05em] text-[#dbd3c4]/50">
+            <p className="order-2 md:order-1 font-light">
+              © {new Date().getFullYear()} VYRAAA. All Rights Reserved. Crafted for elegance.
+            </p>
+
           </div>
         </div>
 
-        {/* Divider */}
-        <div ref={bottom.ref} style={bottom.style}>
-          <div className="h-px bg-[rgba(0,0,0,0.08)] mt-14 mb-6" />
-
-          {/* Bottom row */}
-          <div className="flex flex-col  items-center justify-center gap-4 sm:gap-0 text-[11px] tracking-[0.04em] text-[#dbd3c4]">
-            <p className="order-2 sm:order-1">© 2026 VYRAAA. All Rights Reserved.</p>
-
-     
-
-
-          </div>
-        </div>
       </div>
     </footer>
   );

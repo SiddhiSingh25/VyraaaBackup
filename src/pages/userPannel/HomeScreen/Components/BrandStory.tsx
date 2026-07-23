@@ -1,134 +1,30 @@
-// import { BrandStory } from "@/assets/assets";
-// import { useReveal } from "../../../../hooks/gsap/useReveal";
-// import { Link, useNavigate } from "react-router-dom";
-
-// const NOTES = [
-//   {
-//     label: "Top",
-//     value: "Pear",
-//     position: "top-[18%] right-[-10%] sm:right-[-15%]",
-//   },
-//   {
-//     label: "Heart",
-//     value: "Pink Pepper",
-//     position: "top-[46%] right-[-6%] sm:right-[-10%]",
-//   },
-//   {
-//     label: "Base",
-//     value: "Orange Blossom",
-//     position: "top-[74%] right-[-12%] sm:right-[-18%]",
-//   },
-// ];
-
-// export default function SignatureScent() {
-//   const navigate = useNavigate();
-
-//   const ref = useReveal<HTMLElement>();
-
-//   return (
-//     <section ref={ref} className="py-10  px-5 sm:px-10 ">
-//       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-//         {/* Image side */}
-//         <div data-reveal className="relative mx-auto w-full max-w-md">
-//           <div className="relative rounded-t-[200px] rounded-b-2xl border border-border overflow-hidden aspect-[3/4]">
-//             <img
-//               src={BrandStory}
-//               alt="MONCLair NOCTIS Eau de Parfum surrounded by florals, spices, and wood"
-//               className="w-full h-full object-cover"
-//             />
-//           </div>
-
-//           {/* Note callouts */}
-//           {NOTES.map((note) => (
-//             <div
-//               key={note.label}
-//               className={`absolute ${note.position} bg-surface/95 backdrop-blur-sm border border-border rounded-md px-4 py-2 shadow-sm w-[150px]`}
-//             >
-//               <p className="text-[9px] font-medium tracking-[0.25em] uppercase text-muted mb-0.5">
-//                 {note.label}
-//               </p>
-//               <p className="text-sm text-admin-text">{note.value}</p>
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* Copy side */}
-//         <div data-reveal>
-//           <span className="flex items-center gap-3 text-[10px] font-medium tracking-[0.3em] uppercase text-primary mb-5">
-//             <span className="w-6 h-px bg-primary" />
-//             The Signature Scent
-//           </span>
-
-//           <h2 className="font-heading text-admin-text leading-tight text-[clamp(28px,4vw,48px)] font-light mb-6">
-//             The Essence of
-//             <br />
-//             Noctis
-//           </h2>
-
-//           <div className="w-10 h-px bg-border mb-6" />
-
-//           <div className="space-y-4 text-body text-sm sm:text-base leading-relaxed">
-//             <p>
-//               A bold harmony of dark gourmand richness, sensual florals, and
-//               warm woody depth. NOCTIS is crafted for those who command
-//               attention with quiet confidence and timeless sophistication.
-//             </p>
-//             <p>
-//               Opening with luminous Pear, sparkling Pink Pepper, and delicate
-//               Orange Blossom, it reveals an alluring heart of rich Coffee,
-//               Jasmine, Bitter Almond.
-//             </p>
-
-//             <p>
-//               An oriental-vanilla gourmand fragrance designed for unforgettable
-//               evenings, cooler nights, and refined presence beyond ordinary.
-//             </p>
-//           </div>
-
-//           <button
-//             onClick={() =>
-//               navigate(`/perfume`, {
-//                 state: {
-//                   categoryId: "6a562a2f017a6045e6d9979b",
-//                   fullCategoryData: {
-//                     _id: "6a562a2f017a6045e6d9979b",
-//                     image:
-//                       "https://macreelinfosoft-bucket.s3.ap-south-1.amazonaws.com/Vyraaa-Admin-Images/1784031329965.jpeg",
-//                     category: "Perfumes",
-//                   },
-//                 },
-//               })
-//             }
-//             className="mt-8 inline-flex items-center gap-2 bg-heading text-surface text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 rounded-sm hover:opacity-90 transition-opacity"
-//           >
-//             Shop Now
-//             <span aria-hidden="true">→</span>
-//           </button>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
+import { useState, useEffect, useRef } from "react";
 import { BrandStory } from "@/assets/assets";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView, easeOut } from "framer-motion";
-import { useRef } from "react";
+import { ArrowRight } from "lucide-react";
+import useGetQuery from "@/hooks/getQuery.hook";
+import { apiUrls } from "@/apis";
+
+const toSlug = (text: string) => {
+  return text?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+};
 
 const NOTES = [
   {
-    label: "Top",
-    value: "Pear",
-    position: "top-[18%] right-[-10%] sm:right-[-15%]",
+    label: "01 / Atelier",
+    value: "Slow-Made Fashion",
+    position: "top-[18%] right-[-5%] sm:right-[-12%]",
   },
   {
-    label: "Heart",
-    value: "Pink Pepper",
-    position: "top-[46%] right-[-6%] sm:right-[-10%]",
+    label: "02 / Craft",
+    value: "Artisanal Jewelry",
+    position: "top-[46%] right-[-2%] sm:right-[-8%]",
   },
   {
-    label: "Base",
-    value: "Orange Blossom",
-    position: "top-[74%] right-[-12%] sm:right-[-18%]",
+    label: "03 / Scent",
+    value: "Signature Fragrance",
+    position: "top-[74%] right-[-5%] sm:right-[-12%]",
   },
 ];
 
@@ -145,7 +41,7 @@ const imageReveal = {
 };
 
 const noteVariant = (i: number) => ({
-  hidden: { opacity: 0, x: 24, filter: "blur(4px)" },
+  hidden: { opacity: 0, x: 20, filter: "blur(4px)" },
   visible: {
     opacity: 1,
     x: 0,
@@ -167,6 +63,38 @@ export default function SignatureScent() {
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const inView = useInView(sectionRef, { once: true, margin: "-15% 0px" });
+
+  const { getQuery } = useGetQuery();
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    getQuery({
+      url: apiUrls.Category.getAll,
+      onSuccess: (res: any) => {
+        if (res.success && Array.isArray(res.data)) {
+          setCategories(res.data);
+        }
+      },
+      onFail: (err: any) => {
+        console.error("Failed to fetch brand story categories:", err);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleShopNow = () => {
+    if (categories.length > 0) {
+      const firstCat = categories[0];
+      navigate(`/${toSlug(firstCat.category)}`, {
+        state: {
+          categoryId: firstCat._id,
+          fullCategoryData: firstCat,
+        },
+      });
+    } else {
+      navigate("/");
+    }
+  };
 
   return (
     <section
@@ -194,7 +122,7 @@ export default function SignatureScent() {
           <div className="relative rounded-t-[200px] rounded-b-2xl border border-border overflow-hidden aspect-[3/4] shadow-[0_30px_60px_-25px_rgba(0,0,0,0.35)]">
             <img
               src={BrandStory}
-              alt="MONCLair NOCTIS Eau de Parfum surrounded by florals, spices, and wood"
+              alt="VYRAAA signature collection displaying artisanal apparel and details"
               className="w-full h-full object-cover"
             />
             {/* subtle vignette for depth */}
@@ -211,12 +139,12 @@ export default function SignatureScent() {
               variants={noteVariant(i)}
               whileHover={{ y: -3, scale: 1.03 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className={`absolute ${note.position} bg-surface/90 backdrop-blur-md border border-border/80 rounded-md px-4 py-2.5 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.25)] w-[150px] cursor-default`}
+              className={`absolute ${note.position} bg-surface/90 backdrop-blur-md border border-border/80 rounded-md px-3.5 sm:px-4 py-2 sm:py-2.5 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.25)] w-[125px] sm:w-[150px] cursor-default`}
             >
-              <p className="text-[9px] font-medium tracking-[0.25em] uppercase text-muted mb-0.5">
+              <p className="text-[8px] sm:text-[9px] font-medium tracking-[0.25em] uppercase text-muted mb-0.5">
                 {note.label}
               </p>
-              <p className="text-sm text-admin-text font-light">
+              <p className="text-xs sm:text-sm text-admin-text font-light truncate">
                 {note.value}
               </p>
             </motion.div>
@@ -237,7 +165,7 @@ export default function SignatureScent() {
               transition={{ duration: 0.6, ease: easing, delay: 0.2 }}
               className="h-px bg-primary"
             />
-            The Signature Scent
+            The Vyraaa Story
           </motion.span>
 
           <motion.h2
@@ -248,7 +176,7 @@ export default function SignatureScent() {
           >
             The Essence of
             <br />
-            Noctis
+            Slow Luxury
           </motion.h2>
 
           <motion.div
@@ -260,9 +188,9 @@ export default function SignatureScent() {
 
           <div className="space-y-4 text-body text-sm sm:text-base leading-relaxed">
             {[
-              "A bold harmony of dark gourmand richness, sensual florals, and warm woody depth. NOCTIS is crafted for those who command attention with quiet confidence and timeless sophistication.",
-              "Opening with luminous Pear, sparkling Pink Pepper, and delicate Orange Blossom, it reveals an alluring heart of rich Coffee, Jasmine, Bitter Almond.",
-              "An oriental-vanilla gourmand fragrance designed for unforgettable evenings, cooler nights, and refined presence beyond ordinary.",
+              "At Vyraaa, we believe that true elegance requires patience and purpose. We craft sophisticated silhouettes, fine jewellery, and bespoke fragrances for individuals who appreciate the harmony of craft over noise.",
+              "Every fabric is handpicked with intention, every metal is forged by expert hands, and every scent note is blended for quiet impact. We focus on slow fashion that stands as an enduring reflection of your identity.",
+              "Step away from transient trends and embrace a curation made for the modern connoisseur, where simplicity represents the ultimate mastery of design.",
             ].map((text, i) => (
               <motion.p
                 key={i}
@@ -275,37 +203,37 @@ export default function SignatureScent() {
             ))}
           </div>
 
-          <motion.button
-            initial="hidden"
-            animate={inView ? "visible" : "hidden"}
-            variants={fadeUp(0.95)}
-            whileHover={{ scale: 1.03, letterSpacing: "0.2em" }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 260, damping: 18 }}
-            onClick={() =>
-              navigate(`/perfume`, {
-                state: {
-                  categoryId: "6a562a2f017a6045e6d9979b",
-                  fullCategoryData: {
-                    _id: "6a562a2f017a6045e6d9979b",
-                    image:
-                      "https://macreelinfosoft-bucket.s3.ap-south-1.amazonaws.com/Vyraaa-Admin-Images/1784031329965.jpeg",
-                    category: "Perfumes",
-                  },
-                },
-              })
-            }
-            className="mt-8 inline-flex items-center gap-2 bg-heading text-surface text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 rounded-sm"
+          <button
+            onClick={handleShopNow}
+            className="
+    group
+    mt-8
+    inline-flex
+    items-center
+    gap-2
+    rounded-full
+    bg-heading
+    px-7
+    py-3
+    text-xs
+    font-medium
+    uppercase
+    tracking-[0.18em]
+    text-surface
+    transition-all
+    duration-300
+    hover:-translate-y-0.5
+    hover:shadow-lg
+    active:translate-y-0
+  "
           >
-            Shop Now
-            <motion.span
-              aria-hidden="true"
-              animate={{ x: [0, 3, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            >
-              →
-            </motion.span>
-          </motion.button>
+            <span>Explore Collection</span>
+
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </button>
         </div>
       </div>
     </section>
