@@ -73,7 +73,6 @@ const AddHomeVideos = () => {
   return (
     <div className="min-h-screen bg-[#F8F6F4]">
       <div className="mx-auto max-w-7xl px-6 py-8">
-        {/* HERO */}
         {VideoLoading && (
           <PageLoader loading={VideoLoading} text="Loading Videos" />
         )}
