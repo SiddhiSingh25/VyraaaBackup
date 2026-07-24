@@ -48,8 +48,8 @@ export default function Category() {
     useState<Category | null>(null);
 
   const { getQuery, loading } = useGetQuery();
-  const { postQuery } = usePostQuery();
-  const { putQuery } = usePutQuery();
+  const { postQuery, loading: addLoading } = usePostQuery();
+  const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery } = useDeleteQuery();
 
   const filteredCategories = useMemo(() => {
@@ -215,6 +215,7 @@ export default function Category() {
         initialData={activeCategory}
         onClose={closeFormModal}
         onSubmit={handleFormSubmit}
+        loading={modalMode === "add" ? addLoading : editLoading}
       />
 
       <ConfirmDialog
