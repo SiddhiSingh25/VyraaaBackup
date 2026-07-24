@@ -19,8 +19,9 @@ const ProductTable = ({
   onDelete,
 }: ProductTableProps) => {
   const { currentPage, totalPages, totalProducts, limit } = pagination;
-  const firstEntry = totalProducts === 0 ? 0 : (currentPage - 1) * limit + 1;
-  const lastEntry = Math.min(currentPage * limit, totalProducts);
+  const safeCurrentPage = Math.max(1, Math.min(currentPage || 1, totalPages || 1));
+  const firstEntry = totalProducts === 0 ? 0 : (safeCurrentPage - 1) * limit + 1;
+  const lastEntry = Math.min(safeCurrentPage * limit, totalProducts);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[#E7D8CC] bg-[#FFF8F2]">
@@ -234,22 +235,22 @@ const ProductTable = ({
           <button
             type="button"
             aria-label="Previous page"
-            disabled={currentPage <= 1}
-            onClick={() => onPageChange(currentPage - 1)}
+            disabled={safeCurrentPage <= 1}
+            onClick={() => onPageChange(safeCurrentPage - 1)}
             className="rounded border border-[#E5D7CC] p-1 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <ChevronLeft size={16} />
           </button>
 
           <button className="rounded bg-[#7B523B] px-3 py-1 text-white">
-            {currentPage}
+            {safeCurrentPage}
           </button>
 
           <button
             type="button"
             aria-label="Next page"
-            disabled={currentPage >= totalPages}
-            onClick={() => onPageChange(currentPage + 1)}
+            disabled={safeCurrentPage >= totalPages}
+            onClick={() => onPageChange(safeCurrentPage + 1)}
             className="rounded border border-[#E5D7CC] p-1 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <ChevronRight size={16} />

@@ -91,7 +91,7 @@ export const userRoutes = [
     element: <ProductFilter />,
   },
   {
-    path: "/productDetails/:id",
+    path: "/productDetails/:productName",
     element: <ProductDetails />,
   },
 

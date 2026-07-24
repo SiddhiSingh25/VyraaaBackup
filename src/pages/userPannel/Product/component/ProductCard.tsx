@@ -72,8 +72,9 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Ref for debouncing the wishlist button
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Refs for debouncing the wishlist and cart buttons
+  const wishlistDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cartDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navigate = useNavigate();
   const { getQuery } = useGetQuery();
@@ -108,12 +109,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     // --- DEBOUNCE LOGIC ---
     // Clear the previous timer if the user clicks again rapidly
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
+    if (wishlistDebounceTimer.current) {
+      clearTimeout(wishlistDebounceTimer.current);
     }
 
     // Set a new timer. The action will only run after 400ms of no clicking.
-    debounceTimer.current = setTimeout(() => {
+    wishlistDebounceTimer.current = setTimeout(() => {
       if (isWished) {
         // OPTIMISTIC REMOVE
         dispatch(removeFromWishlist(product._id));
@@ -198,9 +199,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         setSelectedSize(null);
       },
       onFail: (res: any) => {
-        toast("error", res?.data?.message || "Failed to add item to cart");
+        // toast("error", res?.data?.message || "Failed to add item to cart");
       },
       onFinally: () => setIsSubmitting(false),
+
     });
   };
 
@@ -218,12 +220,20 @@ export default function ProductCard({ product }: ProductCardProps) {
       return;
     }
 
-    if (isSingleSize) {
-      submitAddToCart(priceList.indexOf(displayEntry));
-      return;
+    if (cartDebounceTimer.current) {
+      clearTimeout(cartDebounceTimer.current);
     }
 
-    setIsModalOpen(true);
+    cartDebounceTimer.current = setTimeout(() => {
+      cartDebounceTimer.current = null;
+
+      if (isSingleSize) {
+        submitAddToCart(priceList.indexOf(displayEntry));
+        return;
+      }
+
+      setIsModalOpen(true);
+    }, 300);
   };
 
   return (
@@ -232,12 +242,12 @@ export default function ProductCard({ product }: ProductCardProps) {
         className="group flex flex-col cursor-pointer select-none"
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        onClick={() => navigate(`/productDetails/${product?._id}`)}
+        onClick={() => navigate(`/productDetails/${product.title.replace(/\s+/g, "-")}`, { state: { categoryId: product.category?._id, subCategoryId: product.subCategory?._id, subCategoryName: product.subCategory.subCategory, productId: product._id } })}
       >
         {/* Image */}
         <div
           className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#F2E8DD] ring-1 ring-[#E6D9CF]/70
-             aspect-[3/4] sm:aspect-[4/5] lg:aspect-square"
+             aspect-[3/4] sm:aspect-[4/5] "
         >
           <img
             src={product.image}
@@ -444,3 +454,11 @@ export default function ProductCard({ product }: ProductCardProps) {
     </>
   );
 }
+
+
+
+
+
+
+
+//new commit sid merge with ankit
