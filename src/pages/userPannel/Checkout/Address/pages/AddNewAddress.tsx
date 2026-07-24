@@ -281,7 +281,7 @@ export default function AddNewAddress() {
                           )}
 
                           <div className="flex items-center gap-4 pt-4 border-t border-border/50 flex-wrap">
-                            <button
+                            {/* <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleSelectAddress(addr);
@@ -296,7 +296,7 @@ export default function AddNewAddress() {
                               className="text-sm font-bold text-primary hover:underline"
                             >
                               Deliver Here
-                            </button>
+                            </button> */}
 
                             {/* SEPARATE BUTTON TO SET AS DEFAULT */}
                             {!addr.isDefault && (

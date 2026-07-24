@@ -67,23 +67,24 @@ const OrderSummary = ({
           label={
             <>
               Discount on MRP{" "}
-              <span className="cursor-pointer text-primary text-[10px] ml-1">Know More</span>
+              {/* <span className="cursor-pointer text-primary text-[10px] ml-1">Know More</span> */}
             </>
           }
           value={`- ${formatINR(discountOnMrp)}`}
           valueClassName="text-success"
         />
-        <Row
+        {/* <Row
           label="Coupon Discount"
           value={
             couponApplied ? `- ${formatINR(details?.couponDiscount || 0)}` : "Apply Coupon"
           }
           valueClassName={couponApplied ? "text-success" : "text-primary cursor-pointer"}
-        />
+        /> */}
         <Row
           label={
             <>
-              Platform Fee <span className="text-primary text-[10px] ml-1">Know More</span>
+              Platform Fee
+              {/* <span className="text-primary text-[10px] ml-1">Know More</span> */}
             </>
           }
           value={!details?.platformFee ? "FREE" : formatINR(details.platformFee)}
