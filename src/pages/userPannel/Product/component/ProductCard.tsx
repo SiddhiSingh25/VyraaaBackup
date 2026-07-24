@@ -202,6 +202,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         // toast("error", res?.data?.message || "Failed to add item to cart");
       },
       onFinally: () => setIsSubmitting(false),
+
     });
   };
 
