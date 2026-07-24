@@ -152,6 +152,8 @@ const ProductInfo = ({
   const ref = useReveal();
   const isCartActionPending = useRef(false);
   const isBuyNowPending = useRef(false);
+  const cartDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const buyNowDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -195,65 +197,79 @@ const ProductInfo = ({
       return;
     }
 
-    if (isCartActionPending.current) return;
-    isCartActionPending.current = true;
+    if (cartDebounceTimer.current) {
+      clearTimeout(cartDebounceTimer.current);
+    }
 
-    const safetyTimeout = setTimeout(() => {
-      isCartActionPending.current = false;
-    }, 2000);
+    cartDebounceTimer.current = setTimeout(() => {
+      if (isCartActionPending.current) return;
+      isCartActionPending.current = true;
 
-    postQuery({
-      url: apiUrls.Cart.add,
-      postData: {
-        productId: productData._id,
-        size: productData?.price?.[selectedSize]?.size?._id,
-        quantity: 1,
-      },
-      onSuccess: (res: any) => {
-        clearTimeout(safetyTimeout);
+      const safetyTimeout = setTimeout(() => {
         isCartActionPending.current = false;
-        toast("success", res.message);
-        dispatch(
-          addToCart({
-            id: productData._id,
-            brand: productData.brand,
-            name: productData.title,
-            image: productData.image || productData.thumbnail || "",
-            quantity: 1,
-            qty: 1,
-            size: productData?.price?.[selectedSize]?.size?.size || "",
-            price: productData?.price?.[selectedSize]?.amount || 0,
-            mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
-          }),
-        );
-      },
-      onFail: (res: any) => {
-        clearTimeout(safetyTimeout);
-        isCartActionPending.current = false;
-        console.log(res?.data?.message, "=====error section");
-        toast("error", res?.data?.message || "Failed to add item to cart");
-        setIsLoading(false);
-      },
-    });
+      }, 2000);
+
+      postQuery({
+        url: apiUrls.Cart.add,
+        postData: {
+          productId: productData._id,
+          size: productData?.price?.[selectedSize]?.size?._id,
+          quantity: 1,
+        },
+        onSuccess: (res: any) => {
+          clearTimeout(safetyTimeout);
+          isCartActionPending.current = false;
+          toast("success", res.message);
+          dispatch(
+            addToCart({
+              id: productData._id,
+              brand: productData.brand,
+              name: productData.title,
+              image: productData.image || productData.thumbnail || "",
+              quantity: 1,
+              qty: 1,
+              size: productData?.price?.[selectedSize]?.size?.size || "",
+              price: productData?.price?.[selectedSize]?.amount || 0,
+              mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
+            }),
+          );
+        },
+        onFail: (res: any) => {
+          clearTimeout(safetyTimeout);
+          isCartActionPending.current = false;
+          console.log(res?.data?.message, "=====error section");
+          toast("error", res?.data?.message || "Failed to add item to cart");
+          setIsLoading(false);
+        },
+      });
+    }, 500); // Wait 500ms after the last click to process
   };
 
   const handleBuyNow = () => {
     if (selectedSize === null) return;
-    if (isBuyNowPending.current) return;
-    isBuyNowPending.current = true;
 
-    setTimeout(() => {
-      isBuyNowPending.current = false;
-    }, 1000);
+    if (buyNowDebounceTimer.current) {
+      clearTimeout(buyNowDebounceTimer.current);
+    }
 
-    navigate(`/checkout/address`, {
-      state: {
-        from: "product",
-        productId: id,
-        size: activePrice?.size?._id,
-        quantity: quantity || 1,
-      },
-    });
+    buyNowDebounceTimer.current = setTimeout(() => {
+      if (isBuyNowPending.current) return;
+      isBuyNowPending.current = true;
+
+      navigate(`/checkout/address`, {
+        state: {
+          from: "product",
+          productId: id,
+          size: activePrice?.size?._id,
+          quantity: quantity || 1,
+        },
+      });
+
+      // Reset lock after a short delay in case of navigation return
+      setTimeout(() => {
+        isBuyNowPending.current = false;
+      }, 1000);
+    }, 500); // Wait 500ms after the last click to process
   };
 
   if (isLoading) {
@@ -566,14 +582,6 @@ const ProductInfo = ({
                   ratingDistribution={productData.ratingDistribution}
                   reviews={productData.reviews}
                 />
-
-
-
-
-
-
-
-
               </div>
             </div>
           </div>
@@ -584,3 +592,4 @@ const ProductInfo = ({
 };
 
 export default ProductInfo;
+
