@@ -89,6 +89,7 @@ export default function SearchBar({
           }`}
         />
         <input
+          id={isMobile ? "mobile-search-input" : "desktop-search-input"}
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}

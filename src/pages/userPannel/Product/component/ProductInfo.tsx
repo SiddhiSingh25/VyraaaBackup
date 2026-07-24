@@ -10,6 +10,7 @@ import usePostQuery from "../../../../hooks/postQuery.hook";
 import { Heart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../../redux/slices/cartSlice";
+import PageLoader from "@/components/Loader/fullPageLoader";
 
 const isVideoUrl = (url: string) => {
   if (!url) return false;
@@ -224,18 +225,7 @@ const ProductInfo = ({
   };
 
   if (isLoading) {
-    return (
-      <section className="bg-[#fdf9f3] py-5">
-        <div className="px-5 sm:px-10 lg:px-20 ">
-          <div className="flex items-center justify-center h-96">
-            <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#835240]"></div>
-              <p className="mt-4 text-[#84746e]">Loading product...</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
+    return <PageLoader loading={isLoading} text="Loading Product..." />;
   }
 
   const activePrice = productData?.price?.[selectedSize];

@@ -56,7 +56,7 @@ function useFadeUp(delay = 0) {
 
 function FooterColumnTitle({ children }: any) {
   return (
-    <h4 className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#C5A880] mb-6">
+    <h4 className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#C5A880] mb-4">
       {children}
     </h4>
   );
@@ -69,7 +69,7 @@ interface FooterLinkProps {
 }
 
 function FooterLink({ children, to, state }: FooterLinkProps) {
-  const linkClasses = "group relative inline-flex items-center text-xs text-[#dbd3c4]/80 hover:text-[#C5A880] transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 hover:after:w-full after:bg-[#C5A880] after:transition-all after:duration-300 after:ease-out";
+  const linkClasses = "group relative inline-flex items-center text-xs text-[#f7f4ed]/90 hover:text-[#C5A880] transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 hover:after:w-full after:bg-[#C5A880] after:transition-all after:duration-300 after:ease-out";
 
   if (to) {
     return (
@@ -114,34 +114,34 @@ export default function Footer() {
   return (
     <footer className="relative bg-[#0d0a08] overflow-hidden">
       {/* Luxury radial background glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(131,82,64,0.1),transparent_50%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-dark pointer-events-none" />
 
       {/* Sophisticated top aesthetic border */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C5A880]/30 to-transparent" />
 
-      <div className="max-w-[1240px] mx-auto px-6 sm:px-10 lg:px-12 pt-20 pb-10 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-y-12 md:gap-x-12 lg:gap-x-16 pb-16">
+      <div className="max-w-[1240px] mx-auto px-6 sm:px-10 lg:px-12 pt-14 pb-8 lg:pt-16 lg:pb-10 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-y-10 md:gap-x-8 lg:gap-x-10 pb-10">
 
           {/* Column 1 — Brand Column (Span 4) */}
           <div ref={col1.ref} style={col1.style} className="md:col-span-4 flex flex-col justify-between">
             <div>
-              <h3 className="font-heading text-2xl tracking-[0.25em] text-white mb-5 transition-colors duration-300 hover:text-[#C5A880]">
+              <h3 className="font-heading text-2xl tracking-[0.25em] text-white mb-4 transition-colors duration-300 hover:text-[#C5A880]">
                 VYRAAA
               </h3>
-              <p className="text-xs leading-relaxed text-[#dbd3c4]/70 max-w-[280px] mb-6 font-light">
+              <p className="text-xs leading-relaxed text-[#f7f4ed]/90 max-w-[280px] mb-4 font-light">
                 Curated fashion, fine products, and fragrance for those who
                 value craft over noise.
               </p>
 
               {/* Verified contact layout */}
-              <div className="space-y-3.5 mb-8 text-xs font-light text-[#dbd3c4]/80">
+              <div className="space-y-3.5 mb-6 text-xs font-light text-[#f7f4ed]/95">
                 <a href="mailto:support@vyraaa.com" className="flex items-center gap-3 group hover:text-[#C5A880] transition-colors duration-300">
-                  <Mail size={13} className="text-[#C5A880]/70 group-hover:scale-110 transition-transform" />
+                  <Mail size={13} className="text-[#C5A880]/90 group-hover:scale-110 transition-transform" />
                   <span>support@vyraaa.com</span>
                 </a>
-            
+
                 <a href="tel:8796571232" className="flex items-center gap-3 group hover:text-[#C5A880] transition-colors duration-300">
-                  <Phone size={13} className="text-[#C5A880]/70 group-hover:scale-110 transition-transform" />
+                  <Phone size={13} className="text-[#C5A880]/90 group-hover:scale-110 transition-transform" />
                   <span>8796571232</span>
                 </a>
               </div>
@@ -153,7 +153,7 @@ export default function Footer() {
                   key={label}
                   to="/"
                   aria-label={label}
-                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-[#dbd3c4]/60 hover:text-[#0d0a08] hover:bg-[#C5A880] hover:border-[#C5A880] transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-[0_4px_12px_rgba(197,168,128,0.25)]"
+                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-[#f7f4ed]/75 hover:text-[#0d0a08] hover:bg-[#C5A880] hover:border-[#C5A880] transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-[0_4px_12px_rgba(197,168,128,0.25)]"
                 >
                   <Icon size={14} />
                 </Link>
@@ -198,7 +198,7 @@ export default function Footer() {
             {user ? (
               <>
                 <FooterColumnTitle>Your Bag</FooterColumnTitle>
-                <p className="text-xs leading-relaxed text-[#dbd3c4]/70 mb-6 max-w-[280px] font-light">
+                <p className="text-xs leading-relaxed text-[#f7f4ed]/90 mb-4 max-w-[280px] font-light">
                   Go to your cart and buy the products you may have forgotten. Your favorites are waiting for you!
                 </p>
                 <div>
@@ -213,7 +213,7 @@ export default function Footer() {
             ) : (
               <>
                 <FooterColumnTitle>Vyraaa People</FooterColumnTitle>
-                <p className="text-xs leading-relaxed text-[#dbd3c4]/70 mb-6 max-w-[280px] font-light">
+                <p className="text-xs leading-relaxed text-[#f7f4ed]/90 mb-4 max-w-[280px] font-light">
                   Create an exclusive account to explore our collections, build your private wishlist, and purchase original products.
                 </p>
                 <div>
@@ -231,8 +231,8 @@ export default function Footer() {
         </div>
 
         {/* Delicate Golden Divider */}
-        <div ref={bottom.ref} style={bottom.style} className="border-t border-white/5 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-[10px] tracking-[0.05em] text-[#dbd3c4]/50">
+        <div ref={bottom.ref} style={bottom.style} className="border-t border-white/5 pt-6">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-[10px] tracking-[0.05em] text-[#f7f4ed]/60">
             <p className="order-2 md:order-1 font-light">
               © {new Date().getFullYear()} VYRAAA. All Rights Reserved. Crafted for elegance.
             </p>

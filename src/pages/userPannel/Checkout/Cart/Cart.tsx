@@ -30,6 +30,10 @@ const Cart = () => {
   const dispatch = useDispatch();
 
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const {
     items,
     totalItems,
@@ -141,13 +145,13 @@ const Cart = () => {
       <Navbar />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {items.length === 0 ? (
-     <EmptyState
-  icon={<FiShoppingBag size={28} className="text-dark/50" />}
-  title="Your cart is empty"
-  description="Looks like you haven't added anything yet. Discover our collections and find your perfect fragrance."
-  actionText="Continue Shopping"
-  onAction={() => navigate("/products")}
-/>
+          <EmptyState
+            icon={<FiShoppingBag size={28} className="text-dark/50" />}
+            title="Your cart is empty"
+            description="Looks like you haven't added anything yet. Discover our collections and find your perfect fragrance."
+            actionText="Continue Shopping"
+            onAction={() => navigate("/products")}
+          />
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* Left: bag items */}
