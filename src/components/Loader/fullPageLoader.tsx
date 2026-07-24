@@ -23,8 +23,6 @@ export default function PageLoader({ loading, text = "Loading..." }: Props) {
         />
 
         <p className="mt-4 text-base font-semibold text-heading">{text}</p>
-
-        <p className="text-sm text-muted">Please wait...</p>
       </div>
     </div>
   );
