@@ -117,7 +117,9 @@ const OrderDetails = () => {
                                             </div>
                                         </div>
                                         <div className="text-right flex flex-col justify-between">
-                                            <p className="font-bold text-heading">₹{item.itemTotal}</p>
+                                            <p className="font-bold text-heading">
+                                                ₹{Number(item.itemTotal || 0).toFixed(2)}
+                                            </p>
                                             <p className={`text-xs font-medium px-2 py-1 rounded-md border inline-block mt-2 ${getStatusColor(item.itemStatus)}`}>
                                                 {item.itemStatus}
                                             </p>
