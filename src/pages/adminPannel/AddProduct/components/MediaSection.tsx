@@ -14,7 +14,7 @@ type MediaSectionProps = {
   images: string[];
   setImages: (images: string[]) => void;
   onFilesSelected?: (files: File[]) => void;
-  onRemoveImage?: (index: number) => void;
+  onRemoveImage?: (index: number, removedUrl: string) => void;
   errorMessage?: string;
 };
 
@@ -108,15 +108,18 @@ const MediaSection = ({
   };
 
   const removeMedia = (index: number) => {
+    const removedUrl = mediaItems[index];
+
     const next = [...mediaItems];
-    const removedUrl = next.splice(index, 1)[0];
+    next.splice(index, 1);
 
     if (removedUrl?.startsWith("blob:")) {
       URL.revokeObjectURL(removedUrl);
     }
 
     setMediaItems(next);
-    onRemoveImage?.(index);
+
+    onRemoveImage?.(index, removedUrl);
   };
 
   return (

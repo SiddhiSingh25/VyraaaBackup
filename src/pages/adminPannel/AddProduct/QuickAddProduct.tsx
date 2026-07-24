@@ -248,12 +248,22 @@ const QuickAddProduct = () => {
 
   const { postQuery } = usePostQuery();
 
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = (index: number, removedUrl: string) => {
     setValue(
       "images",
-      images.filter((_img, idx) => idx !== index),
+      images.filter((_, i) => i !== index),
     );
-    setImageFiles((prev) => prev.filter((_file, idx) => idx !== index));
+
+    // Only remove from imageFiles if it was a newly uploaded image
+    if (removedUrl.startsWith("blob:")) {
+      const blobImages = images.filter((img) => img.startsWith("blob:"));
+
+      const blobIndex = blobImages.indexOf(removedUrl);
+
+      if (blobIndex !== -1) {
+        setImageFiles((prev) => prev.filter((_, i) => i !== blobIndex));
+      }
+    }
   };
 
   const uploadImages = async (files: File[]) => {
@@ -314,6 +324,110 @@ const QuickAddProduct = () => {
   };
 
   // --- Submission ------------------------------------------------------------
+  // const onSubmit = async (data: QuickAddValues) => {
+  //   const payload = {
+  //     title: data.name,
+  //     appendSizeTypeToSize: appendSizeType,
+  //     description: data.description,
+  //     brand: data.brand || null,
+  //     color: data.color || null,
+  //     category: effectiveCategoryId,
+  //     subCategory: data.subcategory,
+  //     subcategoryType: data.subcategoryType || null,
+  //     sizeType: data.sizeType,
+  //     gender:
+  //       data.gender === "Boys" || data.gender === "Girls"
+  //         ? "Child"
+  //         : data.gender || null,
+  //     ageRange: data.ageRange || null,
+
+  //     price: data.variants.map((variant) => {
+  //       const discount = variant.discountPrice || 0;
+  //       const markupPrice = variant.price;
+  //       const amount = variant.price - (variant.price * discount) / 100;
+  //       return {
+  //         size: variant.size.value,
+  //         skuCode: variant.sku,
+  //         amount,
+  //         isAvailable: variant.isAvailable,
+  //         isFewLeft: variant.isFewLeft,
+  //         markupPrice,
+  //         discount,
+  //       };
+  //     }),
+
+  //     attributes: data.attributes
+  //       ? data.attributes.map((item) => ({
+  //           property: item.property,
+  //           value: item.value,
+  //         }))
+  //       : [],
+
+  //     gifts: gifts.map((gift) => ({
+  //       product: gift.product,
+  //       quantity: gift.quantity,
+  //       size: gift.size,
+  //     })),
+
+  //     linkItems: [],
+  //   };
+
+  //   try {
+  //     const imageUrls = await uploadImages(imageFiles);
+
+  //     const payloadWithImages = {
+  //       ...payload,
+  //       image: imageUrls[0] || "",
+  //       subImages:
+  //         imageUrls.length > 1
+  //           ? imageUrls.slice(1).map((img) => ({ imageUrl: img }))
+  //           : [],
+  //     };
+  //     console.log("Before postQuery");
+  //     await postQuery({
+  //       url: apiUrls.Product.add,
+  //       postData: payloadWithImages,
+  //       onSuccess: (res: any) => {
+  //         console.log("SUCCESS", res);
+  //         toast(
+  //           "success",
+  //           res?.message || res?.data?.message || "Product added successfully",
+  //         );
+  //         // setShowSuccess(true);
+  //         // resetForm();
+  //         setAddedProduct({
+  //           id: res.product._id,
+  //           image: payloadWithImages.image,
+  //           title: payload.title,
+  //           category: categoryOptions.find(
+  //             (c) => c.value === effectiveCategoryId,
+  //           )?.label,
+  //           subCategory: subcategoryOptions.find(
+  //             (s) => s.value === payload.subCategory,
+  //           )?.label,
+  //         });
+
+  //         setShowProductModal(true);
+
+  //         resetForm();
+  //       },
+  //       onFail: (err: any) => {
+  //         console.log("CATCH", err);
+  //         toast(
+  //           "error",
+  //           err?.response?.data?.message ||
+  //             err?.data.message ||
+  //             "Could not add product",
+  //         );
+  //       },
+  //     });
+  //   } catch (err: any) {
+  //     toast(
+  //       "error",
+  //       err?.response?.data?.message || err?.message || "Could not add product",
+  //     );
+  //   }
+  // };
   const onSubmit = async (data: QuickAddValues) => {
     const payload = {
       title: data.name,
@@ -335,6 +449,7 @@ const QuickAddProduct = () => {
         const discount = variant.discountPrice || 0;
         const markupPrice = variant.price;
         const amount = variant.price - (variant.price * discount) / 100;
+
         return {
           size: variant.size.value,
           skuCode: variant.sku,
@@ -346,12 +461,11 @@ const QuickAddProduct = () => {
         };
       }),
 
-      attributes: data.attributes
-        ? data.attributes.map((item) => ({
-            property: item.property,
-            value: item.value,
-          }))
-        : [],
+      attributes:
+        data.attributes?.map((item) => ({
+          property: item.property,
+          value: item.value,
+        })) || [],
 
       gifts: gifts.map((gift) => ({
         product: gift.product,
@@ -363,28 +477,55 @@ const QuickAddProduct = () => {
     };
 
     try {
-      const imageUrls = await uploadImages(imageFiles);
+      let imageUrls: string[] = [];
+
+      // Upload only newly selected images
+      if (imageFiles.length) {
+        imageUrls = await uploadImages(imageFiles);
+      }
+
+      let uploadedIndex = 0;
+
+      const finalImages = images.map((img) => {
+        if (img.startsWith("blob:")) {
+          return imageUrls[uploadedIndex++];
+        }
+
+        return img;
+      });
 
       const payloadWithImages = {
         ...payload,
-        image: imageUrls[0] || "",
-        subImages:
-          imageUrls.length > 1
-            ? imageUrls.slice(1).map((img) => ({ imageUrl: img }))
-            : [],
+
+        image: finalImages[0],
+
+        subImages: finalImages.slice(1).map((img) => ({
+          imageUrl: img,
+        })),
       };
-      console.log("Before postQuery");
+
+      const apiUrl = id
+        ? `${apiUrls.Product.editProduct}/${id}`
+        : apiUrls.Product.add;
+
       await postQuery({
-        url: apiUrls.Product.add,
+        url: apiUrl,
         postData: payloadWithImages,
+
         onSuccess: (res: any) => {
-          console.log("SUCCESS", res);
           toast(
             "success",
-            res?.message || res?.data?.message || "Product added successfully",
+            res?.message ||
+              res?.data?.message ||
+              (id
+                ? "Product updated successfully"
+                : "Product added successfully"),
           );
-          // setShowSuccess(true);
-          // resetForm();
+
+          if (id) {
+            return;
+          }
+
           setAddedProduct({
             id: res.product._id,
             image: payloadWithImages.image,
@@ -401,20 +542,22 @@ const QuickAddProduct = () => {
 
           resetForm();
         },
+
         onFail: (err: any) => {
-          console.log("CATCH", err);
           toast(
             "error",
             err?.response?.data?.message ||
-              err?.data.message ||
-              "Could not add product",
+              err?.data?.message ||
+              (id ? "Could not update product" : "Could not add product"),
           );
         },
       });
     } catch (err: any) {
       toast(
         "error",
-        err?.response?.data?.message || err?.message || "Could not add product",
+        err?.response?.data?.message ||
+          err?.message ||
+          (id ? "Could not update product" : "Could not add product"),
       );
     }
   };
@@ -646,7 +789,7 @@ const QuickAddProduct = () => {
               </Button>
 
               <Button type="submit" variant="primary" className="flex-1">
-                Add Product
+                {id ? "Update Product" : "Add Product"}
               </Button>
             </div>
           </div>
