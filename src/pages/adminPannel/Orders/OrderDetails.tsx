@@ -515,19 +515,19 @@ const OrderDetails = () => {
             </div>
 
             <div className="space-y-3 p-4 text-xs">
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <span className="text-slate-500">Subtotal</span>
                 <span className="font-medium text-[#3F322B]">
                   ₹{Number(order.grandTotal || 0).toFixed(2)}
                 </span>
-              </div>
-
+              </div> */}
+{/* 
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Shipping</span>
                 <span className="font-medium text-[#3F322B]">₹0</span>
-              </div>
+              </div> */}
 
-              <div className="border-t border-[#D8C4B5] pt-3 mt-1">
+              <div className=" border-[#D8C4B5] pt-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-[#3F322B]">
                     Grand Total
