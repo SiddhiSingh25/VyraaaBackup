@@ -3,6 +3,7 @@ import type { PriceDetails } from "./cart";
 import { formatINR } from "./pricing";
 import React from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 interface OrderSummaryProps {
   itemCount: number;
@@ -50,10 +51,8 @@ const OrderSummary = ({
   couponApplied,
   onPlaceOrder,
 }: OrderSummaryProps) => {
-  // 1. Grab items from Redux to check availability
+  const navigate = useNavigate()
   const items = useSelector((state: any) => state.cart.items || []);
-
-  // 2. Check if ANY item in the cart is unavailable
   const hasOutOfStockItems = items.some((item: any) => item.isAvailable === false);
 
   return (
@@ -104,11 +103,13 @@ const OrderSummary = ({
 
       <p className="mt-4 font-body text-[11px] leading-relaxed text-muted">
         By placing the order, you agree to Vyraaa's{" "}
-        <span className="cursor-pointer text-primary underline underline-offset-2">
+        <span className="cursor-pointer text-primary underline underline-offset-2"
+          onClick={() => navigate("/terms-condtions")}>
           Terms of Use
         </span>{" "}
         and{" "}
-        <span className="cursor-pointer text-primary underline underline-offset-2">
+        <span className="cursor-pointer text-primary underline underline-offset-2"
+          onClick={() => navigate("/privacy-policy")}>
           Privacy Policy
         </span>
         .
@@ -121,8 +122,8 @@ const OrderSummary = ({
         whileHover={!hasOutOfStockItems ? { scale: 1.01 } : undefined}
         whileTap={!hasOutOfStockItems ? { scale: 0.98 } : undefined}
         className={`mt-5 w-full rounded-md py-3.5 font-body text-sm font-semibold tracking-[0.15em] text-background shadow-sm transition-colors ${hasOutOfStockItems
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-primary hover:bg-primary-dark"
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-primary hover:bg-primary-dark"
           }`}
       >
         {hasOutOfStockItems ? "ITEM OUT OF STOCK" : "PLACE ORDER"}

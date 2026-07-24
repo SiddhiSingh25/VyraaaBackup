@@ -232,7 +232,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         className="group flex flex-col cursor-pointer select-none"
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        onClick={() => navigate(`/ productDetails / ${product._id} `, { state: { categoryId: product.category?._id, subCategoryId: product.subCategory?._id, subCategoryName: product.subCategory.subCategory } })}
+        onClick={() => navigate(`/productDetails/${product?._id}`)}
       >
         {/* Image */}
         <div
@@ -390,13 +390,13 @@ export default function ProductCard({ product }: ProductCardProps) {
               onClick={() => submitAddToCart(selectedSize)}
               disabled={selectedSize === null || isSubmitting}
               type="button"
-              className={`px - 5 py - 2 rounded font - medium text - [12px] uppercase tracking - wider text - white transition - colors flex items - center gap - 1.5 ${selectedSize === null || isSubmitting
+              className={`px-5 py-2 rounded font-medium text-[12px] uppercase tracking-wider text-white transition-colors flex items-center gap-1.5 ${selectedSize === null || isSubmitting
                 ? "bg-[#835240]/55 cursor-not-allowed"
                 : "bg-[#835240] hover:bg-[#51291a]"
-                } `}
+                }`}
             >
               <ShoppingBag size={13} />
-              {isSubmitting ? "Adding..." : "Add to Cart"}
+              {isSubmitting ? "Adding..." : "Add to bag"}
             </button>
           </div>
         }
@@ -428,12 +428,12 @@ export default function ProductCard({ product }: ProductCardProps) {
                 type="button"
                 disabled={!entry.isAvailable}
                 onClick={() => setSelectedSize(index)}
-                className={`w - 10 h - 10 rounded - full border text - [12.5px] transition - all duration - 200 font - semibold ${!entry.isAvailable
+                className={`w-10 h-10 rounded-full border text-[12.5px] transition-all duration-200 font-semibold ${!entry.isAvailable
                   ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through bg-gray-50/50"
                   : selectedSize === index
                     ? "bg-[#835240] border-[#835240] text-[#fdf9f3] scale-105 shadow-sm"
                     : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
-                  } `}
+                  }`}
               >
                 {entry.size.size}
               </button>
