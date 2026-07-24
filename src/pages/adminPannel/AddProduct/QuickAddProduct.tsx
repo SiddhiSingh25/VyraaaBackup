@@ -35,6 +35,8 @@ const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [addedProduct, setAddedProduct] = useState<any>(null);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const { id } = useParams<{ id: string }>();
   const { getQuery } = useGetQuery();
   console.log("poroductId", id);
@@ -166,6 +168,35 @@ const QuickAddProduct = () => {
     isLoading: subcategoryTypeLoading,
     addSubCategoryType,
   } = useSubCategoryTypeData(selectedSubcategoryId);
+  useEffect(() => {
+    if (!editingProduct) return;
+
+    // Wait until subcategory is selected
+    if (!selectedSubcategoryId) return;
+
+    // Wait until API finishes
+    if (subcategoryTypeLoading) return;
+
+    // Wait until options arrive
+    if (!subcategoryTypeOptions.length) return;
+
+    const exists = subcategoryTypeOptions.find(
+      (item) => item.value === editingProduct.subcategoryType?._id,
+    );
+
+    if (!exists) return;
+
+    setValue("subcategoryType", editingProduct.subcategoryType._id, {
+      shouldDirty: false,
+      shouldValidate: false,
+    });
+  }, [
+    editingProduct,
+    selectedSubcategoryId,
+    subcategoryTypeLoading,
+    subcategoryTypeOptions,
+    setValue,
+  ]);
   const { colorFamilyOptions, addColorFamily } = useColorFamilyData();
   const { colorOptions, addColor } = useColorData(selectedColorFamily);
   const { sizeTypeOptions, addSizeType } = useSizeTypeData();
@@ -183,13 +214,17 @@ const QuickAddProduct = () => {
   // user is picking it manually). When category comes from params this
   // still only fires once, harmlessly, on mount.
   useEffect(() => {
+    if (isInitializing) return;
+
     setValue("subcategory", "");
     setValue("subcategoryType", "");
-  }, [effectiveCategoryId, setValue]);
+  }, [effectiveCategoryId]);
 
   useEffect(() => {
+    if (isInitializing) return;
+
     setValue("subcategoryType", "");
-  }, [selectedSubcategoryId, setValue]);
+  }, [selectedSubcategoryId, setValue, isInitializing]);
 
   useEffect(() => {
     setValue("color", "");
@@ -388,9 +423,97 @@ const QuickAddProduct = () => {
     if (!id) return;
 
     getQuery({
-      url: `${apiUrls.Product.getById}${id}`,
+      url: `${apiUrls.Product.getByIdAdmin}${id}`,
       onSuccess: (res: any) => {
         console.log("Product Details:", res);
+        const product = res.data;
+        setEditingProduct(product);
+
+        // ---------------- Gifts ----------------
+        const mappedGifts =
+          product.gifts?.map((gift: any) => ({
+            product: gift.product._id,
+            quantity: gift.quantity,
+            size: gift.size?._id,
+
+            productDetails: {
+              title: gift.product.title,
+              image: gift.product.image,
+              brand: gift.product.brand?.brand || "",
+              sku: gift.product.price?.[0]?.skuCode || "",
+              sizes:
+                gift.product.price?.map((p: any) => ({
+                  label: p.size?.size,
+                  value: p.size?._id,
+                })) || [],
+            },
+          })) || [];
+
+        setGifts(mappedGifts);
+
+        // ---------------- Images ----------------
+        const allImages = [
+          product.image,
+          ...(product.subImages || []).map((item: any) => item.imageUrl),
+        ];
+
+        setImageFiles([]); // editing existing images
+
+        // ---------------- Form ----------------
+        setIsInitializing(true);
+
+        reset({
+          category: product.category?._id || "",
+
+          subcategory: product.subCategory?._id || "",
+
+          subcategoryType: product.subcategoryType?._id || "",
+
+          name: product.title || "",
+
+          description: product.description || "",
+
+          brand: product.brand?._id || "",
+
+          colorFamily: product.color?.family || "",
+
+          color: product.color?._id || "",
+
+          gender: product.gender || "",
+
+          ageRange: product.ageRange || "",
+
+          sizeType: product.sizeType?._id || "",
+
+          appendSizeType: product.appendSizeTypeToSize ?? false,
+
+          variants:
+            product.price?.map((item: any) => ({
+              size: {
+                value: item.size._id,
+                label: item.size.size,
+              },
+              sku: item.skuCode,
+              price: item.markupPrice,
+              discountPrice: item.discount,
+              isAvailable: item.isAvailable,
+              isFewLeft: item.isFewLeft,
+            })) || [],
+
+          attributes:
+            product.attributes?.map((attr: any) => ({
+              property: attr.property._id,
+              propertyLabel: attr.property.property,
+
+              value: attr.value._id,
+              valueLabel: attr.value.value,
+            })) || [],
+
+          images: allImages,
+        });
+        setTimeout(() => {
+          setIsInitializing(false);
+        }, 0);
       },
       onFail: (err: any) => {
         console.error("Failed to fetch product:", err);
