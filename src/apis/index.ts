@@ -141,21 +141,22 @@ export const apiUrls = {
   },
 
   Search: {
-    search: "product/home?page=1&limit=20&search=shirt&category=6a562a2f017a6045e6d99798&subCategory=6a563078251f4bd09af5db0b&subcategoryType=6a5636245a2f60df17a92d5a&brand=6a562f697cf2727ab9a41b0f&color=6a4748006effd9022addc50b&gender=Men&size=6a474523860ccf879fb4a414&minPrice=300&maxPrice=600&rating=4&discount=10&sort=priceLowHigh"
+    search:
+      "product/home?page=1&limit=20&search=shirt&category=6a562a2f017a6045e6d99798&subCategory=6a563078251f4bd09af5db0b&subcategoryType=6a5636245a2f60df17a92d5a&brand=6a562f697cf2727ab9a41b0f&color=6a4748006effd9022addc50b&gender=Men&size=6a474523860ccf879fb4a414&minPrice=300&maxPrice=600&rating=4&discount=10&sort=priceLowHigh",
   },
   Orders: {
     getAllOrders: "/order",
     getByUserId: "/order/getByUserId",
     getOrderById: "/order",
-    updateOrderStatus: "order/updateOrderStatus", 
-    createOrder : "/order/createOrder"
+    updateOrderStatus: "order/updateOrderStatus",
+    createOrder: "/order/createOrder",
   },
   Home: {
     getVideos: "home/getHomeVideos",
     addVideos: "home/addVideo",
     deleteVideo: "home/deleteVideos",
   },
-  Review : {
-    add : "/review/add"
-  }
+  Review: {
+    add: "/review/add",
+  },
 };
