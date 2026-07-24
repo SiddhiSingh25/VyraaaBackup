@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Pencil,
   Trash2,
@@ -6,8 +6,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-} from 'lucide-react';
-import type { SubCategoryType } from './types';
+} from "lucide-react";
+import type { SubCategoryType } from "./types";
 
 interface Props {
   items: SubCategoryType[];
@@ -15,36 +15,26 @@ interface Props {
   onDelete: (item: SubCategoryType) => void;
 }
 
-const COLUMNS = ['Sr. No.', 'Subcategory', 'Type', 'Actions'];
+const COLUMNS = ["Sr. No.", "Subcategory", "Type", "Actions"];
 
-export default function SubCategoryTypeTable({ items, onEdit, onDelete }: Props) {
+export default function SubCategoryTypeTable({
+  items,
+  onEdit,
+  onDelete,
+}: Props) {
   return (
-    <div className="w-full h-[80vh] bg-surface rounded-xl border border-border shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col font-admin-text">
-
-      <div className="p-5 shrink-0">
-        <div className="relative w-full max-w-[240px]">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={16} className="text-muted" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary bg-background text-body placeholder-muted"
-          />
-        </div>
-      </div>
-
+    <div className="w-full h-[80vh] bg-surface rounded-xl  shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col font-admin-text">
       <div className="flex-1 min-h-0 overflow-auto w-full scrollbar-thin">
-        <table className="w-full min-w-[820px] border-collapse text-left relative">
+        <table className="w-full min-w-205 border-collapse text-left relative">
           <thead className="bg-surface sticky top-0 z-10">
-            <tr className="border-b-2 border-primary border-t border-border shadow-sm">
+            <tr className="border-b-2 border-primary shadow-sm">
               {COLUMNS.map((col, i) => (
                 <th
                   key={col}
                   className={`whitespace-nowrap py-3.5 px-4 text-sm font-medium text-primary bg-surface
-                  ${col === 'Actions' ? 'text-right pr-6' : 'text-left'} 
-                  ${i === 0 ? 'text-center' : ''}
-                  ${i !== COLUMNS.length - 1 ? 'border-r border-border/60' : ''}
+                  ${col === "Actions" ? "text-right pr-6" : "text-left"} 
+                  ${i === 0 ? "text-center" : ""}
+                  ${i !== COLUMNS.length - 1 ? "border-r border-border/60" : ""}
                   `}
                 >
                   {col}
@@ -56,7 +46,10 @@ export default function SubCategoryTypeTable({ items, onEdit, onDelete }: Props)
           <tbody>
             {items.length === 0 && (
               <tr>
-                <td colSpan={COLUMNS.length} className="py-12 text-center text-sm text-muted bg-background">
+                <td
+                  colSpan={COLUMNS.length}
+                  className="py-12 text-center text-sm text-muted bg-background"
+                >
                   No entries found.
                 </td>
               </tr>
@@ -66,18 +59,24 @@ export default function SubCategoryTypeTable({ items, onEdit, onDelete }: Props)
               <tr
                 key={it.id}
                 className={`border-b border-border/60 last:border-b-0 hover:bg-card/40 transition-colors ${
-                  idx % 2 === 0 ? 'bg-surface' : 'bg-background'
+                  idx % 2 === 0 ? "bg-surface" : "bg-background"
                 }`}
               >
-                <td className="whitespace-nowrap px-4 py-3.5 text-sm text-muted font-medium">{it.srNo ?? idx + 1}</td>
-                <td className="whitespace-nowrap px-4 py-3.5 text-sm text-heading font-medium">{it.subCategoryName ?? it.subCategory}</td>
-                <td className="whitespace-nowrap px-4 py-3.5 text-sm text-heading">{it.type}</td>
+                <td className="whitespace-nowrap px-4 py-3.5 text-sm text-muted font-medium">
+                  {it.srNo ?? idx + 1}
+                </td>
+                <td className="whitespace-nowrap px-4 py-3.5 text-sm text-heading font-medium">
+                  {it.subCategoryName ?? it.subCategory}
+                </td>
+                <td className="whitespace-nowrap px-4 py-3.5 text-sm text-heading">
+                  {it.type}
+                </td>
                 <td className="whitespace-nowrap px-4 py-3.5">
                   <div className="flex items-center justify-end gap-2.5 pr-2">
                     <button
                       onClick={() => onEdit(it)}
                       aria-label={`Edit ${it.type}`}
-                      className="flex h-[30px] w-[30px] items-center justify-center rounded-md border border-border bg-background text-muted hover:bg-card hover:text-primary transition-colors shadow-sm"
+                      className="flex h-7.5 w-7.5 items-center justify-center rounded-md border border-border bg-background text-muted hover:bg-card hover:text-primary transition-colors shadow-sm"
                     >
                       <Pencil size={14} />
                     </button>
@@ -85,7 +84,7 @@ export default function SubCategoryTypeTable({ items, onEdit, onDelete }: Props)
                     <button
                       onClick={() => onDelete(it)}
                       aria-label={`Delete ${it.type}`}
-                      className="flex h-[30px] w-[30px] items-center justify-center rounded-md border border-error/20 bg-error/5 text-error hover:bg-error/10 transition-colors shadow-sm"
+                      className="flex h-7.5 w-7.5 items-center justify-center rounded-md border border-error/20 bg-error/5 text-error hover:bg-error/10 transition-colors shadow-sm"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -99,14 +98,19 @@ export default function SubCategoryTypeTable({ items, onEdit, onDelete }: Props)
 
       <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-border bg-surface gap-4 shrink-0">
         <div className="text-sm text-muted">
-          Showing <span className="font-medium text-heading">1</span> to <span className="font-medium text-heading">{items.length}</span> of <span className="font-medium text-heading">{items.length}</span> entries
+          Showing <span className="font-medium text-heading">1</span> to{" "}
+          <span className="font-medium text-heading">{items.length}</span> of{" "}
+          <span className="font-medium text-heading">{items.length}</span>{" "}
+          entries
         </div>
 
         <div className="flex items-center gap-1.5">
           <button className="flex h-7 w-7 items-center justify-center rounded bg-background border border-border text-muted hover:bg-card disabled:opacity-50 transition-colors">
             <ChevronLeft size={14} />
           </button>
-          <button className="flex h-7 w-7 items-center justify-center rounded bg-primary text-background text-sm font-medium hover:bg-primary-dark shadow-sm transition-colors">1</button>
+          <button className="flex h-7 w-7 items-center justify-center rounded bg-primary text-background text-sm font-medium hover:bg-primary-dark shadow-sm transition-colors">
+            1
+          </button>
           <button className="flex h-7 w-7 items-center justify-center rounded bg-background border border-border text-muted hover:bg-card disabled:opacity-50 transition-colors">
             <ChevronRight size={14} />
           </button>
@@ -119,7 +123,10 @@ export default function SubCategoryTypeTable({ items, onEdit, onDelete }: Props)
               <option value="50">50</option>
               <option value="100">100</option>
             </select>
-            <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+            <ChevronDown
+              size={14}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+            />
           </div>
         </div>
       </div>
