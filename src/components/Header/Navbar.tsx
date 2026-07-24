@@ -119,7 +119,6 @@ export default function Navbar({
           const moreItem = {
             id: "more",
             label: "More",
-            to: "/clothing",
             columns: [
               {
                 title: "Explore",

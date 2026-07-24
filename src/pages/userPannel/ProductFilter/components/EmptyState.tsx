@@ -1,12 +1,20 @@
 import React from "react";
 import { Sparkles } from "lucide-react";
 import { C } from "../constants";
+import { useNavigate } from "react-router-dom";
 
 export interface EmptyStateProps {
   onClear: () => void;
 }
 
 export default function EmptyState({ onClear }: EmptyStateProps) {
+  const navigate  = useNavigate()
+
+  const handleClear = ()=>{
+    onClear()
+    navigate("/products")
+
+  }
   return (
     <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
       <div
@@ -26,7 +34,7 @@ export default function EmptyState({ onClear }: EmptyStateProps) {
       </p>
       <div className="flex gap-3">
         <button
-          onClick={onClear}
+          onClick={handleClear}
           className="px-5 py-2.5 rounded-full text-[13px] font-medium"
           style={{ background: C.primary, color: "#fff" }}
         >
@@ -35,6 +43,7 @@ export default function EmptyState({ onClear }: EmptyStateProps) {
         <button
           className="px-5 py-2.5 rounded-full text-[13px] font-medium"
           style={{ border: `1px solid ${C.border}`, color: C.heading }}
+        onClick={() => navigate("/products")}
         >
           Continue Shopping
         </button>

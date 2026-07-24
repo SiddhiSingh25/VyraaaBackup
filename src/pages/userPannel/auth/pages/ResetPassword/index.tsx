@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/useToast.hook";
 
 import {
   AuthLayout,
-  AuthCard,
   AuthHeader,
   PasswordInput,
   AuthButton,
