@@ -1,13 +1,15 @@
+import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import type { CartItem } from "./cart";
 import { discountPercent, formatINR } from "./pricing";
-import { IconClock, IconClose } from "./icons";// Assuming generic hook usage
+import { IconClock, IconClose } from "./icons";
 import { apiUrls } from "../../../../../apis";
 import { useDispatch } from "react-redux";
 import { removeFromCart } from "../../../../../redux/slices/cartSlice";
 import useGetQuery from "../../../../../hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { useToast } from "@/hooks/useToast.hook";
+import { useNavigate } from "react-router-dom";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -24,13 +26,41 @@ const CartItemCard = ({
 }: CartItemCardProps) => {
   const pct = discountPercent(item.mrp, item.price);
   const dispatch = useDispatch();
-  const { getQuery } = useGetQuery()
-  const { postQuery } = usePostQuery()
-  const toast = useToast()
+  const { getQuery } = useGetQuery();
+  const { postQuery } = usePostQuery();
+  const toast = useToast();
+  const navigate = useNavigate()
 
   // Availability Flags
   const isAvailable = item.isAvailable !== false;
   const isFewLeft = item.isFewLeft === true;
+
+  // ==========================================
+  // DEBOUNCE LOGIC
+  // ==========================================
+  const [localQty, setLocalQty] = useState(item.qty);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Sync local state if the global/redux item.qty updates externally
+  useEffect(() => {
+    setLocalQty(item.qty);
+  }, [item.qty]);
+
+  const handleQtyChange = (newQty: number) => {
+    //  Instantly update the UI so it feels responsive
+    setLocalQty(newQty);
+
+    //  Clear any existing pending API calls
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    //  Wait 500ms before sending the final amount to the API & Redux
+    timerRef.current = setTimeout(() => {
+      updateCart(newQty);
+    }, 500);
+  };
+  // ==========================================
 
   const updateCart = (newQty: number) => {
     const targetId = item?.cartItemId || item.id;
@@ -52,7 +82,10 @@ const CartItemCard = ({
     });
   };
 
-  const handleRemoveCart = () => {
+  // ADDED EVENT PARAMETER HERE
+  const handleRemoveCart = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Stops the click from triggering the parent's navigate
+
     const targetId = item?.cartItemId || item?.id;
     dispatch(removeFromCart(targetId));
     getQuery({
@@ -65,7 +98,6 @@ const CartItemCard = ({
         console.log(res?.data);
       },
     });
-
   };
 
   return (
@@ -75,11 +107,12 @@ const CartItemCard = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -24 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className={`relative rounded-lg border border-border bg-background p-4 sm:p-5 ${!isAvailable ? "opacity-60 bg-gray-50" : ""}`}
+      onClick={() => navigate(`/productDetails/${item?.id}`)}
+      className={`relative cursor-pointer rounded-lg border border-border bg-background p-4 sm:p-5 ${!isAvailable ? "opacity-60 bg-gray-50" : ""}`}
     >
       <button
         type="button"
-        onClick={handleRemoveCart}
+        onClick={handleRemoveCart} // Uses the updated handler above
         aria-label={`Remove ${item.name}`}
         className="absolute right-4 top-4 text-muted transition-colors hover:text-error"
       >
@@ -125,19 +158,25 @@ const CartItemCard = ({
               <div className="flex items-center gap-2 rounded-md border border-border bg-surface p-1">
                 <button
                   type="button"
-                  disabled={item.qty <= 1}
-                  onClick={() => updateCart(item.qty - 1)}
+                  disabled={localQty <= 1}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click
+                    handleQtyChange(localQty - 1);
+                  }}
                   className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:opacity-50"
                 >
                   -
                 </button>
                 <span className="w-4 text-center font-body text-xs font-medium text-heading">
-                  {item.qty}
+                  {localQty}
                 </span>
                 <button
                   type="button"
-                  disabled={item.qty >= item.maxQty}
-                  onClick={() => updateCart(item.qty + 1)}
+                  disabled={localQty >= (item.maxQty || 10)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click
+                    handleQtyChange(localQty + 1);
+                  }}
                   className="flex h-6 w-6 items-center justify-center rounded bg-background text-heading transition-colors hover:bg-border disabled:opacity-50"
                 >
                   +

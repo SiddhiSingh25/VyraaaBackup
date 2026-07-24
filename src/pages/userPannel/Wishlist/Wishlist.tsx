@@ -13,6 +13,7 @@ import { removeFromWishlist, setWishlist } from "@/redux/slices/wishlistSlice";
 import { addToCart } from "@/redux/slices/cartSlice";
 import { FiHeart } from "react-icons/fi";
 import { EmptyState } from "@/components/Common/EmptyList/EmptyList";
+import PageLoader from "@/components/Loader/fullPageLoader";
 
 
 
@@ -21,7 +22,7 @@ import { EmptyState } from "@/components/Common/EmptyList/EmptyList";
 /* ------------------------------------------------------------------ */
 
 export default function WishlistPage() {
-  const { getQuery } = useGetQuery();
+  const { getQuery, loading } = useGetQuery();
   const { postQuery } = usePostQuery();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -88,15 +89,15 @@ export default function WishlistPage() {
   }, [dispatch]); // Run once on mount
 
   const removeItem = (id: string) => {
+
+    dispatch(removeFromWishlist(id));
+    toast("success", "Removed from wishlist successfully");
+
     getQuery({
       url: apiUrls.WishList.remove + id,
-      onSuccess: (res: any) => {
-        toast("success", res.message || "Removed from wishlist successfully");
-        dispatch(removeFromWishlist(id));
-      },
+      onSuccess: (res: any) => { },
       onFail: (res: any) => {
         console.error("Failed to remove from wishlist:", res);
-        toast("error", res?.data?.message || "Failed to remove from wishlist");
       },
     });
   };
@@ -160,19 +161,14 @@ export default function WishlistPage() {
   };
 
   // 3. Render a loading skeleton or spinner while fetching
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <main className="mx-auto flex max-w-7xl items-center justify-center px-5 pb-24 pt-32 sm:px-8 lg:px-10">
-          <p className="text-lg font-medium text-muted">Loading your wishlist...</p>
-        </main>
-        <Footer />
-      </div>
+      <PageLoader loading={loading} text="Loading Wishlist..." />
     );
   }
 
   return (
+
     <div className="min-h-screen bg-background">
       <Navbar />
 
@@ -189,19 +185,19 @@ export default function WishlistPage() {
             <p className="mt-2 text-sm text-body">Pieces you love, saved for later.</p>
           </div>
 
-          
+
         </div>
 
         {/* Grid */}
         {items.length === 0 ? (
           <div className="pt-10">
-  <EmptyState
-    icon={<FiHeart size={28} className="text-dark/50" />}
-    title="Your wishlist is empty"
-    description="Save pieces you love and find them here anytime."
-    actionText="Continue Shopping"
-    onAction={() => navigate("/products")}
-  />
+            <EmptyState
+              icon={<FiHeart size={28} className="text-dark/50" />}
+              title="Your wishlist is empty"
+              description="Save pieces you love and find them here anytime."
+              actionText="Continue Shopping"
+              onAction={() => navigate("/products")}
+            />
           </div>
         ) : (
           <>

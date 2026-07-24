@@ -10,6 +10,8 @@ type VariantDraftFormProps = {
   setDraftVariant: (draft: DraftVariant) => void;
   sizeOptions: Option[];
   sizeTypeSelected: any;
+  sizeTypes: any,
+  appendSizeType?: boolean;
   onAdd: () => void;
   onCancel: () => void;
 };
@@ -23,13 +25,16 @@ const VariantDraftForm = ({
   setDraftVariant,
   sizeOptions,
   sizeTypeSelected,
+  sizeTypes,
   onAdd,
   onCancel,
+  appendSizeType = false // 2. Added '= false' as the default value
 }: VariantDraftFormProps) => {
   const { control, watch, reset, setValue } = useForm<VariantDraftFormValues>({
     defaultValues: { size: draftVariant.size.value || "" },
   });
 
+  const sizeTypeName = sizeTypes.find((item: any) => item.value === sizeTypeSelected)
   const selectedSize = watch("size");
 
   useEffect(() => {
@@ -43,7 +48,14 @@ const VariantDraftForm = ({
 
   const handleAddSize = (query: string) => {
     if (!query?.trim()) return;
-    addSizeValue(query.trim(), (newSize) => {
+    let finalSize = ""
+    if (appendSizeType) {
+      finalSize = query + sizeTypeName.label
+    } else {
+      finalSize = query
+    }
+
+    addSizeValue(finalSize.trim(), (newSize) => {
       if (!newSize) return;
 
       setDraftVariant({
