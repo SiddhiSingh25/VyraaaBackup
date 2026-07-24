@@ -19,8 +19,8 @@ const Orders = () => {
 
   // 1. Pagination States
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [totalOrders, setTotalOrders] = useState(0); // Store total count
+  const [limit, setLimit] = useState(10); // Changed to 10 for standard display
+  const [totalOrders, setTotalOrders] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -55,7 +55,6 @@ const Orders = () => {
       url: `${apiUrls.Orders.getAllOrders}?${params.toString()}`,
       onSuccess: (res: any) => {
         setOrders(res.data);
-        // 2. Set the total orders from the API response
         setTotalOrders(res.totalOrders || 0);
       },
       onFail: (err: any) => {
@@ -72,9 +71,6 @@ const Orders = () => {
     fetchOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, paymentStatus, paymentMethod, page, debouncedSearch]);
-
-  // 3. Calculate Total Pages
-  const totalPages = Math.ceil(totalOrders / limit);
 
   return (
     <div className="min-h-screen bg-slate-50 overflow-y-auto font-admin-text pb-10">
@@ -101,7 +97,6 @@ const Orders = () => {
           </div>
 
           <div className="w-full sm:flex-1 pt-5">
-            
             <input
               className="w-full rounded-md border border-[#E7D8CC] bg-white px-3 py-2.5 text-xs sm:text-sm text-[#3F322B] transition-colors focus:border-[#8B5E49] focus:outline-none focus:ring-1 focus:ring-[#8B5E49]"
               placeholder="Search orders by Order ID..."
@@ -111,57 +106,15 @@ const Orders = () => {
           </div>
         </div>
 
-        {/* Passed Page & Limit to calculate exact Sr No. */}
+        {/* Table seamlessly handles pagination now */}
         <OrdersTable
           items={orders}
           page={page}
           limit={limit}
-          onView={(order) => navigate(`/admin/orders/${order._id}`)}
+          totalOrders={totalOrders}
+          onPageChange={setPage}
+          onView={(order: any) => navigate(`/admin/orders/${order._id}`)}
         />
-
-        {/* 4. Pagination UI Component */}
-        {totalPages > 1 && (
-          <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border border-[#E7D8CC] bg-white px-4 py-2.5 rounded-xl shadow-sm">
-            <div className="w-full sm:w-auto text-center sm:text-left">
-              <p className="text-[11px] sm:text-xs text-slate-500">
-                Showing <span className="font-medium text-slate-700">{((page - 1) * limit) + 1}</span> to{" "}
-                <span className="font-medium text-slate-700">{Math.min(page * limit, totalOrders)}</span> of{" "}
-                <span className="font-medium text-slate-700">{totalOrders}</span> results
-              </p>
-            </div>
-
-            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <button
-                onClick={() => setPage(Math.max(1, page - 1))}
-                disabled={page === 1}
-                className="relative inline-flex items-center rounded-l-md px-2.5 py-1.5 text-xs text-slate-400 ring-1 ring-inset ring-[#E7D8CC] hover:bg-[#FFF8F2] hover:text-[#8B5E49] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Prev
-              </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setPage(num)}
-                  className={`relative inline-flex items-center px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-[#E7D8CC] transition-colors ${page === num
-                      ? "bg-[#8B5E49] text-white z-10"
-                      : "text-slate-700 hover:bg-[#FFF8F2]"
-                    }`}
-                >
-                  {num}
-                </button>
-              ))}
-
-              <button
-                onClick={() => setPage(Math.min(totalPages, page + 1))}
-                disabled={page === totalPages}
-                className="relative inline-flex items-center rounded-r-md px-2.5 py-1.5 text-xs text-slate-400 ring-1 ring-inset ring-[#E7D8CC] hover:bg-[#FFF8F2] hover:text-[#8B5E49] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
-            </nav>
-          </div>
-        )}
       </div>
     </div>
   );
