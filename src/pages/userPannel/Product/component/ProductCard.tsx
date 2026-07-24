@@ -79,7 +79,6 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 
 
-  console.log(product, "((((((((((((((((((")
   const navigate = useNavigate();
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
@@ -240,7 +239,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         className="group flex flex-col cursor-pointer select-none"
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        onClick={() => navigate(`/productDetails/${product._id}`, { state: { categoryId: product.category?._id, subCategoryId: product.subCategory?._id, subCategoryName: product.subCategory.subCategory } })}
+        onClick={() => navigate(`/productDetails/${product.title.replace(/\s+/g, "-")}`, { state: { categoryId: product.category?._id, subCategoryId: product.subCategory?._id, subCategoryName: product.subCategory.subCategory, productId: product._id } })}
       >
         {/* Image */}
         <div

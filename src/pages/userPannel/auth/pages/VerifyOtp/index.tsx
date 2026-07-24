@@ -9,7 +9,6 @@ import authImage from "@/assets/auth/auth.png";
 
 import {
   AuthLayout,
-  AuthCard,
   AuthHeader,
   OTPInput,
   AuthButton,

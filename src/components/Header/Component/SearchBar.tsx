@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Search, X, ArrowLeft } from "lucide-react";
 
 interface SearchBarProps {
   variant?: "desktop" | "mobile";
   placeholder?: string;
   className?: string;
+  onClose?: () => void;
 }
 
 const SEARCH_DEBOUNCE_MS = 450;
@@ -15,6 +16,7 @@ export default function SearchBar({
   variant = "desktop",
   placeholder = "Search for products, brands and more",
   className = "",
+  onClose,
 }: SearchBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,7 +62,17 @@ export default function SearchBar({
   };
 
   return (
-    <div className={`relative w-full ${isMobile ? "h-10" : "h-10"} ${className}`}>
+    <div className={`relative flex items-center w-full ${isMobile ? "h-10" : "h-10"} ${className}`}>
+      {onClose && (
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Back"
+          className="mr-3 p-1 shrink-0 text-admin-text/70 hover:text-primary-dark transition-colors duration-200"
+        >
+          <ArrowLeft size={20} strokeWidth={1.8} />
+        </button>
+      )}
       <div
         className={`flex items-center w-full h-full rounded-full border bg-heading/[0.035]
           transition-all duration-300 ease-out

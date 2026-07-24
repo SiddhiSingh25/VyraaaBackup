@@ -3,6 +3,7 @@ import { ArrowRight, Mail, Phone, Globe } from "lucide-react";
 import { FaFacebook, FaInstagram } from "react-icons/fa6";
 import { FaTwitter, FaYoutube } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
 
@@ -93,6 +94,7 @@ export default function Footer() {
 
   const { getQuery } = useGetQuery();
   const [categories, setCategories] = useState<any[]>([]);
+  const { user } = useSelector((state: any) => state.auth);
 
   useEffect(() => {
     getQuery({
@@ -191,20 +193,39 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4 — Join Client List (Span 4) */}
+          {/* Column 4 — Join Client List / Go to Cart (Span 4) */}
           <div ref={col4.ref} style={col4.style} className="md:col-span-4 flex flex-col justify-start">
-            <FooterColumnTitle>Vyraaa People</FooterColumnTitle>
-            <p className="text-xs leading-relaxed text-[#dbd3c4]/70 mb-6 max-w-[280px] font-light">
-              Create an exclusive account to explore our collections, build your private wishlist, and purchase original products.
-            </p>
-            <div>
-              <Link
-                to="/auth/signup"
-                className="group relative inline-flex items-center justify-center px-8 py-3.5 overflow-hidden rounded-sm bg-[#C5A880] hover:bg-[#b09366] text-[#0d0a08] font-body text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(197,168,128,0.25)]"
-              >
-                Create Account
-              </Link>
-            </div>
+            {user ? (
+              <>
+                <FooterColumnTitle>Your Bag</FooterColumnTitle>
+                <p className="text-xs leading-relaxed text-[#dbd3c4]/70 mb-6 max-w-[280px] font-light">
+                  Go to your cart and buy the products you may have forgotten. Your favorites are waiting for you!
+                </p>
+                <div>
+                  <Link
+                    to="/cart"
+                    className="group relative inline-flex items-center justify-center px-8 py-3.5 overflow-hidden rounded-sm bg-[#C5A880] hover:bg-[#b09366] text-[#0d0a08] font-body text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(197,168,128,0.25)]"
+                  >
+                    Go To Cart
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <FooterColumnTitle>Vyraaa People</FooterColumnTitle>
+                <p className="text-xs leading-relaxed text-[#dbd3c4]/70 mb-6 max-w-[280px] font-light">
+                  Create an exclusive account to explore our collections, build your private wishlist, and purchase original products.
+                </p>
+                <div>
+                  <Link
+                    to="/auth/signup"
+                    className="group relative inline-flex items-center justify-center px-8 py-3.5 overflow-hidden rounded-sm bg-[#C5A880] hover:bg-[#b09366] text-[#0d0a08] font-body text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(197,168,128,0.25)]"
+                  >
+                    Create Account
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
 
         </div>

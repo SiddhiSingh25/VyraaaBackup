@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"; // Removed unused 'use' impo
 import { useReveal } from "../../../../hooks/gsap/useReveal";
 import { kidsFootwear, shirts } from "../../../../assets/assets";
 import RatingsAndReviews from "./RatingReviews";
-import { useNavigate, useParams } from "react-router-dom"; // Removed unused 'useNavigation'
+import { useLocation, useNavigate, useParams } from "react-router-dom"; // Removed unused 'useNavigation'
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
 import { useToast } from "../../../../hooks/useToast.hook";
@@ -15,6 +15,10 @@ const isVideoUrl = (url: string) => {
   if (!url) return false;
   // Checks for common video extensions. Expand this list if your backend uses others.
   return /\.(mp4|webm|ogg|mov)$/i.test(url);
+};
+
+const toSlug = (text: string) => {
+  return text?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 };
 
 const StarRating = ({ rating, totalRatings }: any) => (
@@ -127,7 +131,8 @@ const ProductInfo = ({
   // when accessing deeply nested properties like productData.price
   const [productData, setProductData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  let { id } = useParams();
+  const location = useLocation();
+  let id = location.state.productId;
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
@@ -242,104 +247,118 @@ const ProductInfo = ({
   return (
     productData && (
       <section className="bg-[#fdf9f3] py-5">
-        <div className="px-5 sm:px-10 lg:px-20 max-w-[1440px] mx-auto">
-          <div className="max-w-6xl w-full ">
+        <div className="px-5 sm:px-10 lg:px-20 max-w-[1840px] mx-auto">
+          <div className="max-w-8xl w-full ">
             {/* FIX: productData.name -> productData.title (API doesn't return `name`) */}
             <p className="text-[10.5px] tracking-[0.08em] uppercase text-[#84746e]">
-              <span>Home</span> /<span> Products</span>
-              <span>
-                {" "}
-                {productData.category?.category || productData.category}
+              <span
+                onClick={() => navigate("/")}
+                className="cursor-pointer hover:text-[#835240] transition-colors duration-200"
+              >
+                Home /
               </span>{" "}
-              /<span className="text-[#835240]"> {productData.title}</span>
+              <span
+                onClick={() => {
+                  const catName = productData.category?.category;
+                  const catId = productData.category?._id;
+                  if (catName && catId) {
+                    navigate(`/${toSlug(catName)}`, {
+                      state: {
+                        categoryId: catId,
+                        fullCategoryData: productData.category,
+                      },
+                    });
+                  }
+                }}
+                className="cursor-pointer hover:text-[#835240] transition-colors duration-200"
+              >
+                {productData.category?.category}
+              </span>{" "}
+              / <span className="text-[#835240]">{productData.title}</span>
             </p>
 
             <div className="flex flex-col md:flex-row gap-10 mt-4">
-              <div className="flex gap-3 sticky top-24 self-start">
-                <div className="flex gap-3 sticky top-24 self-start">
-                  {/* Thumbnails Section */}
-                  <div className="flex flex-col gap-2.5">
-                    {productData?.subImages?.map(
-                      (media: any, index: number) => {
-                        const isVid = isVideoUrl(media);
-                        return (
-                          <div
-                            key={index}
-                            onClick={() => setThumbnail(index)}
-                            className={`border max-w-[70px] max-h-[70px] rounded overflow-hidden cursor-pointer ${
-                              thumbnail === index
-                                ? "border-[#835240]"
-                                : "border-gray-500/30"
+              <div className="flex flex-col-reverse md:flex-row gap-3 sm:sticky md:top-24 self-start w-full md:w-auto">
+                {/* Thumbnails Section */}
+                <div className="flex flex-row md:flex-col gap-2 md:gap-2.5 overflow-x-auto md:overflow-x-visible pb-1.5 md:pb-0 scrollbar-none">
+                  {productData?.subImages?.map(
+                    (media: any, index: number) => {
+                      const isVid = isVideoUrl(media);
+                      return (
+                        <div
+                          key={index}
+                          onClick={() => setThumbnail(index)}
+                          className={`border w-14 h-14 sm:w-[70px] sm:h-[70px] flex-shrink-0 rounded overflow-hidden cursor-pointer ${thumbnail === index
+                            ? "border-[#835240]"
+                            : "border-gray-500/30"
                             }`}
-                          >
-                            {isVid ? (
-                              <video
-                                src={media}
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                className="w-full h-full object-cover pointer-events-none"
-                              />
-                            ) : (
-                              <img
-                                src={media}
-                                alt={`Thumbnail ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
-                        );
-                      },
-                    )}
-                  </div>
-
-                  {/* Main Image/Video Section */}
-                  <div className="w-[420px] h-[520px] border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative ">
-                    <button
-                      onClick={handleWishlist}
-                      aria-label={
-                        isWishlisted
-                          ? "Remove from wishlist"
-                          : "Add to wishlist"
-                      }
-                      className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
-                    >
-                      <Heart
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
-                          isWishlisted
-                            ? "fill-red-500 text-red-500"
-                            : "text-gray-700"
-                        }`}
-                        strokeWidth={2}
-                      />
-                    </button>
-
-                    {/* Render Main Selected Media */}
-                    {(() => {
-                      const activeMedia = productData?.subImages?.[thumbnail];
-                      return isVideoUrl(activeMedia) ? (
-                        <video
-                          src={activeMedia}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <img
-                          src={activeMedia}
-                          alt="Selected product"
-                          className="w-full h-full object-cover"
-                        />
+                        >
+                          {isVid ? (
+                            <video
+                              src={media}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              className="w-full h-full object-cover pointer-events-none"
+                            />
+                          ) : (
+                            <img
+                              src={media}
+                              alt={`Thumbnail ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
                       );
-                    })()}
-                  </div>
+                    },
+                  )}
+                </div>
+
+                {/* Main Image/Video Section */}
+                <div className="w-full max-w-[350px] aspect-[3/4] md:w-[280px] md:h-[320px] lg:w-[380px] lg:h-[420px] mx-auto md:mx-0 border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative flex-shrink-0">
+                  <button
+                    onClick={handleWishlist}
+                    aria-label={
+                      isWishlisted
+                        ? "Remove from wishlist"
+                        : "Add to wishlist"
+                    }
+                    className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
+                  >
+                    <Heart
+                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWishlisted
+                        ? "fill-red-500 text-red-500"
+                        : "text-gray-700"
+                        }`}
+                      strokeWidth={2}
+                    />
+                  </button>
+
+                  {/* Render Main Selected Media */}
+                  {(() => {
+                    const activeMedia = productData?.subImages?.[thumbnail];
+                    return isVideoUrl(activeMedia) ? (
+                      <video
+                        src={activeMedia}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={activeMedia}
+                        alt="Selected product"
+                        className="w-full h-full object-cover"
+                      />
+                    );
+                  })()}
                 </div>
               </div>
 
-              <div className="w-full md:w-1/2">
+              <div className="w-full md:w-1/2 lg:w-2/3 2xl:w-3/5">
                 <p className="text-[11px] tracking-[0.18em] uppercase text-[#b76e79] font-medium">
                   {productData?.brand}
                 </p>
@@ -391,13 +410,12 @@ const ProductInfo = ({
                         type="button"
                         disabled={!size.isAvailable}
                         onClick={() => setSelectedSize(index)}
-                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${
-                          !size.isAvailable
-                            ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
-                            : selectedSize === index
-                              ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
-                              : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
-                        }`}
+                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${!size.isAvailable
+                          ? "border-[#e6d9cf] text-[#c9bfb6] cursor-not-allowed line-through"
+                          : selectedSize === index
+                            ? "bg-[#835240] border-[#835240] text-[#fdf9f3]"
+                            : "border-[#e6d9cf] text-[#3b302a] hover:border-[#835240] hover:text-[#835240]"
+                          }`}
                       >
                         {size.size.size}
                       </button>
@@ -478,12 +496,11 @@ const ProductInfo = ({
                       });
                     }}
                     type="button"
-                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${
-                      selectedSize === null ||
+                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null ||
                       activePrice?.isAvailable === false
-                        ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
-                        : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
-                    }`}
+                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
+                      : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
+                      }`}
                   >
                     Buy Now
                   </button>
@@ -530,6 +547,22 @@ const ProductInfo = ({
                     {activePrice?.skuCode || productData?._id}
                   </span>
                 </div>
+
+                <RatingsAndReviews
+                  rating={productData.averageRating}
+                  totalRatings={productData.totalRatings}
+                  totalReviews={productData.totalReviews}
+                  ratingDistribution={productData.ratingDistribution}
+                  reviews={productData.reviews}
+                />
+
+
+
+
+
+
+
+
               </div>
             </div>
           </div>

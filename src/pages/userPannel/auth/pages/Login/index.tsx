@@ -12,7 +12,6 @@ import authImage from "@/assets/auth/auth.png";
 
 import {
   AuthLayout,
-  AuthCard,
   AuthHeader,
   AuthInput,
   PasswordInput,
@@ -119,7 +118,7 @@ const Login = () => {
                     price: defaultPrice.amount,
                     originalPrice: defaultPrice.markupPrice,
                     stockStatus: defaultPrice.isAvailable ? "in-stock" : "out-of-stock",
-                  
+
                     reviewCount: 0,
                     badge: null,
                   };

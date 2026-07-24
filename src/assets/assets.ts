@@ -19,6 +19,8 @@ import watch from "./images/category/watch.png";
 import womenClothes from "./images/category/women_clothes.png";
 import womenPerfume from "./images/category/womenPerfume.jpeg";
 import BrandStory from "./images/slider/BrandStory.png";
+import slider5 from "./images/slider/perfume.png";
+import slider6 from "./images/slider/slider.png";
 
 export {
   // Slider Images
@@ -27,6 +29,8 @@ export {
   slider3,
   slider4,
   BrandStory,
+  slider5,
+  slider6,
 
   // Category Images
   bag,

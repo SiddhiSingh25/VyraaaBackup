@@ -6,6 +6,8 @@ import ProductCard from "./ProductCard";
 import { apiUrls } from "@/apis";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { ShoppingBag } from "lucide-react";
+import SkeletonCard from "./SkeletonCard";
 
 interface SuggestedProductProps {
   category?: string;
@@ -33,7 +35,7 @@ export default function SuggestedProduct({
 
   const { getQuery } = useGetQuery();
 
-  const [productLoading, setProductLoading] = useState(false); // initial load
+  const [productLoading, setProductLoading] = useState(true); // initial load
   const [loadingMore, setLoadingMore] = useState(false); // "load more" click
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
@@ -76,6 +78,8 @@ export default function SuggestedProduct({
   useEffect(() => {
     if (categoryId && subCategoryId && currentProductId) {
       fetchProducts(1, false);
+    } else {
+      setProductData([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, subCategoryId, limit, currentProductId]);
@@ -101,14 +105,25 @@ export default function SuggestedProduct({
 
         {/* Products grid */}
         <div className=" mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {productData.map((p: any) => (
-            <ProductCard key={p._id} product={p} />
-          ))}
-          {!productLoading && productData.length === 0 && (
-            <p className="col-span-full text-center text-muted text-sm py-10">
-              No products in this category yet.
-            </p>
+
+          {productLoading ? (
+            Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+          ) : productData.length ? (
+            productData.map((p: any) => <ProductCard key={p?._id} product={p} />)
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+              <ShoppingBag className="w-14 h-14 text-gray-400 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800">
+                No Products Available
+              </h3>
+              <p className="mt-2 text-gray-500">
+                There are no products to display at the moment.
+              </p>
+            </div>
           )}
+
+
+
         </div>
 
         {hasMore && (

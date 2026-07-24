@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Heart, ShoppingBag, User, Menu } from "lucide-react";
+import { Heart, ShoppingBag, User, Menu, Search } from "lucide-react";
 import SearchBar from "./Component/SearchBar";
 import MegaMenu from "./Component/MegaMenu";
 import MobileMenu from "./Component/MobileMenu";
@@ -51,6 +51,7 @@ export default function Navbar({
 }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
 
   const { user } = useSelector((state: any) => state.auth);
@@ -119,7 +120,6 @@ export default function Navbar({
           const moreItem = {
             id: "more",
             label: "More",
-            to: "/clothing",
             columns: [
               {
                 title: "Explore",
@@ -183,8 +183,8 @@ export default function Navbar({
           }`}
       >
         {/* ============ DESKTOP / LAPTOP (lg and up) ============ */}
-        <div className="hidden lg:flex items-center justify-between h-[72px] px-8 xl:px-12 gap-8 xl:gap-12">
-          <div className=" flex items-center gap-4">
+        <div className="hidden lg:flex items-center justify-between h-[72px] px-8 xl:px-12 lg:gap-4 xl:gap-12">
+          <div className="flex items-center gap-4 flex-1">
             <Link to="/" className="shrink-0 flex items-center">
               <img
                 src="/logo.png"
@@ -196,13 +196,13 @@ export default function Navbar({
               />
             </Link>
 
-            <div className="flex-1 min-w-[380px] max-w-[600px]">
+            <div className="flex-1 min-w-[200px] xl:min-w-[380px] max-w-[600px]">
               <SearchBar variant="desktop" />
             </div>
           </div>
 
           <div className="gap-6 xl:gap-8 flex items-center">
-            <nav className="flex items-center gap-7 xl:gap-8 shrink-0">
+            <nav className="flex items-center lg:gap-4 xl:gap-8 shrink-0">
               {navLinks.map((link) => {
                 const active =
                   link.to !== "/" && location.pathname.startsWith(link.to);
@@ -255,77 +255,106 @@ export default function Navbar({
 
         {/* ============ TABLET (640px - 1024px) ============ */}
         <div className="hidden sm:flex lg:hidden flex-col">
-          <div className="flex items-center justify-between h-[68px] px-6 gap-4">
-            <button
-              onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
-              className="text-admin-text p-1"
-            >
-              <Menu size={22} strokeWidth={1.6} />
-            </button>
-            <Link to="/" className="flex items-center">
-              <img
-                src="/logo.png"
-                alt="VYRAAA"
-                className="h-18 w-auto object-contain"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                }}
+          {isSearchOpen ? (
+            <div className="flex items-center justify-between h-[68px] px-6 gap-4">
+              <SearchBar
+                variant="mobile"
+                onClose={() => setIsSearchOpen(false)}
               />
-            </Link>
-            <div className="flex items-center gap-5">
-              <Link to="/wishlist" className="relative text-admin-text/80">
-                <Heart size={20} strokeWidth={1.6} />
-                <Badge count={wishlistCount} pulse={wishlistPulse} />
-              </Link>
-              <Link to="/cart" className="relative text-admin-text/80">
-                <ShoppingBag size={20} strokeWidth={1.6} />
-                <Badge count={calculatedCartCount} pulse={cartPulse} />
-              </Link>
-              <Link to="/profile" className="text-admin-text/80">
-                <User size={20} strokeWidth={1.6} />
-              </Link>
             </div>
-          </div>
-          <div className="px-6 pb-3">
-            <SearchBar variant="mobile" />
-          </div>
+          ) : (
+            <div className="flex items-center justify-between h-[68px] px-6 gap-4">
+              <button
+                onClick={() => setMenuOpen(true)}
+                aria-label="Open menu"
+                className="text-admin-text p-1"
+              >
+                <Menu size={22} strokeWidth={1.6} />
+              </button>
+              <Link to="/" className="flex items-center">
+                <img
+                  src="/logo.png"
+                  alt="VYRAAA"
+                  className="h-18 w-auto object-contain"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              </Link>
+              <div className="flex items-center gap-5">
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(true)}
+                  aria-label="Search"
+                  className="text-admin-text/80 hover:text-primary-dark transition-all duration-200"
+                >
+                  <Search size={20} strokeWidth={1.6} />
+                </button>
+                <Link to="/wishlist" className="relative text-admin-text/80">
+                  <Heart size={20} strokeWidth={1.6} />
+                  <Badge count={wishlistCount} pulse={wishlistPulse} />
+                </Link>
+                <Link to="/cart" className="relative text-admin-text/80">
+                  <ShoppingBag size={20} strokeWidth={1.6} />
+                  <Badge count={calculatedCartCount} pulse={cartPulse} />
+                </Link>
+                <Link to="/profile" className="text-admin-text/80">
+                  <User size={20} strokeWidth={1.6} />
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ============ MOBILE (below 640px) ============ */}
         <div className="sm:hidden flex flex-col">
-          <div className="grid grid-cols-3 items-center h-16 px-4">
-            <button
-              onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
-              className="justify-self-start text-admin-text p-1"
-            >
-              <Menu size={22} strokeWidth={1.6} />
-            </button>
-            <Link to="/" className=" justify-self-center flex items-center">
-              <img
-                src="/logo.png"
-                alt="VYRAAA"
-                className="h-16 mt-1 w-auto object-contain"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                }}
+          {isSearchOpen ? (
+            <div className="flex items-center justify-between h-16 px-4 gap-4">
+              <SearchBar
+                variant="mobile"
+                placeholder="Search products..."
+                onClose={() => setIsSearchOpen(false)}
               />
-            </Link>
-            <div className="justify-self-end flex items-center gap-4">
-              <Link to="/wishlist" className="relative text-admin-text/80">
-                <Heart size={20} strokeWidth={1.6} />
-                <Badge count={wishlistCount} pulse={wishlistPulse} />
-              </Link>
-              <Link to="/cart" className="relative text-admin-text/80">
-                <ShoppingBag size={20} strokeWidth={1.6} />
-                <Badge count={calculatedCartCount} pulse={cartPulse} />
-              </Link>
             </div>
-          </div>
-          <div className="px-4 pb-3">
-            <SearchBar variant="mobile" placeholder="Search products..." />
-          </div>
+          ) : (
+            <div className="grid grid-cols-3 items-center h-16 px-4">
+              <button
+                onClick={() => setMenuOpen(true)}
+                aria-label="Open menu"
+                className="justify-self-start text-admin-text p-1"
+              >
+                <Menu size={22} strokeWidth={1.6} />
+              </button>
+              <Link to="/" className=" justify-self-center flex items-center">
+                <img
+                  src="/logo.png"
+                  alt="VYRAAA"
+                  className="h-16 mt-1 w-auto object-contain"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              </Link>
+              <div className="justify-self-end flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(true)}
+                  aria-label="Search"
+                  className="text-admin-text/80 hover:text-primary-dark transition-all duration-200"
+                >
+                  <Search size={20} strokeWidth={1.6} />
+                </button>
+                <Link to="/wishlist" className="relative text-admin-text/80">
+                  <Heart size={20} strokeWidth={1.6} />
+                  <Badge count={wishlistCount} pulse={wishlistPulse} />
+                </Link>
+                <Link to="/cart" className="relative text-admin-text/80">
+                  <ShoppingBag size={20} strokeWidth={1.6} />
+                  <Badge count={calculatedCartCount} pulse={cartPulse} />
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
