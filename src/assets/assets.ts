@@ -28,7 +28,7 @@ import sliderMobile3 from "./images/slider/sliderMobile3.png";
 import sliderTablet1 from "./images/slider/sliderTablet1.png";
 import sliderTablet2 from "./images/slider/sliderTablet2.png";
 import sliderTablet3 from "./images/slider/sliderTablet3.png";
-
+//comment
 export {
   // Slider Images
   slider1,
