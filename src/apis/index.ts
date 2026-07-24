@@ -1,8 +1,8 @@
 // export const apiBaseUrl =
 //   "https://vyraa-backend-production.up.railway.app/api/";
-export const apiBaseUrl =
-  "https://vyraa-backend-production.up.railway.app/api/";
-// export const apiBaseUrl = "http://localhost:7777/api/";
+// export const apiBaseUrl =
+//   "https://vyraa-backend-production.up.railway.app/api/";
+export const apiBaseUrl = "http://localhost:7777/api/";
 
 export const apiUrls = {
   // Category
@@ -18,7 +18,7 @@ export const apiUrls = {
     add: "subcategory/add",
     getAll: "subcategory/getAll",
     update: "subcategory/update",
-    delete: "subcategory/delete",
+    delete: "subcategory/deleteSubCategory",
     getByCategoryId: "subcategory/getByCategoryId",
   },
 

@@ -1,7 +1,8 @@
-import { FormEvent, useEffect, useState } from 'react';
-import Modal from '../../../../../components/tableComponents/Modal';
-import Button from '../../../../../components/tableComponents/Button';
-import type { SubCategoryFormValues, ModalMode } from './types';
+import { FormEvent, useEffect, useState } from "react";
+import Modal from "../../../../../components/tableComponents/Modal";
+import Button from "../../../../../components/tableComponents/Button";
+import type { SubCategoryFormValues, ModalMode } from "./types";
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 
 interface Props {
   isOpen: boolean;
@@ -10,19 +11,28 @@ interface Props {
   initialData?: SubCategoryFormValues | null;
   onClose: () => void;
   onSubmit: (values: SubCategoryFormValues) => void;
+  loading?: boolean;
 }
 
-const EMPTY: SubCategoryFormValues = { category: '', subCategory: '' };
+const EMPTY: SubCategoryFormValues = { category: "", subCategory: "" };
 
 type Errors = Partial<Record<keyof SubCategoryFormValues, string>>;
 
-export default function SubCategoryFormModal({ isOpen, mode, categories, initialData, onClose, onSubmit }: Props) {
+export default function SubCategoryFormModal({
+  isOpen,
+  mode,
+  categories,
+  initialData,
+  onClose,
+  onSubmit,
+  loading = false,
+}: Props) {
   const [values, setValues] = useState<SubCategoryFormValues>(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
     if (!isOpen) return;
-    if (mode === 'edit' && initialData) setValues(initialData);
+    if (mode === "edit" && initialData) setValues(initialData);
     else setValues(EMPTY);
     setErrors({});
   }, [isOpen, mode, initialData]);
@@ -34,8 +44,9 @@ export default function SubCategoryFormModal({ isOpen, mode, categories, initial
 
   const validate = () => {
     const next: Errors = {};
-    if (!values.subCategory.trim()) next.subCategory = 'Subcategory is required';
-    if (!values.category) next.category = 'Select a category';
+    if (!values.subCategory.trim())
+      next.subCategory = "Subcategory is required";
+    if (!values.category) next.category = "Select a category";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -50,31 +61,72 @@ export default function SubCategoryFormModal({ isOpen, mode, categories, initial
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={mode === 'add' ? 'Add Subcategory' : 'Edit Subcategory'}
-      description={mode === 'add' ? 'Create a new subcategory.' : 'Update subcategory details.'}
+      title={mode === "add" ? "Add Subcategory" : "Edit Subcategory"}
+      description={
+        mode === "add"
+          ? "Create a new subcategory."
+          : "Update subcategory details."
+      }
       footer={
         <>
-          <Button variant="secondary" onClick={onClose} type="button">Cancel</Button>
-          <Button onClick={handleSubmit} type="submit" form="subcategory-form">{mode === 'add' ? 'Add' : 'Save'}</Button>
+          <Button variant="secondary" onClick={onClose} type="button">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            type="submit"
+            form="subcategory-form"
+            disabled={loading}
+          >
+            {loading && <ButtonLoader />}
+            {mode === "add" ? "Add" : "Save"}
+          </Button>
         </>
       }
     >
-      <form id="subcategory-form" onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form
+        id="subcategory-form"
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      >
         <div className="sm:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold text-dark-500">Category</label>
-          <select value={values.category} onChange={handleChange('category')} className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.category ? 'border-red-300' : 'border-dark-200'}`}>
+          <label className="mb-1.5 block text-xs font-semibold text-dark-500">
+            Category
+          </label>
+          <select
+            value={values.category}
+            onChange={handleChange("category")}
+            className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.category ? "border-red-300" : "border-dark-200"}`}
+          >
             <option value="">Select category</option>
             {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
             ))}
           </select>
-          {errors.category && <p className="mt-1 text-xs font-medium text-red-500">{errors.category}</p>}
+          {errors.category && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {errors.category}
+            </p>
+          )}
         </div>
 
         <div className="sm:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold text-dark-500">Subcategory</label>
-          <input value={values.subCategory} onChange={handleChange('subCategory')} placeholder="e.g. T-Shirt" className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.subCategory ? 'border-red-300' : 'border-dark-200'}`} />
-          {errors.subCategory && <p className="mt-1 text-xs font-medium text-red-500">{errors.subCategory}</p>}
+          <label className="mb-1.5 block text-xs font-semibold text-dark-500">
+            Subcategory
+          </label>
+          <input
+            value={values.subCategory}
+            onChange={handleChange("subCategory")}
+            placeholder="e.g. T-Shirt"
+            className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.subCategory ? "border-red-300" : "border-dark-200"}`}
+          />
+          {errors.subCategory && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {errors.subCategory}
+            </p>
+          )}
         </div>
       </form>
     </Modal>

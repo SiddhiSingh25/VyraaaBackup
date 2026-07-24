@@ -34,8 +34,8 @@ export default function SubCategory() {
   const [pendingDelete, setPendingDelete] = useState<SubCategory | null>(null);
 
   const { getQuery, loading } = useGetQuery();
-  const { postQuery } = usePostQuery();
-  const { putQuery } = usePutQuery();
+  const { postQuery, loading: addLoading } = usePostQuery();
+  const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery } = useDeleteQuery();
 
   const fetchCategories = () => {
@@ -182,6 +182,7 @@ export default function SubCategory() {
         initialData={activeItem ?? null}
         onClose={closeForm}
         onSubmit={handleSubmit}
+        loading={modalMode === "add" ? addLoading : editLoading}
       />
 
       <ConfirmDialog
@@ -194,6 +195,7 @@ export default function SubCategory() {
         }
         onConfirm={confirmDelete}
         onCancel={() => setPendingDelete(null)}
+        loading={addLoading}
       />
     </div>
   );
