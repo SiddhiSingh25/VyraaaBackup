@@ -6,9 +6,10 @@ import OrdersTable from "./component/OrdersTable";
 import OrderFilters from "./component/OrderFilters";
 import type { Order } from "./component/types";
 import { useNavigate } from "react-router-dom";
+import PageLoader from "@/components/Loader/fullPageLoader";
 
 const Orders = () => {
-  const { getQuery } = useGetQuery();
+  const { getQuery, loading } = useGetQuery();
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -74,10 +75,13 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 overflow-y-auto font-admin-text pb-10">
+      {loading && <PageLoader loading={loading} text="Loading Orders..." />}
       <div className="mx-auto max-w-7xl px-3 py-3 sm:px-4">
         {/* Header Section */}
         <div className="mb-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Order Management</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+            Order Management
+          </h1>
           <p className="mt-1 text-xs text-slate-500">
             Manage all customer orders efficiently.
           </p>

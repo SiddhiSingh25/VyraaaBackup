@@ -6,6 +6,7 @@ import DeleteVideoModal from "./components/DeleteVideoModal";
 import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
 import usePostQuery from "@/hooks/postQuery.hook";
+import PageLoader from "@/components/Loader/fullPageLoader";
 
 interface HomeVideo {
   _id: string;
@@ -23,7 +24,7 @@ const AddHomeVideos = () => {
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
-  const { getQuery } = useGetQuery();
+  const { getQuery, loading: VideoLoading } = useGetQuery();
 
   const getVideos = async () => {
     getQuery({
@@ -73,6 +74,9 @@ const AddHomeVideos = () => {
     <div className="min-h-screen bg-[#F8F6F4]">
       <div className="mx-auto max-w-7xl px-6 py-8">
         {/* HERO */}
+        {VideoLoading && (
+          <PageLoader loading={VideoLoading} text="Loading Videos" />
+        )}
 
         <div className="mb-8 overflow-hidden rounded-4xl border border-[#E7D8CC] bg-linear-to-r from-[#FFF8F2] via-white to-[#F8EEE6] p-8 shadow-sm">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
