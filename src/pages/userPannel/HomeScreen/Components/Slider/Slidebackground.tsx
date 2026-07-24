@@ -1,7 +1,9 @@
-import { useIsMobile } from "./Useismobile";
+import { useViewport } from "./Useismobile";
+
 interface Slide {
   desktopImage: string;
   mobileImage: string;
+  tabletImage?: string;
   label: string;
   title1: string;
   title2: string;
@@ -23,9 +25,13 @@ interface SlideBackgroundProps {
 // LV hero banners are built, and it sidesteps the `object-contain`
 // letterboxing the previous implementation had.
 export default function SlideBackground({ slide, priority }: SlideBackgroundProps) {
-  console.log(slide)
-  const isMobile = useIsMobile();
-  const image = isMobile ? slide.mobileImage : slide.desktopImage;
+  const viewport = useViewport();
+  const image =
+    viewport === "mobile"
+      ? slide.mobileImage
+      : viewport === "tablet" && slide.tabletImage
+      ? slide.tabletImage
+      : slide.desktopImage;
 
   return (
     <div
@@ -36,7 +42,7 @@ export default function SlideBackground({ slide, priority }: SlideBackgroundProp
       // over the rest of the page's resources.
       // @ts-expect-error fetchpriority isn't in older React DOM typings
       fetchpriority={priority ? "high" : "low"}
-      className="slide-bg absolute inset-0 bg-cover bg-center bg-no-repeat h-[20h]  mx-auto px-8 xl:px-12 gap-8 xl:gap-12"
+      className="slide-bg absolute inset-0 bg-cover bg-center bg-no-repeat h-full mx-auto px-8 xl:px-12 gap-8 xl:gap-12"
       style={{ backgroundImage: `url(${image})`, willChange: "transform, opacity" }}
     />
   );
