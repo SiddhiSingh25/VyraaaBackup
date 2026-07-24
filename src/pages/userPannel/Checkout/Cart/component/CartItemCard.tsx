@@ -107,7 +107,7 @@ const CartItemCard = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -24 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      onClick={() => navigate(`/productDetails/${item?.id}`)}
+      onClick={() => navigate(`/productDetails/${item.name.replace(/\s+/g, "-")}`, { state: { productId: item?.id } })}
       className={`relative cursor-pointer rounded-lg border border-border bg-background p-4 sm:p-5 ${!isAvailable ? "opacity-60 bg-gray-50" : ""}`}
     >
       <button

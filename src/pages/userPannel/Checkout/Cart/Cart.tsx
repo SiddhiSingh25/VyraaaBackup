@@ -50,6 +50,7 @@ const Cart = () => {
   const refreshCart = () => setRefreshKey((prev) => prev + 1);
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     getQuery({
       url: apiUrls.Cart.getByUserId,
       onSuccess: (res: any) => {
@@ -70,7 +71,7 @@ const Cart = () => {
             const currentSizeId = apiItem.size?._id || apiItem.size;
             const sizeData = priceList.find(
               (p: any) => String(p.size?._id || p.size) === String(currentSizeId)
-            ) || priceList[0] || {}; 
+            ) || priceList[0] || {};
 
             // Extract exact prices based on the matched size data
             const baseMrp = sizeData.markupPrice || apiItem.unitPrice || 0;

@@ -150,6 +150,8 @@ const ProductInfo = ({
   const [quantity, setQuantity] = React.useState(1);
   const [isWishlisted, setIsWishlisted] = React.useState(false);
   const ref = useReveal();
+  const isCartActionPending = useRef(false);
+  const isBuyNowPending = useRef(false);
   const cartDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const buyNowDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -200,7 +202,12 @@ const ProductInfo = ({
     }
 
     cartDebounceTimer.current = setTimeout(() => {
-      cartDebounceTimer.current = null;
+      if (isCartActionPending.current) return;
+      isCartActionPending.current = true;
+
+      const safetyTimeout = setTimeout(() => {
+        isCartActionPending.current = false;
+      }, 2000);
 
       postQuery({
         url: apiUrls.Cart.add,
@@ -210,6 +217,8 @@ const ProductInfo = ({
           quantity: 1,
         },
         onSuccess: (res: any) => {
+          clearTimeout(safetyTimeout);
+          isCartActionPending.current = false;
           toast("success", res.message);
           dispatch(
             addToCart({
@@ -226,11 +235,14 @@ const ProductInfo = ({
           );
         },
         onFail: (res: any) => {
+          clearTimeout(safetyTimeout);
+          isCartActionPending.current = false;
           console.log(res?.data?.message, "=====error section");
           toast("error", res?.data?.message || "Failed to add item to cart");
+          setIsLoading(false);
         },
       });
-    }, 300);
+    }, 500); // Wait 500ms after the last click to process
   };
 
   const handleBuyNow = () => {
@@ -241,7 +253,9 @@ const ProductInfo = ({
     }
 
     buyNowDebounceTimer.current = setTimeout(() => {
-      buyNowDebounceTimer.current = null;
+      if (isBuyNowPending.current) return;
+      isBuyNowPending.current = true;
+
       navigate(`/checkout/address`, {
         state: {
           from: "product",
@@ -250,7 +264,12 @@ const ProductInfo = ({
           quantity: quantity || 1,
         },
       });
-    }, 300);
+
+      // Reset lock after a short delay in case of navigation return
+      setTimeout(() => {
+        isBuyNowPending.current = false;
+      }, 1000);
+    }, 500); // Wait 500ms after the last click to process
   };
 
   if (isLoading) {
@@ -506,7 +525,7 @@ const ProductInfo = ({
                     type="button"
                     className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null ||
                       activePrice?.isAvailable === false
-                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-900 border-gray-300"
+                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
                       : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
                       }`}
                   >
@@ -563,14 +582,6 @@ const ProductInfo = ({
                   ratingDistribution={productData.ratingDistribution}
                   reviews={productData.reviews}
                 />
-
-
-
-
-
-
-
-
               </div>
             </div>
           </div>
