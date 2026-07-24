@@ -150,8 +150,8 @@ const ProductInfo = ({
   const [quantity, setQuantity] = React.useState(1);
   const [isWishlisted, setIsWishlisted] = React.useState(false);
   const ref = useReveal();
-  const isCartActionPending = useRef(false);
-  const isBuyNowPending = useRef(false);
+  const cartDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const buyNowDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -195,65 +195,62 @@ const ProductInfo = ({
       return;
     }
 
-    if (isCartActionPending.current) return;
-    isCartActionPending.current = true;
+    if (cartDebounceTimer.current) {
+      clearTimeout(cartDebounceTimer.current);
+    }
 
-    const safetyTimeout = setTimeout(() => {
-      isCartActionPending.current = false;
-    }, 2000);
+    cartDebounceTimer.current = setTimeout(() => {
+      cartDebounceTimer.current = null;
 
-    postQuery({
-      url: apiUrls.Cart.add,
-      postData: {
-        productId: productData._id,
-        size: productData?.price?.[selectedSize]?.size?._id,
-        quantity: 1,
-      },
-      onSuccess: (res: any) => {
-        clearTimeout(safetyTimeout);
-        isCartActionPending.current = false;
-        toast("success", res.message);
-        dispatch(
-          addToCart({
-            id: productData._id,
-            brand: productData.brand,
-            name: productData.title,
-            image: productData.image || productData.thumbnail || "",
-            quantity: 1,
-            qty: 1,
-            size: productData?.price?.[selectedSize]?.size?.size || "",
-            price: productData?.price?.[selectedSize]?.amount || 0,
-            mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
-          }),
-        );
-      },
-      onFail: (res: any) => {
-        clearTimeout(safetyTimeout);
-        isCartActionPending.current = false;
-        console.log(res?.data?.message, "=====error section");
-        toast("error", res?.data?.message || "Failed to add item to cart");
-        setIsLoading(false);
-      },
-    });
+      postQuery({
+        url: apiUrls.Cart.add,
+        postData: {
+          productId: productData._id,
+          size: productData?.price?.[selectedSize]?.size?._id,
+          quantity: 1,
+        },
+        onSuccess: (res: any) => {
+          toast("success", res.message);
+          dispatch(
+            addToCart({
+              id: productData._id,
+              brand: productData.brand,
+              name: productData.title,
+              image: productData.image || productData.thumbnail || "",
+              quantity: 1,
+              qty: 1,
+              size: productData?.price?.[selectedSize]?.size?.size || "",
+              price: productData?.price?.[selectedSize]?.amount || 0,
+              mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
+            }),
+          );
+        },
+        onFail: (res: any) => {
+          console.log(res?.data?.message, "=====error section");
+          toast("error", res?.data?.message || "Failed to add item to cart");
+        },
+      });
+    }, 300);
   };
 
   const handleBuyNow = () => {
     if (selectedSize === null) return;
-    if (isBuyNowPending.current) return;
-    isBuyNowPending.current = true;
 
-    setTimeout(() => {
-      isBuyNowPending.current = false;
-    }, 1000);
+    if (buyNowDebounceTimer.current) {
+      clearTimeout(buyNowDebounceTimer.current);
+    }
 
-    navigate(`/checkout/address`, {
-      state: {
-        from: "product",
-        productId: id,
-        size: activePrice?.size?._id,
-        quantity: quantity || 1,
-      },
-    });
+    buyNowDebounceTimer.current = setTimeout(() => {
+      buyNowDebounceTimer.current = null;
+      navigate(`/checkout/address`, {
+        state: {
+          from: "product",
+          productId: id,
+          size: activePrice?.size?._id,
+          quantity: quantity || 1,
+        },
+      });
+    }, 300);
   };
 
   if (isLoading) {
@@ -509,7 +506,7 @@ const ProductInfo = ({
                     type="button"
                     className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null ||
                       activePrice?.isAvailable === false
-                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
+                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-900 border-gray-300"
                       : "text-[#835240] hover:bg-[#835240] hover:text-[#fdf9f3]"
                       }`}
                   >

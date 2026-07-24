@@ -148,9 +148,12 @@
 //   );
 // }
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { X, ChevronDown, Search, Heart, ShoppingBag, User } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { X, ChevronDown, Search, Heart, ShoppingBag, User, LogOut } from "lucide-react";
 import type { NavLink } from "./navData";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "@/redux/slices/authSlice";
+import { clearCart } from "@/redux/slices/cartSlice";
 
 interface MobileMenuProps {
   open: boolean;
@@ -164,6 +167,16 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(clearCart());
+    onClose();
+    navigate("/auth/login");
+  };
 
   // Lock body scroll without causing layout shift when the scrollbar disappears
   useEffect(() => {
@@ -354,6 +367,18 @@ export default function MobileMenu({ open, onClose, links }: MobileMenuProps) {
               </div>
             );
           })}
+          {isAuthenticated && (
+            <div className="border-t border-border/40 mt-4 pt-4 px-5">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-2.5 text-[13px] font-medium tracking-[0.12em] uppercase text-error hover:text-red-750 transition-colors duration-200 w-full text-left py-2 cursor-pointer"
+              >
+                <LogOut size={16} strokeWidth={1.8} />
+                Logout
+              </button>
+            </div>
+          )}
         </nav>
 
         <div className="flex items-center justify-around py-5 border-t border-border/60 shrink-0">

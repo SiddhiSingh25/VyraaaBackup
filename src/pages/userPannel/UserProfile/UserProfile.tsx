@@ -210,7 +210,7 @@ export default function Profile() {
 
       <main className="px-6 md:px-10 py-6">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
-          <div className="hidden ">
+          <div className="hidden md:block">
             <h1 className="text-3xl font-semibold tracking-tight text-admin-text">
               My Account
             </h1>

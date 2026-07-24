@@ -247,7 +247,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Image */}
         <div
           className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#F2E8DD] ring-1 ring-[#E6D9CF]/70
-             aspect-[3/4] sm:aspect-[4/5] lg:aspect-square"
+             aspect-[3/4] sm:aspect-[4/5] "
         >
           <img
             src={product.image}
@@ -461,4 +461,4 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 
 
-//new commit sid
+//new commit sid merge with ankit
