@@ -47,6 +47,7 @@ const VariantsSection = ({
   addSizeType,
   errorMessage,
 }: VariantsSectionProps) => {
+  const [appendSizeType, setAppendSizeType] = useState(false)
   const [showDraft, setShowDraft] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draftVariant, setDraftVariant] =
@@ -150,7 +151,11 @@ const VariantsSection = ({
                 id="appendSizeType"
                 type="checkbox"
                 checked={field.value}
-                onChange={(e) => field.onChange(e.target.checked)}
+                onChange={(e) => {
+                  field.onChange(e.target.checked)
+                  setAppendSizeType(e.target.checked)
+                  // console.log(sizeTypeOptions, "=======")
+                }}
                 className="mt-1"
               />
 
@@ -197,6 +202,8 @@ const VariantsSection = ({
           setDraftVariant={setDraftVariant}
           sizeOptions={sizeOptions}
           sizeTypeSelected={sizeTypeSelected}
+          appendSizeType={appendSizeType}
+          sizeTypes={sizeTypeOptions}
           onAdd={addVariant}
           onCancel={cancelDraft}
         />

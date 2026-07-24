@@ -1,7 +1,4 @@
-
-
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, ShoppingBag, Star, AlertCircle, TrendingDown } from "lucide-react";
 // import { money } from "../utils";
@@ -13,11 +10,10 @@ import { useToast } from "@/hooks/useToast.hook";
 import { useDispatch, useSelector } from "react-redux";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { addToCart } from "../../../../redux/slices/cartSlice";
-// ✅ add a wishlist slice mirroring cartSlice's shape — adjust path/action names to match yours
 import { addToWishlist, removeFromWishlist } from "../../../../redux/slices/wishlistSlice";
 import Modal from "@/components/tableComponents/Modal";
 
-export const money = (n: number): string => `₹${n.toLocaleString("en-IN")}`;
+export const money = (n: number): string => `₹${n.toLocaleString("en-IN")} `;
 
 export function Badge({ children, tone = "dark", icon }: any) {
   const tones: any = {
@@ -75,9 +71,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isWishlistPending, setIsWishlistPending] = useState(false);
 
-
+  // Refs for debouncing the wishlist and cart buttons
+  const wishlistDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cartDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navigate = useNavigate();
   const { getQuery } = useGetQuery();
@@ -86,15 +83,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
 
-  // ✅ #1/#2: wishlist state now derived from Redux, not local — survives refresh,
-  // and works whether the store hydrates it from an API call on app load or from
-  // a persisted list. Replace `state.wishlist.items` with your actual slice shape.
   const wishlistItems: string[] = useSelector((state: any) => state.wishlist?.items ?? []);
-  // const isWished = wishlistIds.includes(product._id);
-  const isWished = wishlistItems.some(
-    (item: any) => item.id === product._id
-  );
-
+  const isWished = wishlistItems.some((item: any) => item.id === product._id);
   const priceList = product.price ?? [];
   const availableSizes = priceList.filter((p) => p.isAvailable);
   const hasStock = availableSizes.length > 0;
@@ -108,8 +98,6 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const badge = !hasStock ? "Out of Stock" : hasFewLeft ? "Limited Stock" : null;
 
-  // ✅ #3: toggle add/remove instead of add-only
-  // ✅ #4: dispatch to Redux only after API confirms success
   const handleWishlist = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
@@ -119,17 +107,28 @@ export default function ProductCard({ product }: ProductCardProps) {
       return;
     }
 
-    // already wished — do nothing, no remove call
-    if (isWished) return;
+    // --- DEBOUNCE LOGIC ---
+    // Clear the previous timer if the user clicks again rapidly
+    if (wishlistDebounceTimer.current) {
+      clearTimeout(wishlistDebounceTimer.current);
+    }
 
-    if (isWishlistPending) return;
-    setIsWishlistPending(true);
+    // Set a new timer. The action will only run after 400ms of no clicking.
+    wishlistDebounceTimer.current = setTimeout(() => {
+      if (isWished) {
+        // OPTIMISTIC REMOVE
+        dispatch(removeFromWishlist(product._id));
+        toast("success", "Removed from Wishlist successfully");
 
-    const url = apiUrls.WishList.add + product._id;
-
-    getQuery({
-      url,
-      onSuccess: (res: any) => {
+        getQuery({
+          url: apiUrls.WishList.remove + product._id,
+          onSuccess: (res: any) => { },
+          onFail: (res: any) => {
+            console.error("Failed to remove from wishlist:", res);
+          },
+        });
+      } else {
+        // OPTIMISTIC ADD
         dispatch(
           addToWishlist({
             id: product._id,
@@ -144,20 +143,20 @@ export default function ProductCard({ product }: ProductCardProps) {
             badge,
           })
         );
-        toast("success", res.message || "Added to wishlist!");
-      },
-      onFail: (err: any) => {
-        toast("error", err.message);
-      },
-      onFinally: () => setIsWishlistPending(false),
-    });
+        toast("success", "Added to wishlist!");
+
+        const url = apiUrls.WishList.add + product._id;
+        getQuery({
+          url,
+          onSuccess: (res: any) => { },
+          onFail: (err: any) => {
+            toast("error", err.message);
+          },
+        });
+      }
+    }, 400); // 400ms delay
   };
 
-  // ✅ #1 (cart bug fix): this function now ONLY calls the API — no modal logic here.
-  // ✅ #4: validates a size is actually selected before firing the request.
-  // ✅ #5: rejects if the chosen entry is unavailable.
-  // ✅ #6: entry.amount / entry.markupPrice / entry.skuCode / entry.size._id are the
-  //        single source of truth for both the API payload and the Redux update.
   const submitAddToCart = (entryIndex: number | null) => {
     if (entryIndex === null) {
       toast("warning", "Please select a size first");
@@ -172,6 +171,22 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     setIsSubmitting(true);
 
+    dispatch(
+      addToCart({
+        id: product._id,
+        brand: product.brand?.brand ?? "",
+        name: product.title,
+        image: product.image,
+        quantity: 1,
+        qty: 1,
+        size: entry.size.size,
+        skuCode: entry.skuCode,
+        price: entry.amount,
+        mrp: entry.markupPrice,
+      })
+    );
+    setIsModalOpen(false);
+    toast("success", "Item added to cart successfully");
     postQuery({
       url: apiUrls.Cart.add,
       postData: {
@@ -181,36 +196,16 @@ export default function ProductCard({ product }: ProductCardProps) {
         quantity: 1,
       },
       onSuccess: (res: any) => {
-        // ✅ #8: Redux only updated on confirmed success
-        dispatch(
-          addToCart({
-            id: product._id,
-            brand: product.brand?.brand ?? "",
-            name: product.title,
-            image: product.image,
-            quantity: 1,
-            qty: 1,
-            size: entry.size.size,
-            skuCode: entry.skuCode,
-            price: entry.amount,
-            mrp: entry.markupPrice,
-          })
-        );
-        toast("success", res.message);
-        // ✅ #7: close modal, reset size, stop loading — in that order after Redux sync
-        setIsModalOpen(false);
         setSelectedSize(null);
       },
       onFail: (res: any) => {
-        // ✅ #9: no Redux dispatch on failure
-        toast("error", res?.data?.message || "Failed to add item to cart");
+        // toast("error", res?.data?.message || "Failed to add item to cart");
       },
       onFinally: () => setIsSubmitting(false),
+
     });
   };
 
-  // ✅ #10: no available sizes → never open the modal, just tell the user
-  // ✅ #2 (multi-size rule): modal opens for user to pick; API isn't called until they do
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
@@ -225,12 +220,20 @@ export default function ProductCard({ product }: ProductCardProps) {
       return;
     }
 
-    if (isSingleSize) {
-      submitAddToCart(priceList.indexOf(displayEntry));
-      return;
+    if (cartDebounceTimer.current) {
+      clearTimeout(cartDebounceTimer.current);
     }
 
-    setIsModalOpen(true);
+    cartDebounceTimer.current = setTimeout(() => {
+      cartDebounceTimer.current = null;
+
+      if (isSingleSize) {
+        submitAddToCart(priceList.indexOf(displayEntry));
+        return;
+      }
+
+      setIsModalOpen(true);
+    }, 300);
   };
 
   return (
@@ -273,10 +276,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           <motion.button
             onClick={handleWishlist}
-            disabled={isWishlistPending}
             aria-label={isWished ? "Remove from wishlist" : "Add to wishlist"}
             whileTap={{ scale: 0.85 }}
-            className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-colors z-10 disabled:opacity-60 shadow-sm"
+            // Removed the disabled property and the disabled:opacity-60 class so it never turns transparent
+            className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-colors z-10 shadow-sm"
             style={{ background: "rgba(253,249,243,0.92)", backdropFilter: "blur(4px)" }}
           >
             <Heart
@@ -284,7 +287,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               strokeWidth={1.8}
               className={
                 isWished
-                  ? "fill-[#B76E79] text-[#B76E79]"
+                  ? "fill-red-500 text-red-500"
                   : "fill-none text-[#3B302A]"
               }
             />

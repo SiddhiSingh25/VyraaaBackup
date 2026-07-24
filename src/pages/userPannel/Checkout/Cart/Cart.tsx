@@ -13,8 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import {
   setCartItems,
-  toggleSelectItem,
-  increaseQuantity,
   updateQuantity,
   removeFromCart,
 } from "../../../../redux/slices/cartSlice";
@@ -57,15 +55,11 @@ const Cart = () => {
       onSuccess: (res: any) => {
         setCartData(res.data);
 
-        // 2. Map the API response. 
-        // Note: The new Redux slice handles the math beautifully, but we keep this mapping 
-        // to ensure frontend-specific properties (like availableSizes, soldBy) reach the UI components.
         if (res.data && res.data.items) {
           const mappedItems = res.data.items.map((apiItem: any) => {
             const product = apiItem.product || {};
             const priceList = product.price || [];
 
-            // Extract available size strings for UI dropdowns
             const availableSizes = priceList
               .map((p: any) => p.size?.size || p.size)
               .filter(Boolean);
@@ -76,7 +70,7 @@ const Cart = () => {
             const currentSizeId = apiItem.size?._id || apiItem.size;
             const sizeData = priceList.find(
               (p: any) => String(p.size?._id || p.size) === String(currentSizeId)
-            ) || priceList[0] || {}; // Fallback to first if somehow missing
+            ) || priceList[0] || {}; 
 
             // Extract exact prices based on the matched size data
             const baseMrp = sizeData.markupPrice || apiItem.unitPrice || 0;
@@ -106,7 +100,7 @@ const Cart = () => {
               // ==========================================
               // NEW: CAPTURE AVAILABILITY FLAGS
               // ==========================================
-              isAvailable: sizeData.isAvailable !== false, // Defaults to true unless explicitly false
+              isAvailable: sizeData.isAvailable !== false,
               isFewLeft: sizeData.isFewLeft === true,
             } as unknown as CartItem;
           });

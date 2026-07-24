@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Smartphone, CreditCard, Banknote, CheckCircle2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearCart } from "../../../../redux/slices/cartSlice";
@@ -38,6 +38,8 @@ const paymentMethods = [
 export default function Payment() {
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("UPI");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // New state for modal
+
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,14 +55,14 @@ export default function Payment() {
     totalPrice
   } = location?.state || {};
 
-  // 4. Handle the payment logic when the button is clicked
+  // Handle the payment logic when the button is clicked
   const handleProceed = () => {
     setIsProcessing(true);
 
     if (from === "cart") {
       // --- Cart Checkout Flow ---
       postQuery({
-        url: apiUrls.Cart.order, // Make sure this matches your Cart order endpoint
+        url: apiUrls.Cart.order,
         postData: {
           shippingAddress: selectedAddressId,
           paymentMethod: paymentMode
@@ -68,7 +70,7 @@ export default function Payment() {
         onSuccess: (res: any) => {
           setIsProcessing(false);
           dispatch(clearCart());
-          navigate("/");
+          setShowSuccessModal(true); // Show modal instead of immediate redirect
         },
         onFail: (err: any) => {
           setIsProcessing(false);
@@ -78,7 +80,7 @@ export default function Payment() {
     } else if (from === "product") {
       // --- Single Item / Buy Now Flow ---
       postQuery({
-        url: apiUrls.Orders.createOrder, // Ensure apiUrls.Order.createOrder points to your single item order endpoint (e.g., "/orders/createOrder")
+        url: apiUrls.Orders.createOrder,
         postData: {
           productId: productId,
           size: size,
@@ -88,7 +90,7 @@ export default function Payment() {
         },
         onSuccess: (res: any) => {
           setIsProcessing(false);
-          navigate("/"); // Redirect to success page or home  
+          setShowSuccessModal(true); // Show modal instead of immediate redirect
         },
         onFail: (err: any) => {
           setIsProcessing(false);
@@ -102,7 +104,7 @@ export default function Payment() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       <main className="mx-auto max-w-3xl px-5 pb-28 pt-8 sm:px-8 lg:pb-16">
 
         {/* Page Header */}
@@ -118,7 +120,7 @@ export default function Payment() {
         <div className="space-y-6">
           {/* Direct Selection Cards */}
           <div className="flex flex-col gap-4">
-            {paymentMethods.map((method) => {
+            {paymentMethods.map((method: any) => {
               const Icon = method.icon;
               const isSelected = paymentMode === method.id;
 
@@ -193,6 +195,51 @@ export default function Payment() {
           </div>
         </div>
       </main>
+
+      {/* --- Success Modal Overlay --- */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-5 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="w-full max-w-sm rounded-3xl bg-surface p-8 text-center shadow-2xl"
+            >
+              {/* Success Icon */}
+              <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600">
+                <CheckCircle2 className="h-10 w-10" />
+              </div>
+
+              {/* Content */}
+              <h2 className="mb-2 font-heading text-[24px] font-bold text-heading">
+                Order Successful!
+              </h2>
+              <p className="mb-8 font-body text-[14px] text-muted leading-relaxed">
+                Thank you for your purchase. Your order has been placed successfully.
+              </p>
+
+              {/* Actions */}
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => navigate("/profile", { replace: true })}
+                  className="w-full rounded-xl bg-primary py-3.5 font-body text-[15px] font-semibold text-background transition-all hover:bg-primary-dark"
+                >
+                  View Details
+                </button>
+
+                <button
+                  onClick={() => navigate("/", { replace: true })}
+                  className="w-full rounded-xl border border-border bg-transparent py-3.5 font-body text-[15px] font-semibold text-heading transition-all hover:bg-gray-50"
+                >
+                  Go to Home
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
