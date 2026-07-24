@@ -28,6 +28,7 @@ import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
 import type { GiftItem } from "./types";
 import useGetQuery from "@/hooks/getQuery.hook";
+import PageLoader from "@/components/Loader/fullPageLoader";
 
 const TOTAL_SECTIONS = 4;
 
@@ -205,6 +206,7 @@ const QuickAddProduct = () => {
     selectedSubcategoryId,
   );
   const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
+  const [pageLoader, setPageLoader] = useState(false);
 
   useEffect(() => {
     setValue("brand", "");
@@ -564,6 +566,7 @@ const QuickAddProduct = () => {
 
   useEffect(() => {
     if (!id) return;
+    setPageLoader(true);
 
     getQuery({
       url: `${apiUrls.Product.getByIdAdmin}${id}`,
@@ -656,6 +659,7 @@ const QuickAddProduct = () => {
         });
         setTimeout(() => {
           setIsInitializing(false);
+          setPageLoader(false);
         }, 0);
       },
       onFail: (err: any) => {
@@ -679,6 +683,10 @@ const QuickAddProduct = () => {
           />
         </div>
       </div>
+
+      {pageLoader && (
+        <PageLoader loading={pageLoader} text="Loading product details..." />
+      )}
 
       <main className="flex-1 overflow-y-auto">
         <form
