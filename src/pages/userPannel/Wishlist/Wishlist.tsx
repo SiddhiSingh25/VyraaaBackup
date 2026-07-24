@@ -168,69 +168,71 @@ export default function WishlistPage() {
   }
 
   return (
+    <>
+      <div className="min-h-screen bg-background">
+        <Navbar />
 
-    <div className="min-h-screen bg-background">
-      <Navbar />
+        <main className="  mx-auto max-w-7xl px-5 pb-24 pt-6 sm:px-8 lg:px-10">
+          {/* Header */}
+          <div className="flex flex-col gap-2 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h1 className="font-heading text-3xl text-admin-text sm:text-4xl">
+                My Wishlist{" "}
+                <span className="align-middle text-lg font-normal text-muted">
+                  ({items.length})
+                </span>
+              </h1>
+              <p className="mt-2 text-sm text-body">Pieces you love, saved for later.</p>
+            </div>
 
-      <main className="mx-auto max-w-7xl px-5 pb-24 pt-6 sm:px-8 lg:px-10">
-        {/* Header */}
-        <div className="flex flex-col gap-2 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="font-heading text-3xl text-admin-text sm:text-4xl">
-              My Wishlist{" "}
-              <span className="align-middle text-lg font-normal text-muted">
-                ({items.length})
-              </span>
-            </h1>
-            <p className="mt-2 text-sm text-body">Pieces you love, saved for later.</p>
+
           </div>
 
+          {/* Grid */}
+          {items.length === 0 ? (
+            <div className="pt-10">
+              <EmptyState
+                icon={<FiHeart size={28} className="text-dark/50" />}
+                title="Your wishlist is empty"
+                description="Save pieces you love and find them here anytime."
+                actionText="Continue Shopping"
+                onAction={() => navigate("/products")}
+              />
+            </div>
+          ) : (
+            <>
+              <motion.div
+                layout
+                className="grid grid-cols-1 gap-6 pt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              >
+                <AnimatePresence mode="popLayout">
+                  {items.map((product: any) => (
+                    <WishlistCard
+                      key={product.id}
+                      product={product}
+                      onRemove={removeItem}
+                      onAddToBag={addToBag}
+                      onBuyNow={buyNow}
+                      onNotifyMe={notifyMe}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
 
-        </div>
+              <p className="mt-8 flex items-center justify-center gap-2 text-center text-xs text-muted">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
+                </svg>
+                Don't let your favorites go — move items to your bag before they're gone.
+              </p>
+            </>
+          )}
 
-        {/* Grid */}
-        {items.length === 0 ? (
-          <div className="pt-10">
-            <EmptyState
-              icon={<FiHeart size={28} className="text-dark/50" />}
-              title="Your wishlist is empty"
-              description="Save pieces you love and find them here anytime."
-              actionText="Continue Shopping"
-              onAction={() => navigate("/products")}
-            />
-          </div>
-        ) : (
-          <>
-            <motion.div
-              layout
-              className="grid grid-cols-1 gap-6 pt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            >
-              <AnimatePresence mode="popLayout">
-                {items.map((product: any) => (
-                  <WishlistCard
-                    key={product.id}
-                    product={product}
-                    onRemove={removeItem}
-                    onAddToBag={addToBag}
-                    onBuyNow={buyNow}
-                    onNotifyMe={notifyMe}
-                  />
-                ))}
-              </AnimatePresence>
-            </motion.div>
+        </main>
 
-            <p className="mt-8 flex items-center justify-center gap-2 text-center text-xs text-muted">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
-              </svg>
-              Don't let your favorites go — move items to your bag before they're gone.
-            </p>
-          </>
-        )}
 
-      </main>
-
+      </div>
       <Footer />
-    </div>
+    </>
   );
 }
