@@ -19,12 +19,18 @@ import BrandStory from "./images/slider/BrandStory.png";
 import slider1 from "./images/slider/slider1.png";
 import slider2 from "./images/slider/slider2.png";
 import slider3 from "./images/slider/slider3.png";
+import sliderMobile1 from "./images/slider/sliderMobile1.png";
+import sliderMobile2 from "./images/slider/sliderMobile2.png";
+import sliderMobile3 from "./images/slider/sliderMobile3.png";
 
 export {
   // Slider Images
   slider1,
   slider2,
   slider3,
+  sliderMobile1,
+  sliderMobile2,
+  sliderMobile3,
   BrandStory,
 
 

@@ -3,7 +3,7 @@
 // `desktopImage` / `mobileImage` let us serve an art-directed crop per
 // breakpoint instead of relying on CSS to crop a single image (which is
 
-import { slider1, slider2, slider3 } from "../../../../../assets/assets";
+import { slider1, slider2, slider3, sliderMobile1, sliderMobile2, sliderMobile3 } from "../../../../../assets/assets";
 
 // what produced awkward composition on mobile in the old version).
 interface Slide {
@@ -24,7 +24,7 @@ interface Slide {
 export const SLIDES: Slide[] = [
   {
     desktopImage: slider1,
-    mobileImage: slider1,
+    mobileImage: sliderMobile1,
     label: "Summer Solstice · 2025",
     title1: "The Poetry",
     title2: "of Modern Craft",
@@ -34,7 +34,7 @@ export const SLIDES: Slide[] = [
   },
   {
     desktopImage: slider2,
-    mobileImage: slider2,
+    mobileImage: sliderMobile2,
     label: "New Arrivals · 2025",
     title1: "A World",
     title2: "Beyond Trends",
@@ -44,7 +44,7 @@ export const SLIDES: Slide[] = [
   },
   {
     desktopImage: slider3,
-    mobileImage: slider3,
+    mobileImage: sliderMobile3,
     label: "Atelier Collection",
     title1: "Crafted by",
     title2: "Human Hands",

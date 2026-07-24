@@ -1387,7 +1387,7 @@ export default function FeaturedCollections() {
                   <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/75 via-black/25 to-transparent sm:h-20" />
 
                   <div className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 p-2 sm:gap-2 sm:p-2.5">
-                    <span className="fc-thumb h-15 w-15 shrink-0 overflow-hidden rounded-full border border-white/30 bg-dark sm:h-7 sm:w-7">
+                    <span className="fc-thumb h-8 w-8 shrink-0 overflow-hidden rounded-full border border-white/30 bg-dark sm:h-7 sm:w-7">
                       <img src="logo.png" alt="" className="h-full w-full object-cover" />
                     </span>
                     <div className="min-w-0 text-left">

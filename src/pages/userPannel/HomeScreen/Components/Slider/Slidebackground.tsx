@@ -1,5 +1,5 @@
 import { useIsMobile } from "./Useismobile";
- interface Slide {
+interface Slide {
   desktopImage: string;
   mobileImage: string;
   label: string;
@@ -23,6 +23,7 @@ interface SlideBackgroundProps {
 // LV hero banners are built, and it sidesteps the `object-contain`
 // letterboxing the previous implementation had.
 export default function SlideBackground({ slide, priority }: SlideBackgroundProps) {
+  console.log(slide)
   const isMobile = useIsMobile();
   const image = isMobile ? slide.mobileImage : slide.desktopImage;
 
