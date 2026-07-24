@@ -80,7 +80,7 @@ const OrdersTable = ({
                   </td>
 
                   <td className="px-4 py-3 text-sm font-semibold text-[#6F4A36] whitespace-nowrap">
-                    ₹{order.grandTotal}
+                    ₹{Number(order.grandTotal || 0).toFixed(2)}
                   </td>
 
                   <td className="px-4 py-3 text-sm whitespace-nowrap">
