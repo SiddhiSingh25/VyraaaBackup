@@ -47,7 +47,9 @@ const VariantsSection = ({
   addSizeType,
   errorMessage,
 }: VariantsSectionProps) => {
+  const [appendSizeType, setAppendSizeType] = useState(false)
   const [showDraft, setShowDraft] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draftVariant, setDraftVariant] =
     useState<DraftVariant>(emptyDraftVariant);
 
@@ -57,7 +59,6 @@ const VariantsSection = ({
   }, [sizeTypeSelected]);
 
   const addVariant = () => {
-    // draftVariant.size should hold the 'value' from your select options
     const newVariant: VariantEntry = {
       size: draftVariant.size,
       sku: draftVariant.sku.trim(),
@@ -69,34 +70,40 @@ const VariantsSection = ({
       isFewLeft: draftVariant.isFewLeft,
     };
 
-    if (
-      variants.some(
-        (v) =>
-          v.sku === draftVariant.sku &&
-          v.size.value !== draftVariant.size.value,
-      )
-    ) {
+    // Prevent duplicate SKUs
+    const duplicateSku = variants.some(
+      (v, i) => i !== editingIndex && v.sku === newVariant.sku,
+    );
+
+    if (duplicateSku) {
       alert("SKU already exists.");
       return;
     }
 
-    // Check if this size variant already exists
-    const existingIndex = variants.findIndex(
-      (v) => v.size.value === draftVariant.size.value,
-    );
+    if (editingIndex !== null) {
+      const updated = [...variants];
+      updated[editingIndex] = newVariant;
+      setVariants(updated);
 
-    if (existingIndex !== -1) {
-      // Update the existing variant instead of adding a duplicate
-      const updatedVariants = [...variants];
-      updatedVariants[existingIndex] = newVariant;
-      setVariants(updatedVariants);
+      setEditingIndex(null);
     } else {
-      // Add as a completely new variant
       setVariants([...variants, newVariant]);
     }
 
     setDraftVariant(emptyDraftVariant);
     setShowDraft(false);
+  };
+
+  const editVariant = (index: number) => {
+    setDraftVariant({
+      ...variants[index],
+      price: variants[index].price.toString(),
+      stock: "",
+      discountPrice: variants[index].discountPrice?.toString() ?? "",
+    });
+
+    setEditingIndex(index);
+    setShowDraft(true);
   };
 
   const removeVariant = (index: number) => {
@@ -144,7 +151,11 @@ const VariantsSection = ({
                 id="appendSizeType"
                 type="checkbox"
                 checked={field.value}
-                onChange={(e) => field.onChange(e.target.checked)}
+                onChange={(e) => {
+                  field.onChange(e.target.checked)
+                  setAppendSizeType(e.target.checked)
+                  // console.log(sizeTypeOptions, "=======")
+                }}
                 className="mt-1"
               />
 
@@ -191,6 +202,8 @@ const VariantsSection = ({
           setDraftVariant={setDraftVariant}
           sizeOptions={sizeOptions}
           sizeTypeSelected={sizeTypeSelected}
+          appendSizeType={appendSizeType}
+          sizeTypes={sizeTypeOptions}
           onAdd={addVariant}
           onCancel={cancelDraft}
         />
@@ -201,6 +214,7 @@ const VariantsSection = ({
         variants={variants}
         onRemove={removeVariant}
         sizeOptions={sizeOptions}
+        onEdit={editVariant}
       />
     </section>
   );

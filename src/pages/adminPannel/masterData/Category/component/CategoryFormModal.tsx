@@ -5,6 +5,7 @@ import Button from "../../../../../components/tableComponents/Button";
 import type { Category, CategoryFormValues, ModalMode } from "./types";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { apiUrls } from "@/apis";
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 
 interface CategoryFormModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface CategoryFormModalProps {
   initialData?: Category | null;
   onClose: () => void;
   onSubmit: (values: CategoryFormValues) => void;
+  loading?: boolean;
 }
 
 const EMPTY_FORM: CategoryFormValues = {
@@ -31,10 +33,11 @@ export default function CategoryFormModal({
   initialData,
   onClose,
   onSubmit,
+  loading = false,
 }: CategoryFormModalProps) {
   const [values, setValues] = useState<CategoryFormValues>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
-  const { postQuery } = usePostQuery();
+  const { postQuery, loading: uploadLoading } = usePostQuery();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -131,7 +134,14 @@ export default function CategoryFormModal({
             Cancel
           </Button>
 
-          <Button className="bg-dark" type="submit" form="category-form">
+          <Button
+            className="bg-dark flex items-center justify-center gap-2"
+            type="submit"
+            form="category-form"
+            disabled={loading || uploadLoading}
+          >
+            {loading && <ButtonLoader />}
+
             {mode === "add" ? "Add Category" : "Save Changes"}
           </Button>
         </div>
@@ -175,6 +185,7 @@ export default function CategoryFormModal({
           <input
             type="file"
             accept="image/*"
+            disabled={uploadLoading}
             onChange={handleImageChange}
             className="block w-full rounded-md border border-border p-2"
           />
@@ -183,6 +194,12 @@ export default function CategoryFormModal({
               src={values.image as string}
               className="h-28 w-28 rounded-lg object-cover border"
             />
+          )}
+          {uploadLoading && (
+            <div className="mt-3 flex items-center gap-2 text-sm text-muted">
+              <ButtonLoader color="#5E4637" />
+              Uploading image...
+            </div>
           )}
         </div>
       </form>

@@ -1,13 +1,15 @@
 import { MdOutlineDeleteSweep } from "react-icons/md";
 import type { Option, VariantEntry } from "../types";
+import { FiEdit2 } from "react-icons/fi";
 
 type VariantsTableProps = {
   variants: VariantEntry[];
   onRemove: (index: number) => void;
   sizeOptions: Option[];
+  onEdit: (index: number) => void;
 };
 
-const VariantsTable = ({ variants, onRemove }: VariantsTableProps) => {
+const VariantsTable = ({ variants, onRemove, onEdit }: VariantsTableProps) => {
   if (variants.length === 0) {
     return (
       <p className="text-sm text-muted text-center py-6 border border-dashed border-border rounded-lg bg-card/50">
@@ -57,6 +59,14 @@ const VariantsTable = ({ variants, onRemove }: VariantsTableProps) => {
                 </div>
               </td>
               <td className="px-5 py-4 text-right">
+                <button
+                  type="button"
+                  onClick={() => onEdit(index)}
+                  className="rounded-md p-2 hover:bg-primary/10 text-primary"
+                >
+                  <FiEdit2 />
+                </button>
+
                 <button
                   type="button"
                   onClick={() => onRemove(index)}

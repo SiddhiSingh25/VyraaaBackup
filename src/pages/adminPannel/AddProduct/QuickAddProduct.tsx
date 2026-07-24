@@ -28,6 +28,8 @@ import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
 import type { GiftItem } from "./types";
 import useGetQuery from "@/hooks/getQuery.hook";
+import PageLoader from "@/components/Loader/fullPageLoader";
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 
 const TOTAL_SECTIONS = 4;
 
@@ -35,6 +37,8 @@ const QuickAddProduct = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [addedProduct, setAddedProduct] = useState<any>(null);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const { id } = useParams<{ id: string }>();
   const { getQuery } = useGetQuery();
   console.log("poroductId", id);
@@ -166,6 +170,35 @@ const QuickAddProduct = () => {
     isLoading: subcategoryTypeLoading,
     addSubCategoryType,
   } = useSubCategoryTypeData(selectedSubcategoryId);
+  useEffect(() => {
+    if (!editingProduct) return;
+
+    // Wait until subcategory is selected
+    if (!selectedSubcategoryId) return;
+
+    // Wait until API finishes
+    if (subcategoryTypeLoading) return;
+
+    // Wait until options arrive
+    if (!subcategoryTypeOptions.length) return;
+
+    const exists = subcategoryTypeOptions.find(
+      (item) => item.value === editingProduct.subcategoryType?._id,
+    );
+
+    if (!exists) return;
+
+    setValue("subcategoryType", editingProduct.subcategoryType._id, {
+      shouldDirty: false,
+      shouldValidate: false,
+    });
+  }, [
+    editingProduct,
+    selectedSubcategoryId,
+    subcategoryTypeLoading,
+    subcategoryTypeOptions,
+    setValue,
+  ]);
   const { colorFamilyOptions, addColorFamily } = useColorFamilyData();
   const { colorOptions, addColor } = useColorData(selectedColorFamily);
   const { sizeTypeOptions, addSizeType } = useSizeTypeData();
@@ -174,6 +207,7 @@ const QuickAddProduct = () => {
     selectedSubcategoryId,
   );
   const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
+  const [pageLoader, setPageLoader] = useState(false);
 
   useEffect(() => {
     setValue("brand", "");
@@ -183,13 +217,17 @@ const QuickAddProduct = () => {
   // user is picking it manually). When category comes from params this
   // still only fires once, harmlessly, on mount.
   useEffect(() => {
+    if (isInitializing) return;
+
     setValue("subcategory", "");
     setValue("subcategoryType", "");
-  }, [effectiveCategoryId, setValue]);
+  }, [effectiveCategoryId]);
 
   useEffect(() => {
+    if (isInitializing) return;
+
     setValue("subcategoryType", "");
-  }, [selectedSubcategoryId, setValue]);
+  }, [selectedSubcategoryId, setValue, isInitializing]);
 
   useEffect(() => {
     setValue("color", "");
@@ -211,14 +249,24 @@ const QuickAddProduct = () => {
     setImageFiles((prev) => [...prev, ...files]);
   };
 
-  const { postQuery } = usePostQuery();
+  const { postQuery, loading } = usePostQuery();
 
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = (index: number, removedUrl: string) => {
     setValue(
       "images",
-      images.filter((_img, idx) => idx !== index),
+      images.filter((_, i) => i !== index),
     );
-    setImageFiles((prev) => prev.filter((_file, idx) => idx !== index));
+
+    // Only remove from imageFiles if it was a newly uploaded image
+    if (removedUrl.startsWith("blob:")) {
+      const blobImages = images.filter((img) => img.startsWith("blob:"));
+
+      const blobIndex = blobImages.indexOf(removedUrl);
+
+      if (blobIndex !== -1) {
+        setImageFiles((prev) => prev.filter((_, i) => i !== blobIndex));
+      }
+    }
   };
 
   const uploadImages = async (files: File[]) => {
@@ -256,15 +304,11 @@ const QuickAddProduct = () => {
 
     variants.length > 0, // Inventory & Pricing
 
-    // attributes.length > 0, // Product Specifications
-
     images.length > 0, // Media & Gallery
   ].filter(Boolean).length;
 
   // --- Reset helpers ---------------------------------------------------
-  // Resetting the whole form should NOT wipe a categoryId that came from
-  // the route — otherwise the (hidden) category field goes blank and the
-  // taxonomy chain breaks silently.
+
   const resetForm = useCallback(() => {
     reset(getInitialValues());
     setImageFiles([]);
@@ -278,7 +322,6 @@ const QuickAddProduct = () => {
     if (confirmed) resetForm();
   };
 
-  // --- Submission ------------------------------------------------------------
   const onSubmit = async (data: QuickAddValues) => {
     const payload = {
       title: data.name,
@@ -300,6 +343,7 @@ const QuickAddProduct = () => {
         const discount = variant.discountPrice || 0;
         const markupPrice = variant.price;
         const amount = variant.price - (variant.price * discount) / 100;
+
         return {
           size: variant.size.value,
           skuCode: variant.sku,
@@ -311,12 +355,11 @@ const QuickAddProduct = () => {
         };
       }),
 
-      attributes: data.attributes
-        ? data.attributes.map((item) => ({
-            property: item.property,
-            value: item.value,
-          }))
-        : [],
+      attributes:
+        data.attributes?.map((item) => ({
+          property: item.property,
+          value: item.value,
+        })) || [],
 
       gifts: gifts.map((gift) => ({
         product: gift.product,
@@ -328,28 +371,55 @@ const QuickAddProduct = () => {
     };
 
     try {
-      const imageUrls = await uploadImages(imageFiles);
+      let imageUrls: string[] = [];
+
+      // Upload only newly selected images
+      if (imageFiles.length) {
+        imageUrls = await uploadImages(imageFiles);
+      }
+
+      let uploadedIndex = 0;
+
+      const finalImages = images.map((img) => {
+        if (img.startsWith("blob:")) {
+          return imageUrls[uploadedIndex++];
+        }
+
+        return img;
+      });
 
       const payloadWithImages = {
         ...payload,
-        image: imageUrls[0] || "",
-        subImages:
-          imageUrls.length > 1
-            ? imageUrls.slice(1).map((img) => ({ imageUrl: img }))
-            : [],
+
+        image: finalImages[0],
+
+        subImages: finalImages.slice(1).map((img) => ({
+          imageUrl: img,
+        })),
       };
-      console.log("Before postQuery");
+
+      const apiUrl = id
+        ? `${apiUrls.Product.editProduct}/${id}`
+        : apiUrls.Product.add;
+
       await postQuery({
-        url: apiUrls.Product.add,
+        url: apiUrl,
         postData: payloadWithImages,
+
         onSuccess: (res: any) => {
-          console.log("SUCCESS", res);
           toast(
             "success",
-            res?.message || res?.data?.message || "Product added successfully",
+            res?.message ||
+              res?.data?.message ||
+              (id
+                ? "Product updated successfully"
+                : "Product added successfully"),
           );
-          // setShowSuccess(true);
-          // resetForm();
+
+          if (id) {
+            return;
+          }
+
           setAddedProduct({
             id: res.product._id,
             image: payloadWithImages.image,
@@ -366,31 +436,123 @@ const QuickAddProduct = () => {
 
           resetForm();
         },
+
         onFail: (err: any) => {
-          console.log("CATCH", err);
           toast(
             "error",
             err?.response?.data?.message ||
-              err?.data.message ||
-              "Could not add product",
+              err?.data?.message ||
+              (id ? "Could not update product" : "Could not add product"),
           );
         },
       });
     } catch (err: any) {
       toast(
         "error",
-        err?.response?.data?.message || err?.message || "Could not add product",
+        err?.response?.data?.message ||
+          err?.message ||
+          (id ? "Could not update product" : "Could not add product"),
       );
     }
   };
 
   useEffect(() => {
     if (!id) return;
+    setPageLoader(true);
 
     getQuery({
-      url: `${apiUrls.Product.getById}${id}`,
+      url: `${apiUrls.Product.getByIdAdmin}${id}`,
       onSuccess: (res: any) => {
         console.log("Product Details:", res);
+        const product = res.data;
+        setEditingProduct(product);
+
+        // ---------------- Gifts ----------------
+        const mappedGifts =
+          product.gifts?.map((gift: any) => ({
+            product: gift.product._id,
+            quantity: gift.quantity,
+            size: gift.size?._id,
+
+            productDetails: {
+              title: gift.product.title,
+              image: gift.product.image,
+              brand: gift.product.brand?.brand || "",
+              sku: gift.product.price?.[0]?.skuCode || "",
+              sizes:
+                gift.product.price?.map((p: any) => ({
+                  label: p.size?.size,
+                  value: p.size?._id,
+                })) || [],
+            },
+          })) || [];
+
+        setGifts(mappedGifts);
+
+        // ---------------- Images ----------------
+        const allImages = [
+          product.image,
+          ...(product.subImages || []).map((item: any) => item.imageUrl),
+        ];
+
+        setImageFiles([]); // editing existing images
+
+        // ---------------- Form ----------------
+        setIsInitializing(true);
+
+        reset({
+          category: product.category?._id || "",
+
+          subcategory: product.subCategory?._id || "",
+
+          subcategoryType: product.subcategoryType?._id || "",
+
+          name: product.title || "",
+
+          description: product.description || "",
+
+          brand: product.brand?._id || "",
+
+          colorFamily: product.color?.family || "",
+
+          color: product.color?._id || "",
+
+          gender: product.gender || "",
+
+          ageRange: product.ageRange || "",
+
+          sizeType: product.sizeType?._id || "",
+
+          appendSizeType: product.appendSizeTypeToSize ?? false,
+
+          variants:
+            product.price?.map((item: any) => ({
+              size: {
+                value: item.size._id,
+                label: item.size.size,
+              },
+              sku: item.skuCode,
+              price: item.markupPrice,
+              discountPrice: item.discount,
+              isAvailable: item.isAvailable,
+              isFewLeft: item.isFewLeft,
+            })) || [],
+
+          attributes:
+            product.attributes?.map((attr: any) => ({
+              property: attr.property._id,
+              propertyLabel: attr.property.property,
+
+              value: attr.value._id,
+              valueLabel: attr.value.value,
+            })) || [],
+
+          images: allImages,
+        });
+        setTimeout(() => {
+          setIsInitializing(false);
+          setPageLoader(false);
+        }, 0);
       },
       onFail: (err: any) => {
         console.error("Failed to fetch product:", err);
@@ -413,6 +575,10 @@ const QuickAddProduct = () => {
           />
         </div>
       </div>
+
+      {pageLoader && (
+        <PageLoader loading={pageLoader} text="Loading product details..." />
+      )}
 
       <main className="flex-1 overflow-y-auto">
         <form
@@ -522,8 +688,14 @@ const QuickAddProduct = () => {
                 Clear
               </Button>
 
-              <Button type="submit" variant="primary" className="flex-1">
-                Add Product
+              <Button
+                type="submit"
+                variant="primary"
+                className="flex-1"
+                disabled={loading}
+              >
+                {loading && <ButtonLoader />}
+                {id ? "Update Product" : "Add Product"}
               </Button>
             </div>
           </div>

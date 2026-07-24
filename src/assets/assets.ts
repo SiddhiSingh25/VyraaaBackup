@@ -1,7 +1,4 @@
-import slider1 from "./images/slider/sampleImg.png";
-import slider2 from "./images/slider/slider_bags.png";
-import slider3 from "./images/slider/hello.png";
-import slider4 from "./images/slider/k.png";
+
 
 import bag from "./images/category/bag.png";
 import boysClothes from "./images/category/boys_clothes.png";
@@ -19,14 +16,32 @@ import watch from "./images/category/watch.png";
 import womenClothes from "./images/category/women_clothes.png";
 import womenPerfume from "./images/category/womenPerfume.jpeg";
 import BrandStory from "./images/slider/BrandStory.png";
+import slider1 from "./images/slider/slider1.png";
+import slider2 from "./images/slider/slider2.png";
+import slider3 from "./images/slider/slider3.png";
+import sliderMobile1 from "./images/slider/sliderMobile1.png";
+import sliderMobile2 from "./images/slider/sliderMobile2.png";
+import sliderMobile3 from "./images/slider/sliderMobile3.png";
 
+// Tablet placeholders. Once you add sliderTablet1.png, etc. to src/assets/images/slider/,
+// you can change these imports to point to those files (e.g. "./images/slider/sliderTablet1.png").
+import sliderTablet1 from "./images/slider/sliderTablet1.png";
+import sliderTablet2 from "./images/slider/sliderTablet2.png";
+import sliderTablet3 from "./images/slider/sliderTablet3.png";
+//comment
 export {
   // Slider Images
   slider1,
   slider2,
   slider3,
-  slider4,
+  sliderMobile1,
+  sliderMobile2,
+  sliderMobile3,
+  sliderTablet1,
+  sliderTablet2,
+  sliderTablet3,
   BrandStory,
+
 
   // Category Images
   bag,

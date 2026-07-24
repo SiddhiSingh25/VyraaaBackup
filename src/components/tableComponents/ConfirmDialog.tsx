@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { AlertTriangle } from "lucide-react";
 import Button from "./Button";
+import ButtonLoader from "../Loader/ButtonLoader";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface ConfirmDialogProps {
   cancelLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
+  loading?: boolean;
 }
 
 export default function ConfirmDialog({
@@ -20,6 +22,7 @@ export default function ConfirmDialog({
   cancelLabel = "Cancel",
   onConfirm,
   onCancel,
+  loading = false,
 }: ConfirmDialogProps) {
   useEffect(() => {
     if (!isOpen) return;
@@ -79,7 +82,9 @@ export default function ConfirmDialog({
             onClick={onConfirm}
             // Overriding the button colors to use your exact error brand variable
             className="bg-error text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-error/50 transition-all duration-300 shadow-sm border-transparent"
+            disabled={loading}
           >
+            {loading && <ButtonLoader />}
             {confirmLabel}
           </Button>
         </div>

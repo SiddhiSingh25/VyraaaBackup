@@ -12,6 +12,9 @@ export interface CartItem {
   price: number;
   returnDays: number;
   selected: boolean;
+  isAvailable: boolean;
+  isFewLeft : boolean;
+  cartItemId : boolean
 }
 
 export interface DonationTier {
