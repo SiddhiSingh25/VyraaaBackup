@@ -14,7 +14,7 @@ import Footer from "../../../components/Footer/Footer";
 import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { apiUrls } from "@/apis";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/slices/authSlice";
 import { clearCart } from "@/redux/slices/cartSlice";
@@ -210,19 +210,21 @@ export default function Profile() {
 
       <main className="px-6 md:px-10 py-6">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
-          <div>
+          <div className="hidden ">
             <h1 className="text-3xl font-semibold tracking-tight text-admin-text">
               My Account
             </h1>
 
             <p className="text-sm text-muted mt-1">
-              Home
+              <Link to="/">
+                Home
+              </Link>
               <span className="mx-2">/</span>
               <span className="text-admin-text">My Account</span>
             </p>
           </div>
 
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             <p className="text-lg font-semibold text-admin-text">
               Hi, {user.firstName}
             </p>
@@ -264,7 +266,7 @@ export default function Profile() {
                   )}
 
                   {activeTab === "orders" && (
-                    <OrdersTab  />
+                    <OrdersTab />
                   )}
 
                   {activeTab === "addresses" && (

@@ -18,24 +18,26 @@ export function ProfileHeader({ user, stats, onTabChange }: ProfileHeaderProps) 
       className="rounded-2xl border border-border bg-surface p-3 md:p-4"
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-        <LoyaltyAvatar user={user} />
+        <LoyaltyAvatar user={user} setUser={function (value: any): void {
+          throw new Error("Function not implemented.");
+        }} />
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="font-heading text-2xl text-admin-text">
               {user.firstName} {user.lastName}
             </h1>
-          
+
           </div>
           <p className="text-body mt-1">{user.email}</p>
           <p className="text-xs text-muted mt-1">
-            Member since {user.memberSince} 
+            Member since {user.memberSince}
           </p>
         </div>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
-        
+
         <StatChip
           to="/profile"
           onClick={(e) => {
@@ -54,7 +56,7 @@ export function ProfileHeader({ user, stats, onTabChange }: ProfileHeaderProps) 
           }
         />
         <StatChip
-        to="/wishlist"
+          to="/wishlist"
           label="Wishlist items"
           value={String(stats.wishlistCount)}
           icon={
@@ -63,15 +65,7 @@ export function ProfileHeader({ user, stats, onTabChange }: ProfileHeaderProps) 
             </svg>
           }
         />
-        {/* <StatChip
-          label="Reviews"
-          value={stats.loyaltyPoints.toLocaleString("en-IN")}
-          icon={
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path d="M12 2l2.7 6.6L21 9.3l-5 4.5 1.5 7.2L12 17.3l-5.5 3.7L8 13.8l-5-4.5 6.3-.7z" />
-            </svg>
-          }
-        /> */}
+
       </div>
     </motion.div>
   );
