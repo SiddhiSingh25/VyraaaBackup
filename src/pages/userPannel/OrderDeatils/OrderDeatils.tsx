@@ -12,6 +12,7 @@ const OrderDetails = () => {
     const { id } = location?.state || {};
     const { getQuery, loading } = useGetQuery();
 
+    
     const [orderDetails, setOrderDetails] = useState<any>(null);
 
     const getDetails = () => {
