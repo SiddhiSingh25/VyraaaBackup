@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import Button from "../../../../components/tableComponents/Button";
 import SearchInput from "../../../../components/tableComponents/SearchInput";
 import ConfirmDialog from "../../../../components/tableComponents/ConfirmDialog";
+import { DNA } from "react-loader-spinner";
 import type {
   Category,
   CategoryFormValues,
@@ -15,6 +16,7 @@ import usePostQuery from "../../../../hooks/postQuery.hook";
 import usePutQuery from "../../../../hooks/putQuery.hook";
 import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
 import { apiUrls } from "../../../../apis/index.ts";
+import PageLoader from "@/components/Loader/fullPageLoader.tsx";
 
 interface ApiCategory {
   _id: string;
@@ -45,9 +47,9 @@ export default function Category() {
   const [categoryPendingDelete, setCategoryPendingDelete] =
     useState<Category | null>(null);
 
-  const { getQuery } = useGetQuery();
-  const { postQuery } = usePostQuery();
-  const { putQuery } = usePutQuery();
+  const { getQuery, loading } = useGetQuery();
+  const { postQuery, loading: addLoading } = usePostQuery();
+  const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery } = useDeleteQuery();
 
   const filteredCategories = useMemo(() => {
@@ -193,6 +195,10 @@ export default function Category() {
           </Button>
         </div>
 
+        {loading && (
+          <PageLoader loading={loading} text="Loading Categories..." />
+        )}
+
         {/* Table Area */}
         <div className="p-0 sm:p-2 mb-4">
           <CategoryTable
@@ -209,6 +215,7 @@ export default function Category() {
         initialData={activeCategory}
         onClose={closeFormModal}
         onSubmit={handleFormSubmit}
+        loading={modalMode === "add" ? addLoading : editLoading}
       />
 
       <ConfirmDialog
