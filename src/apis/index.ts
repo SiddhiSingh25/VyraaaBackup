@@ -1,8 +1,8 @@
 // export const apiBaseUrl =
 //   "https://vyraa-backend-production.up.railway.app/api/";
-export const apiBaseUrl =
-  "https://vyraa-backend-production.up.railway.app/api/";
-// export const apiBaseUrl = "http://localhost:7777/api/";
+// export const apiBaseUrl =
+//   "https://vyraa-backend-production.up.railway.app/api/";
+export const apiBaseUrl = "http://localhost:7777/api/";
 
 export const apiUrls = {
   // Category
@@ -102,8 +102,9 @@ export const apiUrls = {
     delete: "product/delete",
     getAll: "product/getAll",
     getById: "product/", // Usage: `${apiUrls.Product.getById}${id}`
-
+    getByIdAdmin: "product/getByIdAdmin/",
     home: "/product/home",
+    editProduct: "/product/editProduct",
   },
 
   Cart: {
