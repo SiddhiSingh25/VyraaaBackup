@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
 
 import AddressForm from "../components/AddressForm";
-import { CheckoutSidebar } from "../components/CheckoutSidebar";
+import CheckoutSidebar from "../components/CheckoutSidebar";
 import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook";
 import useDeleteQuery from "@/hooks/deleteQuery.hook";
@@ -31,6 +31,40 @@ function formatINR(amount: number) {
   return `₹${amount.toLocaleString("en-IN")}`;
 }
 
+// ==========================================
+// SHIMMER SKELETON COMPONENT
+// ==========================================
+const AddressShimmer = () => (
+  <div className="relative p-5 rounded-xl border-2 border-border/30 bg-surface animate-pulse">
+    {/* Top Right Badges Shimmer */}
+    <div className="absolute top-5 right-5 flex flex-col items-end gap-2">
+      <div className="h-6 w-20 bg-border/40 rounded-md"></div>
+    </div>
+
+    {/* Name and Type Badge Shimmer */}
+    <div className="mb-4 flex items-center gap-3">
+      <div className="h-6 w-32 bg-border/40 rounded-md"></div>
+      <div className="h-5 w-16 bg-border/40 rounded-full"></div>
+    </div>
+
+    {/* Address Text Shimmer */}
+    <div className="space-y-2 mb-6">
+      <div className="h-4 w-3/4 bg-border/30 rounded"></div>
+      <div className="h-4 w-1/2 bg-border/30 rounded"></div>
+    </div>
+
+    {/* Bottom Actions Shimmer */}
+    <div className="flex items-center gap-4 pt-4 border-t border-border/50 flex-wrap">
+      <div className="h-5 w-24 bg-border/40 rounded"></div>
+      <div className="h-5 w-24 bg-border/40 rounded"></div>
+      <div className="flex-1" />
+      <div className="h-8 w-8 bg-border/40 rounded-lg"></div>
+      <div className="h-8 w-8 bg-border/40 rounded-lg"></div>
+    </div>
+  </div>
+);
+// ==========================================
+
 export default function AddNewAddress() {
   const cartItems = useSelector((state: any) => state.cart.items);
 
@@ -49,8 +83,8 @@ export default function AddNewAddress() {
   // State to store the currently SELECTED address for this checkout session
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
-  const { getQuery } = useGetQuery();
-  const { postQuery } = usePostQuery();
+  const { getQuery, loading } = useGetQuery();
+  const { postQuery, loading: addLoading } = usePostQuery();
   const { deleteQuery } = useDeleteQuery();
   const navigate = useNavigate();
   const location = useLocation();
@@ -178,31 +212,17 @@ export default function AddNewAddress() {
                     >
                       <Plus size={16} /> Add New
                     </button>
-                    <button
-                      onClick={() => {
-                        if (!selectedAddressId) {
-                          alert("Please select an address first!");
-                          return;
-                        }
-                        navigate(`/checkout/payment`, {
-                          state: {
-                            from,
-                            selectedAddressId,
-                            productId,
-                            size,
-                            totalPrice: totalPrice || cartTotalAmount,
-                          }
-                        });
-                      }}
-                      className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
-                    >
-                      Go to Payment
-                    </button>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  {addresses.length === 0 ? (
+                  {/* --- CONDITIONAL RENDERING FOR SHIMMER vs EMPTY vs LIST --- */}
+                  {loading ? (
+                    <>
+                      <AddressShimmer />
+                      <AddressShimmer />
+                    </>
+                  ) : addresses.length === 0 ? (
                     <div className="text-center py-10 text-admin-text/60">
                       No addresses saved yet. Add a new one to proceed.
                     </div>
@@ -261,7 +281,7 @@ export default function AddNewAddress() {
                           )}
 
                           <div className="flex items-center gap-4 pt-4 border-t border-border/50 flex-wrap">
-                            <button
+                            {/* <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleSelectAddress(addr);
@@ -276,7 +296,7 @@ export default function AddNewAddress() {
                               className="text-sm font-bold text-primary hover:underline"
                             >
                               Deliver Here
-                            </button>
+                            </button> */}
 
                             {/* SEPARATE BUTTON TO SET AS DEFAULT */}
                             {!addr.isDefault && (
@@ -341,6 +361,8 @@ export default function AddNewAddress() {
                 productId={productId}
                 size={size}
                 quantity={1}
+                selectedAddressId={selectedAddressId}
+                totalPrice={totalPrice || cartTotalAmount}
                 onTotalChange={setTotalPrice}
               />
             </div>

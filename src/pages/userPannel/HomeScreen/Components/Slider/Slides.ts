@@ -3,12 +3,13 @@
 // `desktopImage` / `mobileImage` let us serve an art-directed crop per
 // breakpoint instead of relying on CSS to crop a single image (which is
 
-import { slider4, slider1, slider2, slider3 } from "../../../../../assets/assets";
+import { slider1, slider2, slider3, sliderMobile1, sliderMobile2, sliderMobile3, sliderTablet1, sliderTablet2, sliderTablet3 } from "../../../../../assets/assets";
 
 // what produced awkward composition on mobile in the old version).
- interface Slide {
+interface Slide {
   desktopImage: string;
   mobileImage: string;
+  tabletImage?: string;
   label: string;
   title1: string;
   title2: string;
@@ -23,8 +24,9 @@ import { slider4, slider1, slider2, slider3 } from "../../../../../assets/assets
 // to change, the component already switches on breakpoint.
 export const SLIDES: Slide[] = [
   {
-    desktopImage: slider4,
-    mobileImage: slider4,
+    desktopImage: slider1,
+    mobileImage: sliderMobile1,
+    tabletImage: sliderTablet1,
     label: "Summer Solstice · 2025",
     title1: "The Poetry",
     title2: "of Modern Craft",
@@ -33,8 +35,9 @@ export const SLIDES: Slide[] = [
     ctaHref: "#",
   },
   {
-    desktopImage: slider1,
-    mobileImage: slider1,
+    desktopImage: slider2,
+    mobileImage: sliderMobile2,
+    tabletImage: sliderTablet2,
     label: "New Arrivals · 2025",
     title1: "A World",
     title2: "Beyond Trends",
@@ -43,8 +46,9 @@ export const SLIDES: Slide[] = [
     ctaHref: "#",
   },
   {
-    desktopImage: slider2,
-    mobileImage: slider2,
+    desktopImage: slider3,
+    mobileImage: sliderMobile3,
+    tabletImage: sliderTablet3,
     label: "Atelier Collection",
     title1: "Crafted by",
     title2: "Human Hands",
@@ -52,9 +56,6 @@ export const SLIDES: Slide[] = [
     ctaLabel: "Discover Collection",
     ctaHref: "#",
   },
+
 ];
 
-// slider3 is imported in the original file but unused — kept imported
-// here only to avoid breaking the barrel if something else depends on
-// the side effect; remove if truly unused in your assets module.
-void slider3;

@@ -28,6 +28,8 @@ import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
 import type { GiftItem } from "./types";
 import useGetQuery from "@/hooks/getQuery.hook";
+import PageLoader from "@/components/Loader/fullPageLoader";
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 
 const TOTAL_SECTIONS = 4;
 
@@ -205,6 +207,7 @@ const QuickAddProduct = () => {
     selectedSubcategoryId,
   );
   const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
+  const [pageLoader, setPageLoader] = useState(false);
 
   useEffect(() => {
     setValue("brand", "");
@@ -246,7 +249,7 @@ const QuickAddProduct = () => {
     setImageFiles((prev) => [...prev, ...files]);
   };
 
-  const { postQuery } = usePostQuery();
+  const { postQuery, loading } = usePostQuery();
 
   const handleRemoveImage = (index: number, removedUrl: string) => {
     setValue(
@@ -301,15 +304,11 @@ const QuickAddProduct = () => {
 
     variants.length > 0, // Inventory & Pricing
 
-    // attributes.length > 0, // Product Specifications
-
     images.length > 0, // Media & Gallery
   ].filter(Boolean).length;
 
   // --- Reset helpers ---------------------------------------------------
-  // Resetting the whole form should NOT wipe a categoryId that came from
-  // the route — otherwise the (hidden) category field goes blank and the
-  // taxonomy chain breaks silently.
+
   const resetForm = useCallback(() => {
     reset(getInitialValues());
     setImageFiles([]);
@@ -323,111 +322,6 @@ const QuickAddProduct = () => {
     if (confirmed) resetForm();
   };
 
-  // --- Submission ------------------------------------------------------------
-  // const onSubmit = async (data: QuickAddValues) => {
-  //   const payload = {
-  //     title: data.name,
-  //     appendSizeTypeToSize: appendSizeType,
-  //     description: data.description,
-  //     brand: data.brand || null,
-  //     color: data.color || null,
-  //     category: effectiveCategoryId,
-  //     subCategory: data.subcategory,
-  //     subcategoryType: data.subcategoryType || null,
-  //     sizeType: data.sizeType,
-  //     gender:
-  //       data.gender === "Boys" || data.gender === "Girls"
-  //         ? "Child"
-  //         : data.gender || null,
-  //     ageRange: data.ageRange || null,
-
-  //     price: data.variants.map((variant) => {
-  //       const discount = variant.discountPrice || 0;
-  //       const markupPrice = variant.price;
-  //       const amount = variant.price - (variant.price * discount) / 100;
-  //       return {
-  //         size: variant.size.value,
-  //         skuCode: variant.sku,
-  //         amount,
-  //         isAvailable: variant.isAvailable,
-  //         isFewLeft: variant.isFewLeft,
-  //         markupPrice,
-  //         discount,
-  //       };
-  //     }),
-
-  //     attributes: data.attributes
-  //       ? data.attributes.map((item) => ({
-  //           property: item.property,
-  //           value: item.value,
-  //         }))
-  //       : [],
-
-  //     gifts: gifts.map((gift) => ({
-  //       product: gift.product,
-  //       quantity: gift.quantity,
-  //       size: gift.size,
-  //     })),
-
-  //     linkItems: [],
-  //   };
-
-  //   try {
-  //     const imageUrls = await uploadImages(imageFiles);
-
-  //     const payloadWithImages = {
-  //       ...payload,
-  //       image: imageUrls[0] || "",
-  //       subImages:
-  //         imageUrls.length > 1
-  //           ? imageUrls.slice(1).map((img) => ({ imageUrl: img }))
-  //           : [],
-  //     };
-  //     console.log("Before postQuery");
-  //     await postQuery({
-  //       url: apiUrls.Product.add,
-  //       postData: payloadWithImages,
-  //       onSuccess: (res: any) => {
-  //         console.log("SUCCESS", res);
-  //         toast(
-  //           "success",
-  //           res?.message || res?.data?.message || "Product added successfully",
-  //         );
-  //         // setShowSuccess(true);
-  //         // resetForm();
-  //         setAddedProduct({
-  //           id: res.product._id,
-  //           image: payloadWithImages.image,
-  //           title: payload.title,
-  //           category: categoryOptions.find(
-  //             (c) => c.value === effectiveCategoryId,
-  //           )?.label,
-  //           subCategory: subcategoryOptions.find(
-  //             (s) => s.value === payload.subCategory,
-  //           )?.label,
-  //         });
-
-  //         setShowProductModal(true);
-
-  //         resetForm();
-  //       },
-  //       onFail: (err: any) => {
-  //         console.log("CATCH", err);
-  //         toast(
-  //           "error",
-  //           err?.response?.data?.message ||
-  //             err?.data.message ||
-  //             "Could not add product",
-  //         );
-  //       },
-  //     });
-  //   } catch (err: any) {
-  //     toast(
-  //       "error",
-  //       err?.response?.data?.message || err?.message || "Could not add product",
-  //     );
-  //   }
-  // };
   const onSubmit = async (data: QuickAddValues) => {
     const payload = {
       title: data.name,
@@ -564,6 +458,7 @@ const QuickAddProduct = () => {
 
   useEffect(() => {
     if (!id) return;
+    setPageLoader(true);
 
     getQuery({
       url: `${apiUrls.Product.getByIdAdmin}${id}`,
@@ -656,6 +551,7 @@ const QuickAddProduct = () => {
         });
         setTimeout(() => {
           setIsInitializing(false);
+          setPageLoader(false);
         }, 0);
       },
       onFail: (err: any) => {
@@ -679,6 +575,10 @@ const QuickAddProduct = () => {
           />
         </div>
       </div>
+
+      {pageLoader && (
+        <PageLoader loading={pageLoader} text="Loading product details..." />
+      )}
 
       <main className="flex-1 overflow-y-auto">
         <form
@@ -788,7 +688,13 @@ const QuickAddProduct = () => {
                 Clear
               </Button>
 
-              <Button type="submit" variant="primary" className="flex-1">
+              <Button
+                type="submit"
+                variant="primary"
+                className="flex-1"
+                disabled={loading}
+              >
+                {loading && <ButtonLoader />}
                 {id ? "Update Product" : "Add Product"}
               </Button>
             </div>

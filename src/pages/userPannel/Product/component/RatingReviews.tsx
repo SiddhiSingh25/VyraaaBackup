@@ -17,41 +17,7 @@ const StarRow = ({ rating, size = 14 }: { rating: number; size?: number }) => (
   </div>
 );
 
-const TruckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path d="M2 7h13v9H2z" stroke="#835240" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M15 10h4l3 3v3h-7v-6z" stroke="#835240" strokeWidth="1.5" strokeLinejoin="round" />
-    <circle cx="6.5" cy="18" r="1.8" stroke="#835240" strokeWidth="1.5" />
-    <circle cx="17.5" cy="18" r="1.8" stroke="#835240" strokeWidth="1.5" />
-  </svg>
-);
 
-const ReturnIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path d="M4 4v6h6" stroke="#835240" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M4.5 14a8 8 0 1 0 2-8.5L4 10" stroke="#835240" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const CashIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <rect x="2" y="6" width="20" height="12" rx="2" stroke="#835240" strokeWidth="1.5" />
-    <circle cx="12" cy="12" r="3" stroke="#835240" strokeWidth="1.5" />
-    <path d="M2 9h2M20 9h2M2 15h2M20 15h2" stroke="#835240" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
-const HelpfulIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M7 10v11M2 10h4v11H2zM7 10l3-8a2 2 0 0 1 2 2v5h6.5a2 2 0 0 1 2 2.5l-1.8 7A2 2 0 0 1 17.7 21H7"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
 
 /* ---------------------------- Small building blocks ---------------------------- */
 
@@ -75,14 +41,7 @@ const FadeIn = ({
   </div>
 );
 
-// Rating distribution UI removed — we show individual reviews only.
 
-const FeatureCard = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
-  <div className="flex flex-col items-center text-center gap-1.5 py-4 px-2 rounded-xl border border-[#e6d9cf] bg-[#fdf9f3] hover:border-[#835240] transition-colors duration-200">
-    {icon}
-    <span className="text-[11px] text-[#51443f]">{label}</span>
-  </div>
-);
 
 const ReviewCard = ({
   review,
@@ -228,6 +187,7 @@ const RatingsAndReviews = ({
   reviews,
 }: RatingsAndReviewsProps) => {
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -253,87 +213,103 @@ const RatingsAndReviews = ({
   };
 
   return (
-    <div
-      ref={sectionRef}
-      className="mt-8 rounded-2xl border border-[#e6d9cf] bg-white shadow-[0_4px_24px_rgba(59,48,42,0.06)] p-6"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3
-          className="text-[19px] text-[#3b302a] font-medium"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+    <>
+
+      {rating === 0 ? (
+        <div
+          ref={sectionRef}
+          className="mt-8 rounded-2xl border border-[#e6d9cf] bg-white shadow-[0_4px_24px_rgba(59,48,42,0.06)] p-5"
         >
-          Ratings &amp; Reviews
-        </h3>
-        <div className="flex items-center gap-2">
-          <StarRow rating={rating} size={13} />
-          <span className="text-[13px] text-[#3b302a] font-medium">{rating} / 5</span>
-          <span className="text-[12px] text-[#84746e]">· Based on {totalRatings} Ratings</span>
+          <h3
+            className="text-[19px] text-[#3b302a] font-medium"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            No rating available
+          </h3>
         </div>
-      </div>
+      ) : (
+        <div
+          ref={sectionRef}
+          className="mt-8 rounded-2xl border border-[#e6d9cf] bg-white shadow-[0_4px_24px_rgba(59,48,42,0.06)] p-5"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <h3
+              className="text-[19px] text-[#3b302a] font-medium"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Ratings &amp; Reviews
+            </h3>
 
-      {/* Summary (simple): show average and counts */}
-      <div className="mt-6 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <StarRow rating={Math.round(rating)} size={16} />
-          <div className="text-[13px] text-[#3b302a] font-medium">{rating} / 5</div>
-        </div>
-        <div className="text-[12.5px] text-[#84746e]">{totalReviews} Reviews</div>
-      </div>
+            {rating !== 0 && (
+              <div className="flex items-center gap-2">
+                <StarRow rating={rating} size={13} />
+                <span className="text-[13px] text-[#3b302a] font-medium">{rating} / 5</span>
+                {totalRatings > 0 && (
+                  <span className="text-[12px] text-[#84746e]">· Based on {totalRatings} Ratings</span>
+                )}
+              </div>
+            )}
+          </div>
 
-      <div className="my-6 h-px bg-[#e6d9cf]" />
 
-      {/* Customer Reviews: render all individual reviews from API */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {reviews.map((review, i) => (
-          <FadeIn key={review._id || review.id || i} trigger={visible} delay={i * 80}>
-            <ReviewCard
-              review={{
-                id: review._id || review.id || i,
-                name: review.user ? `${review.user.firstName || ''} ${review.user.lastName || ''}`.trim() : review.name || "Customer",
-                rating: review.rating,
-                verified: review.verified || false,
-                date: review.createdAt ? new Date(review.createdAt).toLocaleDateString() : review.date || "",
-                title: review.title || "",
-                review: review.message || review.review || "",
-                helpful: review.helpful || 0,
-                images: review.images || [],
-              }}
-              onImageClick={handleImageClick}
+
+          <div className="my-2 mb-4 h-px bg-[#e6d9cf]" />
+
+          {/* Customer Reviews: render all individual reviews from API */}
+          <div className="grid grid-cols-1 gap-4">
+            {(isExpanded ? (reviews || []) : (reviews || []).slice(0, 3)).map((review, i) => (
+              <FadeIn key={review._id || review.id || i} trigger={visible} delay={i * 80}>
+                <ReviewCard
+                  review={{
+                    id: review._id || review.id || i,
+                    name: review.user ? `${review.user.firstName || ''} ${review.user.lastName || ''}`.trim() : review.name || "Customer",
+                    rating: review.rating,
+                    verified: review.verified || false,
+                    date: review.createdAt ? new Date(review.createdAt).toLocaleDateString() : review.date || "",
+                    title: review.title || "",
+                    review: review.message || review.review || "",
+                    helpful: review.helpful || 0,
+                    images: review.images || [],
+                  }}
+                  onImageClick={handleImageClick}
+                />
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Show More / Show Less Toggle */}
+          {reviews && reviews.length > 3 && (
+            <div className="mt-5 flex justify-center md:justify-start">
+              <button
+                type="button"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="group flex items-center gap-1.5 text-[12.5px] tracking-[0.06em] uppercase text-[#835240] font-medium cursor-pointer"
+              >
+                <span className="border-b border-transparent group-hover:border-[#835240] transition-colors duration-200">
+                  {isExpanded ? "Show Less" : "Show More"}
+                </span>
+                <span className={`transition-transform duration-200 ${isExpanded ? "-rotate-90" : "rotate-90"} inline-block`}>
+                  →
+                </span>
+              </button>
+            </div>
+          )}
+
+
+
+          {lightbox && (
+            <Lightbox
+              images={lightbox.images}
+              index={lightbox.index}
+              onClose={() => setLightbox(null)}
+              onNav={handleNav}
             />
-          </FadeIn>
-        ))}
-      </div>
-
-      {/* View all */}
-      <div className="mt-5 flex justify-center md:justify-start">
-        <button
-          type="button"
-          className="group flex items-center gap-1.5 text-[12.5px] tracking-[0.06em] uppercase text-[#835240] font-medium"
-        >
-          <span className="border-b border-transparent group-hover:border-[#835240] transition-colors duration-200">
-            View All Reviews
-          </span>
-          <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-        </button>
-      </div>
-
-      {/* Feature icons */}
-      {/* <div className="mt-6 pt-6 border-t border-[#e6d9cf] grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <FeatureCard icon={<TruckIcon />} label="Free Shipping" />
-        <FeatureCard icon={<CashIcon />} label="Cash on Delivery" />
-        <FeatureCard icon={<ReturnIcon />} label="Easy Returns" />
-      </div> */}
-
-      {lightbox && (
-        <Lightbox
-          images={lightbox.images}
-          index={lightbox.index}
-          onClose={() => setLightbox(null)}
-          onNav={handleNav}
-        />
+          )}
+        </div>
       )}
-    </div>
+
+    </>
   );
 };
 

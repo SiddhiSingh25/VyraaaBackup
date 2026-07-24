@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Heart, ShoppingBag, User, Menu } from "lucide-react";
+import { Heart, ShoppingBag, User, Menu, User2 } from "lucide-react";
 import SearchBar from "./Component/SearchBar";
 import MegaMenu from "./Component/MegaMenu";
 import MobileMenu from "./Component/MobileMenu";
@@ -119,7 +119,6 @@ export default function Navbar({
           const moreItem = {
             id: "more",
             label: "More",
-            to: "/clothing",
             columns: [
               {
                 title: "Explore",
@@ -320,6 +319,9 @@ export default function Navbar({
               <Link to="/cart" className="relative text-admin-text/80">
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
+              </Link>
+              <Link to="/profile" className="relative text-admin-text/80">
+                <User2 size={20} strokeWidth={1.6} />
               </Link>
             </div>
           </div>

@@ -19,7 +19,8 @@ export default function CheckoutStepper() {
   return (
     <div className="w-full border-b border-border bg-surface/60">
       <div className="mx-auto flex max-w-7xl items-center justify-center px-6 py-5">
-        <ol className="flex w-full max-w-xl items-center">
+        {/* Changed max-w-xl to max-w-sm to reduce the gap between steps */}
+        <ol className="flex w-full max-w-sm items-center">
           {checkoutSteps.map((step, index) => {
             const isComplete = index < currentStep;
             const isActive = index === currentStep;
@@ -52,11 +53,10 @@ export default function CheckoutStepper() {
                       />
                     ) : (
                       <span
-                        className={`text-xs font-semibold ${
-                          isActive
+                        className={`text-xs font-semibold ${isActive
                             ? "text-background"
                             : "text-muted"
-                        }`}
+                          }`}
                       >
                         {index + 1}
                       </span>
@@ -64,13 +64,12 @@ export default function CheckoutStepper() {
                   </motion.div>
 
                   <span
-                    className={`text-[11px] tracking-wide ${
-                      isActive
+                    className={`text-[11px] tracking-wide ${isActive
                         ? "font-semibold text-admin-text"
                         : isComplete
-                        ? "text-body"
-                        : "text-muted"
-                    }`}
+                          ? "text-body"
+                          : "text-muted"
+                      }`}
                   >
                     {step.label}
                   </span>

@@ -5,6 +5,8 @@ import useGetQuery from "../../../../hooks/getQuery.hook";
 import { Link, useNavigate } from "react-router-dom";
 import SectionHeader from "@/components/Common/Headers/SectionHeader";
 import SkeletonCard from "../../Product/component/SkeletonCard";
+import { EmptyState } from "@/components/Common/EmptyList/EmptyList";
+import { PackageSearch, ShoppingBag } from "lucide-react";
 
 const GENDERS = ["Men", "Women", "Unisex", "Child"] as const;
 type Gender = (typeof GENDERS)[number] | "";
@@ -51,75 +53,72 @@ export default function ProductShowcase() {
 
 
 
-interface CategoryCardProps {
-  cat: Category;
-  isActive: boolean;
-  onClick: (cat: Category) => void;
-}
+  interface CategoryCardProps {
+    cat: Category;
+    isActive: boolean;
+    onClick: (cat: Category) => void;
+  }
 
 
 
-  function CategoryCard({ cat, isActive, onClick }: CategoryCardProps){
-    return(
+  function CategoryCard({ cat, isActive, onClick }: CategoryCardProps) {
+    return (
       <button
-                key={cat?._id}
-                onClick={() => {
-                  const routeParam = cat?.category
-                    ?.toLowerCase()
-                    .replace(/\s+/g, "-");
-                  navigate(`/${routeParam}`, {
-                    state: {
-                      categoryId: cat?._id,
-                      fullCategoryData: cat,
-                    },
-                  });
-                }}
-                // 'group' enables synchronized hover effects on children
-                className="group flex flex-col items-center gap-3 flex-shrink-0 snap-center focus:outline-none"
-              >
-                {/* Image Container */}
-                <div
-                  className={`relative flex items-center justify-center overflow-hidden transition-all duration-300 ease-out
+        key={cat?._id}
+        onClick={() => {
+          const routeParam = cat?.category
+            ?.toLowerCase()
+            .replace(/\s+/g, "-");
+          navigate(`/${routeParam}`, {
+            state: {
+              categoryId: cat?._id,
+              fullCategoryData: cat,
+            },
+          });
+        }}
+        // 'group' enables synchronized hover effects on children
+        className="group flex flex-col items-center gap-3 flex-shrink-0 snap-center focus:outline-none"
+      >
+        {/* Image Container */}
+        <div
+          className={`relative flex items-center justify-center overflow-hidden transition-all duration-300 ease-out
             w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-2xl
-            ${
-              isActive
-                ? "ring-2 ring-primary ring-offset-2 shadow-md"
-                : "border border-border/50 shadow-sm group-hover:shadow-md group-hover:-translate-y-1 group-hover:border-primary/50"
+            ${isActive
+              ? "ring-2 ring-primary ring-offset-2 shadow-md"
+              : "border border-border/50 shadow-sm group-hover:shadow-md group-hover:-translate-y-1 group-hover:border-primary/50"
             } bg-card`}
-                >
-                  {/* Subtle dark overlay on hover for a tactile feel */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 z-10" />
+        >
+          {/* Subtle dark overlay on hover for a tactile feel */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 z-10" />
 
-                  <img
-                    src={cat?.image}
-                    alt={cat?.category}
-                    className={`w-full h-full object-cover transition-transform duration-500 ease-out
+          <img
+            src={cat?.image}
+            alt={cat?.category}
+            className={`w-full h-full object-cover transition-transform duration-500 ease-out
               ${isActive ? "scale-105" : "group-hover:scale-110"}`}
-                    style={{ objectPosition: "center" }}
-                  />
-                </div>
+            style={{ objectPosition: "center" }}
+          />
+        </div>
 
-                {/* Text Label */}
-                <div className="flex flex-col items-center gap-1.5">
-                  <span
-                    className={`text-[11px] sm:text-xs font-semibold tracking-widest uppercase transition-colors duration-300
-              ${
-                isActive
-                  ? "text-primary"
-                  : "text-admin-text/70 group-hover:text-admin-text"
+        {/* Text Label */}
+        <div className="flex flex-col items-center gap-1.5">
+          <span
+            className={`text-[11px] sm:text-xs font-semibold tracking-widest uppercase transition-colors duration-300
+              ${isActive
+                ? "text-primary"
+                : "text-admin-text/70 group-hover:text-admin-text"
               }`}
-                  >
-                    {cat?.category}
-                  </span>
+          >
+            {cat?.category}
+          </span>
 
-                  {/* Premium Active Indicator (replaces the old border-b) */}
-                  <div
-                    className={`h-[3px] rounded-full transition-all duration-300 ease-out ${
-                      isActive ? "w-4 bg-primary" : "w-0 bg-transparent"
-                    }`}
-                  />
-                </div>
-              </button>
+          {/* Premium Active Indicator (replaces the old border-b) */}
+          <div
+            className={`h-[3px] rounded-full transition-all duration-300 ease-out ${isActive ? "w-4 bg-primary" : "w-0 bg-transparent"
+              }`}
+          />
+        </div>
+      </button>
     )
   }
 
@@ -134,7 +133,7 @@ interface CategoryCardProps {
       },
       onFail: (res: any) => {
         console.log(res);
-         setCategoryLoading(false)
+        setCategoryLoading(false)
       },
     });
   }, [getQuery]);
@@ -206,7 +205,7 @@ interface CategoryCardProps {
               />
             ))
           ) : (
-            <p className="text-center w-full text-admin-text/70">No categories found</p>
+            <p className="text-xl font-semibold text-gray-800">No categories found</p>
           )}
         </div>
 
@@ -243,25 +242,37 @@ interface CategoryCardProps {
         </div> */}
 
         {/* Products grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
           {productLoading ? (
             Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
           ) : products.length ? (
             products.map((p: any) => <ProductCard key={p?.id} product={p} />)
           ) : (
-            <h1>No data</h1>
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+              <ShoppingBag className="w-14 h-14 text-gray-400 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800">
+                No Products Available
+              </h3>
+              <p className="mt-2 text-gray-500">
+                There are no products to display at the moment.
+              </p>
+            </div>
           )}
-       
+
         </div>
 
-        <div className="text-center mt-10">
-          <Link
-            to="/all-product"
-            className="inline-block border border-heading/30 text-admin-text px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-heading hover:text-white transition-all duration-400"
-          >
-            View All Products
-          </Link>
-        </div>
+        {!productLoading && !!products.length && (
+          <div className="text-center mt-10">
+            <Link
+              to="/all-product"
+              className="inline-block border border-heading/30 text-admin-text px-8 sm:px-10 py-3 sm:py-3.5 text-[11px] font-medium tracking-[0.18em] uppercase hover:bg-heading hover:text-white transition-all duration-400"
+            >
+              View All Products
+            </Link>
+          </div>
+        )}
+
+
       </div>
     </section>
   );

@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function Newsletter() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state: any) => state.auth);
 
   return (
     <section className="relative bg-card pt-20 sm:pt-24 pb-28 sm:pb-32 px-5 sm:px-10 text-center overflow-hidden">
@@ -20,26 +22,39 @@ export default function Newsletter() {
           className="block font-body text-[10px] sm:text-[11px] tracking-[0.35em] uppercase mb-5"
           style={{ color: "var(--color-primary)" }}
         >
-          Vyraaa People
+          {isAuthenticated ? "Select Curation" : "Vyraaa People"}
         </span>
 
         <h2 className="font-heading text-admin-text font-normal text-[clamp(32px,5vw,52px)] leading-tight mb-6">
-          Step into{" "}
-          <span className="italic font-light text-primary">
-            your signature era
-          </span>
+          {isAuthenticated ? (
+            <>
+              Explore{" "}
+              <span className="italic font-light text-primary">
+                our products
+              </span>
+            </>
+          ) : (
+            <>
+              Step into{" "}
+              <span className="italic font-light text-primary">
+                your signature era
+              </span>
+            </>
+          )}
         </h2>
 
         <p className="font-body text-body text-sm sm:text-base leading-relaxed max-w-xl mx-auto mb-10">
-          Create an exclusive account today to explore our collections, build your private wishlist, and purchase authentic products from Vyraaa.
+          {isAuthenticated
+            ? "Explore our full range of curated designs, fine products, and original fragrances crafted for those who value authenticity."
+            : "Create an exclusive account today to explore our collections, build your private wishlist, and purchase authentic products from Vyraaa."}
         </p>
 
         <div className="flex justify-center">
           <button
-            onClick={() => navigate("/auth/signup")}
+            onClick={() => navigate(isAuthenticated ? "/all-product" : "/auth/signup")}
             className="group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden rounded-sm bg-primary text-background font-body text-xs  tracking-[0.2em] uppercase transition-all duration-300 hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(131,82,64,0.35)]"
           >
-            Create Your Account
+            {isAuthenticated ? "Shop the Collection" : "Create Your Account"}
           </button>
         </div>
       </div>

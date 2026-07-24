@@ -10,6 +10,7 @@ import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
 import { useNavigate } from "react-router-dom";
 import usePostQuery from "@/hooks/postQuery.hook";
+import PageLoader from "@/components/Loader/fullPageLoader";
 
 const Product = () => {
   const [search, setSearch] = useState("");
@@ -22,7 +23,7 @@ const Product = () => {
     limit: 10,
   });
   const [pendingDelete, setPendingDelete] = useState<ProductItem | null>(null);
-  const { getQuery } = useGetQuery();
+  const { getQuery, loading } = useGetQuery();
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
 
@@ -95,6 +96,9 @@ const Product = () => {
     <div className="h-screen bg-slate-50 font-admin-text text-slate-900">
       <div className="mx-auto max-w-7xl px-4 py-4">
         <div className="mb-4 flex items-center justify-between">
+          {loading && (
+            <PageLoader loading={loading} text="Loadind Products..." />
+          )}
           <div>
             <h1 className="text-3xl font-bold">Product Management</h1>
 
