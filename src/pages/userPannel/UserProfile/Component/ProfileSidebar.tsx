@@ -58,7 +58,7 @@ interface ProfileSidebarProps {
 
 export function ProfileSidebar({ activeTab, onTabChange, onLogout }: ProfileSidebarProps) {
   return (
-    <aside className="flex flex-col rounded-2xl border border-border bg-surface overflow-hidden sticky top-24 self-start">
+    <aside className="flex flex-col rounded-2xl border border-border bg-surface overflow-hidden md:sticky md:top-24 md:self-start">
       <nav className="p-3 flex flex-col gap-1" aria-label="Account navigation">
         {TABS.map((tab) => {
           const isActive = tab.id === activeTab;

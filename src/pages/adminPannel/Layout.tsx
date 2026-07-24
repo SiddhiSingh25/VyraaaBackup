@@ -296,7 +296,7 @@ export default function AdminLayout() {
               <span
                 className={`
                   min-w-0 transition-all duration-200
-                  ${isAsideExpanded ? "lg:block" : "lg:hidden"}
+                  ${isAsideExpanded ? "lg:block" : "lg:hidden"} block
                 `}
               >
                 <span className="block truncate text-lg font-bold tracking-wide ">
@@ -354,7 +354,7 @@ export default function AdminLayout() {
               <Plus size={16} />
             </span>
 
-            <span className={`${isAsideExpanded ? "lg:block" : "lg:hidden"}`}>
+            <span className={`${isAsideExpanded ? "lg:block" : "lg:hidden"} block`}>
               Add Product
             </span>
           </button>
@@ -410,7 +410,7 @@ export default function AdminLayout() {
                           <span
                             className={`
                               truncate font-medium
-                              ${isAsideExpanded ? "lg:block" : "lg:hidden"}
+                              ${isAsideExpanded ? "lg:block" : "lg:hidden"} block
                             `}
                           >
                             {item.label}
@@ -419,7 +419,7 @@ export default function AdminLayout() {
 
                         <span
                           className={`
-                            ${isAsideExpanded ? "lg:flex" : "lg:hidden"}
+                            ${isAsideExpanded ? "lg:flex" : "lg:hidden"} flex
                             items-center text-muted transition-transform duration-200
                           `}
                         >
@@ -536,7 +536,7 @@ export default function AdminLayout() {
                         <span
                           className={`
                             truncate font-medium
-                            ${isAsideExpanded ? "lg:block" : "lg:hidden"}
+                            ${isAsideExpanded ? "lg:block" : "lg:hidden"} block
                           `}
                         >
                           {item.label}
@@ -564,7 +564,7 @@ export default function AdminLayout() {
               <LogOut size={17} />
             </span>
 
-            <span className={`${isAsideExpanded ? "lg:block" : "lg:hidden"}`}>
+            <span className={`${isAsideExpanded ? "lg:block" : "lg:hidden"} block`}>
               Logout
             </span>
           </button>
@@ -572,12 +572,12 @@ export default function AdminLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* <header
+        <header
           className="
             sticky top-0 z-20 border-b border-border/60
             bg-background/55 px-4 py-3 backdrop-blur-2xl
             supports-[backdrop-filter]:bg-background/45
-            sm:px-5 lg:px-6
+            sm:px-5 lg:hidden
           "
         >
           <div className="flex items-center justify-between gap-3">
@@ -586,13 +586,13 @@ export default function AdminLayout() {
                 type="button"
                 aria-label="Open sidebar"
                 onClick={() => setIsMobileSidebarOpen(true)}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-surface/70 text-muted shadow-sm backdrop-blur-xl transition-all duration-200 hover:bg-card hover:text-primary lg:hidden"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-surface/70 text-muted shadow-sm backdrop-blur-xl transition-all duration-200 hover:bg-card hover:text-primary"
               >
                 <Menu size={20} />
               </button>
 
               <div className="min-w-0">
-                <p className="truncate text-base font-bold  sm:text-lg">
+                <p className="truncate text-base font-bold sm:text-lg">
                   {headerName}
                 </p>
                 <p className="hidden text-xs text-muted sm:block">
@@ -601,41 +601,18 @@ export default function AdminLayout() {
               </div>
             </div>
 
-            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-              <div className="hidden items-center gap-2 rounded-2xl border border-border/70 bg-surface/60 px-3 py-2 backdrop-blur-xl md:flex">
-                <Search size={15} className="text-muted" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-36 bg-transparent text-sm  outline-none placeholder:text-muted lg:w-52"
-                />
-              </div>
-
+            <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
-                className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-surface/60 text-muted shadow-sm backdrop-blur-xl transition-all duration-200 hover:bg-card hover:text-primary"
+                onClick={handleLogout}
+                aria-label="Logout"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-200 hover:bg-primary hover:text-white"
               >
-                <Bell size={17} />
-
-                <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full border-2 border-surface bg-red-500" />
-              </button>
-
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-surface/60 text-muted shadow-sm backdrop-blur-xl transition-all duration-200 hover:bg-card hover:text-primary"
-              >
-                <Moon size={17} />
-              </button>
-
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 font-bold text-primary shadow-sm ring-1 ring-primary/10 transition-all duration-200 hover:bg-primary hover:text-white"
-              >
-                AD
+                <LogOut size={17} />
               </button>
             </div>
           </div>
-        </header> */}
+        </header>
 
         <main className="flex-1 overflow-y-auto bg-background ">
           <Outlet />

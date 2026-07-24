@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; // Removed unused 'use' import
+import React, { useEffect, useState, useRef } from "react"; // Removed unused 'use' import
 import { useReveal } from "../../../../hooks/gsap/useReveal";
 import { kidsFootwear, shirts } from "../../../../assets/assets";
 import RatingsAndReviews from "./RatingReviews";
@@ -150,6 +150,8 @@ const ProductInfo = ({
   const [quantity, setQuantity] = React.useState(1);
   const [isWishlisted, setIsWishlisted] = React.useState(false);
   const ref = useReveal();
+  const isCartActionPending = useRef(false);
+  const isBuyNowPending = useRef(false);
 
   useEffect(() => {
     if (!id) return;
@@ -193,6 +195,13 @@ const ProductInfo = ({
       return;
     }
 
+    if (isCartActionPending.current) return;
+    isCartActionPending.current = true;
+
+    const safetyTimeout = setTimeout(() => {
+      isCartActionPending.current = false;
+    }, 2000);
+
     postQuery({
       url: apiUrls.Cart.add,
       postData: {
@@ -201,6 +210,8 @@ const ProductInfo = ({
         quantity: 1,
       },
       onSuccess: (res: any) => {
+        clearTimeout(safetyTimeout);
+        isCartActionPending.current = false;
         toast("success", res.message);
         dispatch(
           addToCart({
@@ -217,9 +228,30 @@ const ProductInfo = ({
         );
       },
       onFail: (res: any) => {
+        clearTimeout(safetyTimeout);
+        isCartActionPending.current = false;
         console.log(res?.data?.message, "=====error section");
         toast("error", res?.data?.message || "Failed to add item to cart");
         setIsLoading(false);
+      },
+    });
+  };
+
+  const handleBuyNow = () => {
+    if (selectedSize === null) return;
+    if (isBuyNowPending.current) return;
+    isBuyNowPending.current = true;
+
+    setTimeout(() => {
+      isBuyNowPending.current = false;
+    }, 1000);
+
+    navigate(`/checkout/address`, {
+      state: {
+        from: "product",
+        productId: id,
+        size: activePrice?.size?._id,
+        quantity: quantity || 1,
       },
     });
   };
@@ -473,18 +505,7 @@ const ProductInfo = ({
                       selectedSize === null ||
                       activePrice?.isAvailable === false
                     }
-                    onClick={() => {
-                      if (selectedSize === null) return;
-
-                      navigate(`/checkout/address`, {
-                        state: {
-                          from: "product",
-                          productId: id,
-                          size: activePrice?.size?._id,
-                          quantity: quantity || 1,
-                        },
-                      });
-                    }}
+                    onClick={handleBuyNow}
                     type="button"
                     className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-[#835240] rounded-sm transition-colors duration-200 ${selectedSize === null ||
                       activePrice?.isAvailable === false
