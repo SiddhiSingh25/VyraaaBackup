@@ -12,7 +12,7 @@ const OrderDetails = () => {
     const { id } = location?.state || {};
     const { getQuery, loading } = useGetQuery();
 
-    
+
     const [orderDetails, setOrderDetails] = useState<any>(null);
 
     const getDetails = () => {
@@ -177,7 +177,9 @@ const OrderDetails = () => {
                             <div className="border-t border-border pt-4 space-y-3">
                                 <div className="flex justify-between text-sm text-body">
                                     <span>Subtotal ({orderDetails.items?.length || 0} items)</span>
-                                    <span className="font-medium">₹{orderDetails.grandTotal}</span>
+                                    <span className="font-medium">
+                                        ₹{Number(orderDetails.grandTotal || 0).toFixed(2)}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between text-sm text-body">
                                     <span>Shipping</span>
@@ -186,7 +188,9 @@ const OrderDetails = () => {
 
                                 <div className="flex justify-between items-center mt-4 pt-4 border-t border-border">
                                     <span className="text-base font-bold text-heading">Grand Total</span>
-                                    <span className="text-xl font-black text-primary">₹{orderDetails.grandTotal}</span>
+                                    <span className="text-xl font-black text-primary">
+                                        ₹{Number(orderDetails.grandTotal).toFixed(2)}
+                                    </span>
                                 </div>
                             </div>
                         </div>
