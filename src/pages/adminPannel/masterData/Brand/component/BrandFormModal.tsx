@@ -87,7 +87,12 @@ export default function BrandFormModal({
           <Button variant="secondary" onClick={onClose} type="button">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} type="submit" className="bg-dark">
+          <Button
+            onClick={handleSubmit}
+            type="submit"
+            className="bg-dark"
+            disabled={loading}
+          >
             {loading && <ButtonLoader />}
             {mode === "add" ? "Add Brand" : "Save Changes"}
           </Button>

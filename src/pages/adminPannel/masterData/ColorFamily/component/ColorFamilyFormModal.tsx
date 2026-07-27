@@ -68,7 +68,12 @@ export default function ColorFamilyFormModal({
           <Button variant="secondary" onClick={onClose} type="button">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} type="submit" form="colorfamily-form">
+          <Button
+            onClick={handleSubmit}
+            type="submit"
+            form="colorfamily-form"
+            disabled={loading}
+          >
             {loading && <ButtonLoader />}
             {mode === "add" ? "Add" : "Save"}
           </Button>
