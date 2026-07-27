@@ -13,6 +13,7 @@ export interface UserProfile {
   tier: MembershipTier;
   tierProgress: number;
   pointsToNextTier: number;
+  profilePic?: string
 }
 
 export interface AccountStats {

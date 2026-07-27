@@ -56,10 +56,10 @@ export default function Profile() {
   const fetchAddresses = useCallback(() => {
     getAddressesQuery({
       url: apiUrls.Address.getByUserId,
-      onSuccess: (res) => {
+      onSuccess: (res: any) => {
         setAddresses(res?.data ?? []);
       },
-      onFail: (err) => {
+      onFail: (err: any) => {
         console.error("Failed to load addresses", err);
       },
     });
