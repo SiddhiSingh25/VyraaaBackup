@@ -17,6 +17,7 @@ import {
 import { forgotPasswordSchema } from "./forgot.schema";
 import type { ForgotPasswordFormValues } from "../../types";
 import { apiUrls } from "@/apis";
+import { useEffect } from "react";
 
 /**
  * UI only — no API wired yet. Replace onSubmit with a postQuery call once
@@ -34,6 +35,10 @@ const ForgotPassword = () => {
     resolver: yupResolver(forgotPasswordSchema) as any,
     defaultValues: { email: "" },
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const onSubmit = (values: ForgotPasswordFormValues) => {
     postQuery({

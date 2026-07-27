@@ -77,16 +77,15 @@ export default function SearchBar({
         className={`flex items-center w-full h-full rounded-full border bg-heading/[0.035]
           transition-all duration-300 ease-out
           ${focused
-            ? "border-primary/40 bg-background shadow-[0_0_0_4px_rgba(0,0,0,0.03)] ring-2 ring-primary/15"
+            ? "border-primary/40 bg-background shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
             : "border-border/70 hover:border-border"
           }`}
       >
         <Search
           size={16}
           strokeWidth={1.8}
-          className={`ml-4 shrink-0 transition-colors duration-300 ${
-            focused ? "text-primary-dark" : "text-admin-text/40"
-          }`}
+          className={`ml-4 shrink-0 transition-colors duration-300 ${focused ? "text-primary-dark" : "text-admin-text/40"
+            }`}
         />
         <input
           id={isMobile ? "mobile-search-input" : "desktop-search-input"}

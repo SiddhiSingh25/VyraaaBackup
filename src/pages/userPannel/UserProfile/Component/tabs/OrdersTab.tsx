@@ -15,20 +15,22 @@ import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook"; // <-- Added
 import { apiUrls } from "@/apis";
 import { useNavigate } from "react-router-dom";
+import { SkeletonOrders } from "./SkeletonOrders";
 
 export function OrdersTab() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { getQuery } = useGetQuery();
-  const { postQuery } = usePostQuery(); // <-- Added
+  const { postQuery } = usePostQuery();
   const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Review Modal State
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [reviewText, setReviewText] = useState("");
   const [reviewImages, setReviewImages] = useState<File[]>([]);
-  const [rating, setRating] = useState<number>(5); // <-- Added Rating State
-  const [isSubmitting, setIsSubmitting] = useState(false); // <-- Added loading state
+  const [rating, setRating] = useState<number>(5);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     getQuery({
@@ -53,9 +55,11 @@ export function OrdersTab() {
           }))
         );
         setOrders(formattedOrders);
+        setIsLoading(false);
       },
       onFail: (err: any) => {
         console.log("Failed to fetch orders:", err);
+        setIsLoading(false);
       },
     });
   }, []);
@@ -160,6 +164,10 @@ export function OrdersTab() {
     }
   };
 
+  if (isLoading) {
+    return <SkeletonOrders />;
+  }
+
   if (!orders.length) {
     return (
       <div className="rounded-2xl border border-border bg-surface p-12 text-center">
@@ -198,7 +206,7 @@ export function OrdersTab() {
 
   return (
     <div className="space-y-6 relative">
-      {Object.entries(grouped).map(([status, list]) => (
+      {(Object.entries(grouped) as [string, any[]][]).map(([status, list]) => (
         <div
           key={status}
           className="rounded-2xl bg-card border border-border p-4"

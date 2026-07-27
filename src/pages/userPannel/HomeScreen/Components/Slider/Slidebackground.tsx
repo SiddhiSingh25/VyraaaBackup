@@ -34,16 +34,20 @@ export default function SlideBackground({ slide, priority }: SlideBackgroundProp
       : slide.desktopImage;
 
   return (
-    <div
-      role="img"
-      aria-label={`${slide.title1} ${slide.title2}`}
-      // `fetchpriority` is a real DOM attribute (lowercase in React);
-      // it tells the browser to prioritize the active slide's image
-      // over the rest of the page's resources.
-      // @ts-expect-error fetchpriority isn't in older React DOM typings
-      fetchpriority={priority ? "high" : "low"}
-      className="slide-bg absolute inset-0 bg-cover bg-center bg-no-repeat h-full mx-auto px-8 xl:px-12 gap-8 xl:gap-12"
-      style={{ backgroundImage: `url(${image})`, willChange: "transform, opacity" }}
-    />
+    <picture>
+  {/* Mobile */}
+  <source media="(max-width: 640px)" srcSet={slide.mobileImage} />
+  {/* Tablet (optional) */}
+  {slide.tabletImage && <source media="(max-width: 1024px)" srcSet={slide.tabletImage} />}
+  {/* Desktop */}
+  <img
+    src={slide.desktopImage}
+    alt={`${slide.title1} ${slide.title2}`}
+    loading={priority ? "eager" : "lazy"}
+    decoding="async"
+    className="slide-bg absolute inset-0 w-full h-full object-cover bg-center"
+    style={{ willChange: "transform, opacity" }}
+  />
+</picture>
   );
 }

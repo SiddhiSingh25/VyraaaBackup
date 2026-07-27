@@ -31,6 +31,10 @@ const VerifyOtp = () => {
   const email = state?.email ?? "";
   const isReset = state?.isReset ?? false;
 
+ useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   useEffect(() => {
     if (!email) {
       console.log("errror")
