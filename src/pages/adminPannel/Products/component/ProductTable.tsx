@@ -7,6 +7,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { ProductTableProps } from "./types";
+import { useNavigate } from "react-router-dom";
 
 const ProductTable = ({
   items,
@@ -18,6 +19,7 @@ const ProductTable = ({
   onEdit,
   onDelete,
 }: ProductTableProps) => {
+  const navigate = useNavigate()
   const { currentPage, totalPages, totalProducts, limit } = pagination;
   const safeCurrentPage = Math.max(
     1,
@@ -189,15 +191,13 @@ const ProductTable = ({
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`h-2 w-2 rounded-full ${
-                            inStock ? "bg-green-500" : "bg-red-500"
-                          }`}
+                          className={`h-2 w-2 rounded-full ${inStock ? "bg-green-500" : "bg-red-500"
+                            }`}
                         />
 
                         <span
-                          className={`text-xs font-medium ${
-                            inStock ? "text-green-600" : "text-red-500"
-                          }`}
+                          className={`text-xs font-medium ${inStock ? "text-green-600" : "text-red-500"
+                            }`}
                         >
                           {inStock ? "In Stock" : "Out of Stock"}
                         </span>
@@ -211,7 +211,7 @@ const ProductTable = ({
                         <button
                           type="button"
                           aria-label={`View ${product.title}`}
-                          onClick={() => onView(product)}
+                          onClick={() => navigate(`/productDetails/${product.title.replace(/\s+/g, "-")}`, { state: { productId: product._id } })}
                           className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
                         >
                           <Eye size={15} className="text-[#7A5442]" />
