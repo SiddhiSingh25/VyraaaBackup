@@ -19,8 +19,12 @@ const ProductTable = ({
   onDelete,
 }: ProductTableProps) => {
   const { currentPage, totalPages, totalProducts, limit } = pagination;
-  const safeCurrentPage = Math.max(1, Math.min(currentPage || 1, totalPages || 1));
-  const firstEntry = totalProducts === 0 ? 0 : (safeCurrentPage - 1) * limit + 1;
+  const safeCurrentPage = Math.max(
+    1,
+    Math.min(currentPage || 1, totalPages || 1),
+  );
+  const firstEntry =
+    totalProducts === 0 ? 0 : (safeCurrentPage - 1) * limit + 1;
   const lastEntry = Math.min(safeCurrentPage * limit, totalProducts);
 
   return (
@@ -64,158 +68,178 @@ const ProductTable = ({
           </thead>
 
           <tbody>
-            {items.map((product, index) => {
-              const lowestPrice = Math.min(
-                ...product.price.map((x) => x.amount),
-              );
-
-              const variantSizes = product.price.map((x) => x.size).join(", ");
-
-              const inStock = product.price.some((x) => x.isAvailable);
-
-              return (
-                <tr
-                  key={product._id}
-                  className="border-b border-[#EFE4DB] hover:bg-[#FFFDFB] transition-colors"
+            {items.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={8}
+                  className="px-4 py-12 text-center text-sm text-[#8B5E49]"
                 >
-                  {/* Sr No */}
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-base font-medium text-[#5E4637]">
+                      No products available
+                    </p>
+                    <p className="text-xs text-[#9B7B69]">
+                      There are no products to display.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              items.map((product, index) => {
+                const lowestPrice = Math.min(
+                  ...product.price.map((x) => x.amount),
+                );
 
-                  <td className="px-4 py-3 text-sm text-[#5E4637]">
-                    {firstEntry + index}
-                  </td>
+                const variantSizes = product.price
+                  .map((x) => x.size)
+                  .join(", ");
 
-                  {/* Product */}
+                const inStock = product.price.some((x) => x.isAvailable);
 
-                  {/* Product */}
+                return (
+                  <tr
+                    key={product._id}
+                    className="border-b border-[#EFE4DB] hover:bg-[#FFFDFB] transition-colors"
+                  >
+                    {/* Sr No */}
 
-                  <td className="w-[320px] px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={product.image}
-                        alt={product.title}
-                        className="h-12 w-12 shrink-0 rounded-lg border border-[#E4D6CB] object-cover"
-                      />
+                    <td className="px-4 py-3 text-sm text-[#5E4637]">
+                      {firstEntry + index}
+                    </td>
 
-                      <div className="min-w-0 max-w-60">
-                        <p
-                          className="overflow-hidden text-sm font-medium leading-5 text-[#3F322B]"
-                          style={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                          }}
-                        >
-                          {product.title}
-                        </p>
+                    {/* Product */}
 
-                        <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                          <span>{product.brand?.brand}</span>
-                          <span>•</span>
-                          <span>{product.gender}</span>
+                    {/* Product */}
+
+                    <td className="w-[320px] px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={product.image}
+                          alt={product.title}
+                          className="h-12 w-12 shrink-0 rounded-lg border border-[#E4D6CB] object-cover"
+                        />
+
+                        <div className="min-w-0 max-w-60">
+                          <p
+                            className="overflow-hidden text-sm font-medium leading-5 text-[#3F322B]"
+                            style={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                            }}
+                          >
+                            {product.title}
+                          </p>
+
+                          <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                            <span>{product.brand?.brand}</span>
+                            <span>•</span>
+                            <span>{product.gender}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Category */}
+                    {/* Category */}
 
-                  <td className="px-4 py-3">
-                    <p className="text-sm font-medium text-[#473A33]">
-                      {product.category}
-                    </p>
-
-                    <p className="text-xs text-slate-500">
-                      {product.subCategory}
-                    </p>
-                  </td>
-
-                  {/* Color */}
-
-                  <td className="px-4 py-3">
-                    <span className="rounded bg-[#F6ECE5] px-2 py-1 text-xs font-medium text-[#7C5945]">
-                      {product.color || "_ _ _"}
-                    </span>
-                  </td>
-
-                  {/* Variants */}
-
-                  <td className="px-4 py-3">
-                    <div>
-                      <p className="text-sm font-medium">
-                        {product.price.length} Variants
+                    <td className="px-4 py-3">
+                      <p className="text-sm font-medium text-[#473A33]">
+                        {product.category}
                       </p>
 
-                      <p className="mt-1 text-xs text-slate-500 truncate max-w-30">
-                        {variantSizes}
+                      <p className="text-xs text-slate-500">
+                        {product.subCategory}
                       </p>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Price */}
+                    {/* Color */}
 
-                  <td className="px-4 py-3">
-                    <p className="font-semibold text-[#6F4A36]">
-                      ₹{lowestPrice}
-                    </p>
-
-                    <p className="text-xs text-slate-500">Starting Price</p>
-                  </td>
-
-                  {/* Stock */}
-
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`h-2 w-2 rounded-full ${
-                          inStock ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      />
-
-                      <span
-                        className={`text-xs font-medium ${
-                          inStock ? "text-green-600" : "text-red-500"
-                        }`}
-                      >
-                        {inStock ? "In Stock" : "Out of Stock"}
+                    <td className="px-4 py-3">
+                      <span className="rounded bg-[#F6ECE5] px-2 py-1 text-xs font-medium text-[#7C5945]">
+                        {product.color || "_ _ _"}
                       </span>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Actions */}
+                    {/* Variants */}
 
-                  <td className="px-4 py-3">
-                    <div className="flex justify-center gap-2">
-                      <button
-                        type="button"
-                        aria-label={`View ${product.title}`}
-                        onClick={() => onView(product)}
-                        className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
-                      >
-                        <Eye size={15} className="text-[#7A5442]" />
-                      </button>
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium">
+                          {product.price.length} Variants
+                        </p>
 
-                      <button
-                        type="button"
-                        aria-label={`Edit ${product.title}`}
-                        onClick={() => onEdit(product)}
-                        className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
-                      >
-                        <Edit2 size={15} className="text-[#7A5442]" />
-                      </button>
+                        <p className="mt-1 text-xs text-slate-500 truncate max-w-30">
+                          {variantSizes}
+                        </p>
+                      </div>
+                    </td>
 
-                      <button
-                        type="button"
-                        aria-label={`Delete ${product.title}`}
-                        onClick={() => onDelete(product)}
-                        className="rounded-md border border-[#F2D6D6] bg-white p-2 hover:bg-red-50"
-                      >
-                        <Trash2 size={15} className="text-red-500" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+                    {/* Price */}
+
+                    <td className="px-4 py-3">
+                      <p className="font-semibold text-[#6F4A36]">
+                        ₹{lowestPrice}
+                      </p>
+
+                      <p className="text-xs text-slate-500">Starting Price</p>
+                    </td>
+
+                    {/* Stock */}
+
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`h-2 w-2 rounded-full ${
+                            inStock ? "bg-green-500" : "bg-red-500"
+                          }`}
+                        />
+
+                        <span
+                          className={`text-xs font-medium ${
+                            inStock ? "text-green-600" : "text-red-500"
+                          }`}
+                        >
+                          {inStock ? "In Stock" : "Out of Stock"}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Actions */}
+
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          type="button"
+                          aria-label={`View ${product.title}`}
+                          onClick={() => onView(product)}
+                          className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
+                        >
+                          <Eye size={15} className="text-[#7A5442]" />
+                        </button>
+
+                        <button
+                          type="button"
+                          aria-label={`Edit ${product.title}`}
+                          onClick={() => onEdit(product)}
+                          className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
+                        >
+                          <Edit2 size={15} className="text-[#7A5442]" />
+                        </button>
+
+                        <button
+                          type="button"
+                          aria-label={`Delete ${product.title}`}
+                          onClick={() => onDelete(product)}
+                          className="rounded-md border border-[#F2D6D6] bg-white p-2 hover:bg-red-50"
+                        >
+                          <Trash2 size={15} className="text-red-500" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
