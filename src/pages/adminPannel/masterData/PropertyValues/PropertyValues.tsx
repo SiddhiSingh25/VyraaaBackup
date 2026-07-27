@@ -16,29 +16,38 @@ import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
 import { apiUrls } from "../../../../apis/index";
 import PageLoader from "@/components/Loader/fullPageLoader";
 
-const mapApi = (item: any): PropertyValueItem => ({
+// OPTIMIZATION 1: Map everything in a single pass using the backend's provided 'propertyName'
+const mapApi = (item: any, idx: number): PropertyValueItem => ({
   id: item._id,
-  srNo: 0,
+  srNo: idx + 1, // Calculate Sr No directly here
   property: item.property,
+  propertyName: item.propertyName || "", // Use backend data! No need to find() from properties state
   value: item.value,
 });
 
 export default function PropertyValuesPage() {
   const [items, setItems] = useState<PropertyValueItem[]>([]);
-  const [properties, setProperties] = useState<{ id: string; name: string }[]>(
-    [],
-  );
+  const [properties, setProperties] = useState<{ id: string; name: string }[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("add");
   const [activeItem, setActiveItem] = useState<any | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<PropertyValueItem | null>(
-    null,
-  );
+  const [pendingDelete, setPendingDelete] = useState<PropertyValueItem | null>(null);
 
   const { getQuery, loading } = useGetQuery();
   const { postQuery, loading: addLoading } = usePostQuery();
   const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
+
+  const fetchItems = () => {
+    getQuery({
+      url: apiUrls.PropertyValues.getAll,
+      onSuccess: (res: any) => {
+        const data = res?.data || [];
+        // Map items exactly once
+        setItems(data.map((item: any, idx: number) => mapApi(item, idx)));
+      },
+    });
+  };
 
   const fetchProperties = () => {
     getQuery({
@@ -50,40 +59,31 @@ export default function PropertyValuesPage() {
     });
   };
 
-  const fetchItems = () => {
-    getQuery({
-      url: apiUrls.PropertyValues.getAll,
-      onSuccess: (res: any) => {
-        const data = res?.data || [];
-        setItems(
-          data.map(mapApi).map((it: PropertyValueItem, idx: number) => ({
-            ...it,
-            srNo: idx + 1,
-            propertyName:
-              properties.find((s) => s.id === it.property)?.name || "",
-          })),
-        );
-      },
-    });
-  };
-
-  useEffect(() => {
-    fetchProperties();
-  }, []);
+  // OPTIMIZATION 2: Only fetch the table items on mount.
   useEffect(() => {
     fetchItems();
-  }, [properties]);
+  }, []);
+
+  // OPTIMIZATION 3: Lazy Load Dropdown Data. 
+  // Only fetch the `properties` list if the user opens the modal AND we haven't fetched them yet.
+  useEffect(() => {
+    if (isFormOpen && properties.length === 0) {
+      fetchProperties();
+    }
+  }, [isFormOpen, properties.length]);
 
   const openAdd = () => {
     setModalMode("add");
     setActiveItem(null);
     setIsFormOpen(true);
   };
+
   const openEdit = (it: PropertyValueItem) => {
     setModalMode("edit");
     setActiveItem(it);
     setIsFormOpen(true);
   };
+
   const closeForm = () => setIsFormOpen(false);
 
   const handleSubmit = async (values: PropertyValueFormValues) => {
@@ -94,14 +94,18 @@ export default function PropertyValuesPage() {
         onSuccess: (res: any) => {
           const newItem = res?.data;
           if (!newItem) return;
-          setItems((prev) =>
-            prev.concat({
-              ...mapApi(newItem),
+
+          setItems((prev) => [
+            ...prev,
+            {
+              id: newItem._id,
               srNo: prev.length + 1,
-              propertyName:
-                properties.find((s) => s.id === newItem.property)?.name || "",
-            }),
-          );
+              property: newItem.property,
+              value: newItem.value,
+              // Fallback to our loaded properties for immediate optimistic UI update
+              propertyName: properties.find((s) => s.id === newItem.property)?.name || "",
+            }
+          ]);
           setIsFormOpen(false);
         },
       });
@@ -118,7 +122,12 @@ export default function PropertyValuesPage() {
           if (!updated) return;
           setItems((prev) =>
             prev.map((p) =>
-              p.id === updated._id ? { ...p, value: updated.value } : p,
+              p.id === updated._id ? {
+                ...p,
+                value: updated.value,
+                property: updated.property,
+                propertyName: properties.find((s) => s.id === updated.property)?.name || p.propertyName
+              } : p,
             ),
           );
           setIsFormOpen(false);

@@ -64,37 +64,7 @@ export default function SignatureScent() {
   const sectionRef = useRef<HTMLElement>(null);
   const inView = useInView(sectionRef, { once: true, margin: "-15% 0px" });
 
-  const { getQuery } = useGetQuery();
-  const [categories, setCategories] = useState<any[]>([]);
 
-  useEffect(() => {
-    getQuery({
-      url: apiUrls.Category.getAll,
-      onSuccess: (res: any) => {
-        if (res.success && Array.isArray(res.data)) {
-          setCategories(res.data);
-        }
-      },
-      onFail: (err: any) => {
-        console.error("Failed to fetch brand story categories:", err);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleShopNow = () => {
-    if (categories.length > 0) {
-      const firstCat = categories[0];
-      navigate(`/${toSlug(firstCat.category)}`, {
-        state: {
-          categoryId: firstCat._id,
-          fullCategoryData: firstCat,
-        },
-      });
-    } else {
-      navigate("/");
-    }
-  };
 
   return (
     <section
@@ -204,7 +174,7 @@ export default function SignatureScent() {
           </div>
 
           <button
-            onClick={handleShopNow}
+            onClick={() => navigate("/products")}
             className="
     group
     mt-8

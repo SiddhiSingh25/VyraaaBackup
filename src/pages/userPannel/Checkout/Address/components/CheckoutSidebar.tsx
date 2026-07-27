@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ShieldCheck, Shield, Truck, RefreshCcw } from "lucide-react";
 import useGetQuery from "@/hooks/getQuery.hook";
 import { apiUrls } from "@/apis";
+import { useToast } from "@/hooks/useToast.hook";
 
 function formatINR(amount: number) {
   return `₹${amount.toLocaleString("en-IN")} `;
@@ -94,6 +95,8 @@ export default function CheckoutSidebar({
   // Destructured `loading` state directly from your custom hook
   const { getQuery, loading } = useGetQuery();
   const navigate = useNavigate();
+
+  let { toast } = useToast()
 
   useEffect(() => {
     if (from === "cart") {
@@ -233,7 +236,7 @@ export default function CheckoutSidebar({
               type="button"
               onClick={() => {
                 if (!selectedAddressId) {
-                  alert("Please select an address first!");
+                  toast("error", "Please select an address first!");
                   return;
                 }
                 navigate(`/checkout/payment`, {

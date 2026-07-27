@@ -73,12 +73,6 @@ export default function FeaturedCollections() {
     navigate(path ? `/collections/${path}` : "/collections");
   };
 
-  const formatPrice = (price?: number | string) => {
-    if (price === undefined || price === null || price === "") return null;
-    const num = typeof price === "string" ? Number(price) : price;
-    if (Number.isNaN(num)) return String(price);
-    return `₹${num.toLocaleString("en-IN")}`;
-  };
 
   /* ---------------------------- responsive slot math -------------------------- */
   useLayoutEffect(() => {

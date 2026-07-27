@@ -78,7 +78,7 @@ export default function BrandTable({
                     <button
                       onClick={() => onEdit(brand)}
                       aria-label={`Edit ${brand.brandName}`}
-                      className="flex h-7.5 w-7.5ems-center justify-center rounded-md border border-border bg-background text-muted hover:bg-card hover:text-primary transition-colors shadow-sm"
+                      className="flex h-7.5 w-7.5 items-center justify-center rounded-md border border-border bg-background text-muted hover:bg-card hover:text-primary transition-colors shadow-sm"
                     >
                       <Pencil size={14} />
                     </button>
