@@ -176,6 +176,7 @@ const ProductTable = ({
                       </div>
                     </td>
 
+
                     {/* Price */}
 
                     <td className="px-4 py-3">
