@@ -1,7 +1,9 @@
-import { FormEvent, useEffect, useState } from 'react';
-import Modal from '../../../../../components/tableComponents/Modal';
-import Button from '../../../../../components/tableComponents/Button';
-import type { SizeTypeFormValues, ModalMode } from './types';
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import Modal from "../../../../../components/tableComponents/Modal";
+import Button from "../../../../../components/tableComponents/Button";
+import type { SizeTypeFormValues, ModalMode } from "./types";
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 
 interface Props {
   isOpen: boolean;
@@ -9,19 +11,27 @@ interface Props {
   initialData?: SizeTypeFormValues | null;
   onClose: () => void;
   onSubmit: (values: SizeTypeFormValues) => void;
+  loading?: boolean;
 }
 
-const EMPTY: SizeTypeFormValues = { sizeType: '' };
+const EMPTY: SizeTypeFormValues = { sizeType: "" };
 
 type Errors = Partial<Record<keyof SizeTypeFormValues, string>>;
 
-export default function SizeTypeFormModal({ isOpen, mode, initialData, onClose, onSubmit }: Props) {
+export default function SizeTypeFormModal({
+  isOpen,
+  mode,
+  initialData,
+  onClose,
+  onSubmit,
+  loading = false,
+}: Props) {
   const [values, setValues] = useState<SizeTypeFormValues>(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
     if (!isOpen) return;
-    if (mode === 'edit' && initialData) setValues(initialData);
+    if (mode === "edit" && initialData) setValues(initialData);
     else setValues(EMPTY);
     setErrors({});
   }, [isOpen, mode, initialData]);
@@ -33,7 +43,7 @@ export default function SizeTypeFormModal({ isOpen, mode, initialData, onClose, 
 
   const validate = () => {
     const next: Errors = {};
-    if (!values.sizeType.trim()) next.sizeType = 'Size type is required';
+    if (!values.sizeType.trim()) next.sizeType = "Size type is required";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -45,12 +55,50 @@ export default function SizeTypeFormModal({ isOpen, mode, initialData, onClose, 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={mode === 'add' ? 'Add Size Type' : 'Edit Size Type'} description={mode === 'add' ? 'Create a new size type.' : 'Update size type.'} footer={<><Button variant="secondary" onClick={onClose} type="button">Cancel</Button><Button onClick={handleSubmit} type="submit" form="sizetype-form">{mode === 'add' ? 'Add' : 'Save'}</Button></>}>
-      <form id="sizetype-form" onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={mode === "add" ? "Add Size Type" : "Edit Size Type"}
+      description={
+        mode === "add" ? "Create a new size type." : "Update size type."
+      }
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} type="button">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            type="submit"
+            form="sizetype-form"
+            disabled={loading}
+          >
+            {loading && <ButtonLoader />}
+            {mode === "add" ? "Add" : "Save"}
+          </Button>
+        </>
+      }
+    >
+      <form
+        id="sizetype-form"
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      >
         <div className="sm:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold text-dark-500">Size Type</label>
-          <input value={values.sizeType} onChange={handleChange('sizeType')} placeholder="e.g. Measurements" className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.sizeType ? 'border-red-300' : 'border-dark-200'}`} />
-          {errors.sizeType && <p className="mt-1 text-xs font-medium text-red-500">{errors.sizeType}</p>}
+          <label className="mb-1.5 block text-xs font-semibold text-dark-500">
+            Size Type
+          </label>
+          <input
+            value={values.sizeType}
+            onChange={handleChange("sizeType")}
+            placeholder="e.g. Measurements"
+            className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.sizeType ? "border-red-300" : "border-dark-200"}`}
+          />
+          {errors.sizeType && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {errors.sizeType}
+            </p>
+          )}
         </div>
       </form>
     </Modal>
