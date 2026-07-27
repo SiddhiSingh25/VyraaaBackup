@@ -70,6 +70,8 @@ function WishlistCard({
         <img
           src={product.image}
           alt={`${product.brand} ${product.name}`}
+          loading="lazy"
+          decoding="async"
           className={`h-full w-full object-cover transition-transform duration-400 ease-out group-hover:scale-[1.025] ${isOut ? "grayscale-35 opacity-80" : ""
             }`}
         />

@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from "react"; // Removed unused 'use' import
 import { useReveal } from "../../../../hooks/gsap/useReveal";
-import { kidsFootwear, shirts } from "../../../../assets/assets";
 import RatingsAndReviews from "./RatingReviews";
-import { useLocation, useNavigate, useParams } from "react-router-dom"; // Removed unused 'useNavigation'
+import { useLocation, useNavigate, } from "react-router-dom"; // Removed unused 'useNavigation'
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
 import { useToast } from "../../../../hooks/useToast.hook";
@@ -294,6 +293,8 @@ const ProductInfo = ({
                             <img
                               src={media}
                               alt={`Thumbnail ${index + 1}`}
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover"
                             />
                           )}
@@ -340,6 +341,8 @@ const ProductInfo = ({
                       <img
                         src={activeMedia}
                         alt="Selected product"
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                       />
                     );
