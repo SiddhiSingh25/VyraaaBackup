@@ -85,31 +85,16 @@ function FooterLink({ children, to, state }: FooterLinkProps) {
   );
 }
 
-export default function Footer() {
+export default function Footer({ category }: { category: any }) {
   const col1 = useFadeUp(0);
   const col2 = useFadeUp(80);
   const col3 = useFadeUp(160);
   const col4 = useFadeUp(240);
   const bottom = useFadeUp(320);
 
-  const { getQuery } = useGetQuery();
-  const [categories, setCategories] = useState<any[]>([]);
   const { user } = useSelector((state: any) => state.auth);
 
-  useEffect(() => {
-    getQuery({
-      url: apiUrls.Category.getAll,
-      onSuccess: (res: any) => {
-        if (res.success && Array.isArray(res.data)) {
-          setCategories(res.data.slice(0, 6)); // show first 6 categories
-        }
-      },
-      onFail: (err: any) => {
-        console.error("Failed to fetch footer categories:", err);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
 
   return (
     <footer className="relative bg-[#0d0a08] overflow-hidden">
@@ -165,7 +150,7 @@ export default function Footer() {
           <div ref={col2.ref} style={col2.style} className="md:col-span-2 flex flex-col">
             <FooterColumnTitle>Shop</FooterColumnTitle>
             <ul className="flex flex-col gap-3">
-              {categories.map((cat: any) => (
+              {category?.slice(0, 6)?.map((cat: any) => (
                 <li key={cat._id}>
                   <FooterLink
                     to={`/${toSlug(cat.category)}`}

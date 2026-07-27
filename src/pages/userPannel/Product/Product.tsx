@@ -13,7 +13,7 @@ export default function ProductDetails() {
   }, [])
   return (
     <>
-      <Navbar />
+
       <ProductInfo onProductLoaded={setProduct} />
       <SuggestedProduct
         categoryId={product?.category?._id || product?.category}
@@ -22,7 +22,7 @@ export default function ProductDetails() {
         currentProductId={product?._id}
       />
       {/* <CustomerLiked/> */}
-      <Footer />
+
     </>
   );
 }

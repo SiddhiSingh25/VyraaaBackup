@@ -56,7 +56,7 @@ const OrderDetails = () => {
     if (!orderDetails) {
         return (
             <div className="min-h-screen bg-background flex flex-col font-body text-body">
-                <Navbar />
+
                 <main className="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8">
                     {/* Header Skeleton */}
                     <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-4 animate-pulse">
@@ -69,7 +69,7 @@ const OrderDetails = () => {
 
                     <SkeletonOrderDetails />
                 </main>
-                <Footer />
+
             </div>
         );
     }
@@ -79,7 +79,7 @@ const OrderDetails = () => {
 
     return (
         <div className="min-h-screen bg-background flex flex-col font-body text-body">
-            <Navbar />
+
 
             {/* Main Content */}
             <main className="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8">
@@ -220,7 +220,7 @@ const OrderDetails = () => {
                 </div>
             </main>
 
-            <Footer />
+
         </div>
     );
 };

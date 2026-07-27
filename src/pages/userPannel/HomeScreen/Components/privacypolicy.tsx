@@ -11,7 +11,7 @@ const PrivacyPolicy: React.FC = () => {
   }, []);
   return (
     <>
-      <Navbar />
+
 
       {/* Main Content */}
       <main className="  py-6 md:py-8  hidden lg:flex items-center justify-between px-8 xl:px-20">
@@ -160,7 +160,7 @@ const PrivacyPolicy: React.FC = () => {
       </main>
 
 
-      <Footer />
+
     </>
   );
 };

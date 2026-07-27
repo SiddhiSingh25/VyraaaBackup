@@ -18,20 +18,19 @@ interface Category {
   image: string;
 }
 
-export default function ProductShowcase() {
+export default function ProductShowcase({ category, categoryLoading }: { category: any, categoryLoading: boolean }) {
   const navigate = useNavigate();
   const { getQuery } = useGetQuery();
   const [gender, setGender] = useState<Gender>("");
 
   // 2. FIX: Tell TypeScript this is an array of Categories (or any[]) instead of never[]
-  const [categories, setCategories] = useState<Category[]>([]);
+  // const [categories, setCategories] = useState<Category[]>([]);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [pageNum, setPageNum] = useState<string>("");
   const [limit, setLimit] = useState<string>("");
   const [products, setProducts] = useState<any[]>([]);
   const [productLoading, setProductLoading] = useState(false);
-  const [categoryLoading, setCategoryLoading] = useState(false);
 
   function CategorySkeletonItem() {
     return (
@@ -77,7 +76,7 @@ export default function ProductShowcase() {
           });
         }}
         // 'group' enables synchronized hover effects on children
-        className="group flex flex-col items-center gap-3 flex-shrink-0 snap-center focus:outline-none"
+        className="group flex flex-col items-center gap-3 flex-shrink-0 snap-center focus:outline-none cursor-pointer"
       >
         {/* Image Container */}
         <div
@@ -122,21 +121,7 @@ export default function ProductShowcase() {
     )
   }
 
-  // Fetch Categories on Mount
-  useEffect(() => {
-    setCategoryLoading(true)
-    getQuery({
-      url: apiUrls.Category.getAll,
-      onSuccess: (res: any) => {
-        setCategories(res.data);
-        setCategoryLoading(false)
-      },
-      onFail: (res: any) => {
-        console.log(res);
-        setCategoryLoading(false)
-      },
-    });
-  }, [getQuery]);
+
 
   // Fetch Products whenever filters change
   useEffect(() => {
@@ -195,8 +180,8 @@ export default function ProductShowcase() {
             Array.from({ length: 8 }).map((_, i) => (
               <CategorySkeletonItem key={i} />
             ))
-          ) : categories?.length ? (
-            categories.map((cat) => (
+          ) : category?.length ? (
+            category.map((cat) => (
               <CategoryCard
                 key={cat._id}
                 cat={cat}

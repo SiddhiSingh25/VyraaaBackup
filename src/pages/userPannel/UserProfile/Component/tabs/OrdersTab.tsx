@@ -16,6 +16,7 @@ import usePostQuery from "@/hooks/postQuery.hook"; // <-- Added
 import { apiUrls } from "@/apis";
 import { useNavigate } from "react-router-dom";
 import { SkeletonOrders } from "./SkeletonOrders";
+import { useToast } from "@/hooks/useToast.hook";
 
 export function OrdersTab() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export function OrdersTab() {
   const { postQuery } = usePostQuery();
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  let { toast } = useToast()
 
   // Review Modal State
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -71,7 +73,7 @@ export function OrdersTab() {
         const combined = [...prev, ...newFiles];
         // Enforce maximum 2 images limit
         if (combined.length > 2) {
-          alert("You can only upload a maximum of 2 images.");
+          toast("error", "You can only upload a maximum of 2 images.");
           return combined.slice(0, 2);
         }
         return combined;
@@ -151,14 +153,14 @@ export function OrdersTab() {
           },
           onFail: (err: any) => {
             console.error("Failed to submit review:", err);
-            alert(err?.response?.data?.message || "Failed to submit review.");
+            toast("error", err?.response?.data?.message || "Failed to submit review.");
             reject(err);
           },
         });
       });
     } catch (error: any) {
       console.error("Error during submission:", error);
-      alert("An error occurred while uploading images or submitting the review.");
+      toast("error", "An error occurred while uploading images or submitting the review.");
     } finally {
       setIsSubmitting(false);
     }
@@ -245,11 +247,11 @@ export function OrdersTab() {
                 {/* Product */}
                 <div className="flex gap-3">
                   <img
-                       src={order?.thumbnailUrl || ""}
-                       alt=""
-                       loading="lazy"
-                       decoding="async"
-                       className="h-20 w-20 rounded-lg object-cover border border-border"/>
+                    src={order?.thumbnailUrl || ""}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="h-20 w-20 rounded-lg object-cover border border-border" />
 
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between gap-3">
@@ -280,14 +282,14 @@ export function OrdersTab() {
                   {status === "Delivered" && (
                     <button
                       onClick={() => {
-                          setSelectedOrder(order);
-                          setIsReviewModalOpen(true);
-                        }}
-                        disabled={!!order?.review} // Disable if review exists
+                        setSelectedOrder(order);
+                        setIsReviewModalOpen(true);
+                      }}
+                      disabled={!!order?.review} // Disable if review exists
                       className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition ${order?.review
-                          ? "border-muted text-muted bg-surface cursor-not-allowed"
-                          : "border-primary text-primary hover:bg-primary/5"
-                          }`}
+                        ? "border-muted text-muted bg-surface cursor-not-allowed"
+                        : "border-primary text-primary hover:bg-primary/5"
+                        }`}
                     >
                       <Star size={14} />
                       {order?.review ? "Review Submitted" : "Write a Review"}

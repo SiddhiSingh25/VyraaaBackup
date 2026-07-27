@@ -18,9 +18,9 @@ const PageTransition = ({ children }: PageTransitionProps) => {
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      <Navbar/>
+
       {children}
-      <Footer/>
+
     </motion.div>
   );
 };
