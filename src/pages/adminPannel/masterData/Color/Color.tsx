@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react"; // <-- Added useCallback
 import { Plus } from "lucide-react";
 import Button from "../../../../components/tableComponents/Button";
 import ConfirmDialog from "../../../../components/tableComponents/ConfirmDialog";
@@ -12,20 +12,23 @@ import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
 import { apiUrls } from "../../../../apis/index";
 import PageLoader from "@/components/Loader/fullPageLoader";
 
-const mapApi = (item: any): ColorItem => ({
+// 1. OPTIMIZATION: Pass index to handle srNo, and grab familyName natively from API
+const mapApi = (item: any, index: number): ColorItem => ({
   id: item._id,
-  srNo: 0,
+  srNo: index + 1,
   color: item.color,
   hexCode: item.hexCode,
   family: item.family,
+  familyName: item.familyName || "",
 });
 
 export default function ColorPage() {
   const [items, setItems] = useState<ColorItem[]>([]);
   const [families, setFamilies] = useState<{ id: string; name: string }[]>([]);
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("add");
-  const [activeItem, setActiveItem] = useState<any | null>(null);
+  const [activeItem, setActiveItem] = useState<ColorItem | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ColorItem | null>(null);
 
   const { getQuery, loading } = useGetQuery();
@@ -33,49 +36,49 @@ export default function ColorPage() {
   const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
-  const fetchFamilies = () => {
-    getQuery({
-      url: apiUrls.ColorFamily.getAll,
-      onSuccess: (res: any) => {
-        const data = res?.data || [];
-        setFamilies(data.map((f: any) => ({ id: f._id, name: f.colorFamily })));
-      },
-    });
-  };
+  // LAZY LOAD: Wrap in useCallback, only call API if array is empty
+  const fetchFamiliesIfNeeded = useCallback(() => {
+    if (families.length === 0) {
+      getQuery({
+        url: apiUrls.ColorFamily.getAll,
+        onSuccess: (res: any) => {
+          const data = res?.data || [];
+          setFamilies(data.map((f: any) => ({ id: f._id, name: f.colorFamily })));
+        },
+      });
+    }
+  }, [families.length, getQuery]);
 
-  const fetchItems = () => {
+  // Wrap in useCallback to satisfy dependency rules
+  const fetchItems = useCallback(() => {
     getQuery({
       url: apiUrls.Color.getAll,
       onSuccess: (res: any) => {
         const data = res?.data || [];
-        setItems(
-          data.map(mapApi).map((it: ColorItem, idx: number) => ({
-            ...it,
-            srNo: idx + 1,
-            familyName: families.find((f) => f.id === it.family)?.name || "",
-          })),
-        );
+        setItems(data.map((it: any, idx: number) => mapApi(it, idx)));
       },
     });
-  };
+  }, [getQuery]);
 
-  useEffect(() => {
-    fetchFamilies();
-  }, []);
+  // INITIAL MOUNT: ONLY fetch items. Do NOT fetch families yet.
   useEffect(() => {
     fetchItems();
-  }, [families]);
+  }, [fetchItems]);
 
   const openAdd = () => {
     setModalMode("add");
     setActiveItem(null);
     setIsFormOpen(true);
+    fetchFamiliesIfNeeded(); // <-- Trigger lazy load here
   };
+
   const openEdit = (it: ColorItem) => {
     setModalMode("edit");
     setActiveItem(it);
     setIsFormOpen(true);
+    fetchFamiliesIfNeeded(); // <-- Trigger lazy load here
   };
+
   const closeForm = () => setIsFormOpen(false);
 
   const handleSubmit = async (values: ColorFormValues) => {
@@ -90,14 +93,14 @@ export default function ColorPage() {
         onSuccess: (res: any) => {
           const newItem = res?.data;
           if (!newItem) return;
-          setItems((prev) =>
-            prev.concat({
-              ...mapApi(newItem),
-              srNo: prev.length + 1,
-              familyName:
-                families.find((f) => f.id === newItem.family)?.name || "",
-            }),
-          );
+
+          setItems((prev) => [
+            ...prev,
+            {
+              ...mapApi(newItem, prev.length),
+              familyName: families.find((f) => f.id === newItem.family)?.name || "",
+            },
+          ]);
           setIsFormOpen(false);
         },
       });
@@ -113,12 +116,19 @@ export default function ColorPage() {
         onSuccess: (res: any) => {
           const updated = res?.data;
           if (!updated) return;
+
           setItems((prev) =>
             prev.map((p) =>
               p.id === updated._id
-                ? { ...p, color: updated.color, hexCode: updated.hexCode }
-                : p,
-            ),
+                ? {
+                  ...p,
+                  color: updated.color,
+                  hexCode: updated.hexCode,
+                  family: updated.family,
+                  familyName: families.find((f) => f.id === updated.family)?.name || p.familyName,
+                }
+                : p
+            )
           );
           setIsFormOpen(false);
         },
@@ -127,8 +137,10 @@ export default function ColorPage() {
   };
 
   const requestDelete = (it: ColorItem) => setPendingDelete(it);
+
   const confirmDelete = async () => {
     if (!pendingDelete) return;
+
     await deleteQuery({
       url: apiUrls.Color.delete,
       deleteData: { id: pendingDelete.id },

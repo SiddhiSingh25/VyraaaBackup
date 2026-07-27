@@ -12,9 +12,11 @@ import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
 import { apiUrls } from "../../../../apis/index";
 import PageLoader from "@/components/Loader/fullPageLoader";
 
-const mapApi = (item: any): BrandItem => ({
+// 1. OPTIMIZATION: Pass index into mapApi to handle srNo in a single pass.
+// We use item.categoryName directly from your backend API response!
+const mapApi = (item: any, index: number): BrandItem => ({
   id: item._id,
-  srNo: 0,
+  srNo: index + 1,
   brandName: item.brand,
   categoryId: item.category,
   categoryName: item.categoryName || "",
@@ -22,9 +24,7 @@ const mapApi = (item: any): BrandItem => ({
 
 export default function BrandPage() {
   const [brands, setBrands] = useState<BrandItem[]>([]);
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
-    [],
-  );
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("add");
@@ -36,19 +36,22 @@ export default function BrandPage() {
   const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
-  const fetchCategories = () => {
-    getQuery({
-      url: apiUrls.Category.getAll,
-      onSuccess: (res: any) => {
-        const data = res?.data || [];
-        setCategories(
-          data.map((category: any) => ({
-            id: category._id,
-            name: category.category,
-          })),
-        );
-      },
-    });
+  // LAZY LOAD OPTIMIZATION: Only fetch categories if the array is empty
+  const fetchCategoriesIfNeeded = () => {
+    if (categories.length === 0) {
+      getQuery({
+        url: apiUrls.Category.getAll,
+        onSuccess: (res: any) => {
+          const data = res?.data || [];
+          setCategories(
+            data.map((category: any) => ({
+              id: category._id,
+              name: category.category,
+            }))
+          );
+        },
+      });
+    }
   };
 
   const fetchBrands = () => {
@@ -56,37 +59,23 @@ export default function BrandPage() {
       url: apiUrls.Brand.getAll,
       onSuccess: (res: any) => {
         const data = res?.data || [];
-        setBrands(
-          data.map(mapApi).map((item: BrandItem, index: number) => ({
-            ...item,
-            srNo: index + 1,
-            categoryName:
-              categories.find((category) => category.id === item.categoryId)
-                ?.name || "",
-          })),
-        );
+        setBrands(data.map((item: any, idx: number) => mapApi(item, idx)));
       },
     });
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
+  // INITIAL RENDER: Only fetch Brands to keep the page load extremely fast
   useEffect(() => {
     fetchBrands();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categories.length]);
+  }, []);
 
   const filteredBrands = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     if (!query) return brands;
 
     return brands.filter((item) =>
-      [item.brandName, item.categoryName]
-        .join(" ")
-        .toLowerCase()
-        .includes(query),
+      [item.brandName, item.categoryName].join(" ").toLowerCase().includes(query)
     );
   }, [brands, searchTerm]);
 
@@ -94,12 +83,14 @@ export default function BrandPage() {
     setModalMode("add");
     setActiveBrand(null);
     setIsFormOpen(true);
+    fetchCategoriesIfNeeded(); // <--- Fetch categories only when modal opens
   };
 
   const openEditModal = (item: BrandItem) => {
     setModalMode("edit");
     setActiveBrand(item);
     setIsFormOpen(true);
+    fetchCategoriesIfNeeded(); // <--- Fetch categories only when modal opens
   };
 
   const closeFormModal = () => setIsFormOpen(false);
@@ -112,14 +103,13 @@ export default function BrandPage() {
         onSuccess: (res: any) => {
           const newItem = res?.data;
           if (!newItem) return;
+
           setBrands((prev) => [
             ...prev,
             {
-              ...mapApi(newItem),
-              srNo: prev.length + 1,
-              categoryName:
-                categories.find((category) => category.id === newItem.category)
-                  ?.name || "",
+              ...mapApi(newItem, prev.length),
+              // We only manually .find() the name here for instantly added items before a page refresh
+              categoryName: categories.find((c) => c.id === newItem.category)?.name || "",
             },
           ]);
           setIsFormOpen(false);
@@ -136,20 +126,19 @@ export default function BrandPage() {
         onSuccess: (res: any) => {
           const updated = res?.data;
           if (!updated) return;
+
           setBrands((prev) =>
             prev.map((item) =>
               item.id === updated._id
                 ? {
-                    ...item,
-                    brandName: updated.brand,
-                    categoryId: updated.category,
-                    categoryName:
-                      categories.find(
-                        (category) => category.id === updated.category,
-                      )?.name || "",
-                  }
-                : item,
-            ),
+                  ...item,
+                  brandName: updated.brand,
+                  categoryId: updated.category,
+                  // Look up the new category name instantly without reloading the page
+                  categoryName: categories.find((c) => c.id === updated.category)?.name || item.categoryName,
+                }
+                : item
+            )
           );
           setIsFormOpen(false);
         },
@@ -166,9 +155,7 @@ export default function BrandPage() {
       url: apiUrls.Brand.delete,
       deleteData: { id: pendingDelete.id },
       onSuccess: () => {
-        setBrands((prev) =>
-          prev.filter((item) => item.id !== pendingDelete.id),
-        );
+        setBrands((prev) => prev.filter((item) => item.id !== pendingDelete.id));
         setPendingDelete(null);
       },
     });

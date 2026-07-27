@@ -12,18 +12,18 @@ import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
 import { apiUrls } from "../../../../apis/index";
 import PageLoader from "@/components/Loader/fullPageLoader";
 
-const mapApi = (item: any): SizeItem => ({
+// OPTIMIZATION 1: Map everything in a single pass using the backend's provided 'sizeTypeName'
+const mapApi = (item: any, idx: number): SizeItem => ({
   id: item._id,
-  srNo: 0,
+  srNo: idx + 1,
   size: item.size,
   sizeType: item.sizeType,
+  sizeTypeName: item.sizeTypeName || "", // Use backend data! No need to find() from sizeTypes state
 });
 
 export default function SizePage() {
   const [items, setItems] = useState<SizeItem[]>([]);
-  const [sizeTypes, setSizeTypes] = useState<{ id: string; name: string }[]>(
-    [],
-  );
+  const [sizeTypes, setSizeTypes] = useState<{ id: string; name: string }[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("add");
   const [activeItem, setActiveItem] = useState<any | null>(null);
@@ -33,6 +33,17 @@ export default function SizePage() {
   const { postQuery, loading: addLoading } = usePostQuery();
   const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
+
+  const fetchItems = () => {
+    getQuery({
+      url: apiUrls.Size.getAll,
+      onSuccess: (res: any) => {
+        const data = res?.data || [];
+        // Map items exactly once
+        setItems(data.map((item: any, idx: number) => mapApi(item, idx)));
+      },
+    });
+  };
 
   const fetchSizeTypes = () => {
     getQuery({
@@ -44,40 +55,31 @@ export default function SizePage() {
     });
   };
 
-  const fetchItems = () => {
-    getQuery({
-      url: apiUrls.Size.getAll,
-      onSuccess: (res: any) => {
-        const data = res?.data || [];
-        setItems(
-          data.map(mapApi).map((it: SizeItem, idx: number) => ({
-            ...it,
-            srNo: idx + 1,
-            sizeTypeName:
-              sizeTypes.find((s) => s.id === it.sizeType)?.name || "",
-          })),
-        );
-      },
-    });
-  };
-
-  useEffect(() => {
-    fetchSizeTypes();
-  }, []);
+  // OPTIMIZATION 2: Only fetch the table items on mount (No dependency array waterfall).
   useEffect(() => {
     fetchItems();
-  }, [sizeTypes]);
+  }, []);
+
+  // OPTIMIZATION 3: Lazy Load Dropdown Data. 
+  // Only fetch the `sizeTypes` list if the user opens the modal AND we haven't fetched them yet.
+  useEffect(() => {
+    if (isFormOpen && sizeTypes.length === 0) {
+      fetchSizeTypes();
+    }
+  }, [isFormOpen, sizeTypes.length]);
 
   const openAdd = () => {
     setModalMode("add");
     setActiveItem(null);
     setIsFormOpen(true);
   };
+
   const openEdit = (it: SizeItem) => {
     setModalMode("edit");
     setActiveItem(it);
     setIsFormOpen(true);
   };
+
   const closeForm = () => setIsFormOpen(false);
 
   const handleSubmit = async (values: SizeFormValues) => {
@@ -88,14 +90,18 @@ export default function SizePage() {
         onSuccess: (res: any) => {
           const newItem = res?.data;
           if (!newItem) return;
-          setItems((prev) =>
-            prev.concat({
-              ...mapApi(newItem),
+
+          setItems((prev) => [
+            ...prev,
+            {
+              id: newItem._id,
               srNo: prev.length + 1,
-              sizeTypeName:
-                sizeTypes.find((s) => s.id === newItem.sizeType)?.name || "",
-            }),
-          );
+              size: newItem.size,
+              sizeType: newItem.sizeType,
+              // Fallback to our loaded sizeTypes for immediate optimistic UI update
+              sizeTypeName: sizeTypes.find((s) => s.id === newItem.sizeType)?.name || "",
+            }
+          ]);
           setIsFormOpen(false);
         },
       });
@@ -112,7 +118,12 @@ export default function SizePage() {
           if (!updated) return;
           setItems((prev) =>
             prev.map((p) =>
-              p.id === updated._id ? { ...p, size: updated.size } : p,
+              p.id === updated._id ? {
+                ...p,
+                size: updated.size,
+                sizeType: updated.sizeType,
+                sizeTypeName: sizeTypes.find((s) => s.id === updated.sizeType)?.name || p.sizeTypeName
+              } : p,
             ),
           );
           setIsFormOpen(false);

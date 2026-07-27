@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Plus } from "lucide-react";
 import Button from "../../../../components/tableComponents/Button";
 import ConfirmDialog from "../../../../components/tableComponents/ConfirmDialog";
@@ -16,11 +16,13 @@ import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
 import { apiUrls } from "../../../../apis/index";
 import PageLoader from "@/components/Loader/fullPageLoader";
 
-const mapApi = (item: any): PropertyItem => ({
+// 1. Optimized mapApi: Takes index to handle SrNo and grabs subCategoryName directly from API
+const mapApi = (item: any, index: number): PropertyItem => ({
   id: item._id,
-  srNo: 0,
+  srNo: index + 1,
   property: item.property,
   subCategory: item.subCategory,
+  subCategoryName: item.subCategoryName || "",
 });
 
 export default function PropertyPage() {
@@ -38,52 +40,52 @@ export default function PropertyPage() {
   const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
-  const fetchSubcategories = () => {
-    getQuery({
-      url: apiUrls.SubCategory.getAll,
-      onSuccess: (res: any) => {
-        const data = res?.data || [];
-        setSubcategories(
-          data.map((s: any) => ({ id: s._id, name: s.subCategory })),
-        );
-      },
-    });
-  };
+  // LAZY LOAD: Wrap in useCallback, only call API if array is empty
+  const fetchSubcategoriesIfNeeded = useCallback(() => {
+    if (subcategories.length === 0) {
+      getQuery({
+        url: apiUrls.SubCategory.getAll,
+        onSuccess: (res: any) => {
+          const data = res?.data || [];
+          setSubcategories(
+            data.map((s: any) => ({ id: s._id, name: s.subCategory }))
+          );
+        },
+      });
+    }
+  }, [subcategories.length, getQuery]);
 
-  const fetchItems = () => {
+  // Wrap in useCallback to satisfy dependency rules
+  const fetchItems = useCallback(() => {
     getQuery({
       url: apiUrls.Property.getAll,
       onSuccess: (res: any) => {
         const data = res?.data || [];
-        setItems(
-          data.map(mapApi).map((it: PropertyItem, idx: number) => ({
-            ...it,
-            srNo: idx + 1,
-            subCategoryName:
-              subcategories.find((s) => s.id === it.subCategory)?.name || "",
-          })),
-        );
+        // 2. Simplified Mapping: Rely on API response instead of local array `.find()`
+        setItems(data.map((item: any, idx: number) => mapApi(item, idx)));
       },
     });
-  };
+  }, [getQuery]);
 
-  useEffect(() => {
-    fetchSubcategories();
-  }, []);
+  // INITIAL MOUNT: ONLY fetch items. Do NOT fetch subcategories yet.
   useEffect(() => {
     fetchItems();
-  }, [subcategories]);
+  }, [fetchItems]);
 
   const openAdd = () => {
     setModalMode("add");
     setActiveItem(null);
     setIsFormOpen(true);
+    fetchSubcategoriesIfNeeded(); // <-- Trigger lazy load here
   };
+
   const openEdit = (it: PropertyItem) => {
     setModalMode("edit");
     setActiveItem(it);
     setIsFormOpen(true);
+    fetchSubcategoriesIfNeeded(); // <-- Trigger lazy load here
   };
+
   const closeForm = () => setIsFormOpen(false);
 
   const handleSubmit = async (values: PropertyFormValues) => {
@@ -97,15 +99,15 @@ export default function PropertyPage() {
         onSuccess: (res: any) => {
           const newItem = res?.data;
           if (!newItem) return;
-          setItems((prev) =>
-            prev.concat({
-              ...mapApi(newItem),
-              srNo: prev.length + 1,
-              subCategoryName:
-                subcategories.find((s) => s.id === newItem.subCategory)?.name ||
-                "",
-            }),
-          );
+
+          setItems((prev) => [
+            ...prev,
+            {
+              ...mapApi(newItem, prev.length),
+              // Fallback just in case your POST response doesn't populate the name instantly
+              subCategoryName: newItem.subCategoryName || subcategories.find(s => s.id === newItem.subCategory)?.name || "",
+            }
+          ]);
           setIsFormOpen(false);
         },
       });
@@ -120,10 +122,17 @@ export default function PropertyPage() {
         onSuccess: (res: any) => {
           const updated = res?.data;
           if (!updated) return;
+
           setItems((prev) =>
             prev.map((p) =>
-              p.id === updated._id ? { ...p, property: updated.property } : p,
-            ),
+              p.id === updated._id ? {
+                ...p,
+                property: updated.property,
+                subCategory: updated.subCategory,
+                // Update name if they changed subcategories
+                subCategoryName: updated.subCategoryName || subcategories.find(s => s.id === updated.subCategory)?.name || p.subCategoryName
+              } : p
+            )
           );
           setIsFormOpen(false);
         },
