@@ -13,6 +13,7 @@ import { addToCart } from "../../../../redux/slices/cartSlice";
 import SkeletonProductInfo from "./SkeletonProductInfo";
 import { addToWishlist, removeFromWishlist } from "../../../../redux/slices/wishlistSlice";
 
+
 const isVideoUrl = (url: string) => {
   if (!url) return false;
   // Checks for common video extensions. Expand this list if your backend uses others.
@@ -103,10 +104,10 @@ const ProductInfo = ({
   const cartDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const buyNowDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wishlistDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-
   const wishlistItems: string[] = useSelector((state: any) => state.wishlist?.items ?? []);
-  const isWished = wishlistItems.some((item: any) => item.id === productData._id);
+  const isWished = wishlistItems.some((item: any) => item.id === id);
+  // console.log(productData)
+
 
   useEffect(() => {
     if (!id) {
