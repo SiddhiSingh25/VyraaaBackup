@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Smartphone, CreditCard, Banknote, CheckCircle2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -44,6 +44,10 @@ export default function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   // Extract necessary fields from location state, including product details if coming from Buy Now
   const {

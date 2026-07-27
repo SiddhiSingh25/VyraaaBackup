@@ -406,7 +406,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 }`}
             >
               <ShoppingBag size={13} />
-              {isSubmitting ? "Adding..." : "Add to bag"}
+              {isSubmitting ? "Adding..." : "Add to Cart"}
             </button>
           </div>
         }

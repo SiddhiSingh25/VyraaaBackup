@@ -14,6 +14,7 @@ import {
 } from "../../components";
 import { resetPasswordSchema } from "./reset.schema";
 import type { ResetPasswordFormValues } from "../../types";
+import { useEffect } from "react";
 
 /**
  * UI only — no API wired yet. Replace onSubmit with a postQuery call once
@@ -22,6 +23,11 @@ import type { ResetPasswordFormValues } from "../../types";
 const ResetPassword = () => {
   const { toast } = useToast();
   const { postQuery, loading } = usePostQuery();
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const {
     register,
     handleSubmit,

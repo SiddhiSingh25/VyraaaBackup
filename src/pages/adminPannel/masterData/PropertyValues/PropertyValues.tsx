@@ -10,6 +10,7 @@ import usePostQuery from '../../../../hooks/postQuery.hook';
 import usePutQuery from '../../../../hooks/putQuery.hook';
 import useDeleteQuery from '../../../../hooks/deleteQuery.hook';
 import { apiUrls } from '../../../../apis/index';
+import PageLoader from '@/components/Loader/fullPageLoader';
 
 const mapApi = (item: any): PropertyValueItem => ({ id: item._id, srNo: 0, property: item.property, value: item.value });
 
@@ -21,23 +22,27 @@ export default function PropertyValuesPage() {
   const [activeItem, setActiveItem] = useState<any | null>(null);
   const [pendingDelete, setPendingDelete] = useState<PropertyValueItem | null>(null);
 
-  const { getQuery } = useGetQuery();
+  const { getQuery, loading } = useGetQuery();
   const { postQuery } = usePostQuery();
   const { putQuery } = usePutQuery();
   const { deleteQuery } = useDeleteQuery();
 
   const fetchProperties = () => {
-    getQuery({ url: apiUrls.Property.getAll, onSuccess: (res: any) => {
-      const data = res?.data || [];
-      setProperties(data.map((s: any) => ({ id: s._id, name: s.property })));
-    }});
+    getQuery({
+      url: apiUrls.Property.getAll, onSuccess: (res: any) => {
+        const data = res?.data || [];
+        setProperties(data.map((s: any) => ({ id: s._id, name: s.property })));
+      }
+    });
   };
 
   const fetchItems = () => {
-    getQuery({ url: apiUrls.PropertyValues.getAll, onSuccess: (res: any) => {
-      const data = res?.data || [];
-      setItems(data.map(mapApi).map((it: PropertyValueItem, idx: number) => ({ ...it, srNo: idx + 1, propertyName: properties.find(s => s.id === it.property)?.name || '' })));
-    }});
+    getQuery({
+      url: apiUrls.PropertyValues.getAll, onSuccess: (res: any) => {
+        const data = res?.data || [];
+        setItems(data.map(mapApi).map((it: PropertyValueItem, idx: number) => ({ ...it, srNo: idx + 1, propertyName: properties.find(s => s.id === it.property)?.name || '' })));
+      }
+    });
   };
 
   useEffect(() => { fetchProperties(); }, []);
@@ -49,27 +54,33 @@ export default function PropertyValuesPage() {
 
   const handleSubmit = async (values: PropertyValueFormValues) => {
     if (modalMode === 'add') {
-      await postQuery({ url: apiUrls.PropertyValues.add, postData: { property: values.property, value: values.value }, onSuccess: (res: any) => {
-        const newItem = res?.data; if (!newItem) return;
-        setItems((prev) => prev.concat({ ...mapApi(newItem), srNo: prev.length + 1, propertyName: properties.find(s => s.id === newItem.property)?.name || '' }));
-        setIsFormOpen(false);
-      }});
+      await postQuery({
+        url: apiUrls.PropertyValues.add, postData: { property: values.property, value: values.value }, onSuccess: (res: any) => {
+          const newItem = res?.data; if (!newItem) return;
+          setItems((prev) => prev.concat({ ...mapApi(newItem), srNo: prev.length + 1, propertyName: properties.find(s => s.id === newItem.property)?.name || '' }));
+          setIsFormOpen(false);
+        }
+      });
     } else if (activeItem) {
-      await putQuery({ url: apiUrls.PropertyValues.update, putData: { id: activeItem.id, property: values.property, value: values.value }, onSuccess: (res: any) => {
-        const updated = res?.data; if (!updated) return;
-        setItems((prev) => prev.map((p) => p.id === updated._id ? { ...p, value: updated.value } : p));
-        setIsFormOpen(false);
-      }});
+      await putQuery({
+        url: apiUrls.PropertyValues.update, putData: { id: activeItem.id, property: values.property, value: values.value }, onSuccess: (res: any) => {
+          const updated = res?.data; if (!updated) return;
+          setItems((prev) => prev.map((p) => p.id === updated._id ? { ...p, value: updated.value } : p));
+          setIsFormOpen(false);
+        }
+      });
     }
   };
 
   const requestDelete = (it: PropertyValueItem) => setPendingDelete(it);
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    await deleteQuery({ url: apiUrls.PropertyValues.delete, deleteData: { id: pendingDelete.id }, onSuccess: () => {
-      setItems((prev) => prev.filter((p) => p.id !== pendingDelete.id));
-      setPendingDelete(null);
-    }});
+    await deleteQuery({
+      url: apiUrls.PropertyValues.delete, deleteData: { id: pendingDelete.id }, onSuccess: () => {
+        setItems((prev) => prev.filter((p) => p.id !== pendingDelete.id));
+        setPendingDelete(null);
+      }
+    });
   };
 
   return (
@@ -77,6 +88,9 @@ export default function PropertyValuesPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-4 lg:px-4 py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
+            {loading && (
+              <PageLoader loading={loading} text="Loading PropertyValues..." />
+            )}
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Property Values</h1>
             <p className="mt-2 text-sm text-slate-500">Manage values for properties.</p>
           </div>

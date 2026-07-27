@@ -66,6 +66,10 @@ export default function Profile() {
   }, [getAddressesQuery]);
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     fetchAddresses();
   }, [fetchAddresses]);
 

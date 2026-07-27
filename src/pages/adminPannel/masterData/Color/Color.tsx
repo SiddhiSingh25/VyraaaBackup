@@ -10,6 +10,7 @@ import usePostQuery from '../../../../hooks/postQuery.hook';
 import usePutQuery from '../../../../hooks/putQuery.hook';
 import useDeleteQuery from '../../../../hooks/deleteQuery.hook';
 import { apiUrls } from '../../../../apis/index';
+import PageLoader from '@/components/Loader/fullPageLoader';
 
 const mapApi = (item: any): ColorItem => ({ id: item._id, srNo: 0, color: item.color, hexCode: item.hexCode, family: item.family });
 
@@ -21,23 +22,27 @@ export default function ColorPage() {
   const [activeItem, setActiveItem] = useState<any | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ColorItem | null>(null);
 
-  const { getQuery } = useGetQuery();
+  const { getQuery, loading } = useGetQuery();
   const { postQuery } = usePostQuery();
   const { putQuery } = usePutQuery();
   const { deleteQuery } = useDeleteQuery();
 
   const fetchFamilies = () => {
-    getQuery({ url: apiUrls.ColorFamily.getAll, onSuccess: (res: any) => {
-      const data = res?.data || [];
-      setFamilies(data.map((f: any) => ({ id: f._id, name: f.colorFamily })));
-    }});
+    getQuery({
+      url: apiUrls.ColorFamily.getAll, onSuccess: (res: any) => {
+        const data = res?.data || [];
+        setFamilies(data.map((f: any) => ({ id: f._id, name: f.colorFamily })));
+      }
+    });
   };
 
   const fetchItems = () => {
-    getQuery({ url: apiUrls.Color.getAll, onSuccess: (res: any) => {
-      const data = res?.data || [];
-      setItems(data.map(mapApi).map((it: ColorItem, idx: number) => ({ ...it, srNo: idx + 1, familyName: families.find((f) => f.id === it.family)?.name || '' })));
-    }});
+    getQuery({
+      url: apiUrls.Color.getAll, onSuccess: (res: any) => {
+        const data = res?.data || [];
+        setItems(data.map(mapApi).map((it: ColorItem, idx: number) => ({ ...it, srNo: idx + 1, familyName: families.find((f) => f.id === it.family)?.name || '' })));
+      }
+    });
   };
 
   useEffect(() => { fetchFamilies(); }, []);
@@ -49,27 +54,33 @@ export default function ColorPage() {
 
   const handleSubmit = async (values: ColorFormValues) => {
     if (modalMode === 'add') {
-      await postQuery({ url: apiUrls.Color.add, postData: { family: values.family, color: values.color, hexCode: values.hexCode }, onSuccess: (res: any) => {
-        const newItem = res?.data; if (!newItem) return;
-        setItems((prev) => prev.concat({ ...mapApi(newItem), srNo: prev.length + 1, familyName: families.find(f => f.id === newItem.family)?.name || '' }));
-        setIsFormOpen(false);
-      }});
+      await postQuery({
+        url: apiUrls.Color.add, postData: { family: values.family, color: values.color, hexCode: values.hexCode }, onSuccess: (res: any) => {
+          const newItem = res?.data; if (!newItem) return;
+          setItems((prev) => prev.concat({ ...mapApi(newItem), srNo: prev.length + 1, familyName: families.find(f => f.id === newItem.family)?.name || '' }));
+          setIsFormOpen(false);
+        }
+      });
     } else if (activeItem) {
-      await putQuery({ url: apiUrls.Color.update, putData: { id: activeItem.id, family: values.family, color: values.color, hexCode: values.hexCode }, onSuccess: (res: any) => {
-        const updated = res?.data; if (!updated) return;
-        setItems((prev) => prev.map((p) => p.id === updated._id ? { ...p, color: updated.color, hexCode: updated.hexCode } : p));
-        setIsFormOpen(false);
-      }});
+      await putQuery({
+        url: apiUrls.Color.update, putData: { id: activeItem.id, family: values.family, color: values.color, hexCode: values.hexCode }, onSuccess: (res: any) => {
+          const updated = res?.data; if (!updated) return;
+          setItems((prev) => prev.map((p) => p.id === updated._id ? { ...p, color: updated.color, hexCode: updated.hexCode } : p));
+          setIsFormOpen(false);
+        }
+      });
     }
   };
 
   const requestDelete = (it: ColorItem) => setPendingDelete(it);
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    await deleteQuery({ url: apiUrls.Color.delete, deleteData: { id: pendingDelete.id }, onSuccess: () => {
-      setItems((prev) => prev.filter((p) => p.id !== pendingDelete.id));
-      setPendingDelete(null);
-    }});
+    await deleteQuery({
+      url: apiUrls.Color.delete, deleteData: { id: pendingDelete.id }, onSuccess: () => {
+        setItems((prev) => prev.filter((p) => p.id !== pendingDelete.id));
+        setPendingDelete(null);
+      }
+    });
   };
 
   return (
@@ -82,7 +93,9 @@ export default function ColorPage() {
           </div>
           <Button onClick={openAdd} variant="primary" size="md" icon={<Plus size={18} strokeWidth={2.5} />}>Add Color</Button>
         </div>
-
+        {loading && (
+          <PageLoader loading={loading} text="Loading Colors..." />
+        )}
         <div className="p-0 sm:p-2 ">
           <ColorTable items={items} onEdit={openEdit} onDelete={requestDelete} />
         </div>
