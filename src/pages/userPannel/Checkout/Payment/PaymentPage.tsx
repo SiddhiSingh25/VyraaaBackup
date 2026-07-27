@@ -227,7 +227,7 @@ export default function Payment() {
               {/* Actions */}
               <div className="flex flex-col gap-3">
                 <button
-                  onClick={() => navigate("/profile", { replace: true })}
+                  onClick={() => navigate("/profile", { replace: true, state: { activeTabName: "orders" } })}
                   className="w-full rounded-xl bg-primary py-3.5 font-body text-[15px] font-semibold text-background transition-all hover:bg-primary-dark"
                 >
                   View Details

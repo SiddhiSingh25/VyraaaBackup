@@ -15,7 +15,7 @@ const TermsAndConditions: React.FC = () => {
 
     return (
         <>
-            <Navbar />
+
             <main className="px-6 md:px-20 py-8 md:py-8">
                 <motion.div
                     initial={{ opacity: 0, y: 8 }}
@@ -186,7 +186,7 @@ const TermsAndConditions: React.FC = () => {
                     </div>
                 </motion.div>
             </main>
-            <Footer />
+
         </>
     );
 };

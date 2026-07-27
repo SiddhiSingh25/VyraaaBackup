@@ -14,7 +14,7 @@ import Footer from "../../../components/Footer/Footer";
 import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { apiUrls } from "@/apis";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/slices/authSlice";
 import { clearCart } from "@/redux/slices/cartSlice";
@@ -41,76 +41,130 @@ const mapFrontendGender = (frontendGender: string): "Male" | "Female" | "Other" 
   return "";
 };
 
+function UserProfileSkeleton() {
+  return (
+    <div className="min-h-screen bg-background font-body">
+      <main className="px-6 md:px-10 py-6 animate-pulse">
+        {/* Header Breadcrumbs Row */}
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
+          <div className="hidden md:block">
+            <div className="h-9 w-40 bg-card rounded mb-2"></div>
+            <div className="h-4 w-28 bg-card rounded"></div>
+          </div>
+
+          <div className="w-full md:w-auto text-left sm:text-right">
+            <div className="h-7 w-32 bg-card rounded mb-2 md:ml-auto"></div>
+            <div className="h-4 w-44 bg-card rounded md:ml-auto"></div>
+          </div>
+        </div>
+
+        {/* Content Layout Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 items-start">
+          {/* Sidebar Skeleton */}
+          <aside className="flex flex-col rounded-2xl border border-border bg-surface overflow-hidden">
+            <nav className="p-3 flex flex-col gap-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-background/50 h-10 w-full">
+                  <div className="h-5 w-5 rounded bg-card shrink-0" />
+                  <div className="h-4 w-28 bg-card rounded" />
+                </div>
+              ))}
+              <div className="my-2 border-t border-border" />
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-background/50 h-10 w-full">
+                <div className="h-5 w-5 rounded bg-card shrink-0" />
+                <div className="h-4 w-16 bg-card rounded" />
+              </div>
+            </nav>
+          </aside>
+
+          {/* Profile Details Skeleton Content column */}
+          <div className="flex flex-col gap-5 min-w-0">
+            {/* Header Component Skeleton */}
+            <div className="rounded-2xl border border-border bg-surface p-4 md:p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+                <div className="h-20 w-20 rounded-full bg-card shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-6 w-44 bg-card rounded" />
+                  <div className="h-4 w-32 bg-card rounded" />
+                  <div className="h-3.5 w-24 bg-card rounded" />
+                </div>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <div className="h-10 w-36 bg-card border border-border rounded-xl" />
+                <div className="h-10 w-36 bg-card border border-border rounded-xl" />
+              </div>
+            </div>
+
+            {/* Selected Tab Area Skeleton */}
+            <div className="rounded-2xl border border-border bg-surface p-4 md:p-5 min-h-105">
+              <div className="h-6 w-48 bg-card rounded mb-6" />
+
+              {/* Mock fields for Personal Info Tab */}
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="h-4.5 w-24 bg-card rounded" />
+                      <div className="h-11 w-full bg-background border border-border rounded-xl" />
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-2">
+                  <div className="h-11 w-32 bg-card rounded-xl" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default function Profile() {
+
+
+
+
+  let location = useLocation();
+
+  let { activeTabName } = location?.state || {};
+
+
+
+
+
+
+
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [activeTab, setActiveTab] = useState<AccountTabId>("personal-info");
+  const [activeTab, setActiveTab] = useState<AccountTabId>(activeTabName ? activeTabName : "personal-info");
   const [user, setUser] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<AccountStats>(sampleStats);
   const [addresses, setAddresses] = useState<Address[]>([]);
 
-  let { getQuery } = useGetQuery();
+
+
+
+
+
+
+
+  let { getQuery, loading } = useGetQuery();
   const { getQuery: getAddressesQuery, loading: loadingAddresses } = useGetQuery();
   let { postQuery } = usePostQuery();
 
-  const fetchAddresses = useCallback(() => {
-    getAddressesQuery({
-      url: apiUrls.Address.getByUserId,
-      onSuccess: (res) => {
-        setAddresses(res?.data ?? []);
-      },
-      onFail: (err) => {
-        console.error("Failed to load addresses", err);
-      },
-    });
-  }, [getAddressesQuery]);
+
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  useEffect(() => {
-    fetchAddresses();
-  }, [fetchAddresses]);
 
-  const handleSaveAddress = (
-    formData: any,
-    addressId?: string,
-    onSuccess?: () => void,
-    onFail?: (err: any) => void
-  ) => {
-    postQuery({
-      url: apiUrls.Address.add,
-      postData: addressId ? { addressId, ...formData } : formData,
-      onSuccess: () => {
-        fetchAddresses();
-        onSuccess?.();
-      },
-      onFail: (err: any) => {
-        console.error("Save address failed", err);
-        onFail?.(err);
-      },
-    });
-  };
 
-  const handleDeleteAddress = (
-    addressId: string,
-    onSuccess?: () => void,
-    onFail?: (err: any) => void
-  ) => {
-    postQuery({
-      url: apiUrls.Address.delete,
-      postData: { addressId },
-      onSuccess: () => {
-        setAddresses((prev) => prev.filter((a) => a._id !== addressId));
-        onSuccess?.();
-      },
-      onFail: (err: any) => {
-        console.error("Delete address failed", err);
-        onFail?.(err);
-      },
-    });
-  };
+
+
 
   useEffect(() => {
     getQuery({
@@ -206,11 +260,11 @@ export default function Profile() {
     navigate("/auth/login");
   };
 
-  if (!user) return null;
+  if (loading || !user) return <UserProfileSkeleton />;
 
   return (
     <div className="min-h-screen bg-background font-body">
-      <Navbar />
+
 
       <main className="px-6 md:px-10 py-6">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
@@ -249,7 +303,7 @@ export default function Profile() {
           <div className="flex flex-col gap-5 min-w-0">
             <ProfileHeader user={user} stats={stats} onTabChange={setActiveTab} />
 
-            <div className="rounded-2xl border border-border bg-surface p-4 md:p-5 min-h-[420px]">
+            <div className="rounded-2xl border border-border bg-surface p-4 md:p-5 min-h-105">
               <h2 className="text-xl font-semibold text-admin-text mb-5">
                 {TAB_TITLES[activeTab]}
               </h2>
@@ -274,12 +328,7 @@ export default function Profile() {
                   )}
 
                   {activeTab === "addresses" && (
-                    <AddressesTab
-                    // addresses={addresses}
-                    // onSave={handleSaveAddress}
-                    // onDelete={handleDeleteAddress}
-                    // loading={loadingAddresses}
-                    />
+                    <AddressesTab />
                   )}
 
 
@@ -294,7 +343,7 @@ export default function Profile() {
         </div>
       </main>
 
-      <Footer />
+
     </div>
   );
 }

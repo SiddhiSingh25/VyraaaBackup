@@ -76,7 +76,7 @@ export default function ProductShowcase({ category, categoryLoading }: { categor
           });
         }}
         // 'group' enables synchronized hover effects on children
-        className="group flex flex-col items-center gap-3 flex-shrink-0 snap-center focus:outline-none"
+        className="group flex flex-col items-center gap-3 flex-shrink-0 snap-center focus:outline-none cursor-pointer"
       >
         {/* Image Container */}
         <div

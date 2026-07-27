@@ -81,7 +81,7 @@ const ProductInfo = ({
   const location = useLocation();
   let id = location.state?.productId;
   const { getQuery } = useGetQuery();
-  const { postQuery } = usePostQuery();
+  const { postQuery, loading: cartLoading } = usePostQuery();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -92,7 +92,7 @@ const ProductInfo = ({
   const cart = useSelector((state: any) => state.cart.items);
 
   const [thumbnail, setThumbnail] = React.useState(0);
-  const [selectedSize, setSelectedSize] = React.useState<number>(0);
+  const [selectedSize, setSelectedSize] = React.useState<number>(-1);
   const [quantity, setQuantity] = React.useState(1);
   const [isWishlisted, setIsWishlisted] = React.useState(false);
   const ref = useReveal();
@@ -130,7 +130,12 @@ const ProductInfo = ({
 
   useEffect(() => {
     setThumbnail(0);
-    setSelectedSize(0);
+    // setSelectedSize(0);
+    const firstAvailableIndex = productData?.price?.findIndex(
+      (item: any) => item.isAvailable
+    );
+
+    setSelectedSize(firstAvailableIndex);
     setIsWishlisted(false);
   }, [productData]);
 
@@ -196,6 +201,7 @@ const ProductInfo = ({
 
   const handleBuyNow = () => {
     if (selectedSize === null) return;
+
 
     if (buyNowDebounceTimer.current) {
       clearTimeout(buyNowDebounceTimer.current);
@@ -466,9 +472,11 @@ const ProductInfo = ({
                   <button
                     onClick={handleAddToCart}
                     type="button"
-                    className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium bg-primary text-background rounded-sm hover:bg-primary-dark transition-colors duration-200"
+                    // disabled={cartLoading}
+                    disabled={selectedSize === -1 || !activePrice?.isAvailable || cartLoading}
+                    className="flex-1 h-11 text-[12px] tracking-[0.08em] disabled:opacity-50 disabled:cursor-not-allowed uppercase font-medium bg-primary text-background rounded-sm hover:bg-primary-dark transition-colors duration-200"
                   >
-                    Add to Cart
+                    {cartLoading ? "Adding to Cart..." : "Add to Cart"}
                   </button>
                   <button
                     disabled={

@@ -41,7 +41,7 @@ export default function HomeScreen() {
 
   return (
     <div className="bg-background text-body font-body selection:bg-rose-gold selection:text-white">
-      <Navbar category={category} />
+      {/* <Navbar category={category} /> */}
       <MarqueeBar />
       {/* <HeroSlider/>
        */}
@@ -51,7 +51,7 @@ export default function HomeScreen() {
       <BrandStory />
       {/* <Testimonials/> */}
       <Newsletter />
-      <Footer category={category} />
+      {/* <Footer category={category} /> */}
     </div>
   );
 }

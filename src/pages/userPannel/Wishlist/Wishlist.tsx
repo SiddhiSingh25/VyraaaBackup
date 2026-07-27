@@ -165,7 +165,7 @@ export default function WishlistPage() {
     return (
       <>
         <div className="min-h-screen bg-background">
-          <Navbar />
+
           <main className="mx-auto max-w-7xl px-5 pb-24 pt-6 sm:px-8 lg:px-10">
             {/* Header Skeleton */}
             <div className="flex flex-col gap-2 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between animate-pulse">
@@ -183,7 +183,7 @@ export default function WishlistPage() {
             </div>
           </main>
         </div>
-        <Footer />
+
       </>
     );
   }
@@ -191,7 +191,7 @@ export default function WishlistPage() {
   return (
     <>
       <div className="min-h-screen bg-background">
-        <Navbar />
+
 
         <main className="  mx-auto max-w-7xl px-5 pb-24 pt-6 sm:px-8 lg:px-10">
           {/* Header */}
@@ -253,7 +253,7 @@ export default function WishlistPage() {
 
 
       </div>
-      <Footer />
+
     </>
   );
 }

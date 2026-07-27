@@ -54,26 +54,26 @@ export default function ProductFilter() {
   });
 
 
-useEffect(() => {
-  const next: FilterState = {};
+  useEffect(() => {
+    const next: FilterState = {};
 
-  if (navState.categoryId) {
-    next.category = navState.categoryId;
-  }
+    if (navState.categoryId) {
+      next.category = navState.categoryId;
+    }
 
-  if (navState.subCategoryId) {
-    next.subCategory = navState.subCategoryId;
-  }
+    if (navState.subCategoryId) {
+      next.subCategory = navState.subCategoryId;
+    }
 
-  if (navState.search) {
-    next.search = navState.search;
-  }
+    if (navState.search) {
+      next.search = navState.search;
+    }
 
-  setFilterState(next);
-  setPage(1);
-}, [
-  location.key, // or location.state
-]);
+    setFilterState(next);
+    setPage(1);
+  }, [
+    location.key, // or location.state
+  ]);
 
 
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
@@ -152,7 +152,7 @@ useEffect(() => {
       url: finalUrl,
       onSuccess: (res: any) => {
         if (res.success && Array.isArray(res.data)) {
-        
+
           setProductData(res.data);
           setTotalPages(res.pagination?.totalPages || 1);
           setPage(res.pagination?.currentPage || 1);
@@ -183,11 +183,11 @@ useEffect(() => {
 
 
   useEffect(() => {
-  if (navState.search === undefined) return;
-  setFilterState((prev) => ({ ...prev, search: navState.search }));
-  setPage(1);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [navState.search]);
+    if (navState.search === undefined) return;
+    setFilterState((prev) => ({ ...prev, search: navState.search }));
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navState.search]);
 
   // ---------------------------------------------------------------------
   // Single handler for every filter change. Toolbar / FilterList /
@@ -294,7 +294,7 @@ useEffect(() => {
         ::selection { background: ${C.primaryLight}; color: #fff; }
       `}</style>
 
-      <Navbar />
+
 
       <Toolbar
         activeCount={activeChips.length}
@@ -333,7 +333,7 @@ useEffect(() => {
           <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         </main>
       </div>
-      <Footer />
+
 
       <MobileBottomBar onFilter={() => setFilterDrawerOpen(true)} />
       <FilterDrawer

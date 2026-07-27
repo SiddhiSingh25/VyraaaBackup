@@ -6,12 +6,10 @@ import Footer from "../../../components/Footer/Footer";
 export default function CheckoutLayout() {
   return (
     <div>
-      <Navbar/>
-      <CheckoutStepper/>
-      <div>
-        <Outlet />
-      </div>
-      <Footer/>
+
+      <CheckoutStepper />
+      <Outlet />
+
     </div>
   );
 }
