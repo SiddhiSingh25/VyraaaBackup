@@ -10,6 +10,7 @@ import usePostQuery from '../../../../hooks/postQuery.hook';
 import usePutQuery from '../../../../hooks/putQuery.hook';
 import useDeleteQuery from '../../../../hooks/deleteQuery.hook';
 import { apiUrls } from '../../../../apis/index';
+import PageLoader from '@/components/Loader/fullPageLoader';
 
 const mapApi = (item: any): SizeTypeItem => ({ id: item._id, srNo: 0, sizeType: item.sizeType || item.sizeType });
 
@@ -20,16 +21,18 @@ export default function SizeTypePage() {
   const [activeItem, setActiveItem] = useState<any | null>(null);
   const [pendingDelete, setPendingDelete] = useState<SizeTypeItem | null>(null);
 
-  const { getQuery } = useGetQuery();
+  const { getQuery, loading } = useGetQuery();
   const { postQuery } = usePostQuery();
   const { putQuery } = usePutQuery();
   const { deleteQuery } = useDeleteQuery();
 
   const fetchItems = () => {
-    getQuery({ url: apiUrls.SizeType.getAll, onSuccess: (res: any) => {
-      const data = res?.data || [];
-      setItems(data.map(mapApi).map((it: SizeTypeItem, idx: number) => ({ ...it, srNo: idx + 1 })));
-    }});
+    getQuery({
+      url: apiUrls.SizeType.getAll, onSuccess: (res: any) => {
+        const data = res?.data || [];
+        setItems(data.map(mapApi).map((it: SizeTypeItem, idx: number) => ({ ...it, srNo: idx + 1 })));
+      }
+    });
   };
 
   useEffect(() => { fetchItems(); }, []);
@@ -40,27 +43,33 @@ export default function SizeTypePage() {
 
   const handleSubmit = async (values: SizeTypeFormValues) => {
     if (modalMode === 'add') {
-      await postQuery({ url: apiUrls.SizeType.add, postData: { sizeType: values.sizeType }, onSuccess: (res: any) => {
-        const newItem = res?.data; if (!newItem) return;
-        setItems((prev) => prev.concat({ ...mapApi(newItem), srNo: prev.length + 1 }));
-        setIsFormOpen(false);
-      }});
+      await postQuery({
+        url: apiUrls.SizeType.add, postData: { sizeType: values.sizeType }, onSuccess: (res: any) => {
+          const newItem = res?.data; if (!newItem) return;
+          setItems((prev) => prev.concat({ ...mapApi(newItem), srNo: prev.length + 1 }));
+          setIsFormOpen(false);
+        }
+      });
     } else if (activeItem) {
-      await putQuery({ url: apiUrls.SizeType.update, putData: { id: activeItem.id, sizeType: values.sizeType }, onSuccess: (res: any) => {
-        const updated = res?.data; if (!updated) return;
-        setItems((prev) => prev.map((p) => p.id === updated._id ? { ...p, sizeType: updated.sizeType } : p));
-        setIsFormOpen(false);
-      }});
+      await putQuery({
+        url: apiUrls.SizeType.update, putData: { id: activeItem.id, sizeType: values.sizeType }, onSuccess: (res: any) => {
+          const updated = res?.data; if (!updated) return;
+          setItems((prev) => prev.map((p) => p.id === updated._id ? { ...p, sizeType: updated.sizeType } : p));
+          setIsFormOpen(false);
+        }
+      });
     }
   };
 
   const requestDelete = (it: SizeTypeItem) => setPendingDelete(it);
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    await deleteQuery({ url: apiUrls.SizeType.delete, deleteData: { id: pendingDelete.id }, onSuccess: () => {
-      setItems((prev) => prev.filter((p) => p.id !== pendingDelete.id));
-      setPendingDelete(null);
-    }});
+    await deleteQuery({
+      url: apiUrls.SizeType.delete, deleteData: { id: pendingDelete.id }, onSuccess: () => {
+        setItems((prev) => prev.filter((p) => p.id !== pendingDelete.id));
+        setPendingDelete(null);
+      }
+    });
   };
 
   return (
@@ -73,7 +82,9 @@ export default function SizeTypePage() {
           </div>
           <Button onClick={openAdd} variant="primary" size="md" icon={<Plus size={18} strokeWidth={2.5} />}>Add Size Type</Button>
         </div>
-
+        {loading && (
+          <PageLoader loading={loading} text="Loading SizeTypes..." />
+        )}
         <div className="p-0 sm:p-2 mb-4">
           <SizeTypeTable items={items} onEdit={openEdit} onDelete={requestDelete} />
         </div>

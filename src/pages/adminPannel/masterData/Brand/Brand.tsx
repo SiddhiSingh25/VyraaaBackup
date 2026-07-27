@@ -10,6 +10,7 @@ import usePostQuery from '../../../../hooks/postQuery.hook';
 import usePutQuery from '../../../../hooks/putQuery.hook';
 import useDeleteQuery from '../../../../hooks/deleteQuery.hook';
 import { apiUrls } from '../../../../apis/index';
+import PageLoader from '@/components/Loader/fullPageLoader';
 
 const mapApi = (item: any): BrandItem => ({
   id: item._id,
@@ -28,9 +29,9 @@ export default function BrandPage() {
   const [activeBrand, setActiveBrand] = useState<BrandItem | null>(null);
   const [pendingDelete, setPendingDelete] = useState<BrandItem | null>(null);
 
-  const { getQuery } = useGetQuery();
-  const { postQuery } = usePostQuery();
-  const { putQuery } = usePutQuery();
+  const { getQuery, loading } = useGetQuery();
+  const { postQuery, loading: addLoading } = usePostQuery();
+  const { putQuery, loading: editLoading } = usePutQuery();
   const { deleteQuery } = useDeleteQuery();
 
   const fetchCategories = () => {
@@ -123,11 +124,11 @@ export default function BrandPage() {
             prev.map((item) =>
               item.id === updated._id
                 ? {
-                    ...item,
-                    brandName: updated.brand,
-                    categoryId: updated.category,
-                    categoryName: categories.find((category) => category.id === updated.category)?.name || '',
-                  }
+                  ...item,
+                  brandName: updated.brand,
+                  categoryId: updated.category,
+                  categoryName: categories.find((category) => category.id === updated.category)?.name || '',
+                }
                 : item
             )
           );
@@ -169,7 +170,9 @@ export default function BrandPage() {
             Add Brand
           </Button>
         </div>
-
+        {loading && (
+          <PageLoader loading={loading} text="Loading Brands..." />
+        )}
         <div className="p-0 sm:p-2 mb-4">
           <BrandTable
             brands={filteredBrands}
