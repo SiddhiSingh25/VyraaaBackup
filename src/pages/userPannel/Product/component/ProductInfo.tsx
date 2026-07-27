@@ -10,7 +10,7 @@ import usePostQuery from "../../../../hooks/postQuery.hook";
 import { Heart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../../redux/slices/cartSlice";
-import PageLoader from "@/components/Loader/fullPageLoader";
+import SkeletonProductInfo from "./SkeletonProductInfo";
 
 const isVideoUrl = (url: string) => {
   if (!url) return false;
@@ -58,12 +58,6 @@ const SectionLabel = ({ children, action }: any) => (
   </div>
 );
 
-const TrustLine = ({ icon, children }: any) => (
-  <div className="flex items-center gap-2 text-[12.5px] text-[#51443f] py-1">
-    {icon}
-    <span>{children}</span>
-  </div>
-);
 
 const SpecCell = ({ label, value }: any) => (
   <div>
@@ -72,54 +66,7 @@ const SpecCell = ({ label, value }: any) => (
   </div>
 );
 
-const TruckIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M2 7h13v9H2z"
-      stroke="#835240"
-      strokeWidth="1.5"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M15 10h4l3 3v3h-7v-6z"
-      stroke="#835240"
-      strokeWidth="1.5"
-      strokeLinejoin="round"
-    />
-    <circle cx="6.5" cy="18" r="1.8" stroke="#835240" strokeWidth="1.5" />
-    <circle cx="17.5" cy="18" r="1.8" stroke="#835240" strokeWidth="1.5" />
-  </svg>
-);
 
-const ReturnIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M4 4v6h6"
-      stroke="#835240"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M4.5 14a8 8 0 1 0 2-8.5L4 10"
-      stroke="#835240"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const ShieldIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M12 2L4 5v6c0 5 3.4 8.7 8 9.9C16.6 19.7 20 16 20 11V5l-8-3z"
-      stroke="#835240"
-      strokeWidth="1.5"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
 
 /* ---------------------------------- Main ---------------------------------- */
 
@@ -133,7 +80,7 @@ const ProductInfo = ({
   const [productData, setProductData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
-  let id = location.state.productId;
+  let id = location.state?.productId;
   const { getQuery } = useGetQuery();
   const { postQuery } = usePostQuery();
   const navigate = useNavigate();
@@ -156,7 +103,10 @@ const ProductInfo = ({
   const buyNowDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      navigate("/");
+      return;
+    }
     window.scrollTo(0, 0);
     setIsLoading(true);
     getQuery({
@@ -273,7 +223,7 @@ const ProductInfo = ({
   };
 
   if (isLoading) {
-    return <PageLoader loading={isLoading} text="Loading Product..." />;
+    return <SkeletonProductInfo />;
   }
 
   const activePrice = productData?.price?.[selectedSize];
@@ -354,7 +304,8 @@ const ProductInfo = ({
                 </div>
 
                 {/* Main Image/Video Section */}
-                <div className="w-full max-w-[350px] aspect-[3/4] md:w-[280px] md:h-[320px] lg:w-[380px] lg:h-[420px] mx-auto md:mx-0 border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative flex-shrink-0">
+                <div
+                  className="w-full max-w-[350px] aspect-[3/4] md:w-[280px] md:h-[320px] lg:w-[380px] lg:h-[420px] mx-auto md:mx-0 border border-gray-300 rounded-xl overflow-hidden bg-gray-50 relative flex-shrink-0">
                   <button
                     onClick={handleWishlist}
                     aria-label={
@@ -533,17 +484,7 @@ const ProductInfo = ({
                   </button>
                 </div>
 
-                {/* <div className="mt-4 pt-3 border-t border-[#e6d9cf]">
-                  <TrustLine icon={<ShieldIcon />}>
-                    100% Original Products
-                  </TrustLine>
-                  <TrustLine icon={<TruckIcon />}>
-                    Free shipping, pan-India
-                  </TrustLine>
-                  <TrustLine icon={<ReturnIcon />}>
-                    Easy 7-day returns & exchanges
-                  </TrustLine>
-                </div> */}
+
 
                 <div className="mt-4 py-4 border-y border-[#e6d9cf]">
                   <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium mb-2">
