@@ -204,7 +204,7 @@ export default function Footer() {
                 <div>
                   <Link
                     to="/cart"
-                    className="group relative inline-flex items-center justify-center px-8 py-3.5 overflow-hidden rounded-sm bg-[#C5A880] hover:bg-[#b09366] text-[#0d0a08] font-body text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(197,168,128,0.25)]"
+                    className="group relative inline-flex items-center justify-center px-8 py-3.5 overflow-hidden rounded-sm bg-[#C5A880] hover:bg-[#b09366] text-[#0d0a08] font-body text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_10px_rgba(197,168,128,0.12)]"
                   >
                     Go To Cart
                   </Link>
