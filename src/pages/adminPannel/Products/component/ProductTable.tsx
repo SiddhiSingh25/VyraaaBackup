@@ -180,7 +180,7 @@ const ProductTable = ({
 
                     <td className="px-4 py-3">
                       <p className="font-semibold text-[#6F4A36]">
-                        ₹{lowestPrice}
+                        ₹{Number(lowestPrice).toFixed(2)}
                       </p>
 
                       <p className="text-xs text-slate-500">Starting Price</p>
