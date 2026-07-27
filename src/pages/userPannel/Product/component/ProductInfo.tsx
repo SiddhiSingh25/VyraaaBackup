@@ -42,15 +42,15 @@ const StarRating = ({ rating, totalRatings }: any) => (
           </svg>
         ))}
     </div>
-    <span className="text-[12px] text-[#3b302a] font-medium">{rating}</span>
-    <span className="w-px h-3 bg-[#e6d9cf]" />
-    <span className="text-[12px] text-[#84746e]">{totalRatings} Reviews</span>
+    <span className="text-[12px] text-heading font-medium">{rating}</span>
+    <span className="w-px h-3 bg-border" />
+    <span className="text-[12px] text-muted">{totalRatings} Reviews</span>
   </div>
 );
 
 const SectionLabel = ({ children, action }: any) => (
   <div className="flex items-center justify-between mb-2">
-    <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium">
+    <p className="text-[11px] tracking-[0.14em] uppercase text-heading font-medium">
       {children}
     </p>
     {action}
@@ -61,7 +61,7 @@ const SectionLabel = ({ children, action }: any) => (
 const SpecCell = ({ label, value }: any) => (
   <div>
     <p className="text-[11px] text-[#a89a90]">{label}</p>
-    <p className="text-[13px] text-[#3b302a] mt-0.5">{value}</p>
+    <p className="text-[13px] text-heading mt-0.5">{value}</p>
   </div>
 );
 
@@ -233,14 +233,14 @@ const ProductInfo = ({
 
   return (
     productData && (
-      <section className="bg-[#fdf9f3] py-5">
+      <section className="bg-background py-5">
         <div className="px-5 sm:px-10 lg:px-20 max-w-[1840px] mx-auto">
           <div className="max-w-8xl w-full ">
             {/* FIX: productData.name -> productData.title (API doesn't return `name`) */}
-            <p className="text-[10.5px] tracking-[0.08em] uppercase text-[#84746e]">
+            <p className="text-[10.5px] tracking-[0.08em] uppercase text-muted">
               <span
                 onClick={() => navigate("/")}
-                className="cursor-pointer hover:text-[#835240] transition-colors duration-200"
+                className="cursor-pointer hover:text-primary transition-colors duration-200"
               >
                 Home /
               </span>{" "}
@@ -257,11 +257,11 @@ const ProductInfo = ({
                     });
                   }
                 }}
-                className="cursor-pointer hover:text-[#835240] transition-colors duration-200"
+                className="cursor-pointer hover:text-primary transition-colors duration-200"
               >
                 {productData.category?.category}
               </span>{" "}
-              / <span className="text-[#835240]">{productData.title}</span>
+              / <span className="text-primary">{productData.title}</span>
             </p>
 
             <div className="flex flex-col md:flex-row gap-10 mt-4">
@@ -276,7 +276,7 @@ const ProductInfo = ({
                           key={index}
                           onClick={() => setThumbnail(index)}
                           className={`border w-14 h-14 sm:w-[70px] sm:h-[70px] flex-shrink-0 rounded overflow-hidden cursor-pointer ${thumbnail === index
-                            ? "border-[#835240]"
+                            ? "border-[var(--color-primary)]"
                             : "border-gray-500/30"
                             }`}
                         >
@@ -351,10 +351,10 @@ const ProductInfo = ({
               </div>
 
               <div className="w-full md:w-1/2 lg:w-2/3 2xl:w-3/5">
-                <p className="text-[11px] tracking-[0.18em] uppercase text-[#b76e79] font-medium">
+                <p className="text-[11px] tracking-[0.18em] uppercase text-rose-gold font-medium">
                   {productData?.brand}
                 </p>
-                <h1 className="mt-0.5 text-[22px] leading-[1.25] text-[#3b302a] font-heading font-semibold">
+                <h1 className="mt-0.5 text-[22px] leading-[1.25] text-heading font-heading font-semibold">
                   {productData?.title}
                 </h1>
 
@@ -370,17 +370,17 @@ const ProductInfo = ({
 
                 {/* FIX: round amounts — API can return decimals like 332.5 */}
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-[22px] text-[#3b302a] font-semibold leading-none">
+                  <span className="text-[22px] text-heading font-semibold leading-none">
                     ₹{Math.round(activePrice?.amount)}
                   </span>
 
                   {activePrice?.discount > 0 && (
                     <>
-                      <span className="text-[13px] text-[#84746e] line-through">
+                      <span className="text-[13px] text-muted line-through">
                         MRP ₹{Math.round(activePrice?.markupPrice)}
                       </span>
 
-                      <span className="text-[13px] text-[#835240] font-medium">
+                      <span className="text-[13px] text-primary font-medium">
                         ({activePrice.discount}% OFF)
                       </span>
                     </>
@@ -388,7 +388,7 @@ const ProductInfo = ({
                 </div>
 
                 {activePrice?.discount > 0 && (
-                  <p className="mt-0.5 text-[11px] text-[#84746e]">
+                  <p className="mt-0.5 text-[11px] text-muted">
                     inclusive of all taxes · you save ₹{savedAmount}
                   </p>
                 )}
@@ -420,7 +420,7 @@ const ProductInfo = ({
                     <div className="mt-4">
                       <SectionLabel>
                         Colour —{" "}
-                        <span className="text-[#84746e] normal-case tracking-normal">
+                        <span className="text-muted normal-case tracking-normal">
                           {productData?.color}
                         </span>
                       </SectionLabel>
@@ -466,7 +466,7 @@ const ProductInfo = ({
                   <button
                     onClick={handleAddToCart}
                     type="button"
-                    className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium bg-[#835240] text-[#fdf9f3] rounded-sm hover:bg-[#51291a] transition-colors duration-200"
+                    className="flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium bg-primary text-background rounded-sm hover:bg-primary-dark transition-colors duration-200"
                   >
                     Add to Cart
                   </button>
@@ -489,15 +489,15 @@ const ProductInfo = ({
 
 
 
-                <div className="mt-4 py-4 border-y border-[#e6d9cf]">
+                <div className="mt-4 py-4 border-y border-border">
                   <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium mb-2">
                     Product Details
                   </p>
-                  <p className="text-[13px] leading-[1.7] text-[#51443f]">
+                  <p className="text-[13px] leading-[1.7] text-body">
                     {productData?.description}
                   </p>
 
-                  <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-bold mt-4 mb-2">
+                  <p className="text-[11px] tracking-[0.14em] uppercase text-heading font-bold mt-4 mb-2">
                     Specifications
                   </p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3 ">
@@ -512,9 +512,9 @@ const ProductInfo = ({
                 </div>
 
                 {/* FIX: real per-variant SKU instead of hardcoded product code */}
-                <div className="mt-4 pt-3 border-t border-[#e6d9cf] text-[11.5px] text-[#84746e]">
+                <div className="mt-4 pt-3 border-t border-border text-[11.5px] text-muted">
                   Product Code:{" "}
-                  <span className="text-[#3b302a]">
+                  <span className="text-heading">
                     {activePrice?.skuCode || productData?._id}
                   </span>
                 </div>
