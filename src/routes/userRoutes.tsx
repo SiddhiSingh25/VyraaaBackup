@@ -66,10 +66,10 @@ export const userRoutes = [
     path: "/",
     element: <HomeScreen />,
   },
-  {
-    path: "/aboutus",
-    element: <AboutUs />,
-  },
+  // {
+  //   path: "/aboutus",
+  //   element: <AboutUs />,
+  // },
   {
     path: "/privacy-policy",
     element: <PrivacyPolicy />,

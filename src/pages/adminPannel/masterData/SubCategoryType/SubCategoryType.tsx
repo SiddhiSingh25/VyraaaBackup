@@ -36,9 +36,9 @@ export default function SubCategoryTypePage() {
   );
 
   const { getQuery, loading } = useGetQuery();
-  const { postQuery } = usePostQuery();
-  const { putQuery } = usePutQuery();
-  const { deleteQuery } = useDeleteQuery();
+  const { postQuery, loading: addLoading } = usePostQuery();
+  const { putQuery, loading: editLoading } = usePutQuery();
+  const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
   const fetchSubcategories = () => {
     getQuery({
@@ -192,6 +192,7 @@ export default function SubCategoryTypePage() {
         initialData={activeItem ?? null}
         onClose={closeForm}
         onSubmit={handleSubmit}
+        loading={modalMode === "add" ? addLoading : editLoading}
       />
 
       <ConfirmDialog
@@ -202,6 +203,7 @@ export default function SubCategoryTypePage() {
         }
         onConfirm={confirmDelete}
         onCancel={() => setPendingDelete(null)}
+        loading={deleteLoading}
       />
     </div>
   );

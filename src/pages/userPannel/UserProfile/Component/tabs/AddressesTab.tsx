@@ -250,8 +250,25 @@ export function AddressesTab() {
           {[...Array(2)].map((_, i) => (
             <div
               key={i}
-              className="h-[170px] animate-pulse rounded-xl border border-border bg-muted/40"
-            />
+              className="h-[170px] p-4 rounded-xl border border-border bg-card animate-pulse flex flex-col justify-between select-none"
+            >
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-border flex-shrink-0 animate-pulse" />
+                <div className="space-y-1.5 flex-1 animate-pulse">
+                  <div className="h-3.5 w-1/3 rounded bg-border animate-pulse" />
+                  <div className="h-2.5 w-1/4 rounded bg-border animate-pulse" />
+                </div>
+              </div>
+              <div className="space-y-1.5 mt-3 flex-grow animate-pulse">
+                <div className="h-3 w-5/6 rounded bg-border animate-pulse" />
+                <div className="h-3 w-2/3 rounded bg-border animate-pulse" />
+                <div className="h-3/12 h-3 w-1/2 rounded bg-border animate-pulse" />
+              </div>
+              <div className="flex gap-2 border-t border-border pt-2.5 shrink-0 animate-pulse">
+                <div className="h-4.5 w-12 rounded bg-border animate-pulse" />
+                <div className="h-4.5 w-12 rounded bg-border animate-pulse" />
+              </div>
+            </div>
           ))}
         </div>
       ) : (

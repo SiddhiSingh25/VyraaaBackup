@@ -1,7 +1,9 @@
-import { FormEvent, useEffect, useState } from 'react';
-import Modal from '../../../../../components/tableComponents/Modal';
-import Button from '../../../../../components/tableComponents/Button';
-import type { PropertyFormValues, ModalMode } from './types';
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import Modal from "../../../../../components/tableComponents/Modal";
+import Button from "../../../../../components/tableComponents/Button";
+import type { PropertyFormValues, ModalMode } from "./types";
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 
 interface Props {
   isOpen: boolean;
@@ -10,19 +12,28 @@ interface Props {
   initialData?: PropertyFormValues | null;
   onClose: () => void;
   onSubmit: (values: PropertyFormValues) => void;
+  loading?: boolean;
 }
 
-const EMPTY: PropertyFormValues = { subCategory: '', property: '' };
+const EMPTY: PropertyFormValues = { subCategory: "", property: "" };
 
 type Errors = Partial<Record<keyof PropertyFormValues, string>>;
 
-export default function PropertyFormModal({ isOpen, mode, subcategories, initialData, onClose, onSubmit }: Props) {
+export default function PropertyFormModal({
+  isOpen,
+  mode,
+  subcategories,
+  initialData,
+  onClose,
+  onSubmit,
+  loading = false,
+}: Props) {
   const [values, setValues] = useState<PropertyFormValues>(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
     if (!isOpen) return;
-    if (mode === 'edit' && initialData) setValues(initialData);
+    if (mode === "edit" && initialData) setValues(initialData);
     else setValues(EMPTY);
     setErrors({});
   }, [isOpen, mode, initialData]);
@@ -34,8 +45,8 @@ export default function PropertyFormModal({ isOpen, mode, subcategories, initial
 
   const validate = () => {
     const next: Errors = {};
-    if (!values.property.trim()) next.property = 'Property is required';
-    if (!values.subCategory) next.subCategory = 'Select a subcategory';
+    if (!values.property.trim()) next.property = "Property is required";
+    if (!values.subCategory) next.subCategory = "Select a subcategory";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -47,21 +58,73 @@ export default function PropertyFormModal({ isOpen, mode, subcategories, initial
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={mode === 'add' ? 'Add Property' : 'Edit Property'} description={mode === 'add' ? 'Create a new property.' : 'Update property.'} footer={<><Button variant="secondary" onClick={onClose} type="button">Cancel</Button><Button onClick={handleSubmit} type="submit" form="property-form">{mode === 'add' ? 'Add' : 'Save'}</Button></>}>
-      <form id="property-form" onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={mode === "add" ? "Add Property" : "Edit Property"}
+      description={
+        mode === "add" ? "Create a new property." : "Update property."
+      }
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} type="button">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            type="submit"
+            form="property-form"
+            disabled={loading}
+          >
+            {loading && <ButtonLoader />}
+            {mode === "add" ? "Add" : "Save"}
+          </Button>
+        </>
+      }
+    >
+      <form
+        id="property-form"
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      >
         <div className="sm:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold text-dark-500">Subcategory</label>
-          <select value={values.subCategory} onChange={handleChange('subCategory')} className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.subCategory ? 'border-red-300' : 'border-dark-200'}`}>
+          <label className="mb-1.5 block text-xs font-semibold text-dark-500">
+            Subcategory
+          </label>
+          <select
+            value={values.subCategory}
+            onChange={handleChange("subCategory")}
+            className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.subCategory ? "border-red-300" : "border-dark-200"}`}
+          >
             <option value="">Select subcategory</option>
-            {subcategories.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {subcategories.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
           </select>
-          {errors.subCategory && <p className="mt-1 text-xs font-medium text-red-500">{errors.subCategory}</p>}
+          {errors.subCategory && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {errors.subCategory}
+            </p>
+          )}
         </div>
 
         <div className="sm:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold text-dark-500">Property</label>
-          <input value={values.property} onChange={handleChange('property')} placeholder="e.g. Fabric Type" className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.property ? 'border-red-300' : 'border-dark-200'}`} />
-          {errors.property && <p className="mt-1 text-xs font-medium text-red-500">{errors.property}</p>}
+          <label className="mb-1.5 block text-xs font-semibold text-dark-500">
+            Property
+          </label>
+          <input
+            value={values.property}
+            onChange={handleChange("property")}
+            placeholder="e.g. Fabric Type"
+            className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.property ? "border-red-300" : "border-dark-200"}`}
+          />
+          {errors.property && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {errors.property}
+            </p>
+          )}
         </div>
       </form>
     </Modal>
