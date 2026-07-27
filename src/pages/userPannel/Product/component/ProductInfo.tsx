@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from "react"; // Removed unused 'use' import
 import { useReveal } from "../../../../hooks/gsap/useReveal";
-import { kidsFootwear, shirts } from "../../../../assets/assets";
 import RatingsAndReviews from "./RatingReviews";
-import { useLocation, useNavigate, useParams } from "react-router-dom"; // Removed unused 'useNavigation'
+import { useLocation, useNavigate, } from "react-router-dom"; // Removed unused 'useNavigation'
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import { apiBaseUrl, apiUrls } from "../../../../apis";
 import { useToast } from "../../../../hooks/useToast.hook";
@@ -174,7 +173,7 @@ const ProductInfo = ({
 
         getQuery({
           url: apiUrls.WishList.remove + productData._id,
-          onSuccess: (res: any) => {},
+          onSuccess: (res: any) => { },
           onFail: (res: any) => {
             console.error("Failed to remove from wishlist:", res);
           },
@@ -201,7 +200,7 @@ const ProductInfo = ({
         const url = apiUrls.WishList.add + productData._id;
         getQuery({
           url,
-          onSuccess: (res: any) => {},
+          onSuccess: (res: any) => { },
           onFail: (err: any) => {
             toast("error", err.message);
           },
@@ -339,37 +338,40 @@ const ProductInfo = ({
               <div className="flex flex-col-reverse md:flex-row gap-3 sm:sticky md:top-24 self-start w-full md:w-auto">
                 {/* Thumbnails Section */}
                 <div className="flex flex-row md:flex-col gap-2 md:gap-2.5 overflow-x-auto md:overflow-x-visible pb-1.5 md:pb-0 scrollbar-none">
-                  {productData?.subImages?.map((media: any, index: number) => {
-                    const isVid = isVideoUrl(media);
-                    return (
-                      <div
-                        key={index}
-                        onClick={() => setThumbnail(index)}
-                        className={`border w-14 h-14 sm:w-17.5 sm:h-17.5 shrink-0 rounded overflow-hidden cursor-pointer ${
-                          thumbnail === index
-                            ? "border-primary"
+                  {productData?.subImages?.map(
+                    (media: any, index: number) => {
+                      const isVid = isVideoUrl(media);
+                      return (
+                        <div
+                          key={index}
+                          onClick={() => setThumbnail(index)}
+                          className={`border w-14 h-14 sm:w-[70px] sm:h-[70px] flex-shrink-0 rounded overflow-hidden cursor-pointer ${thumbnail === index
+                            ? "border-[var(--color-primary)]"
                             : "border-gray-500/30"
-                        }`}
-                      >
-                        {isVid ? (
-                          <video
-                            src={media}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            className="w-full h-full object-cover pointer-events-none"
-                          />
-                        ) : (
-                          <img
-                            src={media}
-                            alt={`Thumbnail ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
+                            }`}
+                        >
+                          {isVid ? (
+                            <video
+                              src={media}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              className="w-full h-full object-cover pointer-events-none"
+                            />
+                          ) : (
+                            <img
+                              src={media}
+                              alt={`Thumbnail ${index + 1}`}
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                      );
+                    },
+                  )}
                 </div>
 
                 {/* Main Image/Video Section */}
@@ -382,9 +384,8 @@ const ProductInfo = ({
                     className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
                   >
                     <Heart
-                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${
-                        isWished ? "fill-red-500 text-red-500" : "text-gray-700"
-                      }`}
+                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWished ? "fill-red-500 text-red-500" : "text-gray-700"
+                        }`}
                       strokeWidth={2}
                     />
                   </button>
@@ -405,6 +406,8 @@ const ProductInfo = ({
                       <img
                         src={activeMedia}
                         alt="Selected product"
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                       />
                     );
@@ -416,7 +419,7 @@ const ProductInfo = ({
                 <p className="text-[11px] tracking-[0.18em] uppercase text-rose-gold font-medium">
                   {productData?.brand}
                 </p>
-                <h1 className="mt-0.5 text-[22px] leading-tight text-heading font-heading font-semibold">
+                <h1 className="mt-0.5 text-[22px] leading-[1.25] text-heading font-heading font-semibold">
                   {productData?.title}
                 </h1>
 
@@ -432,6 +435,7 @@ const ProductInfo = ({
 
                 {/* FIX: round amounts — API can return decimals like 332.5 */}
                 <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-[22px] text-heading font-semibold leading-none"></span>
                   <span className="text-[22px] text-heading font-semibold leading-none">
                     ₹{Math.round(activePrice?.amount)}
                   </span>
@@ -464,13 +468,12 @@ const ProductInfo = ({
                         type="button"
                         disabled={!size.isAvailable}
                         onClick={() => setSelectedSize(index)}
-                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${
-                          !size.isAvailable
+                        className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${!size.isAvailable
                             ? "border-border text-[#c9bfb6] cursor-not-allowed line-through"
                             : selectedSize === index
                               ? "bg-primary border-primary text-background"
                               : "border-border text-heading hover:border-primary hover:text-primary"
-                        }`}
+                          }`}
                       >
                         {size.size.size}
                       </button>
@@ -483,7 +486,7 @@ const ProductInfo = ({
                     <div className="mt-4">
                       <SectionLabel>
                         Colour —{" "}
-                        <span className="text-mutedmal-case tracking-normal">
+                        <span className="text-muted normal-case tracking-normal">
                           {productData?.color}
                         </span>
                       </SectionLabel>
@@ -540,19 +543,20 @@ const ProductInfo = ({
                     }
                     onClick={handleBuyNow}
                     type="button"
-                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-primaryounded-sm transition-colors duration-200 ${
-                      selectedSize === null ||
-                      activePrice?.isAvailable === false
+                    className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-primaryounded-sm transition-colors duration-200 ${selectedSize === null ||
+                        activePrice?.isAvailable === false
                         ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
                         : "text-primaryover:bg-[#835240] hover:text-background"
-                    }`}
+                      }`}
                   >
                     Buy Now
                   </button>
                 </div>
 
+
+
                 <div className="mt-4 py-4 border-y border-border">
-                  <p className="text-[11px] tracking-[0.14em] uppercase text-heading font-medium mb-2">
+                  <p className="text-[11px] tracking-[0.14em] uppercase text-[#3b302a] font-medium mb-2">
                     Product Details
                   </p>
                   <p className="text-[13px] leading-[1.7] text-body">

@@ -239,31 +239,31 @@ export function OrdersTab() {
               >
                 {/* Date */}
                 <p className="text-[11px] text-muted mb-3">
-                  Placed on: {order.placedOn}
+                  Placed on: {order?.placedOn ?? "N/A"}
                 </p>
 
                 {/* Product */}
                 <div className="flex gap-3">
                   <img
-                    src={order.thumbnailUrl}
-                    alt=""
-                    className="h-20 w-20 rounded-lg object-cover border border-border"
-                  />
+                       src={order?.thumbnailUrl || ""}
+                       alt=""
+                       loading="lazy"
+                       decoding="async"
+                       className="h-20 w-20 rounded-lg object-cover border border-border"/>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between gap-3">
                       <div>
                         <h4 className="font-medium text-admin-text line-clamp-2">
-                          {order.title}
+                          {order?.title ?? "Product"}
                         </h4>
 
                         <p className="text-xs text-muted mt-1">
-                          {order.itemCount} item
-                          {order.itemCount > 1 && "s"}
+                          {order?.itemCount ?? 0} item{order?.itemCount > 1 && "s"}
                         </p>
 
                         <p className="text-sm font-semibold mt-2 text-admin-text">
-                          ₹{order.total.toLocaleString("en-IN")}
+                          ₹{order?.total?.toLocaleString("en-IN") ?? "0"}
                         </p>
                       </div>
 
@@ -280,17 +280,17 @@ export function OrdersTab() {
                   {status === "Delivered" && (
                     <button
                       onClick={() => {
-                        setSelectedOrder(order);
-                        setIsReviewModalOpen(true);
-                      }}
-                      disabled={!!order.review} // Disable if review exists
-                      className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition ${order.review
-                        ? "border-muted text-muted bg-surface cursor-not-allowed"
-                        : "border-primary text-primary hover:bg-primary/5"
-                        }`}
+                          setSelectedOrder(order);
+                          setIsReviewModalOpen(true);
+                        }}
+                        disabled={!!order?.review} // Disable if review exists
+                      className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition ${order?.review
+                          ? "border-muted text-muted bg-surface cursor-not-allowed"
+                          : "border-primary text-primary hover:bg-primary/5"
+                          }`}
                     >
                       <Star size={14} />
-                      {order.review ? "Review Submitted" : "Write a Review"}
+                      {order?.review ? "Review Submitted" : "Write a Review"}
                     </button>
                   )
                     // : (
