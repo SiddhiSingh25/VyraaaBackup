@@ -11,6 +11,7 @@ import { Heart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../../redux/slices/cartSlice";
 import SkeletonProductInfo from "./SkeletonProductInfo";
+import { addToWishlist, removeFromWishlist } from "../../../../redux/slices/wishlistSlice";
 
 const isVideoUrl = (url: string) => {
   if (!url) return false;
@@ -101,6 +102,11 @@ const ProductInfo = ({
   const isBuyNowPending = useRef(false);
   const cartDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const buyNowDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wishlistDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+
+  const wishlistItems: string[] = useSelector((state: any) => state.wishlist?.items ?? []);
+  const isWished = wishlistItems.some((item: any) => item.id === productData._id);
 
   useEffect(() => {
     if (!id) {
@@ -136,8 +142,63 @@ const ProductInfo = ({
   }, [productData]);
 
   // FIX: toggle wishlist state instead of always setting true
-  const handleWishlist = () => {
-    setIsWishlisted((prev) => !prev);
+  const handleWishlist = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast("warning", "Please login to add items to wishlist");
+      navigate("/auth/login");
+      return;
+    }
+
+    // --- DEBOUNCE LOGIC ---
+    // Clear the previous timer if the user clicks again rapidly
+    if (wishlistDebounceTimer.current) {
+      clearTimeout(wishlistDebounceTimer.current);
+    }
+    // console.log(productData, "====")
+    // Set a new timer. The action will only run after 400ms of no clicking.
+    wishlistDebounceTimer.current = setTimeout(() => {
+      if (isWished) {
+        // OPTIMISTIC REMOVE
+        dispatch(removeFromWishlist(productData._id));
+        toast("success", "Removed from Wishlist successfully");
+
+        getQuery({
+          url: apiUrls.WishList.remove + productData._id,
+          onSuccess: (res: any) => { },
+          onFail: (res: any) => {
+            console.error("Failed to remove from wishlist:", res);
+          },
+        });
+      } else {
+        // OPTIMISTIC ADD
+        dispatch(
+          addToWishlist({
+            id: productData._id,
+            brand: productData.brand ?? "",
+            name: productData.title,
+            image: productData.image,
+            rating: productData?.averageRating ?? 0,
+            price: productData?.price?.[selectedSize]?.amount ?? 0,
+            originalPrice: productData?.price?.[selectedSize]?.markupPrice ?? null,
+            stockStatus: productData?.isAvailable ? "in-stock" : "out-of-stock",
+            reviewCount: 0,
+            badge: null,
+          })
+        );
+        toast("success", "Added to wishlist!");
+
+        const url = apiUrls.WishList.add + productData._id;
+        getQuery({
+          url,
+          onSuccess: (res: any) => { },
+          onFail: (err: any) => {
+            toast("error", err.message);
+          },
+        });
+      }
+    }, 400); // 400ms delay
   };
 
   const handleAddToCart = () => {
@@ -316,7 +377,7 @@ const ProductInfo = ({
                     className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm active:scale-90 transition-transform duration-150 z-10"
                   >
                     <Heart
-                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWishlisted
+                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors duration-200 ${isWished
                         ? "fill-red-500 text-red-500"
                         : "text-gray-700"
                         }`}
