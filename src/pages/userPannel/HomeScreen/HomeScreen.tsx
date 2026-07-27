@@ -17,7 +17,7 @@ export default function HomeScreen() {
     window.scrollTo(0, 0)
   }, [])
 
-  const { getQuery } = useGetQuery()
+  const { getQuery, loading: categoryLoading } = useGetQuery()
 
   const [category, setCategory] = useState([])
 
@@ -46,7 +46,7 @@ export default function HomeScreen() {
       {/* <HeroSlider/>
        */}
       <HeroSlider />
-      <ProductShowcase category={category} />
+      <ProductShowcase category={category} categoryLoading={categoryLoading} />
       <FeaturedCollections />
       <BrandStory />
       {/* <Testimonials/> */}
