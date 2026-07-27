@@ -1,7 +1,9 @@
-import { FormEvent, useEffect, useState } from 'react';
-import Modal from '../../../../../components/tableComponents/Modal';
-import Button from '../../../../../components/tableComponents/Button';
-import type { ColorFamilyFormValues, ModalMode } from './types';
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import Modal from "../../../../../components/tableComponents/Modal";
+import Button from "../../../../../components/tableComponents/Button";
+import type { ColorFamilyFormValues, ModalMode } from "./types";
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 
 interface Props {
   isOpen: boolean;
@@ -9,19 +11,27 @@ interface Props {
   initialData?: ColorFamilyFormValues | null;
   onClose: () => void;
   onSubmit: (values: ColorFamilyFormValues) => void;
+  loading?: boolean;
 }
 
-const EMPTY: ColorFamilyFormValues = { colorFamily: '' };
+const EMPTY: ColorFamilyFormValues = { colorFamily: "" };
 
 type Errors = Partial<Record<keyof ColorFamilyFormValues, string>>;
 
-export default function ColorFamilyFormModal({ isOpen, mode, initialData, onClose, onSubmit }: Props) {
+export default function ColorFamilyFormModal({
+  isOpen,
+  mode,
+  initialData,
+  onClose,
+  onSubmit,
+  loading = false,
+}: Props) {
   const [values, setValues] = useState<ColorFamilyFormValues>(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
     if (!isOpen) return;
-    if (mode === 'edit' && initialData) setValues(initialData);
+    if (mode === "edit" && initialData) setValues(initialData);
     else setValues(EMPTY);
     setErrors({});
   }, [isOpen, mode, initialData]);
@@ -33,7 +43,8 @@ export default function ColorFamilyFormModal({ isOpen, mode, initialData, onClos
 
   const validate = () => {
     const next: Errors = {};
-    if (!values.colorFamily.trim()) next.colorFamily = 'Color family is required';
+    if (!values.colorFamily.trim())
+      next.colorFamily = "Color family is required";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -45,12 +56,45 @@ export default function ColorFamilyFormModal({ isOpen, mode, initialData, onClos
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={mode === 'add' ? 'Add Color Family' : 'Edit Color Family'} description={mode === 'add' ? 'Create a new color family.' : 'Update color family.'} footer={<><Button variant="secondary" onClick={onClose} type="button">Cancel</Button><Button onClick={handleSubmit} type="submit" form="colorfamily-form">{mode === 'add' ? 'Add' : 'Save'}</Button></>}>
-      <form id="colorfamily-form" onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={mode === "add" ? "Add Color Family" : "Edit Color Family"}
+      description={
+        mode === "add" ? "Create a new color family." : "Update color family."
+      }
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} type="button">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} type="submit" form="colorfamily-form">
+            {loading && <ButtonLoader />}
+            {mode === "add" ? "Add" : "Save"}
+          </Button>
+        </>
+      }
+    >
+      <form
+        id="colorfamily-form"
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+      >
         <div className="sm:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold text-dark-500">Color Family</label>
-          <input value={values.colorFamily} onChange={handleChange('colorFamily')} placeholder="e.g. Red" className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.colorFamily ? 'border-red-300' : 'border-dark-200'}`} />
-          {errors.colorFamily && <p className="mt-1 text-xs font-medium text-red-500">{errors.colorFamily}</p>}
+          <label className="mb-1.5 block text-xs font-semibold text-dark-500">
+            Color Family
+          </label>
+          <input
+            value={values.colorFamily}
+            onChange={handleChange("colorFamily")}
+            placeholder="e.g. Red"
+            className={`w-full rounded-lg border px-3.5 h-10 text-sm text-dark-900 ${errors.colorFamily ? "border-red-300" : "border-dark-200"}`}
+          />
+          {errors.colorFamily && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {errors.colorFamily}
+            </p>
+          )}
         </div>
       </form>
     </Modal>
