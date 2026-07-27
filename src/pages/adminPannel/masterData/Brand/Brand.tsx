@@ -1,44 +1,52 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Plus } from 'lucide-react';
-import Button from '../../../../components/tableComponents/Button';
-import ConfirmDialog from '../../../../components/tableComponents/ConfirmDialog';
-import BrandTable from './component/BrandTable';
-import BrandFormModal from './component/BrandFormModal';
-import type { BrandItem, BrandFormValues, ModalMode } from './component/types';
-import useGetQuery from '../../../../hooks/getQuery.hook';
-import usePostQuery from '../../../../hooks/postQuery.hook';
-import usePutQuery from '../../../../hooks/putQuery.hook';
-import useDeleteQuery from '../../../../hooks/deleteQuery.hook';
-import { apiUrls } from '../../../../apis/index';
+import { useEffect, useMemo, useState } from "react";
+import { Plus } from "lucide-react";
+import Button from "../../../../components/tableComponents/Button";
+import ConfirmDialog from "../../../../components/tableComponents/ConfirmDialog";
+import BrandTable from "./component/BrandTable";
+import BrandFormModal from "./component/BrandFormModal";
+import type { BrandItem, BrandFormValues, ModalMode } from "./component/types";
+import useGetQuery from "../../../../hooks/getQuery.hook";
+import usePostQuery from "../../../../hooks/postQuery.hook";
+import usePutQuery from "../../../../hooks/putQuery.hook";
+import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
+import { apiUrls } from "../../../../apis/index";
+import PageLoader from "@/components/Loader/fullPageLoader";
 
 const mapApi = (item: any): BrandItem => ({
   id: item._id,
   srNo: 0,
   brandName: item.brand,
   categoryId: item.category,
-  categoryName: item.categoryName || '',
+  categoryName: item.categoryName || "",
 });
 
 export default function BrandPage() {
   const [brands, setBrands] = useState<BrandItem[]>([]);
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    [],
+  );
+  const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<ModalMode>('add');
+  const [modalMode, setModalMode] = useState<ModalMode>("add");
   const [activeBrand, setActiveBrand] = useState<BrandItem | null>(null);
   const [pendingDelete, setPendingDelete] = useState<BrandItem | null>(null);
 
-  const { getQuery } = useGetQuery();
-  const { postQuery } = usePostQuery();
-  const { putQuery } = usePutQuery();
-  const { deleteQuery } = useDeleteQuery();
+  const { getQuery, loading } = useGetQuery();
+  const { postQuery, loading: addLoading } = usePostQuery();
+  const { putQuery, loading: editLoading } = usePutQuery();
+  const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
   const fetchCategories = () => {
     getQuery({
       url: apiUrls.Category.getAll,
       onSuccess: (res: any) => {
         const data = res?.data || [];
-        setCategories(data.map((category: any) => ({ id: category._id, name: category.category })));
+        setCategories(
+          data.map((category: any) => ({
+            id: category._id,
+            name: category.category,
+          })),
+        );
       },
     });
   };
@@ -49,13 +57,13 @@ export default function BrandPage() {
       onSuccess: (res: any) => {
         const data = res?.data || [];
         setBrands(
-          data
-            .map(mapApi)
-            .map((item: BrandItem, index: number) => ({
-              ...item,
-              srNo: index + 1,
-              categoryName: categories.find((category) => category.id === item.categoryId)?.name || '',
-            }))
+          data.map(mapApi).map((item: BrandItem, index: number) => ({
+            ...item,
+            srNo: index + 1,
+            categoryName:
+              categories.find((category) => category.id === item.categoryId)
+                ?.name || "",
+          })),
         );
       },
     });
@@ -75,18 +83,21 @@ export default function BrandPage() {
     if (!query) return brands;
 
     return brands.filter((item) =>
-      [item.brandName, item.categoryName].join(' ').toLowerCase().includes(query)
+      [item.brandName, item.categoryName]
+        .join(" ")
+        .toLowerCase()
+        .includes(query),
     );
   }, [brands, searchTerm]);
 
   const openAddModal = () => {
-    setModalMode('add');
+    setModalMode("add");
     setActiveBrand(null);
     setIsFormOpen(true);
   };
 
   const openEditModal = (item: BrandItem) => {
-    setModalMode('edit');
+    setModalMode("edit");
     setActiveBrand(item);
     setIsFormOpen(true);
   };
@@ -94,7 +105,7 @@ export default function BrandPage() {
   const closeFormModal = () => setIsFormOpen(false);
 
   const handleFormSubmit = async (values: BrandFormValues) => {
-    if (modalMode === 'add') {
+    if (modalMode === "add") {
       await postQuery({
         url: apiUrls.Brand.add,
         postData: { brand: values.brandName, category: values.categoryId },
@@ -106,7 +117,9 @@ export default function BrandPage() {
             {
               ...mapApi(newItem),
               srNo: prev.length + 1,
-              categoryName: categories.find((category) => category.id === newItem.category)?.name || '',
+              categoryName:
+                categories.find((category) => category.id === newItem.category)
+                  ?.name || "",
             },
           ]);
           setIsFormOpen(false);
@@ -115,7 +128,11 @@ export default function BrandPage() {
     } else if (activeBrand) {
       await putQuery({
         url: apiUrls.Brand.update,
-        putData: { id: activeBrand.id, brand: values.brandName, category: values.categoryId },
+        putData: {
+          id: activeBrand.id,
+          brand: values.brandName,
+          category: values.categoryId,
+        },
         onSuccess: (res: any) => {
           const updated = res?.data;
           if (!updated) return;
@@ -126,10 +143,13 @@ export default function BrandPage() {
                     ...item,
                     brandName: updated.brand,
                     categoryId: updated.category,
-                    categoryName: categories.find((category) => category.id === updated.category)?.name || '',
+                    categoryName:
+                      categories.find(
+                        (category) => category.id === updated.category,
+                      )?.name || "",
                   }
-                : item
-            )
+                : item,
+            ),
           );
           setIsFormOpen(false);
         },
@@ -146,7 +166,9 @@ export default function BrandPage() {
       url: apiUrls.Brand.delete,
       deleteData: { id: pendingDelete.id },
       onSuccess: () => {
-        setBrands((prev) => prev.filter((item) => item.id !== pendingDelete.id));
+        setBrands((prev) =>
+          prev.filter((item) => item.id !== pendingDelete.id),
+        );
         setPendingDelete(null);
       },
     });
@@ -157,8 +179,12 @@ export default function BrandPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-4 lg:px-4 py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Brand Management</h1>
-            <p className="mt-2 text-sm text-slate-500">Create and manage brands with category assignment.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+              Brand Management
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Create and manage brands with category assignment.
+            </p>
           </div>
           <Button
             onClick={openAddModal}
@@ -169,6 +195,8 @@ export default function BrandPage() {
             Add Brand
           </Button>
         </div>
+
+        {loading && <PageLoader loading={loading} text="Loading Brands..." />}
 
         <div className="p-0 sm:p-2 mb-4">
           <BrandTable
@@ -188,6 +216,7 @@ export default function BrandPage() {
         initialData={activeBrand}
         onClose={closeFormModal}
         onSubmit={handleFormSubmit}
+        loading={modalMode === "add" ? addLoading : editLoading}
       />
 
       <ConfirmDialog
@@ -196,10 +225,11 @@ export default function BrandPage() {
         description={
           pendingDelete
             ? `This will permanently remove "${pendingDelete.brandName}".`
-            : ''
+            : ""
         }
         onConfirm={confirmDelete}
         onCancel={() => setPendingDelete(null)}
+        loading={deleteLoading}
       />
     </div>
   );

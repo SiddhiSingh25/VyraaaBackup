@@ -50,7 +50,7 @@ export default function Category() {
   const { getQuery, loading } = useGetQuery();
   const { postQuery, loading: addLoading } = usePostQuery();
   const { putQuery, loading: editLoading } = usePutQuery();
-  const { deleteQuery } = useDeleteQuery();
+  const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
   const filteredCategories = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
@@ -228,6 +228,7 @@ export default function Category() {
         }
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
+        loading={deleteLoading}
       />
     </div>
   );
