@@ -36,7 +36,7 @@ export default function SubCategory() {
   const { getQuery, loading } = useGetQuery();
   const { postQuery, loading: addLoading } = usePostQuery();
   const { putQuery, loading: editLoading } = usePutQuery();
-  const { deleteQuery } = useDeleteQuery();
+  const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
   const fetchCategories = () => {
     getQuery({
@@ -195,7 +195,7 @@ export default function SubCategory() {
         }
         onConfirm={confirmDelete}
         onCancel={() => setPendingDelete(null)}
-        loading={addLoading}
+        loading={deleteLoading}
       />
     </div>
   );
