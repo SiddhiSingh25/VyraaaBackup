@@ -135,7 +135,7 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
   };
 
   return (
-    <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
+    <section className="rounded-xl border border-border bg-surface p-4 sm:p-6 shadow-sm">
       <div className="mb-6 flex items-center gap-3 border-b border-border pb-4">
         <FaGift className="text-primary text-xl" />
 

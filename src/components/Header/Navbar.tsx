@@ -285,7 +285,7 @@ export default function Navbar({
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
-              <Link to="/profile" className="text-admin-text/80">
+              <Link  to={user?.role == "admin" ? "/admin" : "/profile"} className="text-admin-text/80">
                 <User size={20} strokeWidth={1.6} />
               </Link>
             </div>
@@ -309,7 +309,7 @@ export default function Navbar({
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-16 mt-1 w-auto object-contain"
+                className="h-18 mt-1 w-auto object-cover"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -324,7 +324,7 @@ export default function Navbar({
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
-              <Link to="/profile" className="relative text-admin-text/80">
+              <Link  to={user?.role == "admin" ? "/admin" : "/profile"} className="relative text-admin-text/80">
                 <User2 size={20} strokeWidth={1.6} />
               </Link>
             </div>
