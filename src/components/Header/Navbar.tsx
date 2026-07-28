@@ -186,13 +186,13 @@ export default function Navbar({
           }`}
       >
         {/* ============ DESKTOP / LAPTOP (lg and up) ============ */}
-        <div className="hidden lg:flex items-center justify-between h-[72px] px-8 xl:px-12 gap-8 xl:gap-12">
+        <div className="hidden lg:flex items-center justify-between h-16 px-8 xl:px-12 gap-8 xl:gap-12">
           <div className=" flex items-center gap-4">
             <Link to="/" className="shrink-0 flex items-center">
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-20 mt-2 w-auto object-contain "
+                className="h-22 mt-2 w-auto object-contain "
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}

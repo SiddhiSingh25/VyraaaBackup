@@ -32,7 +32,7 @@ import OrderDeatils from "../pages/userPannel/OrderDeatils/OrderDeatils";
 
 
 import UserLayout from "@/routes/userLayout";
-import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/Privacypolicy";
+import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/PrivacyPolicy";
 
 
 
