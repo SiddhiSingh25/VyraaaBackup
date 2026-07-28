@@ -270,7 +270,7 @@ const ProductInfo = ({
   };
 
   const handleBuyNow = () => {
-    if (selectedSize === null) return;
+    if (selectedSize === null || selectedSize === -1) return;
 
 
     if (buyNowDebounceTimer.current) {
@@ -351,8 +351,8 @@ const ProductInfo = ({
                         <div
                           key={index}
                           onClick={() => setThumbnail(index)}
-                          className={`border w-14 h-14 sm:w-[70px] sm:h-[70px] flex-shrink-0 rounded overflow-hidden cursor-pointer ${thumbnail === index
-                            ? "border-[var(--color-primary)]"
+                          className={`border w-14 h-14 sm:w-17.5 sm:h-17.5 shrink-0 rounded overflow-hidden cursor-pointer ${thumbnail === index
+                            ? "border-primary"
                             : "border-gray-500/30"
                             }`}
                         >
@@ -539,7 +539,7 @@ const ProductInfo = ({
                     onClick={handleAddToCart}
                     type="button"
                     // disabled={cartLoading}
-                    disabled={selectedSize === -1 || !activePrice?.isAvailable || cartLoading}
+                    disabled={  cartLoading}
                     className="flex-1 h-11 text-[12px] tracking-[0.08em] disabled:opacity-50 disabled:cursor-not-allowed uppercase font-medium bg-primary text-background rounded-sm hover:bg-primary-dark transition-colors duration-200"
                   >
                     {cartLoading ? "Adding to Cart..." : "Add to Cart"}
@@ -547,14 +547,15 @@ const ProductInfo = ({
                   <button
                     disabled={
                       selectedSize === null ||
-                      activePrice?.isAvailable === false
+                      activePrice?.isAvailable === false || 
+                      selectedSize === -1
                     }
                     onClick={handleBuyNow}
                     type="button"
                     className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-primaryounded-sm transition-colors duration-200 ${selectedSize === null ||
-                        activePrice?.isAvailable === false
+                        activePrice?.isAvailable === false ||  selectedSize === -1 
                         ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
-                        : "text-primaryover:bg-[#835240] hover:text-background"
+                        : "text-primary hover:bg-[#835240] hover:text-background"
                       }`}
                   >
                     Buy Now

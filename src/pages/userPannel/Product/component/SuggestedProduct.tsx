@@ -1,5 +1,4 @@
 import useGetQuery from "@/hooks/getQuery.hook";
-import { jacket, shirts } from "../../../../assets/assets";
 import OutlinedButton from "../../../../components/Common/Button/OutlinedButton";
 import Heading from "../../../../components/Common/Heading";
 import ProductCard from "./ProductCard";
@@ -29,9 +28,8 @@ export default function SuggestedProduct({
 
   const categoryId = propCategoryId || location.state?.categoryId;
   const subCategoryId = propSubCategoryId || location.state?.subCategoryId;
-  const subCategoryName = propSubCategoryName || location.state?.subCategoryName;
-
-  const text = `More ${subCategoryName || ""}`;
+  const subCategoryName =
+    propSubCategoryName || location.state?.subCategoryName;
 
   const { getQuery } = useGetQuery();
 
@@ -40,9 +38,19 @@ export default function SuggestedProduct({
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [productData, setProductData] = useState<any[]>([]);
+  const [isCategoryOnly, setIsCategoryOnly] = useState(false);
 
-  const fetchProducts = (pageToFetch: number, append: boolean) => {
-    if (!categoryId || !subCategoryId) return;
+  const text =
+    subCategoryName && !isCategoryOnly
+      ? `More ${subCategoryName}`
+      : "Load More";
+
+  const fetchProducts = (
+    pageToFetch: number,
+    append: boolean,
+    forceCategoryOnly: boolean = isCategoryOnly,
+  ) => {
+    if (!categoryId) return;
 
     if (append) {
       setLoadingMore(true);
@@ -50,25 +58,52 @@ export default function SuggestedProduct({
       setProductLoading(true);
     }
 
+    const useCatOnly = forceCategoryOnly || !subCategoryId;
+    const url = useCatOnly
+      ? `${apiUrls.Product.home}?page=${pageToFetch}&limit=${limit}&category=${categoryId}`
+      : `${apiUrls.Product.home}?page=${pageToFetch}&limit=${limit}&category=${categoryId}&subCategory=${subCategoryId}`;
+
     getQuery({
-      url: `${apiUrls.Product.home}?page=${pageToFetch}&limit=${limit}&category=${categoryId}&subCategory=${subCategoryId}`,
+      url,
       onSuccess: (res: any) => {
         if (res.success && Array.isArray(res.data)) {
           // Filter out the current product from suggestions
           const filtered = currentProductId
             ? res.data.filter((p: any) => p._id !== currentProductId)
             : res.data;
+
+          // If no products found on page 1 with subCategory filter, retry with category only
+          if (
+            filtered.length === 0 &&
+            !useCatOnly &&
+            pageToFetch === 1 &&
+            !append
+          ) {
+            setIsCategoryOnly(true);
+            fetchProducts(1, false, true);
+            return;
+          }
+
           setProductData((prev) =>
-            append ? [...prev, ...filtered] : filtered
+            append ? [...prev, ...filtered] : filtered,
           );
           setTotalPages(res.pagination?.totalPages || 1);
           setPage(res.pagination?.currentPage || pageToFetch);
+        } else if (!useCatOnly && pageToFetch === 1 && !append) {
+          setIsCategoryOnly(true);
+          fetchProducts(1, false, true);
+          return;
         }
         setProductLoading(false);
         setLoadingMore(false);
       },
       onFail: (res: any) => {
         console.log(res);
+        if (!useCatOnly && pageToFetch === 1 && !append) {
+          setIsCategoryOnly(true);
+          fetchProducts(1, false, true);
+          return;
+        }
         setProductLoading(false);
         setLoadingMore(false);
       },
@@ -76,19 +111,19 @@ export default function SuggestedProduct({
   };
 
   useEffect(() => {
-    if (categoryId && subCategoryId && currentProductId) {
-      fetchProducts(1, false);
+    setIsCategoryOnly(false);
+    if (categoryId) {
+      fetchProducts(1, false, false);
     } else {
       setProductData([]);
+      setProductLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, subCategoryId, limit, currentProductId]);
 
-
-
   const handleLoadMore = () => {
     if (page >= totalPages || loadingMore) return;
-    fetchProducts(page + 1, true);
+    fetchProducts(page + 1, true, isCategoryOnly);
   };
 
   const hasMore = page < totalPages;
@@ -105,11 +140,12 @@ export default function SuggestedProduct({
 
         {/* Products grid */}
         <div className=" mt-8 grid grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
-
           {productLoading ? (
             Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
           ) : productData.length ? (
-            productData.map((p: any) => <ProductCard key={p?._id} product={p} />)
+            productData.map((p: any) => (
+              <ProductCard key={p?._id} product={p} />
+            ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
               <ShoppingBag className="w-14 h-14 text-gray-400 mb-4" />
@@ -121,9 +157,6 @@ export default function SuggestedProduct({
               </p>
             </div>
           )}
-
-
-
         </div>
 
         {hasMore && (
