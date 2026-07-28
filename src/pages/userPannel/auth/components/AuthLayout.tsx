@@ -1,7 +1,5 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { FiX } from "react-icons/fi";
 import authMobile from "@/assets/auth/authMobile.png";
 
 interface AuthLayoutProps {
@@ -10,11 +8,10 @@ interface AuthLayoutProps {
   children: ReactNode;
 }
 
-/**
- * Shared auth shell: warm gradient backdrop + a floating, rounded,
- * shadowed card (Flipkart-style modal feel) rather than a full-bleed panel.
- */
 const AuthLayout = ({ image, imageAlt, children }: AuthLayoutProps) => {
+  const [desktopLoaded, setDesktopLoaded] = useState(false);
+  const [mobileLoaded, setMobileLoaded] = useState(false);
+
   return (
     <div
       className="
@@ -26,7 +23,6 @@ const AuthLayout = ({ image, imageAlt, children }: AuthLayoutProps) => {
         overflow-y-auto md:overflow-hidden
       "
     >
-      {/* Ambient rose-gold glow behind the card */}
       <div
         aria-hidden
         className="pointer-events-none absolute w-[70vw] h-[60vw] sm:w-[60vw] sm:h-[55vw] max-w-[700px] max-h-[600px] rounded-full bg-[#b76e79]/20 blur-[80px] sm:blur-[120px]"
@@ -50,26 +46,52 @@ const AuthLayout = ({ image, imageAlt, children }: AuthLayoutProps) => {
           md:max-h-[720px]
         "
       >
-        {/* Mobile: top image banner */}
+        {/* Mobile Image */}
         <div
           className="relative block w-full overflow-hidden md:hidden shrink-0"
           style={{ height: "clamp(160px, 30vh, 280px)" }}
         >
+          {!mobileLoaded && (
+            <div className="absolute inset-0 animate-pulse bg-[#efe6dc]" />
+          )}
+
           <img
             src={authMobile}
             alt={imageAlt}
-            className="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
+            fetchPriority="high"
+            onLoad={() => setMobileLoaded(true)}
+            className={`h-full w-full object-cover transition-opacity duration-500 ${
+              mobileLoaded ? "opacity-100" : "opacity-0"
+            }`}
           />
+
           <div className="absolute inset-0 bg-gradient-to-t from-[#fcfaf8] via-transparent to-transparent" />
         </div>
 
-        {/* Desktop/tablet: left image panel */}
+        {/* Desktop Image */}
         <div className="relative hidden md:block md:w-[42%] lg:w-[45%] shrink-0 overflow-hidden">
-          <img src={image} alt={imageAlt} className="h-full w-full object-cover" />
+          {!desktopLoaded && (
+            <div className="absolute inset-0 animate-pulse bg-[#efe6dc]" />
+          )}
+
+          <img
+            src={image}
+            alt={imageAlt}
+            loading="lazy"
+            decoding="async"
+            fetchPriority="high"
+            onLoad={() => setDesktopLoaded(true)}
+            className={`h-full w-full object-cover transition-opacity duration-500 ${
+              desktopLoaded ? "opacity-100" : "opacity-0"
+            }`}
+          />
+
           <div className="absolute inset-0 bg-gradient-to-t from-[#835240]/30 via-transparent to-transparent" />
         </div>
 
-        {/* Form panel */}
+        {/* Form */}
         <div
           className="
             flex-1 min-h-0

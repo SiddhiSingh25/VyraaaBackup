@@ -338,7 +338,7 @@ const QuickAddProduct = () => {
     variants.length > 0, // Inventory & Pricing
 
     images.length > 0, // Media & Gallery
-  ].filter(Boolean).length;
+  ];
 
   // --- Reset helpers ---------------------------------------------------
 
