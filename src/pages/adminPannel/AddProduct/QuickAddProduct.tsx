@@ -22,7 +22,7 @@ import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../../components/tableComponents/Button";
 import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
@@ -88,6 +88,7 @@ const QuickAddProduct = () => {
   const productName = watch("name");
   const description = watch("description");
   const gender = watch("gender");
+  const navigate = useNavigate()
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [gifts, setGifts] = useState<GiftItem[]>([]);
@@ -170,35 +171,40 @@ const QuickAddProduct = () => {
     isLoading: subcategoryTypeLoading,
     addSubCategoryType,
   } = useSubCategoryTypeData(selectedSubcategoryId);
+
+  // --- SYNC SUBCATEGORY ONCE OPTIONS ARRIVE ---
   useEffect(() => {
-    if (!editingProduct) return;
+    if (!editingProduct || !effectiveCategoryId || subcategoryLoading || !subcategoryOptions.length) return;
 
-    // Wait until subcategory is selected
-    if (!selectedSubcategoryId) return;
+    const originalSubCatId = editingProduct.subCategory?._id || editingProduct.subCategory;
+    const exists = subcategoryOptions.find((item) => item.value === originalSubCatId);
 
-    // Wait until API finishes
-    if (subcategoryTypeLoading) return;
+    if (exists) {
+      setValue("subcategory", originalSubCatId, {
+        shouldDirty: false,
+        shouldValidate: false,
+      });
+    }
+  }, [editingProduct, effectiveCategoryId, subcategoryLoading, subcategoryOptions, setValue]);
 
-    // Wait until options arrive
-    if (!subcategoryTypeOptions.length) return;
+  // --- SYNC SUBCATEGORY TYPE ONCE OPTIONS ARRIVE ---
+  useEffect(() => {
+    if (!editingProduct || !selectedSubcategoryId || subcategoryTypeLoading || !subcategoryTypeOptions.length) return;
 
-    const exists = subcategoryTypeOptions.find(
-      (item) => item.value === editingProduct.subcategoryType?._id,
-    );
+    const originalTypeId = editingProduct.subcategoryType?._id || editingProduct.subcategoryType;
+    if (!originalTypeId) return; // Not all products have a subcategory type!
 
-    if (!exists) return;
+    const exists = subcategoryTypeOptions.find((item) => item.value === originalTypeId);
 
-    setValue("subcategoryType", editingProduct.subcategoryType._id, {
-      shouldDirty: false,
-      shouldValidate: false,
-    });
-  }, [
-    editingProduct,
-    selectedSubcategoryId,
-    subcategoryTypeLoading,
-    subcategoryTypeOptions,
-    setValue,
-  ]);
+    if (exists) {
+      setValue("subcategoryType", originalTypeId, {
+        shouldDirty: false,
+        shouldValidate: false,
+      });
+    }
+  }, [editingProduct, selectedSubcategoryId, subcategoryTypeLoading, subcategoryTypeOptions, setValue]);
+
+
   const { colorFamilyOptions, addColorFamily } = useColorFamilyData();
   const { colorOptions, addColor } = useColorData(selectedColorFamily);
   const { sizeTypeOptions, addSizeType } = useSizeTypeData();
@@ -209,33 +215,60 @@ const QuickAddProduct = () => {
   const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
   const [pageLoader, setPageLoader] = useState(false);
 
-  useEffect(() => {
-    setValue("brand", "");
-  }, [effectiveCategoryId, setValue]);
 
-  // Only reset subcategory/type when category actually changes (i.e. the
-  // user is picking it manually). When category comes from params this
-  // still only fires once, harmlessly, on mount.
+  // --- WIPE HOOKS ---
+
+  // --- WIPE HOOKS ---
+
   useEffect(() => {
     if (isInitializing) return;
+
+    // Fix: Prevent wiping if the category hasn't changed from the original product
+    const originalCatId = editingProduct?.category?._id || editingProduct?.category;
+    if (editingProduct && effectiveCategoryId === originalCatId) return;
+
+    setValue("brand", "");
+  }, [effectiveCategoryId, editingProduct, setValue, isInitializing]);
+
+  useEffect(() => {
+    if (isInitializing) return;
+
+    const originalCatId = editingProduct?.category?._id || editingProduct?.category;
+    if (editingProduct && effectiveCategoryId === originalCatId) return;
 
     setValue("subcategory", "");
     setValue("subcategoryType", "");
-  }, [effectiveCategoryId]);
+  }, [effectiveCategoryId, editingProduct, setValue, isInitializing]);
 
   useEffect(() => {
     if (isInitializing) return;
 
+    const originalSubCatId = editingProduct?.subCategory?._id || editingProduct?.subCategory;
+    if (editingProduct && selectedSubcategoryId === originalSubCatId) return;
+
     setValue("subcategoryType", "");
-  }, [selectedSubcategoryId, setValue, isInitializing]);
+  }, [selectedSubcategoryId, editingProduct, setValue, isInitializing]);
 
   useEffect(() => {
+    if (isInitializing) return;
+
+    // Fix: Prevent wiping if the color family hasn't changed from the original product
+    const originalFamilyId = editingProduct?.color?.family || editingProduct?.colorFamily;
+    if (editingProduct && selectedColorFamily === originalFamilyId) return;
+
     setValue("color", "");
-  }, [selectedColorFamily, setValue]);
+  }, [selectedColorFamily, editingProduct, setValue, isInitializing]);
 
   useEffect(() => {
+    if (isInitializing) return;
+
+    // Fix: Prevent wiping if the sizeType hasn't changed from the original product
+    const originalSizeTypeId = editingProduct?.sizeType?._id || editingProduct?.sizeType;
+    if (editingProduct && selectedSizeType === originalSizeTypeId) return;
+
     setValue("variants", []);
-  }, [selectedSizeType, setValue]);
+  }, [selectedSizeType, editingProduct, setValue, isInitializing]);
+
 
   // If the param-based categoryId changes (e.g. navigating between
   // category-scoped quick-add routes), keep the form field in sync.
@@ -410,13 +443,14 @@ const QuickAddProduct = () => {
           toast(
             "success",
             res?.message ||
-              res?.data?.message ||
-              (id
-                ? "Product updated successfully"
-                : "Product added successfully"),
+            res?.data?.message ||
+            (id
+              ? "Product updated successfully"
+              : "Product added successfully"),
           );
 
           if (id) {
+            navigate("/admin/products")
             return;
           }
 
@@ -441,8 +475,8 @@ const QuickAddProduct = () => {
           toast(
             "error",
             err?.response?.data?.message ||
-              err?.data?.message ||
-              (id ? "Could not update product" : "Could not add product"),
+            err?.data?.message ||
+            (id ? "Could not update product" : "Could not add product"),
           );
         },
       });
@@ -450,8 +484,8 @@ const QuickAddProduct = () => {
       toast(
         "error",
         err?.response?.data?.message ||
-          err?.message ||
-          (id ? "Could not update product" : "Could not add product"),
+        err?.message ||
+        (id ? "Could not update product" : "Could not add product"),
       );
     }
   };
@@ -468,24 +502,49 @@ const QuickAddProduct = () => {
         setEditingProduct(product);
 
         // ---------------- Gifts ----------------
+        // ---------------- Gifts ----------------
         const mappedGifts =
-          product.gifts?.map((gift: any) => ({
-            product: gift.product._id,
-            quantity: gift.quantity,
-            size: gift.size?._id,
+          product.gifts?.map((gift: any) => {
+            // Extract the selected size ID and Label from the fully populated gift.size
+            const selectedSizeId = gift.size?._id || gift.size || "";
+            const selectedSizeLabel = gift.size?.size || "Default Size";
 
-            productDetails: {
-              title: gift.product.title,
-              image: gift.product.image,
-              brand: gift.product.brand?.brand || "",
-              sku: gift.product.price?.[0]?.skuCode || "",
-              sizes:
-                gift.product.price?.map((p: any) => ({
-                  label: p.size?.size,
-                  value: p.size?._id,
-                })) || [],
-            },
-          })) || [];
+            return {
+              product: gift.product?._id || gift.product,
+              quantity: gift.quantity || 1,
+              size: selectedSizeId, // Use the extracted ID
+
+              productDetails: {
+                title: gift.product?.title || "",
+                image: gift.product?.image || "",
+                brand: gift.product?.brand?.brand || "",
+                sku: gift.product?.price?.[0]?.skuCode || "",
+
+                // Safely map sizes handling both Populated Objects and Unpopulated Strings
+                sizes:
+                  gift.product?.price?.map((p: any) => {
+                    const isPopulated = typeof p.size === "object" && p.size !== null;
+                    const value = isPopulated ? p.size._id : p.size; // Get ID whether it's an object or string
+
+                    let label = isPopulated ? p.size.size : "";
+
+                    // If the size is an unpopulated string, check if it matches the selected size to salvage the label
+                    if (!isPopulated) {
+                      if (value === selectedSizeId) {
+                        label = selectedSizeLabel;
+                      } else {
+                        label = `Size Data Missing`;
+                      }
+                    }
+
+                    return {
+                      label: label,
+                      value: value,
+                    };
+                  }) || [],
+              },
+            };
+          }) || [];
 
         setGifts(mappedGifts);
 
@@ -493,7 +552,7 @@ const QuickAddProduct = () => {
         const allImages = [
           product.image,
           ...(product.subImages || []).map((item: any) => item.imageUrl),
-        ];
+        ].filter(Boolean); // Filter out any null/undefined images
 
         setImageFiles([]); // editing existing images
 
@@ -501,54 +560,48 @@ const QuickAddProduct = () => {
         setIsInitializing(true);
 
         reset({
-          category: product.category?._id || "",
-
-          subcategory: product.subCategory?._id || "",
-
-          subcategoryType: product.subcategoryType?._id || "",
+          category: product.category?._id || product.category || "",
+          subcategory: product.subCategory?._id || product.subCategory || "",
+          subcategoryType: product.subcategoryType?._id || product.subcategoryType || "",
 
           name: product.title || "",
-
           description: product.description || "",
-
-          brand: product.brand?._id || "",
-
+          brand: product.brand?._id || product.brand || "",
           colorFamily: product.color?.family || "",
-
-          color: product.color?._id || "",
-
+          color: product.color?._id || product.color || "",
           gender: product.gender || "",
-
           ageRange: product.ageRange || "",
-
-          sizeType: product.sizeType?._id || "",
-
+          sizeType: product.sizeType?._id || product.sizeType || "",
           appendSizeType: product.appendSizeTypeToSize ?? false,
 
+          // --- FIXED VARIANTS SECTION ---
           variants:
             product.price?.map((item: any) => ({
-              size: {
-                value: item.size._id,
-                label: item.size.size,
-              },
-              sku: item.skuCode,
-              price: item.markupPrice,
-              discountPrice: item.discount,
-              isAvailable: item.isAvailable,
-              isFewLeft: item.isFewLeft,
+              // Safely map size for react-select components
+              size: item.size ? {
+                value: item.size._id || item.size,
+                label: item.size.size || "",
+              } : null,
+
+              sku: item.skuCode || "",
+              amount: item.amount || 0, // <-- Added: The actual selling price was missing in your original code
+              price: item.markupPrice || 0, // MRP
+              discountPrice: item.discount || 0,
+              isAvailable: item.isAvailable ?? true,
+              isFewLeft: item.isFewLeft ?? false,
             })) || [],
 
           attributes:
             product.attributes?.map((attr: any) => ({
-              property: attr.property._id,
-              propertyLabel: attr.property.property,
-
-              value: attr.value._id,
-              valueLabel: attr.value.value,
+              property: attr.property?._id || "",
+              propertyLabel: attr.property?.property || "",
+              value: attr.value?._id || "",
+              valueLabel: attr.value?.value || "",
             })) || [],
 
           images: allImages,
         });
+
         setTimeout(() => {
           setIsInitializing(false);
           setPageLoader(false);
@@ -558,8 +611,9 @@ const QuickAddProduct = () => {
         console.error("Failed to fetch product:", err);
         toast(
           "error",
-          err?.response?.data?.message || "Failed to fetch product",
+          err?.response?.data?.message || "Failed to fetch product"
         );
+        setPageLoader(false);
       },
     });
   }, [id]);
@@ -588,7 +642,7 @@ const QuickAddProduct = () => {
             toast(
               "error",
               firstError?.message?.toString() ||
-                "Please fix the highlighted fields.",
+              "Please fix the highlighted fields.",
             );
           })}
           className="mx-auto flex h-full max-w-5xl flex-col gap-5 py-6  px-6 "
@@ -682,7 +736,7 @@ const QuickAddProduct = () => {
               <button
                 type="button"
                 onClick={handleClear}
-                className="group relative flex-1 sm:flex-none sm:min-w-[150px] py-2 rounded-[10px] border border-border bg-transparent text-heading/70 font-medium text-sm tracking-wide overflow-hidden transition-colors duration-200 hover:text-heading disabled:opacity-50 disabled:pointer-events-none"
+                className="group relative flex-1 sm:flex-none sm:min-w-35 md:min-w-40 lg:min-w-45 py-2.5 sm:py-2 md:py-2.5 rounded-[10px] sm:rounded-xl border border-border bg-transparent text-heading/70 font-medium text-[13px] sm:text-sm tracking-wide overflow-hidden transition-colors duration-200 hover:text-heading disabled:opacity-50 disabled:pointer-events-none"
               >
                 <span className="absolute inset-0 bg-surface scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100" />
                 <span className="relative">Clear</span>
@@ -691,9 +745,9 @@ const QuickAddProduct = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative flex-1 py-2 rounded-[10px] bg-primary text-white font-medium text-sm tracking-wide overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none disabled:active:scale-100 flex items-center justify-center gap-2"
+                className="group relative flex-1 py-2.5 sm:py-2 md:py-2.5 rounded-[10px] sm:rounded-xl bg-primary text-white font-medium text-[13px] sm:text-sm tracking-wide overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none disabled:active:scale-100 flex items-center justify-center gap-2"
               >
-                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.06] transition-colors duration-200" />
+                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/6 transition-colors duration-200" />
                 {loading && (
                   <span className="relative h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                 )}
