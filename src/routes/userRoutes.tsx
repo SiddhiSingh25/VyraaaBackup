@@ -12,7 +12,6 @@ import ResetPassword from "../pages/userPannel/auth/pages/ResetPassword";
    User Pages
 ========================= */
 import HomeScreen from "../pages/userPannel/HomeScreen/HomeScreen";
-import AboutUs from "../pages/userPannel/AboutUs/AboutUs";
 import Wishlist from "../pages/userPannel/Wishlist/Wishlist";
 import Profile from "../pages/userPannel/UserProfile/UserProfile";
 import ProductDetails from "../pages/userPannel/Product/Product";
@@ -73,7 +72,7 @@ export const userRoutes = [
 
       {
         path: "/privacy-policy",
-        element: <PrivacyPolicy />,
+        element: <PrivacyPolicy/>
       },
       {
         path: "/terms-condtions",
