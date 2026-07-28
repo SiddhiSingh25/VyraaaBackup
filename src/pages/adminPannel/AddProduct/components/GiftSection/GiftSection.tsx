@@ -15,10 +15,9 @@ type Props = {
 };
 
 const GiftSection = ({ gifts, setGifts }: Props) => {
+  console.log(gifts, "======giftsdection=======")
   const [query, setQuery] = useState("");
-
   const [loading, setLoading] = useState(false);
-
   const [products, setProducts] = useState<GiftProduct[]>([]);
 
   useEffect(() => {
@@ -31,10 +30,7 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
     }
 
     const controller = new AbortController();
-
-    // Results always come from the API for the current search term.
-    // Clearing the old list prevents it from being mistaken for new results.
-    setProducts([]);
+    setProducts([]); // Clear old list
 
     const timer = setTimeout(async () => {
       try {
@@ -49,11 +45,12 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
               limit: 20,
             },
             signal: controller.signal,
-          },
+          }
         );
 
         if (!controller.signal.aborted) {
-          setProducts(res.data.data || []);
+          console.log(res, "==data====")
+          setProducts(res.data?.data || []);
         }
       } catch (err) {
         if (!axios.isCancel(err)) {
@@ -77,31 +74,49 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
   const addGift = (product: GiftProduct) => {
     if (selectedIds.includes(product._id)) return;
 
+    // 1. Safely handle sizes whether they are populated objects or just string IDs
+    const mappedSizes = product.price?.map((p: any) => {
+      // Check if size is a populated object (from details API) or just a string (from search API)
+      const isSizeObject = p.size && typeof p.size === "object";
+
+      const sizeId = isSizeObject ? p.size._id : p.size;
+      const sizeLabel = isSizeObject ? p.size.size : "Default Size"; // Fallback label
+
+      return {
+        label: sizeLabel || "Default Size",
+        value: sizeId || "",
+      };
+    }).filter((s) => s.value !== "") || []; // Remove entirely blank sizes
+
+    // 2. Safely grab the initial size ID for the dropdown
+    const firstSize = product.price?.[0]?.size;
+    const initialSizeId = (firstSize && typeof firstSize === "object")
+      ? firstSize._id
+      : (firstSize || "");
+
+    const resolvedBrand = typeof product.brand === "string"
+      ? product.brand
+      : product.brand?.brand;
+
     setGifts([
       ...gifts,
       {
         product: product._id,
-
         quantity: 1,
-
-        size: product.price[0]?.size._id || "",
+        size: initialSizeId,
 
         productDetails: {
-          title: product.title,
-
-          image: product.image,
-
-          brand: product.brand?.brand || "",
-
-          sku: product.price[0]?.skuCode,
-
-          sizes: product.price.map((p) => ({
-            label: p.size.size,
-            value: p.size._id,
-          })),
+          title: product.title || "Unknown Product",
+          image: product.image || "",
+          brand: resolvedBrand || "Generic Brand",
+          sku: product.price?.[0]?.skuCode || "",
+          sizes: mappedSizes,
         },
       },
     ]);
+
+    // Optional: Clear search after adding
+    setQuery("");
   };
 
   const removeGift = (productId: string) => {
@@ -111,37 +126,25 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
   const updateQuantity = (productId: string, quantity: number) => {
     setGifts(
       gifts.map((gift) =>
-        gift.product === productId
-          ? {
-              ...gift,
-              quantity,
-            }
-          : gift,
-      ),
+        gift.product === productId ? { ...gift, quantity } : gift
+      )
     );
   };
 
   const updateSize = (productId: string, size: string) => {
     setGifts(
       gifts.map((gift) =>
-        gift.product === productId
-          ? {
-              ...gift,
-              size,
-            }
-          : gift,
-      ),
+        gift.product === productId ? { ...gift, size } : gift
+      )
     );
   };
 
   return (
-    <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
+    <section className="rounded-xl border border-border bg-surface p-4 sm:p-6 shadow-sm">
       <div className="mb-6 flex items-center gap-3 border-b border-border pb-4">
         <FaGift className="text-primary text-xl" />
-
         <div>
           <h3 className="text-lg font-semibold">Free Gifts</h3>
-
           <p className="text-sm text-muted-foreground">
             Optional products that will be sent free with this product.
           </p>
@@ -153,7 +156,6 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
           size={18}
           className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
         />
-
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -182,7 +184,6 @@ const GiftSection = ({ gifts, setGifts }: Props) => {
       {gifts.length > 0 && (
         <div className="mt-8">
           <h4 className="mb-4 text-base font-semibold">Selected Gifts</h4>
-
           <div className="space-y-4">
             {gifts.map((gift) => (
               <GiftCard

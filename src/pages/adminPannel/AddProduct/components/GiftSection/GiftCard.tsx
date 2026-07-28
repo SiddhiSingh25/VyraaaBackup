@@ -1,5 +1,4 @@
 import { Trash2 } from "lucide-react";
-
 import type { GiftItem } from "../../types";
 
 type Props = {
@@ -15,53 +14,67 @@ const GiftCard = ({
   onQuantityChange,
   onSizeChange,
 }: Props) => {
+  console.log(gift, "======")
   return (
-    <div className="flex gap-4 rounded-xl border border-border bg-card p-4">
+    <div className="flex gap-4 rounded-xl border border-border bg-card p-4 items-center">
       <img
-        src={gift.productDetails.image}
-        alt={gift.productDetails.title}
-        className="h-24 w-24 rounded-lg object-cover"
+        src={gift.productDetails?.image || "https://via.placeholder.com/150"}
+        alt={gift.productDetails?.title || "Gift"}
+        className="h-20 w-20 rounded-lg object-cover border border-border"
       />
 
       <div className="flex-1">
-        <h4 className="font-semibold">{gift.productDetails.title}</h4>
+        <h4 className="font-semibold text-sm">
+          {gift.productDetails?.title || "Unknown Product"}
+        </h4>
 
-        <p className="text-sm text-muted-foreground">
-          {gift.productDetails.brand}
+        <p className="text-xs text-muted-foreground mb-3">
+          {gift.productDetails?.brand || "Generic Brand"}
         </p>
 
-        <div className="mt-4 flex gap-5">
+        <div className="flex gap-4">
           <div>
-            <label className="mb-1 block text-xs">Quantity</label>
-
+            <label className="mb-1 block text-[10px] uppercase tracking-wider text-muted-foreground">
+              Quantity
+            </label>
             <input
               type="number"
               min={1}
-              value={gift.quantity}
+              value={gift.quantity || 1}
               onChange={(e) => onQuantityChange(Number(e.target.value))}
-              className="w-24 rounded-lg border border-border p-2"
+              className="w-20 rounded-md border border-border p-1.5 text-sm outline-none focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs">Size</label>
-
+            <label className="mb-1 block text-[10px] uppercase tracking-wider text-muted-foreground">
+              Size
+            </label>
             <select
-              value={gift.size}
+              value={gift.size || ""}
               onChange={(e) => onSizeChange(e.target.value)}
-              className="rounded-lg border border-border p-2"
+              className="w-24 rounded-md border border-border p-1.5 text-sm outline-none focus:border-primary bg-transparent"
             >
-              {gift.productDetails.sizes.map((size) => (
-                <option key={size.value} value={size.value}>
-                  {size.label}
-                </option>
-              ))}
+              {/* Added safe array checking before map */}
+              {gift.productDetails?.sizes?.length ? (
+                gift.productDetails.sizes.map((size) => (
+                  <option key={size.value} value={size.value}>
+                    {size.label}
+                  </option>
+                ))
+              ) : (
+                <option value="">N/A</option>
+              )}
             </select>
           </div>
         </div>
       </div>
 
-      <button type="button" onClick={onDelete} className="text-red-500">
+      <button
+        type="button"
+        onClick={onDelete}
+        className="text-red-400 hover:text-red-600 transition-colors p-2 bg-red-50 hover:bg-red-100 rounded-lg"
+      >
         <Trash2 size={18} />
       </button>
     </div>
