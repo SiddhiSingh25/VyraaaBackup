@@ -99,7 +99,7 @@ const steps = ["Category", "Product", "Inventory", "Media"];
 const FormHeader = ({ completedSections, totalSections }: FormHeaderProps) => {
   return (
     <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl py-3 ">
+      <div className="mx-auto max-w-7xl pb-2 ">
         <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[260px_1fr_170px] lg:gap-8">
           {/* Left */}
           <div className="flex items-center justify-between gap-3 lg:block">
