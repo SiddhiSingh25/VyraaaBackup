@@ -39,7 +39,7 @@ import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/Privacypolic
 export const userRoutes = [
   {
     path: "/",
-    element: <UserLayout />,
+    element: <UserLayout/>,
     children: [
       {
         index: true,
