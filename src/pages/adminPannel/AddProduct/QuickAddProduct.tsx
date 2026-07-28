@@ -22,7 +22,7 @@ import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../../components/tableComponents/Button";
 import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
@@ -88,6 +88,7 @@ const QuickAddProduct = () => {
   const productName = watch("name");
   const description = watch("description");
   const gender = watch("gender");
+  const navigate = useNavigate()
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [gifts, setGifts] = useState<GiftItem[]>([]);
@@ -449,6 +450,7 @@ const QuickAddProduct = () => {
           );
 
           if (id) {
+            navigate("/admin/products")
             return;
           }
 
@@ -734,7 +736,7 @@ const QuickAddProduct = () => {
               <button
                 type="button"
                 onClick={handleClear}
-                className="group relative flex-1 sm:flex-none sm:min-w-[150px] py-2 rounded-[10px] border border-border bg-transparent text-heading/70 font-medium text-sm tracking-wide overflow-hidden transition-colors duration-200 hover:text-heading disabled:opacity-50 disabled:pointer-events-none"
+                className="group relative flex-1 sm:flex-none sm:min-w-35 md:min-w-40 lg:min-w-45 py-2.5 sm:py-2 md:py-2.5 rounded-[10px] sm:rounded-xl border border-border bg-transparent text-heading/70 font-medium text-[13px] sm:text-sm tracking-wide overflow-hidden transition-colors duration-200 hover:text-heading disabled:opacity-50 disabled:pointer-events-none"
               >
                 <span className="absolute inset-0 bg-surface scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100" />
                 <span className="relative">Clear</span>
@@ -743,9 +745,9 @@ const QuickAddProduct = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative flex-1 py-2 rounded-[10px] bg-primary text-white font-medium text-sm tracking-wide overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none disabled:active:scale-100 flex items-center justify-center gap-2"
+                className="group relative flex-1 py-2.5 sm:py-2 md:py-2.5 rounded-[10px] sm:rounded-xl bg-primary text-white font-medium text-[13px] sm:text-sm tracking-wide overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none disabled:active:scale-100 flex items-center justify-center gap-2"
               >
-                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.06] transition-colors duration-200" />
+                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/6 transition-colors duration-200" />
                 {loading && (
                   <span className="relative h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                 )}
