@@ -28,9 +28,8 @@ const OrdersTable = ({
   page = 1,
   limit = 10,
   totalOrders = 0,
-  onPageChange
+  onPageChange,
 }: any) => {
-
   // Exact pagination math used in ProductTable
   const totalPages = Math.max(1, Math.ceil(totalOrders / limit));
   const safeCurrentPage = Math.max(1, Math.min(page || 1, totalPages));
@@ -45,77 +44,97 @@ const OrdersTable = ({
             <tr className="border-b border-[#D8C4B5] bg-[#FFF8F2] text-left text-sm font-semibold text-[#8B5E49]">
               <th className="px-4 py-3 whitespace-nowrap w-20">Sr. no.</th>
               <th className="px-4 py-3">Customer</th>
-              <th className="px-4 py-3 min-w-[150px]">Products</th>
+              <th className="px-4 py-3 min-w-37.5">Products</th>
               <th className="px-4 py-3 whitespace-nowrap">Items</th>
               <th className="px-4 py-3 whitespace-nowrap">Total</th>
               <th className="px-4 py-3 whitespace-nowrap">Payment</th>
               <th className="px-4 py-3 whitespace-nowrap">Status</th>
-              <th className="px-4 py-3 text-center whitespace-nowrap">Action</th>
+              <th className="px-4 py-3 text-center whitespace-nowrap">
+                Action
+              </th>
             </tr>
           </thead>
 
           <tbody>
-            {items.map((order: any, index: number) => {
-              const srNo = (safeCurrentPage - 1) * limit + index + 1;
-
-              return (
-                <tr
-                  key={order._id}
-                  className="border-b border-[#EFE4DB] hover:bg-[#FFFDFB] transition-colors"
+            {items.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={8}
+                  className="px-4 py-12 text-center text-sm text-[#8B5E49]"
                 >
-                  <td className="px-4 py-3 text-sm text-[#5E4637]">
-                    {srNo}
-                  </td>
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-base font-medium text-[#5E4637]">
+                      No orders available
+                    </p>
+                    <p className="text-xs text-[#9B7B69]">
+                      There are no orders to display.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              items.map((order: any, index: number) => {
+                const srNo = (safeCurrentPage - 1) * limit + index + 1;
 
-                  <td className="px-4 py-3 text-sm text-[#3F322B] break-all min-w-[120px]">
-                    {order.user?.email || "N/A"}
-                  </td>
+                return (
+                  <tr
+                    key={order._id}
+                    className="border-b border-[#EFE4DB] hover:bg-[#FFFDFB] transition-colors"
+                  >
+                    <td className="px-4 py-3 text-sm text-[#5E4637]">{srNo}</td>
 
-                  <td className="px-4 py-3 text-sm text-[#5E4637] line-clamp-2">
-                    {order.items.map((x: any) => x.product?.title).join(", ")}
-                  </td>
+                    <td className="px-4 py-3 text-sm text-[#3F322B] break-all min-w-30">
+                      {order.user?.email || "N/A"}
+                    </td>
 
-                  <td className="px-4 py-3 text-sm font-medium text-center">
-                    {order.items.length}
-                  </td>
+                    <td className="px-4 py-3 text-sm text-[#5E4637] line-clamp-2">
+                      {order.items.map((x: any) => x.product?.title).join(", ")}
+                    </td>
 
-                  <td className="px-4 py-3 text-sm font-semibold text-[#6F4A36] whitespace-nowrap">
-                    ₹{Number(order.grandTotal || 0).toFixed(2)}
-                  </td>
+                    <td className="px-4 py-3 text-sm font-medium text-center">
+                      {order.items.length}
+                    </td>
 
-                  <td className="px-4 py-3 text-sm whitespace-nowrap">
-                    <div className="font-medium text-[#3F322B]">{order.paymentMethod}</div>
-                    <div className="text-xs text-slate-500 mt-0.5">
-                      {order.paymentStatus}
-                    </div>
-                  </td>
+                    <td className="px-4 py-3 text-sm font-semibold text-[#6F4A36] whitespace-nowrap">
+                      ₹{Number(order.grandTotal || 0).toFixed(2)}
+                    </td>
 
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <span
-                      className={`rounded-md border px-2 py-1 text-xs font-medium ${getBadgeColor(
-                        order.orderStatus
-                      )}`}
-                    >
-                      {order.orderStatus}
-                    </span>
-                  </td>
+                    <td className="px-4 py-3 text-sm whitespace-nowrap">
+                      <div className="font-medium text-[#3F322B]">
+                        {order.paymentMethod}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {order.paymentStatus}
+                      </div>
+                    </td>
 
-                  <td className="px-4 py-3">
-                    <div className="flex justify-center gap-2">
-                      <button
-                        type="button"
-                        aria-label="View Order"
-                        onClick={() => onView?.(order)}
-                        className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
-                        title="View Order"
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span
+                        className={`rounded-md border px-2 py-1 text-xs font-medium ${getBadgeColor(
+                          order.orderStatus,
+                        )}`}
                       >
-                        <Eye size={15} className="text-[#7A5442]" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+                        {order.orderStatus}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          type="button"
+                          aria-label="View Order"
+                          onClick={() => onView?.(order)}
+                          className="rounded-md border border-[#E4D8CE] bg-white p-2 hover:bg-[#F8F3EF]"
+                          title="View Order"
+                        >
+                          <Eye size={15} className="text-[#7A5442]" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
@@ -158,7 +177,6 @@ const OrdersTable = ({
           <span className="text-xs text-[#9B7B69]">of {totalPages}</span>
         </div>
       </div>
-
     </div>
   );
 };

@@ -14,6 +14,7 @@ import { addToCart } from "@/redux/slices/cartSlice";
 import { FiHeart } from "react-icons/fi";
 import { EmptyState } from "@/components/Common/EmptyList/EmptyList";
 import PageLoader from "@/components/Loader/fullPageLoader";
+import SkeletonCard from "../Product/component/SkeletonCard";
 
 
 
@@ -160,17 +161,37 @@ export default function WishlistPage() {
       .forEach((item: any) => addToBag(item.id));
   };
 
-  // 3. Render a loading skeleton or spinner while fetching
   if (loading) {
     return (
-      <PageLoader loading={loading} text="Loading Wishlist..." />
+      <>
+        <div className="min-h-screen bg-background">
+
+          <main className="mx-auto max-w-7xl px-5 pb-24 pt-6 sm:px-8 lg:px-10">
+            {/* Header Skeleton */}
+            <div className="flex flex-col gap-2 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between animate-pulse">
+              <div className="space-y-2">
+                <div className="h-8 w-48 rounded bg-border animate-pulse" />
+                <div className="h-3.5 w-56 rounded bg-border animate-pulse mt-2" />
+              </div>
+            </div>
+
+            {/* Grid Skeleton */}
+            <div className="grid grid-cols-1 gap-6 pt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {[...Array(4)].map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          </main>
+        </div>
+
+      </>
     );
   }
 
   return (
     <>
       <div className="min-h-screen bg-background">
-        <Navbar />
+
 
         <main className="  mx-auto max-w-7xl px-5 pb-24 pt-6 sm:px-8 lg:px-10">
           {/* Header */}
@@ -232,7 +253,7 @@ export default function WishlistPage() {
 
 
       </div>
-      <Footer />
+
     </>
   );
 }

@@ -6,6 +6,7 @@ import { Package, MapPin, CreditCard, Gift, CheckCircle, Truck } from 'lucide-re
 import Navbar from '@/components/Header/Navbar';
 import Footer from '@/components/Footer/Footer';
 import PageLoader from '@/components/Loader/fullPageLoader';
+import { SkeletonOrderDetails } from './SkeletonOrderDetails';
 
 const OrderDetails = () => {
     const location = useLocation();
@@ -26,6 +27,10 @@ const OrderDetails = () => {
             },
         });
     }
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
 
     useEffect(() => {
         if (id) {
@@ -50,7 +55,22 @@ const OrderDetails = () => {
     // --- Loading State ---
     if (!orderDetails) {
         return (
-            <PageLoader loading={loading} text="Loading Details..." />
+            <div className="min-h-screen bg-background flex flex-col font-body text-body">
+
+                <main className="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+                    {/* Header Skeleton */}
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-4 animate-pulse">
+                        <div className="space-y-3">
+                            <div className="h-7 w-48 rounded bg-border" />
+                            <div className="h-4 w-64 rounded bg-border mt-1" />
+                        </div>
+                        <div className="h-9 w-28 rounded-full bg-border" />
+                    </div>
+
+                    <SkeletonOrderDetails />
+                </main>
+
+            </div>
         );
     }
 
@@ -59,7 +79,7 @@ const OrderDetails = () => {
 
     return (
         <div className="min-h-screen bg-background flex flex-col font-body text-body">
-            <Navbar />
+
 
             {/* Main Content */}
             <main className="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8">
@@ -200,7 +220,7 @@ const OrderDetails = () => {
                 </div>
             </main>
 
-            <Footer />
+
         </div>
     );
 };

@@ -12,11 +12,16 @@ import authImage from "@/assets/auth/auth.png";
 import { AuthLayout, AuthHeader, AuthInput, AuthButton, FormDivider, PageTransition } from "../../components";
 import { sendOtpSchema } from "./sendOtp.schema";
 import type { SendOtpFormValues } from "../../types";
+import { useEffect } from "react";
 
 const SendOtp = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { postQuery, loading } = usePostQuery();
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const {
     register,
@@ -26,6 +31,7 @@ const SendOtp = () => {
     resolver: yupResolver(sendOtpSchema) as any,
     defaultValues: { email: "" },
   });
+
 
   const onSubmit = (values: SendOtpFormValues) => {
     postQuery({

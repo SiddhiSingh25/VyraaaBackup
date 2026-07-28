@@ -3,11 +3,11 @@ interface MarqueeItem {
 }
 
 const ITEMS: MarqueeItem[] = [
-  { text: "Complimentary Luxury Packaging" },
-  { text: "Free Shipping on Orders Above ₹2,999" },
-  { text: "Premium Craftsmanship" },
-  { text: "Curated Luxury Collection" },
-  { text: "Secure Payments • Easy Returns" },
+  { text: "Luxury in Every Note" },
+  { text: "Crafted to Leave a Lasting Impression" },
+  { text: "Fine Fragrances • Premium Experience" },
+  { text: "Elegance. Confidence. Vyraaa." },
+  { text: "Premium Ingredients • Exceptional Quality" },
 ];
 
 function MarqueeRow() {

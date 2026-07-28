@@ -17,7 +17,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 export function LoyaltyAvatar({ user, size = 104, setUser }: LoyaltyAvatarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   // Fallback to profilePic if avatarUrl is undefined in your schema
-  const [preview, setPreview] = useState<string | null>(user.avatarUrl || user.profilePic);
+  const [preview, setPreview] = useState<string | null | undefined>(user.avatarUrl || user.profilePic);
   const [isUploading, setIsUploading] = useState(false);
 
   const { postQuery } = usePostQuery();

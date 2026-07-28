@@ -13,6 +13,7 @@ import { RxCross2 } from "react-icons/rx";
 import { Controller, type Control, type FieldErrors } from "react-hook-form";
 import type { QuickAddValues } from "../types";
 import { SearchableSelect } from "../../../../components/SearchableDropdown/SearchableDropdown";
+import { useToast } from "@/hooks/useToast.hook";
 
 const emptyDraftVariant: DraftVariant = {
   size: {},
@@ -53,6 +54,8 @@ const VariantsSection = ({
   const [draftVariant, setDraftVariant] =
     useState<DraftVariant>(emptyDraftVariant);
 
+  const { toast } = useToast();
+
   useEffect(() => {
     setDraftVariant(emptyDraftVariant);
     setShowDraft(false);
@@ -76,7 +79,7 @@ const VariantsSection = ({
     );
 
     if (duplicateSku) {
-      alert("SKU already exists.");
+      toast("error", "SKU already exists.");
       return;
     }
 
@@ -118,7 +121,7 @@ const VariantsSection = ({
   };
 
   return (
-    <section className="rounded-xl border border-border bg-surface p-6 shadow-sm">
+    <section className="rounded-xl border border-border bg-surface p-4 sm:p-6 shadow-sm">
       <div className="mb-6 flex items-center gap-3 border-b border-border pb-4">
         <IoColorPaletteOutline className="text-xl text-primary" />
         <h3 className="text-sm font-semibold tracking-tight  ">

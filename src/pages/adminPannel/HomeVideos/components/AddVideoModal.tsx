@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { UploadCloud, Video, X } from "lucide-react";
 import usePostQuery from "@/hooks/postQuery.hook";
 import { apiUrls } from "@/apis";
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 
 interface Props {
   open: boolean;
@@ -13,7 +14,7 @@ const AddVideoModal = ({ open, onClose, onSuccess }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [video, setVideo] = useState<File | null>(null);
-  const { postQuery } = usePostQuery();
+  const { postQuery, loading } = usePostQuery();
 
   const [preview, setPreview] = useState("");
 
@@ -179,10 +180,11 @@ const AddVideoModal = ({ open, onClose, onSuccess }: Props) => {
           </button>
 
           <button
-            disabled={!video}
+            disabled={!video && !loading}
             onClick={handleSubmit}
             className="rounded-xl bg-[#7B523B] px-6 py-3 font-semibold text-white transition hover:bg-[#65402d] disabled:cursor-not-allowed disabled:opacity-50"
           >
+            {loading && <ButtonLoader />}
             Upload Video
           </button>
         </div>

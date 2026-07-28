@@ -32,6 +32,10 @@ const Signup = () => {
   const isReset = state?.isReset ?? false;
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     if (!email || !verificationToken) {
       navigate("/auth/send-otp", { replace: true });
     }

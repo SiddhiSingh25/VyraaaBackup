@@ -4,11 +4,7 @@ import Button from "../../../../components/tableComponents/Button";
 import ConfirmDialog from "../../../../components/tableComponents/ConfirmDialog";
 import SubCategoryTable from "./component/SubCategoryTable";
 import SubCategoryFormModal from "./component/SubCategoryFormModal";
-import type {
-  SubCategory,
-  SubCategoryFormValues,
-  ModalMode,
-} from "./component/types";
+import type { SubCategory, SubCategoryFormValues, ModalMode } from "./component/types";
 import useGetQuery from "../../../../hooks/getQuery.hook";
 import usePostQuery from "../../../../hooks/postQuery.hook";
 import usePutQuery from "../../../../hooks/putQuery.hook";
@@ -16,18 +12,10 @@ import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
 import { apiUrls } from "../../../../apis/index";
 import PageLoader from "@/components/Loader/fullPageLoader";
 
-const mapApi = (item: any): SubCategory => ({
-  id: item._id,
-  srNo: 0,
-  subCategory: item.subCategory,
-  category: item.category,
-});
-
 export default function SubCategory() {
-  const [items, setItems] = useState<SubCategory[]>([]);
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
-    [],
-  );
+  const [rawItems, setRawItems] = useState<any[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("add");
   const [activeItem, setActiveItem] = useState<any | null>(null);
@@ -36,52 +24,64 @@ export default function SubCategory() {
   const { getQuery, loading } = useGetQuery();
   const { postQuery, loading: addLoading } = usePostQuery();
   const { putQuery, loading: editLoading } = usePutQuery();
-  const { deleteQuery } = useDeleteQuery();
+  const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
-  const fetchCategories = () => {
-    getQuery({
-      url: apiUrls.Category.getAll,
-      onSuccess: (res: any) => {
-        const data = res?.data || [];
-        setCategories(data.map((c: any) => ({ id: c._id, name: c.category })));
-      },
-    });
-  };
-
-  const fetchSubcategories = () => {
+  // 1. Fetch ONLY Subcategories on initial mount
+  useEffect(() => {
     getQuery({
       url: apiUrls.SubCategory.getAll,
       onSuccess: (res: any) => {
-        const data = res?.data || [];
-        setItems(
-          data.map(mapApi).map((it: SubCategory, idx: number) => ({
-            ...it,
-            srNo: idx + 1,
-            categoryName:
-              categories.find((c) => c.id === it.category)?.name || "",
-          })),
-        );
+        setRawItems(res?.data || []);
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 2. Fetch Categories ONLY when requested (Lazy Loading)
+  const fetchCategoriesIfNeeded = () => {
+    if (categories.length === 0) {
+      getQuery({
+        url: apiUrls.Category.getAll,
+        onSuccess: (res: any) => {
+          const data = res?.data || [];
+          setCategories(data.map((c: any) => ({ id: c._id, name: c.category })));
+        },
+      });
+    }
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-  useEffect(() => {
-    fetchSubcategories();
-  }, [categories]);
+  // 3. Derived State
+  const mappedItems: SubCategory[] = useMemo(() => {
+    const categoryMap = categories.reduce((acc, curr) => {
+      acc[curr.id] = curr.name;
+      return acc;
+    }, {} as Record<string, string>);
 
+    return rawItems.map((item, index) => ({
+      id: item._id,
+      srNo: index + 1,
+      subCategory: item.subCategory,
+      category: item.category,
+      // Fallback to item.categoryName if backend provides it, otherwise use our map
+      categoryName: item.categoryName || categoryMap[item.category] || "N/A",
+    }));
+  }, [rawItems, categories]);
+
+  // 4. Trigger Category fetch when opening modals
   const openAdd = () => {
     setModalMode("add");
     setActiveItem(null);
     setIsFormOpen(true);
+    fetchCategoriesIfNeeded(); // <--- Call here
   };
+
   const openEdit = (it: SubCategory) => {
     setModalMode("edit");
     setActiveItem(it);
     setIsFormOpen(true);
+    fetchCategoriesIfNeeded(); // <--- Call here
   };
+
   const closeForm = () => setIsFormOpen(false);
 
   const handleSubmit = async (values: SubCategoryFormValues) => {
@@ -93,17 +93,10 @@ export default function SubCategory() {
           subCategory: values.subCategory,
         },
         onSuccess: (res: any) => {
-          const newItem = res?.data;
-          if (!newItem) return;
-          setItems((prev) =>
-            prev.concat({
-              ...mapApi(newItem),
-              srNo: prev.length + 1,
-              categoryName:
-                categories.find((c) => c.id === newItem.category)?.name || "",
-            }),
-          );
-          setIsFormOpen(false);
+          if (res?.data) {
+            setRawItems((prev) => [...prev, res.data]);
+            setIsFormOpen(false);
+          }
         },
       });
     } else if (activeItem) {
@@ -111,29 +104,26 @@ export default function SubCategory() {
         url: apiUrls.SubCategory.update,
         putData: { id: activeItem.id, subCategory: values.subCategory },
         onSuccess: (res: any) => {
-          const updated = res?.data;
-          if (!updated) return;
-          setItems((prev) =>
-            prev.map((p) =>
-              p.id === updated._id
-                ? { ...p, subCategory: updated.subCategory }
-                : p,
-            ),
-          );
-          setIsFormOpen(false);
+          if (res?.data) {
+            setRawItems((prev) =>
+              prev.map((p) => (p._id === res.data._id ? res.data : p))
+            );
+            setIsFormOpen(false);
+          }
         },
       });
     }
   };
 
   const requestDelete = (it: SubCategory) => setPendingDelete(it);
+
   const confirmDelete = async () => {
     if (!pendingDelete) return;
     await deleteQuery({
       url: apiUrls.SubCategory.delete,
       deleteData: { id: pendingDelete.id },
       onSuccess: () => {
-        setItems((prev) => prev.filter((p) => p.id !== pendingDelete.id));
+        setRawItems((prev) => prev.filter((p) => p._id !== pendingDelete.id));
         setPendingDelete(null);
       },
     });
@@ -162,13 +152,11 @@ export default function SubCategory() {
           </Button>
         </div>
 
-        {loading && (
-          <PageLoader loading={loading} text="Loading Subcategories..." />
-        )}
+        {loading && <PageLoader loading={loading} text="Loading Subcategories..." />}
 
         <div className="p-0 sm:p-2 mb-4">
           <SubCategoryTable
-            items={items}
+            items={mappedItems}
             onEdit={openEdit}
             onDelete={requestDelete}
           />
@@ -195,7 +183,7 @@ export default function SubCategory() {
         }
         onConfirm={confirmDelete}
         onCancel={() => setPendingDelete(null)}
-        loading={addLoading}
+        loading={deleteLoading}
       />
     </div>
   );

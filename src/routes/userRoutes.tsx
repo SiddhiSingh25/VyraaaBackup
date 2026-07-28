@@ -26,111 +26,111 @@ import CheckoutLayout from "../pages/userPannel/Checkout/CheckoutLayout";
 import Cart from "../pages/userPannel/Checkout/Cart/Cart";
 import AddNewAddress from "../pages/userPannel/Checkout/Address/pages/AddNewAddress";
 import Payment from "../pages/userPannel/Checkout/Payment/PaymentPage";
-import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/privacypolicy";
 import TermsAndConditions from "@/pages/userPannel/HomeScreen/Components/TermsCondition";
 import OrderDeatils from "../pages/userPannel/OrderDeatils/OrderDeatils";
 
-export const userRoutes = [
-  /* =========================
-     Authentication
-  ========================= */
-  {
-    path: "/auth/login",
-    element: <Login />,
-  },
-  {
-    path: "/auth/send-otp",
-    element: <SendOtp />,
-  },
-  {
-    path: "/auth/verify-otp",
-    element: <VerifyOtp />,
-  },
-  {
-    path: "/auth/signup",
-    element: <Signup />,
-  },
-  {
-    path: "/auth/forgot-password",
-    element: <ForgotPassword />,
-  },
-  {
-    path: "/auth/reset-password",
-    element: <ResetPassword />,
-  },
 
-  /* =========================
-     Public
-  ========================= */
+
+
+import UserLayout from "@/routes/userLayout";
+import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/Privacypolicy";
+
+
+
+export const userRoutes = [
   {
     path: "/",
-    element: <HomeScreen />,
-  },
-  {
-    path: "/aboutus",
-    element: <AboutUs />,
-  },
-  {
-    path: "/privacy-policy",
-    element: <PrivacyPolicy />,
-  },
-  {
-    path: "/terms-condtions",
-    element: <TermsAndConditions />,
-  },
-  {
-    path: "/aboutus",
-    element: <AboutUs />,
-  },
-  {
-    path: "/:id",
-    element: <ProductFilter />,
-  },
-  {
-    path: "/:id/:subId",
-    element: <ProductFilter />,
-  },
-  {
-    path: "/productDetails/:productName",
-    element: <ProductDetails />,
-  },
-
-  /* =========================
-     Protected User Routes
-  ========================= */
-  {
-    element: <ProtectedRoute allowedRoles={["user", "admin"]} />,
+    element: <UserLayout />,
     children: [
       {
-        path: "cart",
-        element: <Cart />,
+        index: true,
+        element: <HomeScreen />,
       },
       {
-        path: "/profile",
-        element: <Profile />,
+        path: "/auth/login",
+        element: <Login />,
       },
       {
-        path: "/wishlist",
-        element: <Wishlist />,
+        path: "/auth/send-otp",
+        element: <SendOtp />,
       },
       {
-        path: "/orderDeatils",
-        element: <OrderDeatils />,
+        path: "/auth/verify-otp",
+        element: <VerifyOtp />,
       },
       {
-        path: "/checkout",
-        element: <CheckoutLayout />,
+        path: "/auth/signup",
+        element: <Signup />,
+      },
+      {
+        path: "/auth/forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "/auth/reset-password",
+        element: <ResetPassword />,
+      },
+
+      {
+        path: "/privacy-policy",
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: "/terms-condtions",
+        element: <TermsAndConditions />,
+      },
+
+      {
+        path: "/:id",
+        element: <ProductFilter />,
+      },
+      {
+        path: "/:id/:subId",
+        element: <ProductFilter />,
+      },
+      {
+        path: "/productDetails/:productName",
+        element: <ProductDetails />,
+      },
+      {
+        element: <ProtectedRoute allowedRoles={["user", "admin"]} />,
         children: [
           {
-            path: "address",
-            element: <AddNewAddress />,
+            path: "cart",
+            element: <Cart />,
           },
           {
-            path: "payment",
-            element: <Payment />,
+            path: "/profile",
+            element: <Profile />,
+          },
+          {
+            path: "/wishlist",
+            element: <Wishlist />,
+          },
+          {
+            path: "/orderDeatils",
+            element: <OrderDeatils />,
+          },
+          {
+            path: "/checkout",
+            element: <CheckoutLayout />,
+            children: [
+              {
+                path: "address",
+                element: <AddNewAddress />,
+              },
+              {
+                path: "payment",
+                element: <Payment />,
+              },
+            ],
           },
         ],
       },
     ],
   },
+
+
+
+
 ];

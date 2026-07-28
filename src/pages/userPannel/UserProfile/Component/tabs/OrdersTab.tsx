@@ -15,20 +15,24 @@ import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook"; // <-- Added
 import { apiUrls } from "@/apis";
 import { useNavigate } from "react-router-dom";
+import { SkeletonOrders } from "./SkeletonOrders";
+import { useToast } from "@/hooks/useToast.hook";
 
 export function OrdersTab() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { getQuery } = useGetQuery();
-  const { postQuery } = usePostQuery(); // <-- Added
+  const { postQuery } = usePostQuery();
   const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  let { toast } = useToast()
 
   // Review Modal State
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [reviewText, setReviewText] = useState("");
   const [reviewImages, setReviewImages] = useState<File[]>([]);
-  const [rating, setRating] = useState<number>(5); // <-- Added Rating State
-  const [isSubmitting, setIsSubmitting] = useState(false); // <-- Added loading state
+  const [rating, setRating] = useState<number>(5);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     getQuery({
@@ -53,9 +57,11 @@ export function OrdersTab() {
           }))
         );
         setOrders(formattedOrders);
+        setIsLoading(false);
       },
       onFail: (err: any) => {
         console.log("Failed to fetch orders:", err);
+        setIsLoading(false);
       },
     });
   }, []);
@@ -67,7 +73,7 @@ export function OrdersTab() {
         const combined = [...prev, ...newFiles];
         // Enforce maximum 2 images limit
         if (combined.length > 2) {
-          alert("You can only upload a maximum of 2 images.");
+          toast("error", "You can only upload a maximum of 2 images.");
           return combined.slice(0, 2);
         }
         return combined;
@@ -147,18 +153,22 @@ export function OrdersTab() {
           },
           onFail: (err: any) => {
             console.error("Failed to submit review:", err);
-            alert(err?.response?.data?.message || "Failed to submit review.");
+            toast("error", err?.response?.data?.message || "Failed to submit review.");
             reject(err);
           },
         });
       });
     } catch (error: any) {
       console.error("Error during submission:", error);
-      alert("An error occurred while uploading images or submitting the review.");
+      toast("error", "An error occurred while uploading images or submitting the review.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return <SkeletonOrders />;
+  }
 
   if (!orders.length) {
     return (
@@ -198,7 +208,7 @@ export function OrdersTab() {
 
   return (
     <div className="space-y-6 relative">
-      {Object.entries(grouped).map(([status, list]) => (
+      {(Object.entries(grouped) as [string, any[]][]).map(([status, list]) => (
         <div
           key={status}
           className="rounded-2xl bg-card border border-border p-4"
@@ -231,31 +241,31 @@ export function OrdersTab() {
               >
                 {/* Date */}
                 <p className="text-[11px] text-muted mb-3">
-                  Placed on: {order.placedOn}
+                  Placed on: {order?.placedOn ?? "N/A"}
                 </p>
 
                 {/* Product */}
                 <div className="flex gap-3">
                   <img
-                    src={order.thumbnailUrl}
+                    src={order?.thumbnailUrl || ""}
                     alt=""
-                    className="h-20 w-20 rounded-lg object-cover border border-border"
-                  />
+                    loading="lazy"
+                    decoding="async"
+                    className="h-20 w-20 rounded-lg object-cover border border-border" />
 
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between gap-3">
                       <div>
                         <h4 className="font-medium text-admin-text line-clamp-2">
-                          {order.title}
+                          {order?.title ?? "Product"}
                         </h4>
 
                         <p className="text-xs text-muted mt-1">
-                          {order.itemCount} item
-                          {order.itemCount > 1 && "s"}
+                          {order?.itemCount ?? 0} item{order?.itemCount > 1 && "s"}
                         </p>
 
                         <p className="text-sm font-semibold mt-2 text-admin-text">
-                          ₹{order.total.toLocaleString("en-IN")}
+                          ₹{order?.total?.toLocaleString("en-IN") ?? "0"}
                         </p>
                       </div>
 
@@ -275,14 +285,14 @@ export function OrdersTab() {
                         setSelectedOrder(order);
                         setIsReviewModalOpen(true);
                       }}
-                      disabled={!!order.review} // Disable if review exists
-                      className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition ${order.review
+                      disabled={!!order?.review} // Disable if review exists
+                      className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition ${order?.review
                         ? "border-muted text-muted bg-surface cursor-not-allowed"
                         : "border-primary text-primary hover:bg-primary/5"
                         }`}
                     >
                       <Star size={14} />
-                      {order.review ? "Review Submitted" : "Write a Review"}
+                      {order?.review ? "Review Submitted" : "Write a Review"}
                     </button>
                   )
                     // : (

@@ -50,7 +50,7 @@ export interface FilterSectionConfig {
 }
 
 /** Value shape stored per-filter-id inside FilterState */
-export type FilterValue = string | string[] | [number, number] | undefined;
+export type FilterValue = string | string[] | [number, number] | undefined | null;
 
 export interface FilterState {
   [sectionId: string]: FilterValue;

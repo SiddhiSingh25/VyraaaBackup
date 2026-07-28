@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../../../components/Footer/Footer";
 import Navbar from "../../../components/Header/Navbar";
 import { useReveal } from "../../../hooks/gsap/useReveal";
@@ -8,10 +8,12 @@ import SuggestedProduct from "./component/SuggestedProduct";
 export default function ProductDetails() {
   const ref = useReveal<HTMLElement>();
   const [product, setProduct] = useState<any>(null);
-
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   return (
     <>
-      <Navbar />
+
       <ProductInfo onProductLoaded={setProduct} />
       <SuggestedProduct
         categoryId={product?.category?._id || product?.category}
@@ -20,7 +22,7 @@ export default function ProductDetails() {
         currentProductId={product?._id}
       />
       {/* <CustomerLiked/> */}
-      <Footer />
+
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Plus } from "lucide-react";
 import Button from "../../../../components/tableComponents/Button";
 import ConfirmDialog from "../../../../components/tableComponents/ConfirmDialog";
@@ -16,84 +16,79 @@ import useDeleteQuery from "../../../../hooks/deleteQuery.hook";
 import { apiUrls } from "../../../../apis/index";
 import PageLoader from "@/components/Loader/fullPageLoader";
 
-const mapApi = (item: any): SubCategoryType => ({
+// 1. OPTIMIZATION: Pass index to mapApi to handle srNo in a single pass
+// and use the subCategoryName directly from the API response
+const mapApi = (item: any, idx: number): SubCategoryType => ({
   id: item._id,
-  srNo: 0,
+  srNo: idx + 1,
   subCategory: item.subCategory,
+  subCategoryName: item.subCategoryName || "",
   type: item.type,
 });
 
 export default function SubCategoryTypePage() {
   const [items, setItems] = useState<SubCategoryType[]>([]);
-  const [subcategories, setSubcategories] = useState<
-    { id: string; name: string }[]
-  >([]);
+  const [subcategories, setSubcategories] = useState<{ id: string; name: string }[]>([]);
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("add");
-  const [activeItem, setActiveItem] = useState<any | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<SubCategoryType | null>(
-    null,
-  );
+  const [activeItem, setActiveItem] = useState<SubCategoryType | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<SubCategoryType | null>(null);
 
   const { getQuery, loading } = useGetQuery();
-  const { postQuery } = usePostQuery();
-  const { putQuery } = usePutQuery();
-  const { deleteQuery } = useDeleteQuery();
+  const { postQuery, loading: addLoading } = usePostQuery();
+  const { putQuery, loading: editLoading } = usePutQuery();
+  const { deleteQuery, loading: deleteLoading } = useDeleteQuery();
 
-  const fetchSubcategories = () => {
-    getQuery({
-      url:
-        apiUrls.SubCategory.getByCategoryId.replace(
-          "getByCategoryId",
-          "getAll",
-        ) || apiUrls.SubCategory.getByCategoryId,
-      onSuccess: (res: any) => {
-        // fallback: use Category.getAll if specific endpoint is absent
-        const data = res?.data || [];
-        setSubcategories(
-          data.map((s: any) => ({
-            id: s._id,
-            name: s.subCategory || s.subCategory,
-          })),
-        );
-      },
-    });
-  };
+  // LAZY LOAD: Wrap in useCallback, only call API if array is empty
+  const fetchSubcategoriesIfNeeded = useCallback(() => {
+    if (subcategories.length === 0) {
+      getQuery({
+        url: apiUrls.SubCategory.getByCategoryId.replace("getByCategoryId", "getAll") || apiUrls.SubCategory.getByCategoryId,
+        onSuccess: (res: any) => {
+          const data = res?.data || [];
+          setSubcategories(
+            data.map((s: any) => ({
+              id: s._id,
+              name: s.subCategory || s.subCategoryName,
+            }))
+          );
+        },
+      });
+    }
+  }, [subcategories.length, getQuery]);
 
-  const fetchItems = () => {
+  // Wrapped in useCallback to prevent infinite re-renders
+  const fetchItems = useCallback(() => {
     getQuery({
       url: apiUrls.SubCategoryType.getAll,
       onSuccess: (res: any) => {
         const data = res?.data || [];
-        setItems(
-          data.map(mapApi).map((it: SubCategoryType, idx: number) => ({
-            ...it,
-            srNo: idx + 1,
-            subCategoryName:
-              subcategories.find((s) => s.id === it.subCategory)?.name || "",
-          })),
-        );
+        // 2. OPTIMIZATION: Replaced double .map() and expensive .find() loop with a single map
+        setItems(data.map((it: any, idx: number) => mapApi(it, idx)));
       },
     });
-  };
+  }, [getQuery]);
 
-  useEffect(() => {
-    fetchSubcategories();
-  }, []);
+  // INITIAL MOUNT: ONLY fetch items. Do NOT fetch subcategories yet.
   useEffect(() => {
     fetchItems();
-  }, [subcategories]);
+  }, [fetchItems]);
 
   const openAdd = () => {
     setModalMode("add");
     setActiveItem(null);
     setIsFormOpen(true);
+    fetchSubcategoriesIfNeeded(); // <-- Trigger lazy load here
   };
+
   const openEdit = (it: SubCategoryType) => {
     setModalMode("edit");
     setActiveItem(it);
     setIsFormOpen(true);
+    fetchSubcategoriesIfNeeded(); // <-- Trigger lazy load here
   };
+
   const closeForm = () => setIsFormOpen(false);
 
   const handleSubmit = async (values: SubCategoryTypeFormValues) => {
@@ -104,41 +99,44 @@ export default function SubCategoryTypePage() {
         onSuccess: (res: any) => {
           const newItem = res?.data;
           if (!newItem) return;
-          setItems((prev) =>
-            prev.concat({
-              ...mapApi(newItem),
-              srNo: prev.length + 1,
-              subCategoryName:
-                subcategories.find((s) => s.id === newItem.subCategory)?.name ||
-                "",
-            }),
-          );
-          setIsFormOpen(false);
+
+          setItems((prev) => [
+            ...prev,
+            {
+              ...mapApi(newItem, prev.length),
+              // We only need to manually find the name on newly added items before page refresh
+              subCategoryName: subcategories.find((s) => s.id === newItem.subCategory)?.name || "",
+            }
+          ]);
+          closeForm();
         },
       });
     } else if (activeItem) {
       await putQuery({
         url: apiUrls.SubCategoryType.update,
-        putData: {
-          id: activeItem.id,
-          subCategory: values.subCategory,
-          type: values.type,
-        },
+        putData: { id: activeItem.id, subCategory: values.subCategory, type: values.type },
         onSuccess: (res: any) => {
           const updated = res?.data;
           if (!updated) return;
+
           setItems((prev) =>
             prev.map((p) =>
-              p.id === updated._id ? { ...p, type: updated.type } : p,
-            ),
+              p.id === updated._id
+                ? {
+                  ...p,
+                  type: updated.type,
+                  subCategory: updated.subCategory,
+                  subCategoryName: subcategories.find((s) => s.id === updated.subCategory)?.name || p.subCategoryName
+                }
+                : p
+            )
           );
-          setIsFormOpen(false);
+          closeForm();
         },
       });
     }
   };
 
-  const requestDelete = (it: SubCategoryType) => setPendingDelete(it);
   const confirmDelete = async () => {
     if (!pendingDelete) return;
     await deleteQuery({
@@ -153,35 +151,23 @@ export default function SubCategoryTypePage() {
 
   return (
     <div className="h-screen bg-slate-50 font-admin-text text-slate-900">
-      {loading && (
-        <PageLoader loading={loading} text="Loading Subcategory Types" />
-      )}
+      {loading && <PageLoader loading={loading} text="Loading Subcategory Types" />}
+
       <div className="mx-auto max-w-7xl px-4 sm:px-4 lg:px-4 py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">
               Subcategory Type Management
             </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Manage subcategory types.
-            </p>
+            <p className="mt-2 text-sm text-slate-500">Manage subcategory types.</p>
           </div>
-          <Button
-            onClick={openAdd}
-            variant="primary"
-            size="md"
-            icon={<Plus size={18} strokeWidth={2.5} />}
-          >
+          <Button onClick={openAdd} variant="primary" size="md" icon={<Plus size={18} strokeWidth={2.5} />}>
             Add Type
           </Button>
         </div>
 
         <div className="p-0 sm:p-2 mb-4">
-          <SubCategoryTypeTable
-            items={items}
-            onEdit={openEdit}
-            onDelete={requestDelete}
-          />
+          <SubCategoryTypeTable items={items} onEdit={openEdit} onDelete={setPendingDelete} />
         </div>
       </div>
 
@@ -192,16 +178,16 @@ export default function SubCategoryTypePage() {
         initialData={activeItem ?? null}
         onClose={closeForm}
         onSubmit={handleSubmit}
+        loading={modalMode === "add" ? addLoading : editLoading}
       />
 
       <ConfirmDialog
         isOpen={Boolean(pendingDelete)}
         title="Delete entry?"
-        description={
-          pendingDelete ? `This will permanently remove this entry.` : ""
-        }
+        description={pendingDelete ? "This will permanently remove this entry." : ""}
         onConfirm={confirmDelete}
         onCancel={() => setPendingDelete(null)}
+        loading={deleteLoading}
       />
     </div>
   );

@@ -567,7 +567,7 @@ const QuickAddProduct = () => {
   return (
     <div className="flex h-screen flex-col bg-background font-admin-text selection:bg-rose-gold/30">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-50 border-b border-border bg-background ">
+      <div className="md:sticky md:top-0 md:z-50 border-b border-border bg-background ">
         <div className="mx-auto max-w-5xl px-6 ">
           <FormHeader
             completedSections={completedSections}
@@ -591,7 +591,7 @@ const QuickAddProduct = () => {
                 "Please fix the highlighted fields.",
             );
           })}
-          className="mx-auto flex h-full max-w-5xl flex-col gap-5 py-6 "
+          className="mx-auto flex h-full max-w-5xl flex-col gap-5 py-6  px-6 "
         >
           {showSuccess && (
             <SuccessBanner
@@ -678,25 +678,29 @@ const QuickAddProduct = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex w-full flex-col sm:flex-row gap-3 mb-32">
-              <Button
+            <div className="flex w-full flex-col-reverse sm:flex-row gap-3 sm:gap-4 mt-8 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-border">
+              <button
                 type="button"
-                variant="secondary"
                 onClick={handleClear}
-                className="flex-1"
+                className="group relative flex-1 sm:flex-none sm:min-w-[150px] py-2 rounded-[10px] border border-border bg-transparent text-heading/70 font-medium text-sm tracking-wide overflow-hidden transition-colors duration-200 hover:text-heading disabled:opacity-50 disabled:pointer-events-none"
               >
-                Clear
-              </Button>
+                <span className="absolute inset-0 bg-surface scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100" />
+                <span className="relative">Clear</span>
+              </button>
 
-              <Button
+              <button
                 type="submit"
-                variant="primary"
-                className="flex-1"
                 disabled={loading}
+                className="group relative flex-1 py-2 rounded-[10px] bg-primary text-white font-medium text-sm tracking-wide overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none disabled:active:scale-100 flex items-center justify-center gap-2"
               >
-                {loading && <ButtonLoader />}
-                {id ? "Update Product" : "Add Product"}
-              </Button>
+                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.06] transition-colors duration-200" />
+                {loading && (
+                  <span className="relative h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                )}
+                <span className="relative">
+                  {id ? "Update Product" : "Add Product"}
+                </span>
+              </button>
             </div>
           </div>
         </form>

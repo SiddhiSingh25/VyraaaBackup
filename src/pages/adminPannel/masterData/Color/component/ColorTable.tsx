@@ -20,7 +20,7 @@ const COLUMNS = ["Sr. No.", "Color", "Hex", "Family", "Actions"];
 export default function ColorTable({ items, onEdit, onDelete }: Props) {
   return (
     <div className="w-full h-[80vh] bg-surface rounded-xl border border-border shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col font-admin-text">
-      <div className="p-5 shrink-0">
+      {/* <div className="p-5 shrink-0">
         <div className="relative w-full max-w-60">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search size={16} className="text-muted" />
@@ -31,12 +31,12 @@ export default function ColorTable({ items, onEdit, onDelete }: Props) {
             className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary bg-background text-body placeholder-muted"
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="flex-1 min-h-0 overflow-auto w-full scrollbar-thin">
         <table className="w-full min-w-205 border-collapse text-left relative">
           <thead className="bg-surface sticky top-0 z-10">
-            <tr className="border-b-2 border-primary border-t shadow-sm">
+            <tr className="border-b-2 border-primary  shadow-sm">
               {COLUMNS.map((col, i) => (
                 <th
                   key={col}

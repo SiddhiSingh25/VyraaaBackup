@@ -30,6 +30,7 @@ import { setCartItems } from "@/redux/slices/cartSlice";
 import { setWishlist } from "@/redux/slices/wishlistSlice";
 import useGetQuery from "@/hooks/getQuery.hook";
 import Navbar from "@/components/Header/Navbar";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -39,6 +40,10 @@ const Login = () => {
   const { getQuery: getProfileQuery } = useGetQuery();
   const { getQuery: getCartQuery } = useGetQuery();
   const { getQuery: getWishlistQuery } = useGetQuery();
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const {
     register,

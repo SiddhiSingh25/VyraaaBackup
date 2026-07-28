@@ -53,31 +53,31 @@ const ReviewCard = ({
   <div className="border border-[#e6d9cf] rounded-xl p-5 bg-[#fdf9f3]">
     <div className="flex items-center justify-between flex-wrap gap-1.5">
       <div className="flex items-center gap-2">
-        <StarRow rating={review.rating} size={12} />
-        {review.verified && (
+        <StarRow rating={review?.rating} size={12} />
+        {review?.verified && (
           <span className="text-[10px] tracking-wide uppercase text-[#835240] bg-[#f2e8dd] px-2 py-0.5 rounded-full">
             Verified Purchase
           </span>
         )}
       </div>
-      <span className="text-[11px] text-[#a89a90]">{review.date}</span>
+      <span className="text-[11px] text-[#a89a90]">{review?.date}</span>
     </div>
 
-    <h4 className="mt-2.5 text-[14.5px] font-medium text-[#3b302a]">{review.title}</h4>
-    <p className="mt-1 text-[13px] leading-[1.7] text-[#51443f]">{review.review}</p>
+    <h4 className="mt-2.5 text-[14.5px] font-medium text-[#3b302a]">{review?.title}</h4>
+    <p className="mt-1 text-[13px] leading-[1.7] text-[#51443f]">{review?.review}</p>
 
-    {review.images && review.images.length > 0 && (
+    {review?.images && review?.images?.length > 0 && (
       <div className="mt-3 flex gap-2">
-        {review.images.slice(0, 4).map((img, i) => (
+        {review?.images.slice(0, 4).map((img: any, i: any) => (
           <button
             key={i}
             type="button"
-            onClick={() => onImageClick(review.images!, i)}
+            onClick={() => onImageClick(review?.images!, i)}
             className="w-14 h-14 rounded-lg overflow-hidden border border-[#e6d9cf] cursor-pointer group shrink-0"
           >
             <img
               src={img}
-              alt={`review-${review.id}-${i}`}
+              alt={`review-${review?.id}-${i}`}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
           </button>
@@ -86,13 +86,13 @@ const ReviewCard = ({
     )}
 
     <div className="mt-3 flex items-center justify-between">
-      <span className="text-[12.5px] text-[#84746e]">— {review.name}</span>
+      <span className="text-[12.5px] text-[#84746e]">— {review?.name}</span>
       {/* <button
         type="button"
         className="flex items-center gap-1.5 text-[12px] text-[#84746e] hover:text-[#835240] transition-colors duration-200"
       >
         <HelpfulIcon />
-        Helpful ({review.helpful})
+        Helpful ({review?.helpful})
       </button> */}
     </div>
   </div>
@@ -129,7 +129,7 @@ const Lightbox = ({
       >
         ×
       </button>
-      {images.length > 1 && (
+      {images?.length > 1 && (
         <>
           <button
             type="button"
@@ -259,18 +259,18 @@ const RatingsAndReviews = ({
           {/* Customer Reviews: render all individual reviews from API */}
           <div className="grid grid-cols-1 gap-4">
             {(isExpanded ? (reviews || []) : (reviews || []).slice(0, 3)).map((review, i) => (
-              <FadeIn key={review._id || review.id || i} trigger={visible} delay={i * 80}>
+              <FadeIn key={review?._id || review?.id || i} trigger={visible} delay={i * 80}>
                 <ReviewCard
                   review={{
-                    id: review._id || review.id || i,
-                    name: review.user ? `${review.user.firstName || ''} ${review.user.lastName || ''}`.trim() : review.name || "Customer",
-                    rating: review.rating,
-                    verified: review.verified || false,
-                    date: review.createdAt ? new Date(review.createdAt).toLocaleDateString() : review.date || "",
-                    title: review.title || "",
-                    review: review.message || review.review || "",
-                    helpful: review.helpful || 0,
-                    images: review.images || [],
+                    id: review?._id || review?.id || i,
+                    name: review?.user ? `${review?.user.firstName || ''} ${review?.user.lastName || ''}`.trim() : review?.name || "Customer",
+                    rating: review?.rating,
+                    verified: review?.verified || false,
+                    date: review?.createdAt ? new Date(review?.createdAt).toLocaleDateString() : review?.date || "",
+                    title: review?.title || "",
+                    review: review?.message || review?.review || "",
+                    helpful: review?.helpful || 0,
+                    images: review?.images || [],
                   }}
                   onImageClick={handleImageClick}
                 />
@@ -279,7 +279,7 @@ const RatingsAndReviews = ({
           </div>
 
           {/* Show More / Show Less Toggle */}
-          {reviews && reviews.length > 3 && (
+          {reviews && reviews?.length > 3 && (
             <div className="mt-5 flex justify-center md:justify-start">
               <button
                 type="button"
@@ -300,8 +300,8 @@ const RatingsAndReviews = ({
 
           {lightbox && (
             <Lightbox
-              images={lightbox.images}
-              index={lightbox.index}
+              images={lightbox?.images}
+              index={lightbox?.index}
               onClose={() => setLightbox(null)}
               onNav={handleNav}
             />

@@ -18,20 +18,19 @@ interface Category {
   image: string;
 }
 
-export default function ProductShowcase() {
+export default function ProductShowcase({ category, categoryLoading }: { category: any, categoryLoading: boolean }) {
   const navigate = useNavigate();
   const { getQuery } = useGetQuery();
   const [gender, setGender] = useState<Gender>("");
 
   // 2. FIX: Tell TypeScript this is an array of Categories (or any[]) instead of never[]
-  const [categories, setCategories] = useState<Category[]>([]);
+  // const [categories, setCategories] = useState<Category[]>([]);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [pageNum, setPageNum] = useState<string>("");
   const [limit, setLimit] = useState<string>("");
   const [products, setProducts] = useState<any[]>([]);
   const [productLoading, setProductLoading] = useState(false);
-  const [categoryLoading, setCategoryLoading] = useState(false);
 
   function CategorySkeletonItem() {
     return (
@@ -77,12 +76,12 @@ export default function ProductShowcase() {
           });
         }}
         // 'group' enables synchronized hover effects on children
-        className="group flex flex-col items-center gap-3 flex-shrink-0 snap-center focus:outline-none"
+        className="group flex flex-col items-center gap-2 flex-shrink-0 snap-center focus:outline-none cursor-pointer"
       >
         {/* Image Container */}
         <div
           className={`relative flex items-center justify-center overflow-hidden transition-all duration-300 ease-out
-            w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-2xl
+            w-14 h-14 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-2xl
             ${isActive
               ? "ring-2 ring-primary ring-offset-2 shadow-md"
               : "border border-border/50 shadow-sm group-hover:shadow-md group-hover:-translate-y-1 group-hover:border-primary/50"
@@ -103,7 +102,7 @@ export default function ProductShowcase() {
         {/* Text Label */}
         <div className="flex flex-col items-center gap-1.5">
           <span
-            className={`text-[11px] sm:text-xs font-semibold tracking-widest uppercase transition-colors duration-300
+            className={`text-[10px] sm:text-xs font-semibold tracking-widest uppercase transition-colors duration-300
               ${isActive
                 ? "text-primary"
                 : "text-admin-text/70 group-hover:text-admin-text"
@@ -122,21 +121,7 @@ export default function ProductShowcase() {
     )
   }
 
-  // Fetch Categories on Mount
-  useEffect(() => {
-    setCategoryLoading(true)
-    getQuery({
-      url: apiUrls.Category.getAll,
-      onSuccess: (res: any) => {
-        setCategories(res.data);
-        setCategoryLoading(false)
-      },
-      onFail: (res: any) => {
-        console.log(res);
-        setCategoryLoading(false)
-      },
-    });
-  }, [getQuery]);
+
 
   // Fetch Products whenever filters change
   useEffect(() => {
@@ -186,17 +171,17 @@ export default function ProductShowcase() {
   return (
     <section className="bg-surface/50 py-10">
       <div className="px-5 sm:px-10 lg:px-20 ">
-        <h2 className="font-serif text-center mb-8 font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
+        <h2 className="font-serif text-center mb-4 font-light text-neutral-900 dark:text-neutral-50 text-[clamp(28px,4.5vw,48px)] leading-[1.15] tracking-tight sm:-tracking-[0.02em]">
           Categories
         </h2>
 
-        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 pt-4 mb-8 justify-start md:justify-center px-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-3 sm:gap-6 overflow-x-auto pb-6 pt-4  justify-start md:justify-center px-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categoryLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
               <CategorySkeletonItem key={i} />
             ))
-          ) : categories?.length ? (
-            categories.map((cat) => (
+          ) : category?.length ? (
+            category.map((cat) => (
               <CategoryCard
                 key={cat._id}
                 cat={cat}

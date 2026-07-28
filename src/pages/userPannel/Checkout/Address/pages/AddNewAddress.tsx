@@ -117,6 +117,7 @@ export default function AddNewAddress() {
 
   useEffect(() => {
     fetchAddresses();
+    window.scrollTo(0, 0)
   }, []);
 
   const toggleAddressExpand = (id: string, e: React.MouseEvent) => {

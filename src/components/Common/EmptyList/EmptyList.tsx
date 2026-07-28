@@ -10,6 +10,7 @@ interface EmptyStateProps {
   backgroundImageUrl?: string;
 }
 
+
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {

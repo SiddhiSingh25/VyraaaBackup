@@ -16,7 +16,7 @@ interface HomeVideo {
 const AddHomeVideos = () => {
   const [videos, setVideos] = useState<HomeVideo[]>([]);
   const [loading, setLoading] = useState(true);
-  const { postQuery } = usePostQuery();
+  const { postQuery, loading: deleteLoading } = usePostQuery();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -230,6 +230,7 @@ const AddHomeVideos = () => {
               console.error(err);
             }
           }}
+          loading={deleteLoading}
         />
       </div>
     </div>

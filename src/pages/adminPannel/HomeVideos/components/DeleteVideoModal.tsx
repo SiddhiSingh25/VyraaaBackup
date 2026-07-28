@@ -1,12 +1,19 @@
+import ButtonLoader from "@/components/Loader/ButtonLoader";
 import { AlertTriangle } from "lucide-react";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   onDelete: () => void;
+  loading: boolean;
 }
 
-const DeleteVideoModal = ({ open, onClose, onDelete }: Props) => {
+const DeleteVideoModal = ({
+  open,
+  onClose,
+  onDelete,
+  loading = false,
+}: Props) => {
   if (!open) return null;
 
   return (
@@ -41,7 +48,9 @@ const DeleteVideoModal = ({ open, onClose, onDelete }: Props) => {
           <button
             onClick={onDelete}
             className="rounded-xl bg-red-600 px-7 py-3 font-semibold text-white transition hover:bg-red-700"
+            disabled={loading}
           >
+            {loading && <ButtonLoader />}
             Delete Video
           </button>
         </div>
