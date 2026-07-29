@@ -81,17 +81,21 @@ export interface GiftProduct {
   title: string;
   image: string;
 
-  brand?: {
-    _id: string;
-    brand: string;
-  } | string; // Added string in case brand is sometimes unpopulated
+  brand?:
+    | {
+        _id: string;
+        brand: string;
+      }
+    | string; // Added string in case brand is sometimes unpopulated
 
   price: {
     // Crucial Fix: Size can be a populated object OR a raw string ID
-    size: {
-      _id: string;
-      size: string;
-    } | string;
+    size:
+      | {
+          _id: string;
+          size: string;
+        }
+      | string;
 
     skuCode?: string;
     amount?: number;
@@ -158,12 +162,12 @@ export type QuickAddValues = {
   brand: string;
   gender: "Men" | "Women" | "Unisex" | "Boys" | "Girls" | "";
   ageRange?:
-  | "0-2 Years"
-  | "3-5 Years"
-  | "6-8 Years"
-  | "9-12 Years"
-  | "13-18 Years"
-  | "";
+    | "0-2 Years"
+    | "3-5 Years"
+    | "6-8 Years"
+    | "9-12 Years"
+    | "13-18 Years"
+    | "Adult";
   attributes: AttributeEntry[];
   colorFamily: string;
   color: string;
