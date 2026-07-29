@@ -3,14 +3,18 @@ import type { QuickAddValues } from "./types";
 
 export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
   // Taxonomy
-  category: yup.string().required("Category is required"),
+  category: yup.string().when("$hideCategoryField", {
+    is: true,
+    then: (schema) => schema.optional(),
+    otherwise: (schema) => schema.required("Category is required"),
+  }),
   subcategory: yup.string().required("Subcategory is required"),
   subcategoryType: yup.string().required("Type is required"),
 
   // Basic Details
   name: yup.string().required("Product Name is required"),
   description: yup.string().required("Description is required"),
-  brand: yup.string().required("Brand is required"),
+  brand: yup.string().optional(),
   gender: yup
     .string()
     .oneOf(["Men", "Women", "Unisex", "Boys", "Girls"])
@@ -25,6 +29,7 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
       "6-8 Years",
       "9-12 Years",
       "13-18 Years",
+      "Adult",
     ])
     .optional(),
 
@@ -32,24 +37,28 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
   attributes: yup
     .array()
     .of(
-      yup
-        .object()
-        .shape({
-          property: yup.string().required(),
-          value: yup.string().required(),
-        }),
+      yup.object().shape({
+        property: yup.string().required(),
+        value: yup.string().required(),
+      }),
     )
     .default([]),
 
   // Variants (Simplified for Quick Add)
-  colorFamily: yup.string().required("Color Family is required"),
-  color: yup.string().required("Specific Color is required"),
+  colorFamily: yup.string().optional(),
+  color: yup.string().optional(),
   sizeType: yup.string().required("Size Type is required"),
   variants: yup
     .array()
     .of(
       yup.object({
-        size: yup.string().required("Size is required"),
+        sku: yup.string().required("SKU is required"),
+        size: yup
+          .object({
+            value: yup.string().required("Size is required"),
+            label: yup.string().required(),
+          })
+          .required("Size is required"),
         price: yup
           .number()
           .typeError("Must be a number")
@@ -91,5 +100,7 @@ export const quickAddDefaultValues: QuickAddValues = {
   sizeType: "",
   variants: [],
   images: [],
+  sku: "",
+  appendSizeType: false,
+  gifts: [],
 };
-//hey chat gpt i am giving you image  of a school in which i have attached the logo all you have to do is genrate  a exact logo but with8k qulaity and transaprent bg ...make sure color will not change and bg will be 100% transparent  there shoiuld be not much gap./

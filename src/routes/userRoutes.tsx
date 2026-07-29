@@ -12,6 +12,7 @@ import ResetPassword from "../pages/userPannel/auth/pages/ResetPassword";
    User Pages
 ========================= */
 import HomeScreen from "../pages/userPannel/HomeScreen/HomeScreen";
+import AboutUs from "../pages/userPannel/AboutUs/AboutUs";
 import Wishlist from "../pages/userPannel/Wishlist/Wishlist";
 import Profile from "../pages/userPannel/UserProfile/UserProfile";
 import ProductDetails from "../pages/userPannel/Product/Product";
@@ -32,14 +33,14 @@ import OrderDeatils from "../pages/userPannel/OrderDeatils/OrderDeatils";
 
 
 import UserLayout from "@/routes/userLayout";
-import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/PrivacyPolicy";
+import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/Privacypolicy";
 
 
 
 export const userRoutes = [
   {
     path: "/",
-    element: <UserLayout/>,
+    element: <UserLayout />,
     children: [
       {
         index: true,
@@ -72,7 +73,7 @@ export const userRoutes = [
 
       {
         path: "/privacy-policy",
-        element: <PrivacyPolicy/>
+        element: <PrivacyPolicy />,
       },
       {
         path: "/terms-condtions",
