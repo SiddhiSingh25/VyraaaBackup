@@ -69,6 +69,7 @@ const CoreInfoSection = ({
           {...register("name")}
           error={errors.name?.message}
         />
+        
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-2">
           <Controller
             name="colorFamily"
