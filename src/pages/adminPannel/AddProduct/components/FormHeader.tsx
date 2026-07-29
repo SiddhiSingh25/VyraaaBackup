@@ -1,13 +1,14 @@
 import { RiCheckLine } from "react-icons/ri";
 
 type FormHeaderProps = {
-  completedSections: number;
+  completedSections: boolean[];
   totalSections: number;
 };
 
 const steps = ["Category", "Product", "Inventory", "Media"];
 
 const FormHeader = ({ completedSections, totalSections }: FormHeaderProps) => {
+  const completedCount = completedSections.filter(Boolean).length;
   return (
     <div className="sticky top-0 z-40  bg-background/95 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-8 py-3">
@@ -27,8 +28,10 @@ const FormHeader = ({ completedSections, totalSections }: FormHeaderProps) => {
           <div className="pt-1">
             <div className="flex items-center">
               {steps.map((step, index) => {
-                const completed = index < completedSections;
-                const active = index === completedSections;
+                const completed = completedSections[index];
+                const active =
+  !completed &&
+  index === completedSections.findIndex((value) => !value);
 
                 return (
                   <div key={step} className="flex flex-1 items-center">
@@ -77,7 +80,7 @@ const FormHeader = ({ completedSections, totalSections }: FormHeaderProps) => {
           {/* Right */}
           <div className="flex justify-end">
             <div className="rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary">
-              {completedSections} / {totalSections} Completed
+              {completedCount} / {totalSections} Completed
             </div>
           </div>
         </div>
