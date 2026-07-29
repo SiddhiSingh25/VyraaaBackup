@@ -300,7 +300,7 @@ const ProductInfo = ({
   if (isLoading) {
     return <SkeletonProductInfo />;
   }
-  let activePrice = 0
+  let activePrice :any;
   if(selectedSize === -1){
  activePrice = productData?.price?.[0];
   }else{
