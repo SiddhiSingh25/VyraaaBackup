@@ -22,7 +22,7 @@ import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../../components/tableComponents/Button";
 import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
@@ -41,6 +41,7 @@ const QuickAddProduct = () => {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const { id } = useParams<{ id: string }>();
   const { getQuery } = useGetQuery();
+  const navigate = useNavigate();
   console.log("poroductId", id);
 
   // categoryId coming from the route params (e.g. /category/:categoryId/quick-add)
@@ -481,6 +482,7 @@ const QuickAddProduct = () => {
           );
 
           if (id) {
+            navigate("/admin/products");
             return;
           }
 
