@@ -298,6 +298,7 @@ const ProductInfo = ({
       }, 1000);
     }, 500); // Wait 500ms after the last click to process
   };
+  
 
   if (isLoading) {
     return <SkeletonProductInfo />;
