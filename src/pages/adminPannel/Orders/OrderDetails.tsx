@@ -1,4 +1,5 @@
 import { apiUrls } from "@/apis";
+import PageLoader from "@/components/Loader/fullPageLoader";
 import useGetQuery from "@/hooks/getQuery.hook";
 import usePostQuery from "@/hooks/postQuery.hook";
 import {
@@ -53,7 +54,7 @@ const getBadgeColor = (status: string) => {
 
 const OrderDetails = () => {
   const navigate = useNavigate();
-  const { getQuery } = useGetQuery();
+  const { getQuery, loading } = useGetQuery();
   const { postQuery } = usePostQuery();
   const { id } = useParams<{ id: string }>();
 
@@ -114,9 +115,7 @@ const OrderDetails = () => {
 
   if (!order) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-sm font-medium text-[#8B5E49]">Loading Order...</p>
-      </div>
+      <PageLoader loading={loading} text="Loading Order Details..." />
     );
   }
 
@@ -521,7 +520,7 @@ const OrderDetails = () => {
                   ₹{Number(order.grandTotal || 0).toFixed(2)}
                 </span>
               </div> */}
-{/* 
+              {/* 
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Shipping</span>
                 <span className="font-medium text-[#3F322B]">₹0</span>
