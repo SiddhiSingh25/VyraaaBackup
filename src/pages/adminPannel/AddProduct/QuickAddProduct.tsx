@@ -22,7 +22,7 @@ import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "../../../components/tableComponents/Button";
 import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
@@ -48,6 +48,14 @@ const QuickAddProduct = () => {
   const { categoryId: categoryIdFromParams } = useParams();
 
   const { toast } = useToast();
+
+  let location  = useLocation()
+
+  useEffect(()=>{
+    resetForm()
+  }, [location.pathname])
+
+
 
   // Build default values so the "category" field is pre-filled whenever
   // we've landed here with a categoryId in the URL.
@@ -370,7 +378,7 @@ const QuickAddProduct = () => {
     variants.length > 0, // Inventory & Pricing
 
     images.length > 0, // Media & Gallery
-  ].filter(Boolean).length;
+  ];
 
   // --- Reset helpers ---------------------------------------------------
 
