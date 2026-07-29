@@ -27,19 +27,13 @@ import AddNewAddress from "../pages/userPannel/Checkout/Address/pages/AddNewAddr
 import Payment from "../pages/userPannel/Checkout/Payment/PaymentPage";
 import TermsAndConditions from "@/pages/userPannel/HomeScreen/Components/TermsCondition";
 import OrderDeatils from "../pages/userPannel/OrderDeatils/OrderDeatils";
-
-
-
-
 import UserLayout from "@/routes/userLayout";
-import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/PrivacyPolicy";
-
-
+import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/privacypolicy";
 
 export const userRoutes = [
   {
     path: "/",
-    element: <UserLayout/>,
+    element: <UserLayout />,
     children: [
       {
         index: true,
@@ -72,7 +66,7 @@ export const userRoutes = [
 
       {
         path: "/privacy-policy",
-        element: <PrivacyPolicy/>
+        element: <PrivacyPolicy />,
       },
       {
         path: "/terms-condtions",
@@ -128,8 +122,4 @@ export const userRoutes = [
       },
     ],
   },
-
-
-
-
 ];
