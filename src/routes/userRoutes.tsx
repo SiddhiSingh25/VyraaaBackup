@@ -28,7 +28,7 @@ import Payment from "../pages/userPannel/Checkout/Payment/PaymentPage";
 import TermsAndConditions from "@/pages/userPannel/HomeScreen/Components/TermsCondition";
 import OrderDeatils from "../pages/userPannel/OrderDeatils/OrderDeatils";
 import UserLayout from "@/routes/userLayout";
-import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/privacypolicy";
+import PrivacyPolicy from "@/pages/userPannel/HomeScreen/Components/Privacypolicy";
 
 export const userRoutes = [
   {
