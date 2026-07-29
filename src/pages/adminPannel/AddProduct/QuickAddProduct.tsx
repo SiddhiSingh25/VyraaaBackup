@@ -22,7 +22,7 @@ import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../../components/tableComponents/Button";
 import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
@@ -41,6 +41,7 @@ const QuickAddProduct = () => {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const { id } = useParams<{ id: string }>();
   const { getQuery } = useGetQuery();
+  const navigate = useNavigate()
   console.log("poroductId", id);
 
   // categoryId coming from the route params (e.g. /category/:categoryId/quick-add)
@@ -173,10 +174,19 @@ const QuickAddProduct = () => {
 
   // --- SYNC SUBCATEGORY ONCE OPTIONS ARRIVE ---
   useEffect(() => {
-    if (!editingProduct || !effectiveCategoryId || subcategoryLoading || !subcategoryOptions.length) return;
+    if (
+      !editingProduct ||
+      !effectiveCategoryId ||
+      subcategoryLoading ||
+      !subcategoryOptions.length
+    )
+      return;
 
-    const originalSubCatId = editingProduct.subCategory?._id || editingProduct.subCategory;
-    const exists = subcategoryOptions.find((item) => item.value === originalSubCatId);
+    const originalSubCatId =
+      editingProduct.subCategory?._id || editingProduct.subCategory;
+    const exists = subcategoryOptions.find(
+      (item) => item.value === originalSubCatId,
+    );
 
     if (exists) {
       setValue("subcategory", originalSubCatId, {
@@ -184,16 +194,31 @@ const QuickAddProduct = () => {
         shouldValidate: false,
       });
     }
-  }, [editingProduct, effectiveCategoryId, subcategoryLoading, subcategoryOptions, setValue]);
+  }, [
+    editingProduct,
+    effectiveCategoryId,
+    subcategoryLoading,
+    subcategoryOptions,
+    setValue,
+  ]);
 
   // --- SYNC SUBCATEGORY TYPE ONCE OPTIONS ARRIVE ---
   useEffect(() => {
-    if (!editingProduct || !selectedSubcategoryId || subcategoryTypeLoading || !subcategoryTypeOptions.length) return;
+    if (
+      !editingProduct ||
+      !selectedSubcategoryId ||
+      subcategoryTypeLoading ||
+      !subcategoryTypeOptions.length
+    )
+      return;
 
-    const originalTypeId = editingProduct.subcategoryType?._id || editingProduct.subcategoryType;
+    const originalTypeId =
+      editingProduct.subcategoryType?._id || editingProduct.subcategoryType;
     if (!originalTypeId) return; // Not all products have a subcategory type!
 
-    const exists = subcategoryTypeOptions.find((item) => item.value === originalTypeId);
+    const exists = subcategoryTypeOptions.find(
+      (item) => item.value === originalTypeId,
+    );
 
     if (exists) {
       setValue("subcategoryType", originalTypeId, {
@@ -201,8 +226,13 @@ const QuickAddProduct = () => {
         shouldValidate: false,
       });
     }
-  }, [editingProduct, selectedSubcategoryId, subcategoryTypeLoading, subcategoryTypeOptions, setValue]);
-
+  }, [
+    editingProduct,
+    selectedSubcategoryId,
+    subcategoryTypeLoading,
+    subcategoryTypeOptions,
+    setValue,
+  ]);
 
   const { colorFamilyOptions, addColorFamily } = useColorFamilyData();
   const { colorOptions, addColor } = useColorData(selectedColorFamily);
@@ -214,7 +244,6 @@ const QuickAddProduct = () => {
   const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
   const [pageLoader, setPageLoader] = useState(false);
 
-
   // --- WIPE HOOKS ---
 
   // --- WIPE HOOKS ---
@@ -223,7 +252,8 @@ const QuickAddProduct = () => {
     if (isInitializing) return;
 
     // Fix: Prevent wiping if the category hasn't changed from the original product
-    const originalCatId = editingProduct?.category?._id || editingProduct?.category;
+    const originalCatId =
+      editingProduct?.category?._id || editingProduct?.category;
     if (editingProduct && effectiveCategoryId === originalCatId) return;
 
     setValue("brand", "");
@@ -232,7 +262,8 @@ const QuickAddProduct = () => {
   useEffect(() => {
     if (isInitializing) return;
 
-    const originalCatId = editingProduct?.category?._id || editingProduct?.category;
+    const originalCatId =
+      editingProduct?.category?._id || editingProduct?.category;
     if (editingProduct && effectiveCategoryId === originalCatId) return;
 
     setValue("subcategory", "");
@@ -242,7 +273,8 @@ const QuickAddProduct = () => {
   useEffect(() => {
     if (isInitializing) return;
 
-    const originalSubCatId = editingProduct?.subCategory?._id || editingProduct?.subCategory;
+    const originalSubCatId =
+      editingProduct?.subCategory?._id || editingProduct?.subCategory;
     if (editingProduct && selectedSubcategoryId === originalSubCatId) return;
 
     setValue("subcategoryType", "");
@@ -252,7 +284,8 @@ const QuickAddProduct = () => {
     if (isInitializing) return;
 
     // Fix: Prevent wiping if the color family hasn't changed from the original product
-    const originalFamilyId = editingProduct?.color?.family || editingProduct?.colorFamily;
+    const originalFamilyId =
+      editingProduct?.color?.family || editingProduct?.colorFamily;
     if (editingProduct && selectedColorFamily === originalFamilyId) return;
 
     setValue("color", "");
@@ -262,12 +295,12 @@ const QuickAddProduct = () => {
     if (isInitializing) return;
 
     // Fix: Prevent wiping if the sizeType hasn't changed from the original product
-    const originalSizeTypeId = editingProduct?.sizeType?._id || editingProduct?.sizeType;
+    const originalSizeTypeId =
+      editingProduct?.sizeType?._id || editingProduct?.sizeType;
     if (editingProduct && selectedSizeType === originalSizeTypeId) return;
 
     setValue("variants", []);
   }, [selectedSizeType, editingProduct, setValue, isInitializing]);
-
 
   // If the param-based categoryId changes (e.g. navigating between
   // category-scoped quick-add routes), keep the form field in sync.
@@ -449,6 +482,7 @@ const QuickAddProduct = () => {
           );
 
           if (id) {
+            navigate("/admin/products");
             return;
           }
 
@@ -521,7 +555,8 @@ const QuickAddProduct = () => {
                 // Safely map sizes handling both Populated Objects and Unpopulated Strings
                 sizes:
                   gift.product?.price?.map((p: any) => {
-                    const isPopulated = typeof p.size === "object" && p.size !== null;
+                    const isPopulated =
+                      typeof p.size === "object" && p.size !== null;
                     const value = isPopulated ? p.size._id : p.size; // Get ID whether it's an object or string
 
                     let label = isPopulated ? p.size.size : "";
@@ -560,7 +595,8 @@ const QuickAddProduct = () => {
         reset({
           category: product.category?._id || product.category || "",
           subcategory: product.subCategory?._id || product.subCategory || "",
-          subcategoryType: product.subcategoryType?._id || product.subcategoryType || "",
+          subcategoryType:
+            product.subcategoryType?._id || product.subcategoryType || "",
 
           name: product.title || "",
           description: product.description || "",
@@ -576,10 +612,12 @@ const QuickAddProduct = () => {
           variants:
             product.price?.map((item: any) => ({
               // Safely map size for react-select components
-              size: item.size ? {
-                value: item.size._id || item.size,
-                label: item.size.size || "",
-              } : null,
+              size: item.size
+                ? {
+                  value: item.size._id || item.size,
+                  label: item.size.size || "",
+                }
+                : null,
 
               sku: item.skuCode || "",
               amount: item.amount || 0, // <-- Added: The actual selling price was missing in your original code
@@ -609,7 +647,7 @@ const QuickAddProduct = () => {
         console.error("Failed to fetch product:", err);
         toast(
           "error",
-          err?.response?.data?.message || "Failed to fetch product"
+          err?.response?.data?.message || "Failed to fetch product",
         );
         setPageLoader(false);
       },

@@ -23,7 +23,6 @@ export const quickAddSchema: yup.ObjectSchema<QuickAddValues> = yup.object({
   ageRange: yup
     .string()
     .oneOf([
-      "",
       "0-2 Years",
       "3-5 Years",
       "6-8 Years",
@@ -93,7 +92,7 @@ export const quickAddDefaultValues: QuickAddValues = {
   description: "",
   brand: "",
   gender: "",
-  ageRange: "",
+  ageRange: undefined,
   attributes: [],
   colorFamily: "",
   color: "",

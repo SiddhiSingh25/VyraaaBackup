@@ -300,8 +300,14 @@ const ProductInfo = ({
   if (isLoading) {
     return <SkeletonProductInfo />;
   }
+  let activePrice :any;
+  if(selectedSize === -1){
+ activePrice = productData?.price?.[0];
+  }else{
+ activePrice = productData?.price?.[selectedSize];
+  }
 
-  const activePrice = productData?.price?.[selectedSize];
+  
   const savedAmount =
     activePrice?.markupPrice != null && activePrice?.amount != null
       ? Math.round(activePrice.markupPrice - activePrice.amount)
@@ -539,7 +545,8 @@ const ProductInfo = ({
                     onClick={handleAddToCart}
                     type="button"
                     // disabled={cartLoading}
-                    disabled={selectedSize === -1 || !activePrice?.isAvailable || cartLoading}
+                    disabled={selectedSize === null ||  selectedSize === -1 ||
+                      activePrice?.isAvailable === false ||   cartLoading}
                     className="flex-1 h-11 text-[12px] tracking-[0.08em] disabled:opacity-50 disabled:cursor-not-allowed uppercase font-medium bg-primary text-background rounded-sm hover:bg-primary-dark transition-colors duration-200"
                   >
                     {cartLoading ? "Adding to Cart..." : "Add to Cart"}
