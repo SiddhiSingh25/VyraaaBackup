@@ -300,8 +300,14 @@ const ProductInfo = ({
   if (isLoading) {
     return <SkeletonProductInfo />;
   }
+  let activePrice = 0
+  if(selectedSize === -1){
+ activePrice = productData?.price?.[0];
+  }else{
+ activePrice = productData?.price?.[selectedSize];
+  }
 
-  const activePrice = productData?.price?.[selectedSize];
+  
   const savedAmount =
     activePrice?.markupPrice != null && activePrice?.amount != null
       ? Math.round(activePrice.markupPrice - activePrice.amount)
