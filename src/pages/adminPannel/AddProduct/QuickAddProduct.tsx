@@ -22,7 +22,7 @@ import usePostQuery from "../../../hooks/postQuery.hook";
 import { apiUrls } from "../../../apis";
 import useBrandData from "./api/useBrandData";
 import { useToast } from "../../../hooks/useToast.hook";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Button from "../../../components/tableComponents/Button";
 import ProductAddedModal from "./components/LinkProductModal";
 import GiftSection from "./components/GiftSection/GiftSection";
@@ -88,7 +88,6 @@ const QuickAddProduct = () => {
   const productName = watch("name");
   const description = watch("description");
   const gender = watch("gender");
-  const navigate = useNavigate()
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [gifts, setGifts] = useState<GiftItem[]>([]);
@@ -174,10 +173,19 @@ const QuickAddProduct = () => {
 
   // --- SYNC SUBCATEGORY ONCE OPTIONS ARRIVE ---
   useEffect(() => {
-    if (!editingProduct || !effectiveCategoryId || subcategoryLoading || !subcategoryOptions.length) return;
+    if (
+      !editingProduct ||
+      !effectiveCategoryId ||
+      subcategoryLoading ||
+      !subcategoryOptions.length
+    )
+      return;
 
-    const originalSubCatId = editingProduct.subCategory?._id || editingProduct.subCategory;
-    const exists = subcategoryOptions.find((item) => item.value === originalSubCatId);
+    const originalSubCatId =
+      editingProduct.subCategory?._id || editingProduct.subCategory;
+    const exists = subcategoryOptions.find(
+      (item) => item.value === originalSubCatId,
+    );
 
     if (exists) {
       setValue("subcategory", originalSubCatId, {
@@ -185,16 +193,31 @@ const QuickAddProduct = () => {
         shouldValidate: false,
       });
     }
-  }, [editingProduct, effectiveCategoryId, subcategoryLoading, subcategoryOptions, setValue]);
+  }, [
+    editingProduct,
+    effectiveCategoryId,
+    subcategoryLoading,
+    subcategoryOptions,
+    setValue,
+  ]);
 
   // --- SYNC SUBCATEGORY TYPE ONCE OPTIONS ARRIVE ---
   useEffect(() => {
-    if (!editingProduct || !selectedSubcategoryId || subcategoryTypeLoading || !subcategoryTypeOptions.length) return;
+    if (
+      !editingProduct ||
+      !selectedSubcategoryId ||
+      subcategoryTypeLoading ||
+      !subcategoryTypeOptions.length
+    )
+      return;
 
-    const originalTypeId = editingProduct.subcategoryType?._id || editingProduct.subcategoryType;
+    const originalTypeId =
+      editingProduct.subcategoryType?._id || editingProduct.subcategoryType;
     if (!originalTypeId) return; // Not all products have a subcategory type!
 
-    const exists = subcategoryTypeOptions.find((item) => item.value === originalTypeId);
+    const exists = subcategoryTypeOptions.find(
+      (item) => item.value === originalTypeId,
+    );
 
     if (exists) {
       setValue("subcategoryType", originalTypeId, {
@@ -202,8 +225,13 @@ const QuickAddProduct = () => {
         shouldValidate: false,
       });
     }
-  }, [editingProduct, selectedSubcategoryId, subcategoryTypeLoading, subcategoryTypeOptions, setValue]);
-
+  }, [
+    editingProduct,
+    selectedSubcategoryId,
+    subcategoryTypeLoading,
+    subcategoryTypeOptions,
+    setValue,
+  ]);
 
   const { colorFamilyOptions, addColorFamily } = useColorFamilyData();
   const { colorOptions, addColor } = useColorData(selectedColorFamily);
@@ -215,7 +243,6 @@ const QuickAddProduct = () => {
   const { brandOptions, addBrand } = useBrandData(effectiveCategoryId);
   const [pageLoader, setPageLoader] = useState(false);
 
-
   // --- WIPE HOOKS ---
 
   // --- WIPE HOOKS ---
@@ -224,7 +251,8 @@ const QuickAddProduct = () => {
     if (isInitializing) return;
 
     // Fix: Prevent wiping if the category hasn't changed from the original product
-    const originalCatId = editingProduct?.category?._id || editingProduct?.category;
+    const originalCatId =
+      editingProduct?.category?._id || editingProduct?.category;
     if (editingProduct && effectiveCategoryId === originalCatId) return;
 
     setValue("brand", "");
@@ -233,7 +261,8 @@ const QuickAddProduct = () => {
   useEffect(() => {
     if (isInitializing) return;
 
-    const originalCatId = editingProduct?.category?._id || editingProduct?.category;
+    const originalCatId =
+      editingProduct?.category?._id || editingProduct?.category;
     if (editingProduct && effectiveCategoryId === originalCatId) return;
 
     setValue("subcategory", "");
@@ -243,7 +272,8 @@ const QuickAddProduct = () => {
   useEffect(() => {
     if (isInitializing) return;
 
-    const originalSubCatId = editingProduct?.subCategory?._id || editingProduct?.subCategory;
+    const originalSubCatId =
+      editingProduct?.subCategory?._id || editingProduct?.subCategory;
     if (editingProduct && selectedSubcategoryId === originalSubCatId) return;
 
     setValue("subcategoryType", "");
@@ -253,7 +283,8 @@ const QuickAddProduct = () => {
     if (isInitializing) return;
 
     // Fix: Prevent wiping if the color family hasn't changed from the original product
-    const originalFamilyId = editingProduct?.color?.family || editingProduct?.colorFamily;
+    const originalFamilyId =
+      editingProduct?.color?.family || editingProduct?.colorFamily;
     if (editingProduct && selectedColorFamily === originalFamilyId) return;
 
     setValue("color", "");
@@ -263,12 +294,12 @@ const QuickAddProduct = () => {
     if (isInitializing) return;
 
     // Fix: Prevent wiping if the sizeType hasn't changed from the original product
-    const originalSizeTypeId = editingProduct?.sizeType?._id || editingProduct?.sizeType;
+    const originalSizeTypeId =
+      editingProduct?.sizeType?._id || editingProduct?.sizeType;
     if (editingProduct && selectedSizeType === originalSizeTypeId) return;
 
     setValue("variants", []);
   }, [selectedSizeType, editingProduct, setValue, isInitializing]);
-
 
   // If the param-based categoryId changes (e.g. navigating between
   // category-scoped quick-add routes), keep the form field in sync.
@@ -338,7 +369,7 @@ const QuickAddProduct = () => {
     variants.length > 0, // Inventory & Pricing
 
     images.length > 0, // Media & Gallery
-  ];
+  ].filter(Boolean).length;
 
   // --- Reset helpers ---------------------------------------------------
 
@@ -443,14 +474,13 @@ const QuickAddProduct = () => {
           toast(
             "success",
             res?.message ||
-            res?.data?.message ||
-            (id
-              ? "Product updated successfully"
-              : "Product added successfully"),
+              res?.data?.message ||
+              (id
+                ? "Product updated successfully"
+                : "Product added successfully"),
           );
 
           if (id) {
-            navigate("/admin/products")
             return;
           }
 
@@ -475,8 +505,8 @@ const QuickAddProduct = () => {
           toast(
             "error",
             err?.response?.data?.message ||
-            err?.data?.message ||
-            (id ? "Could not update product" : "Could not add product"),
+              err?.data?.message ||
+              (id ? "Could not update product" : "Could not add product"),
           );
         },
       });
@@ -484,8 +514,8 @@ const QuickAddProduct = () => {
       toast(
         "error",
         err?.response?.data?.message ||
-        err?.message ||
-        (id ? "Could not update product" : "Could not add product"),
+          err?.message ||
+          (id ? "Could not update product" : "Could not add product"),
       );
     }
   };
@@ -523,7 +553,8 @@ const QuickAddProduct = () => {
                 // Safely map sizes handling both Populated Objects and Unpopulated Strings
                 sizes:
                   gift.product?.price?.map((p: any) => {
-                    const isPopulated = typeof p.size === "object" && p.size !== null;
+                    const isPopulated =
+                      typeof p.size === "object" && p.size !== null;
                     const value = isPopulated ? p.size._id : p.size; // Get ID whether it's an object or string
 
                     let label = isPopulated ? p.size.size : "";
@@ -562,7 +593,8 @@ const QuickAddProduct = () => {
         reset({
           category: product.category?._id || product.category || "",
           subcategory: product.subCategory?._id || product.subCategory || "",
-          subcategoryType: product.subcategoryType?._id || product.subcategoryType || "",
+          subcategoryType:
+            product.subcategoryType?._id || product.subcategoryType || "",
 
           name: product.title || "",
           description: product.description || "",
@@ -578,10 +610,12 @@ const QuickAddProduct = () => {
           variants:
             product.price?.map((item: any) => ({
               // Safely map size for react-select components
-              size: item.size ? {
-                value: item.size._id || item.size,
-                label: item.size.size || "",
-              } : null,
+              size: item.size
+                ? {
+                    value: item.size._id || item.size,
+                    label: item.size.size || "",
+                  }
+                : null,
 
               sku: item.skuCode || "",
               amount: item.amount || 0, // <-- Added: The actual selling price was missing in your original code
@@ -611,7 +645,7 @@ const QuickAddProduct = () => {
         console.error("Failed to fetch product:", err);
         toast(
           "error",
-          err?.response?.data?.message || "Failed to fetch product"
+          err?.response?.data?.message || "Failed to fetch product",
         );
         setPageLoader(false);
       },
@@ -621,7 +655,7 @@ const QuickAddProduct = () => {
   return (
     <div className="flex h-screen flex-col bg-background font-admin-text selection:bg-rose-gold/30">
       {/* Sticky Header */}
-      <div className="md:sticky md:top-0 md:z-50 border-b border-border bg-background ">
+      <div className="sticky top-0 z-50 border-b border-border bg-background ">
         <div className="mx-auto max-w-5xl px-6 ">
           <FormHeader
             completedSections={completedSections}
@@ -642,10 +676,10 @@ const QuickAddProduct = () => {
             toast(
               "error",
               firstError?.message?.toString() ||
-              "Please fix the highlighted fields.",
+                "Please fix the highlighted fields.",
             );
           })}
-          className="mx-auto flex h-full max-w-5xl flex-col gap-5 py-6  px-6 "
+          className="mx-auto flex h-full max-w-5xl flex-col gap-5 py-6 "
         >
           {showSuccess && (
             <SuccessBanner
@@ -732,29 +766,25 @@ const QuickAddProduct = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex w-full flex-col-reverse sm:flex-row gap-3 sm:gap-4 mt-8 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-border">
-              <button
+            <div className="flex w-full flex-col sm:flex-row gap-3 mb-32">
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={handleClear}
-                className="group relative flex-1 sm:flex-none sm:min-w-35 md:min-w-40 lg:min-w-45 py-2.5 sm:py-2 md:py-2.5 rounded-[10px] sm:rounded-xl border border-border bg-transparent text-heading/70 font-medium text-[13px] sm:text-sm tracking-wide overflow-hidden transition-colors duration-200 hover:text-heading disabled:opacity-50 disabled:pointer-events-none"
+                className="flex-1"
               >
-                <span className="absolute inset-0 bg-surface scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100" />
-                <span className="relative">Clear</span>
-              </button>
+                Clear
+              </Button>
 
-              <button
+              <Button
                 type="submit"
+                variant="primary"
+                className="flex-1"
                 disabled={loading}
-                className="group relative flex-1 py-2.5 sm:py-2 md:py-2.5 rounded-[10px] sm:rounded-xl bg-primary text-white font-medium text-[13px] sm:text-sm tracking-wide overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all duration-200 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none disabled:active:scale-100 flex items-center justify-center gap-2"
               >
-                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/6 transition-colors duration-200" />
-                {loading && (
-                  <span className="relative h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                )}
-                <span className="relative">
-                  {id ? "Update Product" : "Add Product"}
-                </span>
-              </button>
+                {loading && <ButtonLoader />}
+                {id ? "Update Product" : "Add Product"}
+              </Button>
             </div>
           </div>
         </form>
