@@ -30,7 +30,6 @@ import { Modal } from "antd";
 import Button from "@/components/tableComponents/Button";
 
 const ProductAddedModal = ({ open, onClose, onLink, product }: Props) => {
-  
   return (
     <Modal
       open={open}

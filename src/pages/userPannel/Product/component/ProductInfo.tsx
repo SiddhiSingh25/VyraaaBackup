@@ -233,6 +233,23 @@ const ProductInfo = ({
         isCartActionPending.current = false;
       }, 2000);
 
+      clearTimeout(safetyTimeout);
+      isCartActionPending.current = false;
+      dispatch(
+        addToCart({
+          id: productData._id,
+          brand: productData.brand,
+          name: productData.title,
+          image: productData.image || productData.thumbnail || "",
+          quantity: 1,
+          qty: 1,
+          size: productData?.price?.[selectedSize]?.size?.size || "",
+          price: productData?.price?.[selectedSize]?.amount || 0,
+          mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
+        }),
+      );
+      toast("success", "Item added to wishlist successfully");
+
       postQuery({
         url: apiUrls.Cart.add,
         postData: {
@@ -241,36 +258,21 @@ const ProductInfo = ({
           quantity: 1,
         },
         onSuccess: (res: any) => {
-          clearTimeout(safetyTimeout);
-          isCartActionPending.current = false;
-          toast("success", res.message);
-          dispatch(
-            addToCart({
-              id: productData._id,
-              brand: productData.brand,
-              name: productData.title,
-              image: productData.image || productData.thumbnail || "",
-              quantity: 1,
-              qty: 1,
-              size: productData?.price?.[selectedSize]?.size?.size || "",
-              price: productData?.price?.[selectedSize]?.amount || 0,
-              mrp: productData?.price?.[selectedSize]?.markupPrice || 0,
-            }),
-          );
+
         },
         onFail: (res: any) => {
           clearTimeout(safetyTimeout);
           isCartActionPending.current = false;
-          console.log(res?.data?.message, "=====error section");
-          toast("error", res?.data?.message || "Failed to add item to cart");
+          // console.log(res?.data?.message, "=====error section");
+          // toast("error", res?.data?.message || "Failed to add item to cart");
           setIsLoading(false);
         },
       });
-    }, 500); // Wait 500ms after the last click to process
+    }, 500); 
   };
 
   const handleBuyNow = () => {
-    if (selectedSize === null || selectedSize === -1) return;
+    if (selectedSize === null) return;
 
 
     if (buyNowDebounceTimer.current) {
@@ -296,18 +298,19 @@ const ProductInfo = ({
       }, 1000);
     }, 500); // Wait 500ms after the last click to process
   };
+  
 
   if (isLoading) {
     return <SkeletonProductInfo />;
   }
-  let activePrice = 0
-  if(selectedSize === -1){
- activePrice = productData?.price?.[0];
-  }else{
- activePrice = productData?.price?.[selectedSize];
+  let activePrice: any;
+  if (selectedSize === -1) {
+    activePrice = productData?.price?.[0];
+  } else {
+    activePrice = productData?.price?.[selectedSize];
   }
 
-  
+
   const savedAmount =
     activePrice?.markupPrice != null && activePrice?.amount != null
       ? Math.round(activePrice.markupPrice - activePrice.amount)
@@ -357,8 +360,8 @@ const ProductInfo = ({
                         <div
                           key={index}
                           onClick={() => setThumbnail(index)}
-                          className={`border w-14 h-14 sm:w-17.5 sm:h-17.5 shrink-0 rounded overflow-hidden cursor-pointer ${thumbnail === index
-                            ? "border-primary"
+                          className={`border w-14 h-14 sm:w-[70px] sm:h-[70px] flex-shrink-0 rounded overflow-hidden cursor-pointer ${thumbnail === index
+                            ? "border-[var(--color-primary)]"
                             : "border-gray-500/30"
                             }`}
                         >
@@ -481,10 +484,10 @@ const ProductInfo = ({
                         disabled={!size.isAvailable}
                         onClick={() => setSelectedSize(index)}
                         className={`w-9 h-9 rounded-full border text-[12.5px] transition-colors duration-200 ${!size.isAvailable
-                            ? "border-border text-[#c9bfb6] cursor-not-allowed line-through"
-                            : selectedSize === index
-                              ? "bg-primary border-primary text-background"
-                              : "border-border text-heading hover:border-primary hover:text-primary"
+                          ? "border-border text-[#c9bfb6] cursor-not-allowed line-through"
+                          : selectedSize === index
+                            ? "bg-primary border-primary text-background"
+                            : "border-border text-heading hover:border-primary hover:text-primary"
                           }`}
                       >
                         {size.size.size}
@@ -545,8 +548,8 @@ const ProductInfo = ({
                     onClick={handleAddToCart}
                     type="button"
                     // disabled={cartLoading}
-                    disabled={selectedSize === null ||  selectedSize === -1 ||
-                      activePrice?.isAvailable === false ||   cartLoading}
+                    disabled={selectedSize === null || selectedSize === -1 ||
+                      activePrice?.isAvailable === false || cartLoading}
                     className="flex-1 h-11 text-[12px] tracking-[0.08em] disabled:opacity-50 disabled:cursor-not-allowed uppercase font-medium bg-primary text-background rounded-sm hover:bg-primary-dark transition-colors duration-200"
                   >
                     {cartLoading ? "Adding to Cart..." : "Add to Cart"}
@@ -554,15 +557,14 @@ const ProductInfo = ({
                   <button
                     disabled={
                       selectedSize === null ||
-                      activePrice?.isAvailable === false || 
-                      selectedSize === -1
+                      activePrice?.isAvailable === false
                     }
                     onClick={handleBuyNow}
                     type="button"
                     className={`flex-1 h-11 text-[12px] tracking-[0.08em] uppercase font-medium border border-primaryounded-sm transition-colors duration-200 ${selectedSize === null ||
-                        activePrice?.isAvailable === false ||  selectedSize === -1 
-                        ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
-                        : "text-primary hover:bg-[#835240] hover:text-background"
+                      activePrice?.isAvailable === false
+                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-300"
+                      : "text-primaryover:bg-[#835240] hover:text-background"
                       }`}
                   >
                     Buy Now

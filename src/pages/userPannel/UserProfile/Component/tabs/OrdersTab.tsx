@@ -281,7 +281,8 @@ export function OrdersTab() {
                 <div className="mt-4 flex flex-wrap gap-2">
                   {status === "Delivered" && (
                     <button
-                      onClick={() => {
+                      onClick={(event) => {
+                        event.stopPropagation();
                         setSelectedOrder(order);
                         setIsReviewModalOpen(true);
                       }}

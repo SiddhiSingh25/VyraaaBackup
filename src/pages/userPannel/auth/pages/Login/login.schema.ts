@@ -5,8 +5,7 @@ export const loginSchema: yup.ObjectSchema<LoginFormValues> = yup.object({
   email: yup
     .string()
     .trim()
-    .required("Email is required")
-    .email("Enter a valid email address"),
+    .required("Email is required"),
   password: yup
     .string()
     .required("Password is required")

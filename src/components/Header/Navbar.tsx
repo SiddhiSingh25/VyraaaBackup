@@ -186,13 +186,13 @@ export default function Navbar({
           }`}
       >
         {/* ============ DESKTOP / LAPTOP (lg and up) ============ */}
-        <div className="hidden lg:flex items-center justify-between h-16 px-8 xl:px-12 gap-8 xl:gap-12">
+        <div className="hidden lg:flex items-center justify-between h-[72px] px-8 xl:px-12 gap-8 xl:gap-12">
           <div className=" flex items-center gap-4">
             <Link to="/" className="shrink-0 flex items-center">
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-22 mt-2 w-auto object-contain "
+                className="h-20 mt-2 w-auto object-contain "
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -285,7 +285,7 @@ export default function Navbar({
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
-              <Link  to={user?.role == "admin" ? "/admin" : "/profile"} className="text-admin-text/80">
+              <Link to="/profile" className="text-admin-text/80">
                 <User size={20} strokeWidth={1.6} />
               </Link>
             </div>
@@ -309,7 +309,7 @@ export default function Navbar({
               <img
                 src="/logo.png"
                 alt="VYRAAA"
-                className="h-18 mt-1 w-auto object-cover"
+                className="h-16 mt-1 w-auto object-contain"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -324,7 +324,7 @@ export default function Navbar({
                 <ShoppingBag size={20} strokeWidth={1.6} />
                 <Badge count={calculatedCartCount} pulse={cartPulse} />
               </Link>
-              <Link  to={user?.role == "admin" ? "/admin" : "/profile"} className="relative text-admin-text/80">
+              <Link to="/profile" className="relative text-admin-text/80">
                 <User2 size={20} strokeWidth={1.6} />
               </Link>
             </div>
