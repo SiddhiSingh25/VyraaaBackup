@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import Footer from '@/components/Footer/Footer';
 import Navbar from '@/components/Header/Navbar';
 
-const PrivacyPolicy: React.FC = () => {
+const Privacypolicy: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -165,4 +165,4 @@ const PrivacyPolicy: React.FC = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default Privacypolicy;
