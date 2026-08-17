@@ -1,4 +1,4 @@
-// export const apiBaseUrl =
+export const apiBaseUrl =
   "vyraaabackend-production.up.railway.app/api/";
 // export const apiBaseUrl = "http://localhost:7777/api/";
 
